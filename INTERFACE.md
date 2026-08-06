@@ -81,7 +81,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `measure.py` | Distance/angle/dihedral, radius of gyration, principal axes, helix axis, tilt and crossing angles, Shrake–Rupley SASA, buried interface area, and the pore hydrophobicity profile. | `distance()`, `angle()`, `dihedral()`, `sasa()`, `buried_area()`, `helix_axis()`, `tilt_angle()`, `hydrophobicity_profile()` | ✅ |
+| `measure.py` | `MeasurementSet` click-to-measure logic (Qt-free, so it is testable without a display), distance/angle/dihedral, radius of gyration, principal axes, helix axis, tilt and crossing angles, Shrake–Rupley SASA, buried interface area, and the pore hydrophobicity profile. | `distance()`, `angle()`, `dihedral()`, `sasa()`, `buried_area()`, `helix_axis()`, `tilt_angle()`, `hydrophobicity_profile()` | ✅ |
 | `interactions.py` | Hydrogen bonds, salt bridges, hydrophobic contacts, π-stacking, cation–π and disulfides, with published geometric criteria; cross-selection mode for interfaces; state-to-state comparison. | `detect_interactions()`, `Interaction`, `InteractionSet`, `compare_interactions()`, `CUTOFFS` | ✅ |
 | `variant_impact.py` | Predicts a variant's mechanical effect on gating as ½·dᵀ(H_mut − H_wt)·d — the change in elastic cost of the observed gating motion. Volume-based spring perturbation, all protomers, coverage reported. | `VariantImpactModel`, `VariantPrediction`, `spring_scale_from_volume()`, `RESIDUE_VOLUME` | ✅ |
 | `variants.py` | Maps variants onto structure, reports domain context, contacts lost/gained. | `map_variants()`, `VariantImpact` | 📋 |
@@ -118,8 +118,8 @@ geometry at a fraction of the triangle count.
 | `main_window.py` | Application shell: docks, menus, structure loading, highlighting, click-to-identify. | `MainWindow`, `main()` | ✅ |
 | `physics_controller.py` | Dome measurement, threaded mode calculation, mode animation and displacement colouring. | `PhysicsController`, `ModeWorker` | ✅ |
 | `morph_controller.py` | Builds and plays back the curved-to-flat morph. | `MorphController` | ✅ |
-| `gl_widget.py` | `QOpenGLWidget` hosting the moderngl context; input, picking, animation ticks. | `ViewportWidget`, `configure_surface_format()` | ✅ |
-| `panels/` | `structure_panel` (chooser + appearance), `annotation_panel` (domains, sites, variants), `physics_panel` (dome, modes, animation). | `StructurePanel`, `AnnotationPanel`, `PhysicsPanel` | ✅ |
+| `gl_widget.py` | `QOpenGLWidget` hosting the moderngl context; input, picking, animation ticks, and a transparent overlay child that draws world-anchored text labels. | `ViewportWidget`, `configure_surface_format()` | ✅ |
+| `panels/` | `structure_panel` (chooser + appearance), `annotation_panel` (domains, sites, variants), `physics_panel` (dome, modes, animation), `measure_panel` (click-to-measure, CSV export). | `StructurePanel`, `AnnotationPanel`, `PhysicsPanel`, `MeasurePanel` | ✅ |
 
 ### `piezo1/resources/` — curated data (committed)
 
@@ -171,6 +171,7 @@ geometry at a fraction of the triangle count.
 | `test_interactions.py` | The annotated disulfide, the R2456–E2117 inter-protomer salt bridge, cutoff enforcement, and the donor–donor exclusion. | ✅ |
 | `test_membrane.py` | Unit conversion, the κ/γ/λ triple, exact-vs-numerical profile and energy, second-order convergence, small-slope validity, and Cox's T₅₀ round trip. | ✅ |
 | `test_ensemble.py` | Shared-basis construction, paralogue exclusion, reversed-protomer detection, PC1-as-gating-coordinate, and A-mode dominance against a random control. | ✅ |
+| `test_measurement_set.py` | Pick accumulation, double-click rejection, kind switching, CSV export, and the disulfide measured on real coordinates. | ✅ |
 | `test_workflow.py` | Session round-trip and format guards, provenance capture, report failure handling, and the argparse flag-position trap. | ✅ |
 | `test_conservation.py` | Entropy on synthetic columns, uncovered-position handling, species deduplication, the pore-versus-blade conservation gradient, and ranking behaviour. | ✅ |
 | `test_pockets.py` | Circumsphere geometry against a known tetrahedron, percolation prevention, union-not-sum volumes, gate/anchor recovery, and the Yoda1 groove-versus-cavity result. | ✅ |

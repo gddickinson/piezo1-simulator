@@ -25,7 +25,10 @@ __all__ = ["distance", "angle", "dihedral", "radius_of_gyration",
            "inertia_tensor", "principal_axes", "helix_axis", "tilt_angle",
            "crossing_angle", "sasa", "SASAResult", "buried_area",
            "hydrophobicity_profile", "KYTE_DOOLITTLE", "rmsf_from_modes",
-           "Measurement"]
+           "Measurement", "MeasurementSet", "MEASUREMENT_KINDS"]
+
+#: How many atoms each kind of measurement needs.
+MEASUREMENT_KINDS = {"distance": 2, "angle": 3, "dihedral": 4}
 
 
 #: Kyte–Doolittle hydropathy. Positive is hydrophobic.
@@ -46,11 +49,112 @@ class Measurement:
     units: str
     atoms: tuple[int, ...] = ()
     labels: tuple[str, ...] = ()
+    positions: tuple = ()         # world coordinates of the picked atoms
     note: str = ""
 
     def __str__(self) -> str:
         what = " – ".join(self.labels) if self.labels else self.kind
         return f"{what}: {self.value:.2f} {self.units}"
+
+    @property
+    def anchor(self) -> np.ndarray:
+        """Where a label for this measurement should sit in space."""
+        if not len(self.positions):
+            return np.zeros(3)
+        return np.mean(np.asarray(self.positions, dtype=float), axis=0)
+
+    def as_row(self) -> dict:
+        return {"kind": self.kind, "value": round(float(self.value), 4),
+                "units": self.units, "atoms": " ".join(map(str, self.atoms)),
+                "selection": " - ".join(self.labels), "note": self.note}
+
+
+@dataclass
+class MeasurementSet:
+    """Accumulates picked atoms and turns them into measurements.
+
+    Deliberately free of any Qt import so the interaction logic — how many
+    atoms a kind needs, when a measurement completes, what gets exported — is
+    unit-testable without a display.
+    """
+
+    kind: str = "distance"
+    pending: list[int] = field(default_factory=list)
+    pending_positions: list = field(default_factory=list)
+    pending_labels: list[str] = field(default_factory=list)
+    measurements: list[Measurement] = field(default_factory=list)
+
+    @property
+    def required(self) -> int:
+        return MEASUREMENT_KINDS[self.kind]
+
+    def set_kind(self, kind: str) -> None:
+        if kind not in MEASUREMENT_KINDS:
+            raise ValueError(f"unknown measurement kind {kind!r}; "
+                             f"choose from {sorted(MEASUREMENT_KINDS)}")
+        self.kind = kind
+        self.clear_pending()
+
+    def clear_pending(self) -> None:
+        self.pending.clear()
+        self.pending_positions.clear()
+        self.pending_labels.clear()
+
+    def clear(self) -> None:
+        self.clear_pending()
+        self.measurements.clear()
+
+    def add_atom(self, index: int, position, label: str = "") -> Measurement | None:
+        """Add a picked atom. Returns the measurement once enough are picked.
+
+        Picking the same atom twice in a row is treated as a mistake and
+        ignored: a zero-length distance is never what anyone meant, and it is
+        an easy double-click to make.
+        """
+        if self.pending and self.pending[-1] == index:
+            return None
+        self.pending.append(int(index))
+        self.pending_positions.append(np.asarray(position, dtype=float))
+        self.pending_labels.append(label or str(index))
+        if len(self.pending) < self.required:
+            return None
+
+        points = self.pending_positions
+        if self.kind == "distance":
+            value, units = distance(points[0], points[1]), "A"
+        elif self.kind == "angle":
+            value, units = angle(points[0], points[1], points[2]), "deg"
+        else:
+            value, units = dihedral(*points[:4]), "deg"
+
+        m = Measurement(kind=self.kind, value=float(value), units=units,
+                        atoms=tuple(self.pending),
+                        labels=tuple(self.pending_labels),
+                        positions=tuple(points))
+        self.measurements.append(m)
+        self.clear_pending()
+        return m
+
+    def remove(self, index: int) -> None:
+        if 0 <= index < len(self.measurements):
+            self.measurements.pop(index)
+
+    def rows(self) -> list[dict]:
+        return [m.as_row() for m in self.measurements]
+
+    def to_csv(self) -> str:
+        import csv
+        import io
+        buf = io.StringIO()
+        fields = ["kind", "value", "units", "atoms", "selection", "note"]
+        writer = csv.DictWriter(buf, fieldnames=fields)
+        writer.writeheader()
+        for row in self.rows():
+            writer.writerow(row)
+        return buf.getvalue()
+
+    def to_text(self) -> str:
+        return "\n".join(str(m) for m in self.measurements)
 
 
 # --------------------------------------------------------------------------

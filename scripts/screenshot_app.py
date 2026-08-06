@@ -82,6 +82,25 @@ def main() -> int:
         print("variant status:", win.status_label.text())
         shot("variant")
 
+    def step_measure() -> None:
+        import numpy as np
+        st = win.structure
+        mp = win.measure_panel
+        mp.arm_button.setChecked(True)
+        for residue in (2411, 2415):
+            idx = np.flatnonzero((st.chain == "A") & (st.res_seq == residue)
+                                 & (st.atom_name == "SG"))
+            if len(idx):
+                win._on_pick(int(idx[0]))
+        if not mp.set.measurements:
+            failures.append("measurement produced no result")
+        else:
+            value = mp.set.measurements[0].value
+            print(f"measured C2411-C2415 disulfide: {value:.2f} A")
+            if not (1.8 < value < 2.5):
+                failures.append(f"disulfide measured {value:.2f} A")
+        mp.arm_button.setChecked(False)
+
     def step_modes() -> None:
         win.physics_panel.compute_modes_requested.emit(
             {"cutoff": 15.0, "spring": "inverse_square", "n_modes": 20})
@@ -95,7 +114,7 @@ def main() -> int:
         shot("modes")
 
     steps += [step_select, step_shot_overview, step_dome, step_shot_dome,
-              step_variant, step_shot_variant]
+              step_variant, step_shot_variant, step_measure]
     if args.modes:
         steps += [step_modes, None, None, None, step_shot_modes]
 

@@ -314,12 +314,24 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   N···N pairs were being admitted, which is donor–donor and impossible; now
   excluded except for histidine, whose ring nitrogens may be unprotonated.
 
-### Round 13 — Measurement in the GUI
-- [ ] Click-to-measure tool: pick two atoms for a distance, three for an angle,
+### Round 13 — Measurement in the GUI  ✅
+- [x] Click-to-measure tool: pick two atoms for a distance, three for an angle,
       four for a dihedral; persistent labelled measurements in the 3D view.
-- [ ] Measurement panel listing everything measured, with copy-to-clipboard
+- [x] Measurement panel listing everything measured, with copy-to-clipboard
       and CSV export.
-- [ ] Tests; docs; commit.
+- [x] Tests; docs; commit.
+- **Validated against an independent measurement:** picking the two sulfurs of
+  C2411/C2415 in the live GUI returns **2.04 Å**, exactly what
+  `analysis.interactions` finds for that disulfide by a completely different
+  code path. That check is now part of the scripted GUI smoke test.
+- **A Qt trap worth recording.** Drawing labels with `QPainter` inside
+  `paintGL` alongside the moderngl render does not work — the two fight over GL
+  state and the text simply never appears, with no error. Labels are now drawn
+  by a transparent child widget with its own paint event, which cannot
+  interfere with the scene at all.
+- Measurements are cleared when a new structure loads: atom indices are
+  per-structure, so a retained measurement would silently point at different
+  atoms.
 
 ---
 

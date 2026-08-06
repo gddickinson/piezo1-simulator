@@ -24,6 +24,7 @@ from .gl_widget import ViewportWidget
 from .morph_controller import MorphController
 from .physics_controller import PhysicsController
 from .panels.annotation_panel import AnnotationPanel
+from .panels.measure_panel import MeasurePanel
 from .panels.physics_panel import PhysicsPanel
 from .panels.structure_panel import StructurePanel
 from .theme import apply_dark_theme
@@ -81,6 +82,11 @@ class MainWindow(QMainWindow):
         self.annotation_panel.residues_selected.connect(self._highlight)
         self.annotation_panel.focus_requested.connect(self._focus_residues)
 
+        self.measure_panel = MeasurePanel()
+        self.measure_panel.measurements_changed.connect(self._refresh_measurements)
+        self.measure_panel.status.connect(self._set_status)
+        self.measure_panel.mode_changed.connect(self._set_measure_mode)
+
         self.physics_panel = PhysicsPanel()
         self.physics = PhysicsController(self)
         self.physics_panel.measure_dome_requested.connect(self.physics.measure_dome)
@@ -104,6 +110,12 @@ class MainWindow(QMainWindow):
         right = QDockWidget("Annotation", self)
         right.setWidget(self.annotation_panel)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, right)
+
+        measure = QDockWidget("Measure", self)
+        measure.setWidget(self.measure_panel)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, measure)
+        self.tabifyDockWidget(right, measure)
+        right.raise_()
 
         physics = QDockWidget("Physics", self)
         physics.setWidget(self.physics_panel)
@@ -181,6 +193,10 @@ class MainWindow(QMainWindow):
         self.view.rebuild()
 
         self.viewport.set_pick_source(st.xyz)
+        # Atom indices are per-structure, so measurements taken on the previous
+        # one would silently point at different atoms.
+        self.measure_panel.set.clear()
+        self._refresh_measurements()
         self._reset_camera()
 
         modelled = self._modelled_residues(st)
@@ -318,11 +334,43 @@ class MainWindow(QMainWindow):
             self.viewport.scene.camera.pivot = self.structure.xyz[mask].mean(axis=0)
             self.viewport.update()
 
+    def _set_measure_mode(self, on: bool) -> None:
+        self.viewport.measure_mode = on
+        self._refresh_measurements()
+        self._set_status("measure mode: click atoms to pick" if on
+                         else "measure mode off")
+
+    def _refresh_measurements(self) -> None:
+        """Push labels and picked-atom markers into the viewport."""
+        if self.viewport.scene is None or self.structure is None:
+            return
+        self.viewport.set_overlay_labels(self.measure_panel.overlay_labels())
+        name = "measure:picks"
+        self.viewport.scene.remove(name)
+        picked = self.measure_panel.highlighted_atoms()
+        if picked:
+            idx = np.asarray(sorted(set(picked)), dtype=int)
+            idx = idx[idx < self.structure.n_atoms]
+            if len(idx):
+                batch = self.viewport.scene.spheres(name)
+                batch.upload(self.structure.xyz[idx],
+                             self.structure.vdw_radii()[idx] * 1.15,
+                             np.tile(np.array([0.47, 0.78, 1.0], np.float32),
+                                     (len(idx), 1)),
+                             np.ones(len(idx), np.float32))
+        self.viewport.update()
+
     def _on_pick(self, index: int) -> None:
         if index < 0 or self.structure is None:
             self._set_status("nothing under the cursor")
             return
         st = self.structure
+        if self.measure_panel.armed:
+            label = (f"{st.res_name[index]}{int(st.res_seq[index])}"
+                     f"{st.chain[index]}.{st.atom_name[index]}")
+            self.measure_panel.add_pick(int(index), st.xyz[index].astype(float),
+                                        label)
+            return
         res = int(st.res_seq[index])
         info = self.annotations.annotate_residue(res)
         bits = [f"{st.res_name[index]}{res} chain {st.chain[index]} "

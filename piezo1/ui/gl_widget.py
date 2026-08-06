@@ -14,8 +14,9 @@ from __future__ import annotations
 
 import numpy as np
 from PyQt6.QtCore import QPoint, Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QSurfaceFormat
+from PyQt6.QtGui import QColor, QFont, QPainter, QPen, QSurfaceFormat
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
+from PyQt6.QtWidgets import QWidget
 
 from ..config import RenderSettings
 from ..render.scene import Scene
@@ -62,6 +63,16 @@ class ViewportWidget(QOpenGLWidget):
         self.setMouseTracking(True)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
+        #: World-space labels drawn as a 2D overlay: (xyz, text, colour).
+        self.overlay_labels: list = []
+        self.measure_mode = False
+        # Text is drawn by a transparent child widget rather than by QPainter
+        # inside paintGL. Mixing QPainter with a moderngl context in the same
+        # paint call is fragile - the two fight over GL state, and the text
+        # simply failed to appear. A sibling widget has its own paint event and
+        # cannot interfere with the scene at all.
+        self.overlay = _LabelOverlay(self)
+
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._on_tick)
         self._timer.start(int(1000 / max(self.settings.target_fps, 1)))
@@ -88,6 +99,14 @@ class ViewportWidget(QOpenGLWidget):
         # See the module docstring: Qt owns the target framebuffer.
         self.ctx.detect_framebuffer(self.defaultFramebufferObject()).use()
         self.scene.render()
+
+    def set_overlay_labels(self, labels) -> None:
+        self.overlay_labels = list(labels)
+        self.overlay.update()
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        self.overlay.setGeometry(self.rect())
 
     # ------------------------------------------------------------ animation
 
@@ -214,3 +233,50 @@ class ViewportWidget(QOpenGLWidget):
             return
         best = hits[np.argmin(along[hits])]
         self.atom_picked.emit(int(best))
+
+
+class _LabelOverlay(QWidget):
+    """Transparent child widget that draws world-anchored text labels."""
+
+    def __init__(self, viewport: "ViewportWidget") -> None:
+        super().__init__(viewport)
+        self.viewport = viewport
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        self.setGeometry(viewport.rect())
+
+    def project(self, xyz) -> tuple[float, float] | None:
+        """World point to widget pixels, or None if it is not on screen."""
+        scene = self.viewport.scene
+        if scene is None:
+            return None
+        view, proj = scene.camera.matrices()
+        clip = (proj @ view) @ np.append(np.asarray(xyz, dtype=float), 1.0)
+        if clip[3] <= 0:
+            return None                     # behind the camera
+        ndc = clip[:3] / clip[3]
+        if not (-1.15 < ndc[0] < 1.15 and -1.15 < ndc[1] < 1.15):
+            return None
+        return ((ndc[0] * 0.5 + 0.5) * self.width(),
+                (1.0 - (ndc[1] * 0.5 + 0.5)) * self.height())
+
+    def paintEvent(self, event) -> None:
+        labels = self.viewport.overlay_labels
+        if not labels:
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setFont(QFont("Helvetica", 11))
+        for xyz, text, colour in labels:
+            pos = self.project(xyz)
+            if pos is None:
+                continue
+            x, y = int(pos[0]), int(pos[1])
+            # A dark halo, so labels stay readable over pale cartoon ribbons.
+            painter.setPen(QPen(QColor(8, 10, 16, 220), 3))
+            for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                painter.drawText(x + dx, y + dy, text)
+            painter.setPen(QPen(QColor(*colour)))
+            painter.drawText(x, y, text)
+        painter.end()
