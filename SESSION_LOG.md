@@ -393,3 +393,46 @@ people's copyright, and the bibliography suffices to retrieve them).
 The 20-minute cron cadence is shorter than a round actually takes, so
 invocations stack up. Harmless — each fire simply picks up the next unchecked
 item — but worth knowing when reading the history.
+
+---
+
+## Round 3 — membrane mechanics (2026-08-06)
+
+Implemented the Helfrich footprint solver and the dome energetics. Four
+published numbers reproduced: γ = 0.420 mN/m from λ = 14 nm and κ = 20 k_BT;
+4.116 mN/m per k_BT/nm²; λ = 13.998 nm recovered from the solver's own output;
+and T₅₀ = 4.99 mN/m from Cox's ΔG₀ and ΔA against their measured 5.1 ± 0.2.
+
+The footprint result is the one that matters scientifically: around the
+measured 7WLT dome it stores **622 nm² of excess area against the dome's own
+256 nm²**. Haselwandter & MacKinnon argued the footprint dominates tension
+sensitivity; this puts a number on it.
+
+### Two errors that produced plausible numbers
+
+**`L @ L` is not how you build a biharmonic operator.** Squaring the discrete
+Laplacian squares its condition number. The solver converged — to a profile
+with a 47 nm decay length where the exact answer is 14 nm, and a 59% energy
+error that stayed at 59% under grid refinement. That last detail is the tell:
+an error that does not shrink when the grid does is not a discretisation error,
+it is convergence to the wrong problem. Rewritten as a coupled second-order
+system, now second-order convergent.
+
+**The closed-form energy had the Bessel ratio upside down.** K₁/K₀ instead of
+K₀/K₁, which is 2.5× too large at PIEZO1's r₀/λ. Both the formula and the
+solver looked reasonable in isolation; the disagreement only surfaced when the
+functional was integrated over the *exact* analytic profile — a third,
+independent route to the same number. Two implementations agreeing is weak
+evidence when they share an author; three disagreeing is what localises the
+fault.
+
+### One thing flagged rather than fixed
+
+PIEZO1's dome meets the bilayer at a contact slope near 2.0 — about 63°. The
+Monge gauge assumes |∇h| ≪ 1 and drops terms of order |∇h|², so at that slope
+the neglected terms exceed the retained ones. The code solves it anyway,
+because the trend and scale are still informative, but
+`FootprintSolution.validity_note()` states plainly that the numbers are not
+quantitative and that a nonlinear Helfrich or Euler–elastica treatment is what
+the problem actually needs. Reporting a number with a caveat is better than
+either silently reporting it or refusing to compute it.
