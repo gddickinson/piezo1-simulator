@@ -199,20 +199,6 @@ report.to_json("report.json")
 Every report carries software version, input file, parameters and library
 versions. A number without provenance is not a result.
 
----
-
-## Things that will bite you
-
-| | |
-|---|---|
-| Chain labels | Do not encode rotational order. Use `match_protomers`. |
-| Numbering | Human↔mouse offset is not constant. Use `load_numbering_map`. |
-| Coverage | Most variants of interest are not resolved. Check `modelled_in`. |
-| 6KG7 | Is PIEZO2, a paralogue. Excluded from ensembles by default. |
-| 3JAC | Has poly-UNK regions with arbitrary numbering; dome fits are meaningless. |
-| 6LQI | Splice isoform missing 1382–1411 — a *sequence* outlier that dominates a PC. |
-| Units | Coordinates Å, dome geometry nm, energies k_BT, tension mN/m. |
-
 ## Hydrophobic gating
 
 ```python
@@ -233,3 +219,19 @@ is False and the score is NaN rather than an exception.
 `hydrophobic_gate` and `sterically_occluded` are **separate**. The heuristic
 asks whether water would dewet, not whether water fits — 7WLU has no hydrophobic
 gate but a 0.098 nm bottleneck, so it is shut for the other reason.
+
+---
+
+## Things that will bite you
+
+| | |
+|---|---|
+| Chain labels | Do not encode rotational order. Use `match_protomers`. |
+| Numbering | Human↔mouse offset is not constant. Use `load_numbering_map`. |
+| Coverage | Most variants of interest are not resolved. Check `modelled_in`. |
+| 6KG7 | Is PIEZO2, a paralogue. Excluded from ensembles by default. |
+| 3JAC | Has poly-UNK regions with arbitrary numbering; dome fits are meaningless. |
+| 6LQI | Splice isoform missing 1382–1411 — a *sequence* outlier that dominates a PC. |
+| Units | Coordinates Å, dome geometry nm, energies k_BT, tension mN/m. |
+| Footprint | The linear solver is not quantitative at PIEZO1's 63° contact slope — 3.6× too large. Use `physics.elastica`. |
+| Wetting | `predict_wetting` finds *hydrophobic* gates, not steric occlusion. Check both flags. |
