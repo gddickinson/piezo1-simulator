@@ -114,3 +114,42 @@ sufficient to gate PIEZO1 — a specific lipid cofactor is also required.
 
 Sequence numbering map (human↔mouse), the annotation layer, then the elastic
 network model, then the renderer.
+
+---
+
+## Variants & disease dossier — `ref/research/04_variants_disease.md`
+
+Written 2026-08-05. 68-entry curated JSON variant table (22 GoF, 17 LoF, 8 VUS,
+6 blood-group, 15 engineered) plus narrative. Every wild-type residue in the
+table was validated programmatically against `ref/sequences/Q92508_human_PIEZO1.fasta`
+— zero mismatches.
+
+**The human↔mouse numbering map now exists** (Biopython global alignment,
+BLOSUM62, 82.47% identity) and is tabulated in §8.2. The headline result is that
+**the offset is not constant**: −6 at E756, −5 through the beam, **+16** across
+THU9/anchor/outer-helix, and **+26** from the cap onward. Validated against the
+known anchor mouse R2482 ≡ human R2456 (Ma et al. 2018). Traps to remember:
+human E2496 ≠ mouse E2496 (mouse E2496 = human **E2470**); human S2446 = mouse
+S2472; human E2117 = mouse E2133; human S1335 = mouse S1330.
+
+**Two literature errors found and documented:** the Open Biology 2025 review
+gives T2127's mouse equivalent as 2142 (correct: **2143**; the local alignment is
+gapless), and Albuisson 2013 gives R1358P as c.4072G>C (ClinVar: **c.4073G>C**).
+Also note a WebFetch summarisation hazard — the summariser fabricated a mouse
+numbering column for that review; the raw XML had to be parsed directly to catch
+it. Prefer parsing tables from XML over summarised fetches for numeric data.
+
+**Blocking finding for the renderer/annotation layer:** the mutated residue is
+often *absent* from its own structure. Verified against the local CIFs — all six
+human PIEZO1 entries model chain A from residue **570** only, and **E756 is not
+modelled in 9VMX**, nor **A1988 in 8ZU8 or 8YFC**. Only R2456 (8YFG) is present.
+Residues 2060–2521 are continuously modelled, so the whole pore module renders
+cleanly; G253, D669, G718, E756, C1064, K1877 and A1988 need AlphaFold and must
+be flagged model-only in the UI.
+
+Population genetics: gnomAD v4 gives pLI ≈ 0 and LOEUF 1.097 — PIEZO1 is
+unconstrained for heterozygous LoF, exactly as expected for recessive LMPHM6.
+The missense Z of −11.3 is *not* usable: synonymous Z is −14.1, so the mutational
+model fails at this locus. ClinVar (2858 records) yields 133 sequence-level P/LP;
+truncating alleles are spread uniformly while missense P/LP density is 6–8×
+enriched in the pore module (inner helix 5.88 per 100 aa vs blade 0.69).

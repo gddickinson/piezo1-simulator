@@ -115,16 +115,35 @@ class Camera:
 
     # ---------------------------------------------------------------- setup
 
-    def frame(self, coords: np.ndarray, margin: float = 1.25) -> "Camera":
-        """Point the camera at a coordinate set and pull back to include it."""
+    def frame(self, coords: np.ndarray, margin: float = 1.06) -> "Camera":
+        """Point the camera at a coordinate set and pull back to include it.
+
+        The pull-back distance uses the *true* bounding-sphere radius, not half
+        the bounding-box diagonal. PIEZO1 is a wide, flat propeller, and the
+        diagonal overestimates its radius badly enough to leave the molecule
+        floating in the middle of an empty viewport.
+        """
         coords = np.asarray(coords, dtype=np.float64)
         if len(coords) == 0:
             return self
         lo, hi = coords.min(axis=0), coords.max(axis=0)
         self.pivot = 0.5 * (lo + hi)
-        self.scene_radius = float(np.linalg.norm(hi - lo) * 0.5) or 100.0
-        half_fov = np.radians(self.fov) / 2.0
-        self.distance = float(self.scene_radius * margin / max(np.sin(half_fov), 1e-3))
+        self.scene_radius = float(np.linalg.norm(coords - self.pivot, axis=1).max()) or 100.0
+
+        # Project into the *current* camera orientation and solve for the
+        # distance that just contains everything. For a point at camera-frame
+        # offset (x, y, z) from the pivot, staying inside the frustum requires
+        #     d >= z + |x| / tan(half_horizontal)   and the same for y,
+        # so the tight distance is the maximum of that over all points. Framing
+        # by bounding sphere instead leaves a flat molecule like PIEZO1 filling
+        # barely half the viewport.
+        local = (coords - self.pivot) @ quat_to_matrix(self.rotation).T
+        half_v = np.radians(self.fov) / 2.0
+        half_h = np.arctan(np.tan(half_v) * max(self.aspect, 1e-3))
+        need_x = local[:, 2] + np.abs(local[:, 0]) / max(np.tan(half_h), 1e-6)
+        need_y = local[:, 2] + np.abs(local[:, 1]) / max(np.tan(half_v), 1e-6)
+        self.distance = float(max(need_x.max(), need_y.max()) * margin)
+        self.distance = max(self.distance, self.scene_radius * 0.2)
         self.pan = np.zeros(3)
         return self
 

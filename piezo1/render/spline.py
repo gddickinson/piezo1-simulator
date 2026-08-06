@@ -186,7 +186,8 @@ def assign_secondary_structure(ca: np.ndarray, smooth: int = 2) -> np.ndarray:
 
     d2, d3, d4 = dist(2), dist(3), dist(4)
 
-    # C-alpha pseudo-torsion over four consecutive residues.
+    # C-alpha pseudo-torsion over four consecutive residues, in the IUPAC sense
+    # so that a right-handed alpha helix comes out at about +50 degrees.
     tor = np.full(n, np.nan)
     if n >= 4:
         b1 = ca[1:-2] - ca[:-3]
@@ -194,20 +195,23 @@ def assign_secondary_structure(ca: np.ndarray, smooth: int = 2) -> np.ndarray:
         b3 = ca[3:] - ca[2:-1]
         n1 = np.cross(b1, b2)
         n2 = np.cross(b2, b3)
-        m1 = np.cross(n1, b2 / np.linalg.norm(b2, axis=1, keepdims=True))
+        b2u = b2 / np.linalg.norm(b2, axis=1, keepdims=True)
+        m1 = np.cross(b2u, n1)
         x = np.einsum("ij,ij->i", n1, n2)
         y = np.einsum("ij,ij->i", m1, n2)
         tor[: n - 3] = np.degrees(np.arctan2(y, x))
 
+    # Reference geometry, verified against the resolved helices of PDB 8YEZ:
+    # the PIEZO1 outer helix gives d2 5.52, d3 5.34, d4 6.29, torsion +51.
     helix = (
-        (np.abs(d3 - 5.3) < 0.6) & (np.abs(d4 - 6.4) < 1.0)
+        (np.abs(d3 - 5.4) < 0.8) & (np.abs(d4 - 6.3) < 1.1)
         & (np.abs(d2 - 5.5) < 0.8)
-        & (np.abs(tor - 50.0) < 30.0)
+        & (np.abs(tor - 51.0) < 32.0)
     )
     strand = (
-        (np.abs(d3 - 10.4) < 1.3) & (np.abs(d4 - 13.0) < 1.8)
-        & (np.abs(d2 - 6.7) < 0.7)
-        & ((np.abs(tor - 195.0) < 45.0) | (np.abs(tor + 170.0) < 45.0))
+        (np.abs(d3 - 10.4) < 1.4) & (np.abs(d4 - 13.0) < 2.0)
+        & (np.abs(d2 - 6.7) < 0.8)
+        & (np.abs(np.abs(tor) - 180.0) < 55.0)
     )
 
     # A residue's label applies to the window it starts, so paint it forward.
