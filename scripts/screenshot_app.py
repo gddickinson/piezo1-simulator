@@ -33,6 +33,8 @@ def main() -> int:
     ap.add_argument("--outdir", type=Path, default=Path("docs/img"))
     ap.add_argument("--modes", action="store_true",
                     help="also compute normal modes and screenshot the result")
+    ap.add_argument("--analysis", action="store_true",
+                    help="also run the pore analysis and screenshot the panel")
     ap.add_argument("--hold", type=int, default=1200,
                     help="milliseconds between scripted steps")
     args = ap.parse_args()
@@ -113,8 +115,45 @@ def main() -> int:
             win.physics_panel.color_button.setChecked(True)
         shot("modes")
 
+    def step_pore() -> None:
+        win.analysis_panel.tabs.setCurrentIndex(0)
+        win.analysis_panel.pore_requested.emit()
+
+    def step_shot_pore() -> None:
+        text = win.analysis_panel.pore_label.text()
+        print("pore:", text.replace("<br>", " | ").replace("<b>", "")
+              .replace("</b>", "")[:200])
+        if "bottleneck" not in text:
+            failures.append("pore profile produced no result")
+        if not win.analysis_panel.pore_plot.traces:
+            failures.append("pore plot has no traces")
+        elif len(win.analysis_panel.pore_plot.traces) < 2:
+            failures.append("hydrophobicity trace missing from the pore plot")
+        shot("pore")
+
+    def step_session() -> None:
+        """Round-trip a session through the controller, without a file dialog."""
+        import tempfile
+        from pathlib import Path as _Path
+        from piezo1.io.session import load_session, save_session
+        captured = win.session._capture()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = _Path(tmp) / "smoke_session.json"
+            save_session(captured, path)
+            restored = load_session(path)
+        if restored.structure != captured.structure:
+            failures.append("session round-trip lost the structure")
+        if restored.selected_residues != captured.selected_residues:
+            failures.append("session round-trip lost the selection")
+        print(f"session: {restored.structure}, "
+              f"{len(restored.selected_residues)} residues, "
+              f"analyses {sorted(restored.analyses)}")
+
     steps += [step_select, step_shot_overview, step_dome, step_shot_dome,
               step_variant, step_shot_variant, step_measure]
+    if args.analysis:
+        steps += [step_pore, None, None, None, None, None, step_shot_pore,
+                  step_session]
     if args.modes:
         steps += [step_modes, None, None, None, step_shot_modes]
 

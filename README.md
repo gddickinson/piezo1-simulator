@@ -152,6 +152,17 @@ click any atom to identify it.
   highlights it and explains what is known about it, with the PMID.
 - **Physics** — measure the dome, compute normal modes, animate them, or colour
   the structure by per-residue displacement to see which parts a mode moves.
+- **Analysis** — the pore-radius profile with the hydrophobicity trace drawn
+  against it (radius alone predicts conduction at AUROC 0.59; with
+  hydrophobicity, 0.91), alpha-sphere pockets, and per-residue conservation or
+  mechanical coupling to the gate as colour maps. Click the pore plot to select
+  the residues lining it at that height.
+
+![Pore analysis](docs/img/app_pore.png)
+
+Sessions save and reload from the File menu — what you were looking at, never
+results — and an analysis report exports to Markdown or JSON with the
+provenance of every number attached.
 
 ### Domain colour key
 

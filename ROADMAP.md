@@ -597,12 +597,50 @@ the interface: the GUI can show a structure, a dome measurement and normal
 modes, but cannot reach the pore profile, pockets, conservation, allostery or
 any of the reporting.
 
-### Round 21 — Let the GUI reach the engine
-- [ ] Expose the pore profile (with the hydrophobicity trace alongside it),
-      pockets, conservation colouring and the allostery maps in the interface.
-- [ ] Colour-by-conservation and colour-by-PRS as first-class colour schemes.
-- [ ] Session save/load wired to the window; report export from a menu.
-- [ ] Tests; docs; commit.
+### Round 21 — Let the GUI reach the engine ✅
+- [x] New **Analysis dock** (`ui/panels/analysis_panel.py`) with three tabs —
+      Pore, Pockets, Residue maps — driven by `ui/analysis_controller.py`.
+      Every analysis runs on a worker thread: a pocket search or PRS scan takes
+      seconds, and a window that stops repainting during a calculation is
+      indistinguishable from one that has crashed.
+- [x] **Pore profile with the hydrophobicity trace alongside it**, on
+      independent left/right axes, with the bottleneck and the 1.5 Å water
+      radius marked. Clicking the plot selects the residues lining the pore at
+      that height. Written as a QPainter widget (`ui/profile_plot.py`) rather
+      than adding matplotlib or pyqtgraph — one plot type, needs to repaint at
+      interactive rates inside a dock, and must match the dark theme.
+- [x] **Verified the GUI is not a second implementation.** A test asserts the
+      pore worker reproduces `pore_profile` and `predict_wetting` exactly, and
+      the smoke test now reads the panel's own label: bottleneck **0.95 Å**,
+      Rao score **0.82 → non-conductive (sterically occluded + hydrophobic
+      gate)** — identical to `piezo1 hydration 8YEZ`.
+- [x] Pockets listed with volume, buriedness and lining, selecting one
+      highlights and frames it. Verified top pocket 6594 Å³, buriedness 1.00.
+- [x] **Colour-by-conservation and colour-by-PRS**, through the existing
+      `ColorBy.VALUE` path rather than a new one. They appear in the Analysis
+      dock's scalar menu once computed rather than in the main colour dropdown,
+      because unlike domain or chain they do not exist until an analysis has
+      run — an inert entry in the main list would be a dead control.
+      Conservation returns 2484 residues (mean 0.770, 901 above 0.95) after
+      dropping positions with ortholog coverage below 0.7, since those measure
+      the alignment rather than selection pressure. PRS folds the three
+      protomers, giving 1279 residues, coupling 0.473–20.2.
+- [x] **Session save/load and report export** on the File menu
+      (`ui/session_controller.py`, kept out of `main_window.py` which was
+      already near the 500-line limit). Sessions record *what was being looked
+      at* and never results — a test asserts no eigenvalues or coordinates
+      reach the file. Round-tripped in the smoke test, not just unit-tested.
+- [x] Two traps handled: restoring four appearance settings blocks signals and
+      re-emits once, so a 120k-atom trimer rebuilds once rather than four times
+      and does not flicker; and residues with no computed value take the map's
+      **floor rather than zero**, since injecting a zero into a conservation
+      map running 0.6–1.0 would rescale the whole legend around positions that
+      were never measured.
+- [x] 19 tests (`tests/test_ui_analysis.py`), running the real widgets on the
+      **offscreen** Qt platform rather than mocking them — mocks would not have
+      caught either of the two silent GUI breakages this project has had.
+      `scripts/screenshot_app.py --analysis` exercises the new panel end to
+      end. Suite 311 → **330 passed**.
 
 ### Round 22 — A second, stated hypothesis for the variant test
 - [ ] Write a *new* pre-registration before touching the labels again. The

@@ -1163,3 +1163,81 @@ combination of six predictors on 25 variants would otherwise measure how well 25
 points can be fitted.
 
 Suite 288 → 311 passing; GUI smoke test clean.
+
+## Round 21 — the engine reaches the interface (2026-08-06)
+
+Twenty rounds built an engine the GUI could not reach. It could show a
+structure, measure a dome and animate normal modes; the pore profiler, the
+pockets, conservation, allostery and every report were CLI-only. This round
+closes that gap.
+
+### The thing worth guarding against
+
+A GUI that recomputes what the engine already computes becomes a second
+implementation, and second implementations diverge. So the workers call the
+same functions the CLI calls, and a test asserts the pore worker reproduces
+`pore_profile` and `predict_wetting` *exactly* rather than producing something
+plausible. The smoke test then reads the panel's own label back: bottleneck
+0.95 Å, Rao score 0.82, "non-conductive (sterically occluded + hydrophobic
+gate)" — identical to `piezo1 hydration 8YEZ`.
+
+### Two axes, because that is the whole point
+
+Round 19's finding is that radius alone predicts conduction at AUROC 0.59 and
+radius-with-hydrophobicity at 0.91. A plot that puts both on one y-scale makes
+the hydrophobicity trace a flat line at the bottom of a 0–10 Å axis, which
+destroys exactly the comparison the plot exists to show. So the widget has
+independent left and right axes, with the left anchored at zero (a radius of
+zero is meaningful) and the right not (hydrophobicity is signed, and anchoring
+it at zero squashes the range carrying the signal).
+
+I wrote it as a QPainter widget rather than adding matplotlib or pyqtgraph.
+One plot type, has to repaint inside a dock at interactive rates, has to match
+the dark theme, and both libraries drag in their own event-loop integration —
+more to configure than to write.
+
+### Where the colour schemes went, and why not where the roadmap said
+
+The roadmap asked for conservation and PRS as "first-class colour schemes",
+which I read as the main colour dropdown next to Domain and Chain. I put them
+in the Analysis dock instead, appearing once computed.
+
+The reason is that they are not the same kind of thing. Domain and chain are
+properties of a loaded structure and are available the instant it loads.
+Conservation needs 61 orthologs fetched and aligned; PRS needs normal modes
+computed first. An entry in the main dropdown that silently does nothing until
+some other panel has been used is a dead control, and a user who selects it and
+sees no change has been told the feature is broken.
+
+They do go through the existing `ColorBy.VALUE` path rather than a new one —
+the same mechanism mode-displacement colouring already used.
+
+### Two traps
+
+**Unmeasured residues take the floor, not zero.** Conservation runs about
+0.6–1.0. Giving an unmeasured residue a zero stretches the colour scale across
+a range containing no data and washes out every real difference — while looking
+like a perfectly valid map. The value map now fills with the minimum of what it
+was actually handed.
+
+**Restoring a session rebuilt the scene four times.** Style, colouring, ligands
+and atom size each emit a signal. Setting all four from a saved session fires
+four rebuilds of a 120k-atom trimer, which is visible as flicker through three
+intermediate views nobody asked for. `set_state` blocks signals, sets the
+widgets, then emits once.
+
+Also worth recording: conservation drops positions with ortholog coverage below
+0.7. Those values measure how well the alignment covered the position, not
+selection pressure on it, and left in they paint a confident band across the
+unresolved distal blade. 2484 residues survive, mean 0.770, 901 above 0.95.
+
+### Testing a GUI
+
+Qt refactors have silently broken this application twice, so the tests run real
+widgets on the offscreen platform rather than mocks. Mocks would not have caught
+either breakage — both were real widgets behaving differently from how the code
+assumed, which is precisely what a mock encodes rather than tests.
+`scripts/screenshot_app.py --analysis` now drives the new panel end to end and
+round-trips a session through the controller.
+
+Suite 311 → 330 passing.

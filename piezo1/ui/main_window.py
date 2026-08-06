@@ -20,9 +20,12 @@ from ..core.annotations import load_annotations
 from ..core.structure import Structure
 from ..io.registry import load_registry
 from ..render.representations import ColorBy, MolecularView, Style
+from .analysis_controller import AnalysisController
 from .gl_widget import ViewportWidget
 from .morph_controller import MorphController
 from .physics_controller import PhysicsController
+from .session_controller import SessionController
+from .panels.analysis_panel import AnalysisPanel
 from .panels.annotation_panel import AnnotationPanel
 from .panels.measure_panel import MeasurePanel
 from .panels.physics_panel import PhysicsPanel
@@ -47,6 +50,9 @@ class MainWindow(QMainWindow):
         self.record = None
         self.modes = None
         self._mode_blocks: list[np.ndarray] = []
+        self._mode_residues: np.ndarray = np.array([], dtype=np.int64)
+        self.selected_residues: list[int] = []
+        self.selection_label: str = ""
 
         self.viewport = ViewportWidget(SETTINGS.render)
         self.setCentralWidget(self.viewport)
@@ -117,9 +123,29 @@ class MainWindow(QMainWindow):
         self.tabifyDockWidget(right, measure)
         right.raise_()
 
+        self.analysis_panel = AnalysisPanel()
+        self.analysis = AnalysisController(self)
+        self.analysis_panel.pore_requested.connect(self.analysis.compute_pore)
+        self.analysis_panel.pockets_requested.connect(self.analysis.compute_pockets)
+        self.analysis_panel.conservation_requested.connect(
+            self.analysis.compute_conservation)
+        self.analysis_panel.allostery_requested.connect(
+            self.analysis.compute_allostery)
+        self.analysis_panel.residues_selected.connect(self._highlight)
+        self.analysis_panel.focus_requested.connect(self._focus_residues)
+        self.analysis_panel.color_requested.connect(self.analysis.apply_color)
+        self.analysis_panel.pore_position_picked.connect(
+            self.analysis.focus_pore_position)
+
         physics = QDockWidget("Physics", self)
         physics.setWidget(self.physics_panel)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, physics)
+
+        analysis = QDockWidget("Analysis", self)
+        analysis.setWidget(self.analysis_panel)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, analysis)
+        self.tabifyDockWidget(right, analysis)
+        right.raise_()
 
         self.resizeDocks([left, physics], [420, 520], Qt.Orientation.Vertical)
         self.resizeDocks([right], [400], Qt.Orientation.Horizontal)
@@ -131,6 +157,19 @@ class MainWindow(QMainWindow):
         act.triggered.connect(self._open_file)
         file_menu.addAction(act)
         file_menu.addSeparator()
+
+        self.session = SessionController(self)
+        for label, shortcut, callback in (
+                ("&Save session…", "Ctrl+S", self.session.save),
+                ("Load &session…", "Ctrl+L", self.session.load),
+                ("&Export analysis report…", "Ctrl+E",
+                 self.session.export_report)):
+            a = QAction(label, self)
+            a.setShortcut(QKeySequence(shortcut))
+            a.triggered.connect(callback)
+            file_menu.addAction(a)
+        file_menu.addSeparator()
+
         act = QAction("&Quit", self)
         act.setShortcut(QKeySequence.StandardKey.Quit)
         act.triggered.connect(self.close)
@@ -142,6 +181,17 @@ class MainWindow(QMainWindow):
             a = QAction(label, self)
             a.triggered.connect(cb)
             view_menu.addAction(a)
+
+        analysis_menu = self.menuBar().addMenu("&Analysis")
+        for label, callback in (
+                ("Pore profile", lambda: self.analysis.compute_pore()),
+                ("Find pockets", lambda: self.analysis.compute_pockets(10)),
+                ("Conservation", lambda: self.analysis.compute_conservation()),
+                ("Coupling to the gate (PRS)",
+                 lambda: self.analysis.compute_allostery())):
+            a = QAction(label, self)
+            a.triggered.connect(callback)
+            analysis_menu.addAction(a)
 
         help_menu = self.menuBar().addMenu("&Help")
         a = QAction("About", self)
@@ -185,6 +235,7 @@ class MainWindow(QMainWindow):
         self.modes = None
         self.physics_panel.set_modes(None)
         self.physics.reset()
+        self.analysis.reset()
 
         self.view = MolecularView(self.viewport.scene, st, name=rec.pdb)
         self.view.set_species(rec.numbering_species)
@@ -234,6 +285,10 @@ class MainWindow(QMainWindow):
         for xyz, seq in chains[:3]:
             idx = np.searchsorted(seq, common_arr)
             blocks.append(xyz[idx].astype(np.float64))
+        # Keep the residue numbering the blocks were built on. Anything that
+        # maps a per-site result back onto the model needs it, and rebuilding
+        # it independently is how the two fall out of step.
+        self._mode_residues = common_arr
         return blocks
 
     def _open_file(self) -> None:
@@ -302,6 +357,8 @@ class MainWindow(QMainWindow):
     def _highlight(self, residues, label: str) -> None:
         if self.view is None or self.structure is None:
             return
+        self.selected_residues = [int(r) for r in (residues or [])]
+        self.selection_label = label
         st = self.structure
         if not residues:
             self.view.highlight = None
@@ -395,6 +452,7 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event) -> None:
         self.physics.cleanup()
+        self.analysis.cleanup()
         if self.viewport.scene is not None:
             self.viewport.makeCurrent()
             self.viewport.scene.release()

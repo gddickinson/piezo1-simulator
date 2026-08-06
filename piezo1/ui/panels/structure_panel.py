@@ -151,3 +151,53 @@ class StructurePanel(QWidget):
     def current_record(self) -> StructureRecord | None:
         i = self.structure_combo.currentIndex()
         return self._records[i] if 0 <= i < len(self._records) else None
+
+    def set_state(self, style: str | None = None, color_by: str | None = None,
+                  ligands: bool | None = None,
+                  radius_scale: float | None = None) -> None:
+        """Restore appearance controls from a saved session.
+
+        Signals are blocked while the widgets are set and re-emitted once at
+        the end, so restoring four settings triggers one rebuild of the scene
+        rather than four — the intermediate states are not views anybody asked
+        for, and on a 120k-atom trimer they are visible as flicker.
+        """
+        for widget in (self.style_combo, self.color_combo, self.ligand_check,
+                       self.radius_slider):
+            widget.blockSignals(True)
+        try:
+            if style is not None:
+                for i, (_, value) in enumerate(STYLE_LABELS):
+                    if value.value == style:
+                        self.style_combo.setCurrentIndex(i)
+                        break
+            if color_by is not None:
+                for i, (_, value) in enumerate(COLOR_LABELS):
+                    if value.value == color_by:
+                        self.color_combo.setCurrentIndex(i)
+                        break
+            if ligands is not None:
+                self.ligand_check.setChecked(bool(ligands))
+            if radius_scale is not None:
+                self.radius_slider.setValue(int(round(radius_scale * 100)))
+        finally:
+            for widget in (self.style_combo, self.color_combo,
+                           self.ligand_check, self.radius_slider):
+                widget.blockSignals(False)
+
+        self.style_changed.emit(self.current_style())
+        self.color_changed.emit(self.current_color())
+        self.ligands_toggled.emit(self.ligand_check.isChecked())
+        self.radius_changed.emit(self.radius_slider.value() / 100.0)
+
+    def current_style(self):
+        return STYLE_LABELS[self.style_combo.currentIndex()][1]
+
+    def current_color(self):
+        return COLOR_LABELS[self.color_combo.currentIndex()][1]
+
+    @property
+    def radius_spin(self):
+        """Alias so callers can read the atom-size control by one name."""
+        return self.radius_slider
+

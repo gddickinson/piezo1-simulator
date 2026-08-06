@@ -122,9 +122,12 @@ geometry at a fraction of the triangle count.
 |---|---|---|---|
 | `main_window.py` | Application shell: docks, menus, structure loading, highlighting, click-to-identify. | `MainWindow`, `main()` | ✅ |
 | `physics_controller.py` | Dome measurement, threaded mode calculation, mode animation and displacement colouring. | `PhysicsController`, `ModeWorker` | ✅ |
+| `analysis_controller.py` | Threaded pore, pockets, conservation and allostery runs; maps per-residue scalars onto atoms and colours the model through `ColorBy.VALUE`. Unmeasured residues take the map's floor, not zero. | `AnalysisController`, `AnalysisWorker` | ✅ |
+| `session_controller.py` | File-menu session save/load and report export. Sessions record what was being viewed, never results. | `SessionController` | ✅ |
+| `profile_plot.py` | Two-axis QPainter line plot for the pore radius against hydrophobicity, with threshold markers and click-to-locate. No charting dependency. | `ProfilePlot`, `Trace`, `Marker` | ✅ |
 | `morph_controller.py` | Builds and plays back the curved-to-flat morph. | `MorphController` | ✅ |
 | `gl_widget.py` | `QOpenGLWidget` hosting the moderngl context; input, picking, animation ticks, and a transparent overlay child that draws world-anchored text labels. | `ViewportWidget`, `configure_surface_format()` | ✅ |
-| `panels/` | `structure_panel` (chooser + appearance), `annotation_panel` (domains, sites, variants), `physics_panel` (dome, modes, animation), `measure_panel` (click-to-measure, CSV export). | `StructurePanel`, `AnnotationPanel`, `PhysicsPanel`, `MeasurePanel` | ✅ |
+| `panels/` | `structure_panel` (chooser + appearance, `set_state` for session restore), `annotation_panel` (domains, sites, variants), `physics_panel` (dome, modes, animation), `measure_panel` (click-to-measure, CSV export), `analysis_panel` (pore + hydrophobicity, pockets, conservation and PRS colouring). | `StructurePanel`, `AnnotationPanel`, `PhysicsPanel`, `MeasurePanel`, `AnalysisPanel` | ✅ |
 
 ### `piezo1/resources/` — curated data (committed)
 
@@ -181,6 +184,7 @@ geometry at a fraction of the triangle count.
 | `test_features.py` | Column completeness and documentation, distance/response falloff, the symmetric-PRS finding, and a guard forbidding any two columns from being the same quantity. | ✅ |
 | `test_measurement_set.py` | Pick accumulation, double-click rejection, kind switching, CSV export, and the disulfide measured on real coordinates. | ✅ |
 | `test_workflow.py` | Session round-trip and format guards, provenance capture, report failure handling, and the argparse flag-position trap. | ✅ |
+| `test_ui_analysis.py` | The Analysis dock, run on the **offscreen** Qt platform with real widgets rather than mocks. Two-axis scaling, NaN handling, click-to-locate, panel plumbing, the residue-to-atom value map, session round-trip, and that each worker reproduces the headless function it wraps rather than reimplementing it. | ✅ |
 | `test_conservation.py` | Entropy on synthetic columns, uncovered-position handling, species deduplication, the pore-versus-blade conservation gradient, and ranking behaviour. | ✅ |
 | `test_external.py` | ProtVar client, run **offline from the disk cache** so the suite needs no network. Covers the `mt`-parameter disambiguation, FoldX keying by `mutatedType`, graceful degradation to `None`, licence recording, and an external cross-check that ProtVar's wild-type residues match all 64 of our numbered variants. | ✅ |
 | `test_pockets.py` | Circumsphere geometry against a known tetrahedron, percolation prevention, union-not-sum volumes, gate/anchor recovery, and the Yoda1 groove-versus-cavity result. | ✅ |
