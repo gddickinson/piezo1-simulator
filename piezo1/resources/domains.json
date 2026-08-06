@@ -1,0 +1,401 @@
+{
+ "protein": "PIEZO1",
+ "numbering": {
+  "human": {
+   "accession": "Q92508",
+   "length": 2521
+  },
+  "mouse": {
+   "accession": "E2JF22",
+   "length": 2547
+  },
+  "identity": 0.8247,
+  "note": "The human/mouse offset is NOT constant; it varies from 0 to +26 across the chain. Always convert via piezo1.core.sequence.load_numbering_map()."
+ },
+ "domains": [
+  {
+   "id": "thu1",
+   "name": "THU1 (TM1-TM4)",
+   "category": "blade",
+   "human": {
+    "start": 1,
+    "end": 138
+   },
+   "mouse": {
+    "start": 1,
+    "end": 138
+   },
+   "description": "Transmembrane helical unit 1 of the mechanosensory blade, comprising TM1-TM4. Distal blade \u2014 not resolved in any experimental structure; modelled from AlphaFold.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#1f3f7a",
+   "rule": "transmembrane segments 1-4",
+   "thu_index": 1,
+   "distal": true,
+   "transmembrane": [
+    "TM1",
+    "TM2",
+    "TM3",
+    "TM4"
+   ]
+  },
+  {
+   "id": "thu2",
+   "name": "THU2 (TM5-TM8)",
+   "category": "blade",
+   "human": {
+    "start": 195,
+    "end": 330
+   },
+   "mouse": {
+    "start": 202,
+    "end": 337
+   },
+   "description": "Transmembrane helical unit 2 of the mechanosensory blade, comprising TM5-TM8. Distal blade \u2014 not resolved in any experimental structure; modelled from AlphaFold.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#26508f",
+   "rule": "transmembrane segments 5-8",
+   "thu_index": 2,
+   "distal": true,
+   "transmembrane": [
+    "TM5",
+    "TM6",
+    "TM7",
+    "TM8"
+   ]
+  },
+  {
+   "id": "thu3",
+   "name": "THU3 (TM9-TM12)",
+   "category": "blade",
+   "human": {
+    "start": 418,
+    "end": 530
+   },
+   "mouse": {
+    "start": 425,
+    "end": 536
+   },
+   "description": "Transmembrane helical unit 3 of the mechanosensory blade, comprising TM9-TM12. Distal blade \u2014 not resolved in any experimental structure; modelled from AlphaFold.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#2d61a4",
+   "rule": "transmembrane segments 9-12",
+   "thu_index": 3,
+   "distal": true,
+   "transmembrane": [
+    "TM9",
+    "TM10",
+    "TM11",
+    "TM12"
+   ]
+  },
+  {
+   "id": "thu4",
+   "name": "THU4 (TM13-TM16)",
+   "category": "blade",
+   "human": {
+    "start": 575,
+    "end": 696
+   },
+   "mouse": {
+    "start": 581,
+    "end": 702
+   },
+   "description": "Transmembrane helical unit 4 of the mechanosensory blade, comprising TM13-TM16. Proximal blade \u2014 resolved in cryo-EM.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#3472b9",
+   "rule": "transmembrane segments 13-16",
+   "thu_index": 4,
+   "distal": false,
+   "transmembrane": [
+    "TM13",
+    "TM14",
+    "TM15",
+    "TM16"
+   ]
+  },
+  {
+   "id": "thu5",
+   "name": "THU5 (TM17-TM20)",
+   "category": "blade",
+   "human": {
+    "start": 817,
+    "end": 954
+   },
+   "mouse": {
+    "start": 812,
+    "end": 949
+   },
+   "description": "Transmembrane helical unit 5 of the mechanosensory blade, comprising TM17-TM20. Proximal blade \u2014 resolved in cryo-EM.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#3b83ce",
+   "rule": "transmembrane segments 17-20",
+   "thu_index": 5,
+   "distal": false,
+   "transmembrane": [
+    "TM17",
+    "TM18",
+    "TM19",
+    "TM20"
+   ]
+  },
+  {
+   "id": "thu6",
+   "name": "THU6 (TM21-TM24)",
+   "category": "blade",
+   "human": {
+    "start": 995,
+    "end": 1118
+   },
+   "mouse": {
+    "start": 990,
+    "end": 1113
+   },
+   "description": "Transmembrane helical unit 6 of the mechanosensory blade, comprising TM21-TM24. Proximal blade \u2014 resolved in cryo-EM.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#5695d8",
+   "rule": "transmembrane segments 21-24",
+   "thu_index": 6,
+   "distal": false,
+   "transmembrane": [
+    "TM21",
+    "TM22",
+    "TM23",
+    "TM24"
+   ]
+  },
+  {
+   "id": "thu7",
+   "name": "THU7 (TM25-TM28)",
+   "category": "blade",
+   "human": {
+    "start": 1154,
+    "end": 1302
+   },
+   "mouse": {
+    "start": 1149,
+    "end": 1297
+   },
+   "description": "Transmembrane helical unit 7 of the mechanosensory blade, comprising TM25-TM28. Proximal blade \u2014 resolved in cryo-EM.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#71a7e1",
+   "rule": "transmembrane segments 25-28",
+   "thu_index": 7,
+   "distal": false,
+   "transmembrane": [
+    "TM25",
+    "TM26",
+    "TM27",
+    "TM28"
+   ]
+  },
+  {
+   "id": "beam",
+   "name": "Beam",
+   "category": "lever",
+   "human": {
+    "start": 1305,
+    "end": 1370
+   },
+   "mouse": {
+    "start": 1300,
+    "end": 1365
+   },
+   "description": "Long intracellular helix running from beneath the distal blade to the pore module. The lever arm of the lever-like transduction mechanism: blade motion is transmitted along the beam to the anchor and thence to the inner helix.",
+   "source": "Zhao et al. Nature 2018 (PMID 30089899); Wang et al. Nat Commun 2018 (PMID 29610524)",
+   "confidence": "medium",
+   "color": "#f2a541",
+   "declared_numbering": "mouse"
+  },
+  {
+   "id": "clasp",
+   "name": "Clasp",
+   "category": "lever",
+   "human": {
+    "start": 1371,
+    "end": 1501
+   },
+   "mouse": {
+    "start": 1366,
+    "end": 1492
+   },
+   "description": "Intracellular region following the beam that packs against the blade; proposed to stabilise blade-beam coupling. Boundaries are approximate and partly unresolved in cryo-EM.",
+   "source": "Zhao et al. Nature 2018 (PMID 30089899)",
+   "confidence": "low",
+   "color": "#d98032",
+   "declared_numbering": "mouse"
+  },
+  {
+   "id": "thu8",
+   "name": "THU8 (TM29-TM32)",
+   "category": "blade",
+   "human": {
+    "start": 1657,
+    "end": 1801
+   },
+   "mouse": {
+    "start": 1657,
+    "end": 1801
+   },
+   "description": "Transmembrane helical unit 8 of the mechanosensory blade, comprising TM29-TM32. Proximal blade \u2014 resolved in cryo-EM.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#8cb9ea",
+   "rule": "transmembrane segments 29-32",
+   "thu_index": 8,
+   "distal": false,
+   "transmembrane": [
+    "TM29",
+    "TM30",
+    "TM31",
+    "TM32"
+   ]
+  },
+  {
+   "id": "thu9",
+   "name": "THU9 (TM33-TM36)",
+   "category": "blade",
+   "human": {
+    "start": 1961,
+    "end": 2076
+   },
+   "mouse": {
+    "start": 1977,
+    "end": 2092
+   },
+   "description": "Transmembrane helical unit 9 of the mechanosensory blade, comprising TM33-TM36. Proximal blade \u2014 resolved in cryo-EM.",
+   "source": "UniProt Q92508 transmembrane features, grouped in fours from the N-terminus",
+   "confidence": "high",
+   "color": "#a7cbf3",
+   "rule": "transmembrane segments 33-36",
+   "thu_index": 9,
+   "distal": false,
+   "transmembrane": [
+    "TM33",
+    "TM34",
+    "TM35",
+    "TM36"
+   ]
+  },
+  {
+   "id": "anchor",
+   "name": "Anchor domain",
+   "category": "lever",
+   "human": {
+    "start": 2077,
+    "end": 2176
+   },
+   "mouse": {
+    "start": 2093,
+    "end": 2192
+   },
+   "description": "Amphipathic intracellular domain wedged between the blade and the pore module. Transmits beam motion to the outer helix and hosts a cholesterol-interaction site (human P2113).",
+   "source": "UniProt Q92508 topology; Buyan et al. Biophys J 2020 (PMID 32949489)",
+   "confidence": "high",
+   "color": "#4fc3c7",
+   "rule": "cytoplasmic topological domain between TM36 and TM37"
+  },
+  {
+   "id": "latch",
+   "name": "Latch",
+   "category": "gate",
+   "human": {
+    "start": 2174,
+    "end": 2194
+   },
+   "mouse": {
+    "start": 2190,
+    "end": 2210
+   },
+   "description": "Short intracellular segment linking the anchor to the outer helix; implicated in coupling and in inactivation. Approximate.",
+   "source": "Geng et al. Neuron 2020 (PMID 32084332)",
+   "confidence": "low",
+   "color": "#9d7bd8",
+   "declared_numbering": "mouse"
+  },
+  {
+   "id": "outer_helix",
+   "name": "Outer helix (OH)",
+   "category": "pore",
+   "human": {
+    "start": 2177,
+    "end": 2197
+   },
+   "mouse": {
+    "start": 2193,
+    "end": 2213
+   },
+   "description": "Penultimate transmembrane helix; forms the outer wall of the pore module.",
+   "source": "UniProt Q92508 transmembrane features",
+   "confidence": "high",
+   "color": "#5b8def",
+   "rule": "transmembrane segment 37",
+   "transmembrane": [
+    "TM37"
+   ]
+  },
+  {
+   "id": "cap",
+   "name": "Cap / C-terminal extracellular domain (CED)",
+   "category": "cap",
+   "human": {
+    "start": 2198,
+    "end": 2431
+   },
+   "mouse": {
+    "start": 2214,
+    "end": 2457
+   },
+   "description": "Trimeric extracellular cap sitting above the pore, 234 residues per protomer. Contains the C2411-C2415 disulfide and carries the Er blood-group antigens. Rotates during gating and controls ion permeation through lateral portals.",
+   "source": "UniProt Q92508 topology; Karamatic Crew et al. Blood 2023",
+   "confidence": "high",
+   "color": "#8ad35e",
+   "rule": "extracellular topological domain between TM37 and TM38"
+  },
+  {
+   "id": "inner_helix",
+   "name": "Inner helix (IH, pore-lining)",
+   "category": "pore",
+   "human": {
+    "start": 2432,
+    "end": 2452
+   },
+   "mouse": {
+    "start": 2458,
+    "end": 2478
+   },
+   "description": "Final transmembrane helix. Three copies line the ion-conduction pathway and form the transmembrane gate.",
+   "source": "UniProt Q92508 transmembrane features",
+   "confidence": "high",
+   "color": "#e8556d",
+   "rule": "transmembrane segment 38",
+   "transmembrane": [
+    "TM38"
+   ]
+  },
+  {
+   "id": "ctd",
+   "name": "C-terminal domain (CTD)",
+   "category": "gate",
+   "human": {
+    "start": 2453,
+    "end": 2521
+   },
+   "mouse": {
+    "start": 2479,
+    "end": 2547
+   },
+   "description": "Intracellular domain beneath the pore forming the cytoplasmic vestibule and the constriction that sets ion selectivity. Hosts the acidic residues controlling divalent permeation and most gain-of-function xerocytosis variants.",
+   "source": "UniProt Q92508 topology; Coste et al. Nature 2015 (PMID 26649819)",
+   "confidence": "high",
+   "color": "#e8556d",
+   "rule": "cytoplasmic topological domain after TM38"
+  }
+ ]
+}
