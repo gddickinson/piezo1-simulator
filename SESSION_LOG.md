@@ -540,3 +540,60 @@ small-slope violation, pore wetting prediction, and — written *before* the
 blind test rather than after — a statistical protocol under which "the
 predictor does not separate GoF from LoF" is a recordable outcome rather than a
 prompt to keep tuning.
+
+---
+
+## Rounds 6-7 — the blind test, and a null result (2026-08-06)
+
+Round 6 built the predictor: ΔΔG_gating = ½dᵀ(H_mut − H_wt)d, the change in
+elastic cost of the *observed* gating motion. Exact to 7e-16 against an
+explicitly rebuilt Hessian, and cheap, because H_mut − H_wt is non-zero only at
+the mutated residue's contacts.
+
+**No phenotype comparison was made in Round 6, deliberately**, and
+`docs/PREREGISTRATION.md` was written before Round 7 ran — pulling Round 20's
+protocol forward, because a blind test is only blind if the rule was fixed
+first.
+
+### The result
+
+**H0 not rejected.** 25 variants (16 GoF, 9 LoF) after pre-registered
+inclusion. Permutation p = 0.234, Cliff's delta −0.083 with CI spanning zero,
+AUROC 0.542. The mean difference points the predicted way; the effect is
+negligible.
+
+Writing the pre-registration turned out to matter more than expected. Two
+numbers were close enough to tempt: the secondary analysis on the normalised
+score came in at **p = 0.054**, and the primary difference had the right sign.
+Without a decision rule fixed in advance, "the normalised version is basically
+significant" is exactly the sentence one writes. The rule said p ≥ 0.05 is a
+null result, and it is reported as one.
+
+### Why it fails, and why that is the useful part
+
+Post-hoc, labelled as such: **99.8% of the ΔΔG variance is between-position,
+0.2% within-position.** The predictor reports *where a residue is*, not *what
+happened to it*. That falls straight out of the construction — ΔΔG scales with
+local gating strain and contact count, both properties of the position, while
+the substitution enters through a single scalar spring multiplier, a far weaker
+lever.
+
+The R2456 series makes it concrete: four substitutions at one position, GoF and
+LoF among them, all predicted to soften, with the *largest* softening belonging
+to the loss-of-function variant R2456C. Positions do not have phenotypes;
+variants do.
+
+### What this does not mean
+
+It does not touch the physics chain. Dome curvature 9.7 nm against a published
+10.2; T₅₀ 4.99 mN/m against 5.1 ± 0.2; footprint decay 13.998 nm against 14.0;
+PC1 of the experimental ensemble matching an A-symmetric mode at 0.804. Those
+stand. What fails is a single scalar as a phenotype call.
+
+The right reading is that the elastic network models the *machine* well and the
+*substitution* badly. Round 17's sequence-based predictors (AlphaMissense, EVE,
+ESM-1b via ProtVar, all substitution-aware by construction) are the natural
+complement — they lack the mechanism, which is exactly what this supplies.
+`docs/VALIDATION.md` §8 records what a fair next test would look like, written
+now so that whatever is tried next is a stated new hypothesis rather than a
+retrofit.

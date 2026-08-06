@@ -177,12 +177,29 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   ΔΔG distribution is balanced a priori (23 stiffening, 21 softening), which is
   what an untuned predictor should look like.
 
-### Round 7 — Blind validation
-- [ ] Run the pipeline over all 68 curated variants.
-- [ ] Ask whether GoF and LoF separate in the predicted direction. Report the
+### Round 7 — Blind validation  ✅  **NULL RESULT**
+- [x] Run the pipeline over all 68 curated variants.
+- [x] Ask whether GoF and LoF separate in the predicted direction. Report the
       effect size and a p-value honestly, including if the answer is no.
-- [ ] `docs/VALIDATION.md` with the full result.
-- [ ] Tests; docs; commit.
+- [x] `docs/VALIDATION.md` with the full result.
+- [x] Tests; docs; commit.
+- **Result: H0 not rejected.** 25 variants survived the pre-registered
+  inclusion criteria (16 GoF, 9 LoF). One-sided permutation test **p = 0.234**;
+  Cliff's delta **−0.083**, CI [−0.528, +0.403] (negligible, spans zero);
+  **AUROC 0.542**. The mean difference points the predicted way but the effect
+  is negligible and the ranking is barely above chance.
+- **Post-hoc diagnostic explains why:** only **0.2% of ΔΔG variance is
+  within-position**. The score is dominated by *where a residue sits*, not
+  *which substitution occurred* — ΔΔG scales with local gating strain and
+  contact count, both properties of the position, while the substitution enters
+  through a single scalar. Four variants at R2456 spanning GoF and LoF all get
+  "softening", the largest belonging to the **LoF** one.
+- **This does not invalidate the physics chain**, every link of which was
+  validated against an independent published number. It means a single scalar
+  from a volume-scaled elastic network is not sufficient to call a phenotype at
+  this sample size.
+- [x] `docs/VALIDATION.md` written in the pre-registered order, with the null
+      result stated first.
 
 ### Round 8 — Pockets and ligands
 - [ ] `analysis/pockets.py`: Delaunay alpha-sphere pocket detection.

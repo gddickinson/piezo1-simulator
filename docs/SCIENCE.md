@@ -462,6 +462,28 @@ all**, and only R2456 appears in its own structure (8YFG).
 
 ---
 
+## 8b. What the mechanical model cannot do
+
+A pre-registered blind test asked whether an elastic-network ΔΔG separates
+gain-of-function from loss-of-function variants. **It does not** — p = 0.234,
+Cliff's delta −0.083 (negligible), AUROC 0.542 over 25 variants. Full report in
+`docs/VALIDATION.md`; the protocol was fixed in `docs/PREREGISTRATION.md`
+before the comparison was run.
+
+The diagnostic is the useful part. Partitioning the ΔΔG variance shows **99.8%
+of it is between-position and only 0.2% within-position**: the score reports
+*where a residue sits* rather than *which substitution occurred*. That is
+structural, not a bug — ΔΔG = ½dᵀ(H_mut−H_wt)d scales with the local strain of
+the gating coordinate and the residue's contact count, both properties of the
+position, while the substitution enters only through one scalar spring
+multiplier. Four variants at R2456 spanning both phenotypes all receive
+"softening", the largest belonging to the loss-of-function one.
+
+The honest summary: this elastic network is a good model of the *machine* and a
+poor instrument for the *substitution*. It answers "which residues are
+mechanically coupled to the gate" well — Round 5 identified the anchor as the
+transmission hub — and "is this amino-acid swap GoF or LoF" badly.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:
