@@ -4,6 +4,94 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 31 — HaloTag fusion geometry, and a ghost structure
+
+### What was built
+`structure/fusion.py` places a HaloTag at each of PIEZO1's three C-termini.
+There is no structure of the fusion, so the module produces an **accessible
+volume** — the region the tag centre can occupy without clashing — rather than a
+pose, in the manner used for FRET position modelling. Measured inputs from 6U32
+(1.8 Å, TMR ligand bound): Rg **17.6 Å**, N-terminus **19.9 Å** from the centre,
+ligand 21.8 Å from that N-terminus. A C-terminal fusion attaches to the tag's
+*N*-terminus, so it is that offset, not the radius of gyration, that decides
+where the body sits.
+
+### The validation: two of three
+**C3 symmetry — pass.** 0.0000 Å on all 20 entries. Exact by construction, since
+one envelope is solved and rotated, but measured anyway: a placement that
+quietly broke the symmetry would look right in a picture and be wrong in every
+calculation after it.
+
+**No steric clash — pass on 18 of 20.** 21.5 Å clearance against the tag's
+17.6 Å radius on 8YEZ. 3JAC and 11ZC are marginal at 17.6 and 15.7 Å.
+
+**Tag centre 4–6 nm from the pore exit — misses.** 3.95 nm on 8YEZ, and
+3.27–4.21 nm across all 20 structures. The interesting part is that this is not
+the unverified linker's fault: sweeping it from 1 to 30 residues — a 30× change
+in accessible volume — moves the answer only between 3.0 and 4.0 nm, and moves
+it *down*, because a longer tether wraps further around the channel and pulls
+the centroid back. So the miss is structural, and it is explained: the 4–6 nm
+estimate added the tag's ~2 nm anchor-to-centre offset to the anchor's 2.6 nm
+from the pore exit, which assumes the tag points straight away from the channel.
+Averaged over accessible directions, many of which run sideways along the
+membrane, the mean is pulled in. The band is not unreachable — the envelope
+spans 1.7–7.9 nm and 51% of it lies inside 4–6 nm — so the honest statement is
+that **the window describes an achievable position, not the ensemble mean**.
+Round 35 should take its nanodomain distance from the envelope, not the centroid.
+
+### Two sign faults, both of which gave confident wrong answers
+The sweep across all 20 structures is what exposed them; a single structure
+would have passed silently.
+
+**The pore exit is not the lowest atom.** In a curved trimer that is a distal
+blade tip. Restricting to atoms within a registered `fusion.pore_mouth_radius`
+of the axis finds the CTD bundle, which is what an ion actually leaves through.
+
+**`SymmetryAxis.direction` has no fixed sign.** It comes from the rotation
+operator relating two protomers, and re-detecting the axis on an already-framed
+structure returns −z as readily as +z — it does for 7WLT and 8YFG but not for
+8YEZ. Trusting it put those two structures' pore exit at the *extracellular*
+end. Together the two faults reported the tag 15–16 nm from the pore exit for
+7WLT and 8YFG against 3.9 nm for the same construct on 8YEZ. The cytosolic
+direction is now taken from the C-terminal anchors, which are intracellular by
+topology.
+
+### The ghost structure
+Reported mid-round: loading a new structure left the previous one drawn.
+`OverlayController.clear()` finishes by rebuilding the primary view to undo
+deviation colouring, and `load_structure` called it *after* clearing the old
+view — so the rebuild put the old batches straight back. The bug predates this
+round; it was survivable only while deposited frames sat 100 Å apart, and became
+obvious as soon as canonical framing made structures superimpose. Fixed by
+clearing the overlay first and nulling the view before anything can rebuild it.
+
+**And the feature it suggested.** `ui/companions.py` adds deliberate
+multi-structure display: off by default, opt-in under *View → Show multiple
+structures at once*, each extra structure drawn in its own colour in the shared
+frame, with the Structure panel naming what is on screen. Loading with the
+option on demotes the previous primary to a companion, so the feature needs no
+second way of opening a file. Turning the option off drops the extras, because a
+setting reading "one structure" while three are drawn is worse than either
+state. It is deliberately **not** `overlay_controller`, which superposes one
+nominated structure and reports an RMSD — that measures; this displays. Every
+analysis still runs on the primary, whatever else is drawn.
+
+### Notes
+- `fusion.linker_residues` is registered with the `unverified` sentinel. No
+  source for the construct states a linker, so it is the one assumed input, and
+  the module says to vary it rather than trust it. The sweep above is why the
+  result survives that.
+- `build_parameters.py` passed 500 lines, so the table moved to
+  `scripts/parameter_table.py` and the gate stayed behind. 75 parameters now.
+- The GL-dependent companion tests skip on the offscreen Qt platform the rest of
+  the UI suite forces, so the ordering fault is *also* pinned by a test that
+  needs no GL at all.
+
+550 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Structure framing — two faults behind one complaint
 
 ### What was reported

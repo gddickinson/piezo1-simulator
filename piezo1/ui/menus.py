@@ -161,6 +161,18 @@ def _options_menu(win, bar) -> None:
 
     menu.addSeparator()
 
+    _action(menu, "Show &multiple structures at once", win.set_multi_structure,
+            checkable=True, checked=win.multi_structure,
+            tip="Keep the current structure on screen when another is loaded, "
+                "drawn in its own colour in the same frame. Off by default: "
+                "two entries in the same frame sit on top of each other, and a "
+                "structure left behind reads as extra density. Analyses always "
+                "run on the primary structure, whatever else is drawn.")
+    _action(menu, "Remove e&xtra structures", win.clear_companions, "",
+            tip="Drop everything except the primary structure")
+
+    menu.addSeparator()
+
     align = menu.addMenu("Structure &alignment")
     align.setToolTipsVisible(True)
     align_group = QActionGroup(align)

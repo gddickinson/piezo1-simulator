@@ -1007,12 +1007,36 @@ from the pore exit; and the nanodomain there is of order **200 µM** against
 BAPTA's **~0.2 µM** Kd.
 
 ### Round 31 — HaloTag fusion geometry
-- [ ] Fetch 6U32; build the fusion at each of the three C-termini; render the
-      seam visibly, as `hybrid.py` does. The placement is a **model, not a
-      measurement** — there is no structure of the fusion — so show an
-      accessible-volume envelope for the flexible linker rather than one pose.
-- [ ] *Validate:* C3 symmetry preserved across the three tags; tag centre
-      4–6 nm from the pore exit; no steric clash with the CTD.
+- [x] Fetched 6U32 (1.8 Å, TMR-HaloTag ligand bound). `structure/fusion.py`
+      builds the fusion at all three C-termini as an **accessible-volume
+      envelope**, not a pose. Measured tag inputs: Rg **17.6 Å**, N-terminus
+      **19.9 Å** from the centre, ligand 21.8 Å from that N-terminus. On 8YEZ
+      the envelope holds 30,698 positions / **246 nm³**, with **65%** of the
+      tether's reach blocked by the channel. `FusionModel.seams()` returns the
+      anchor→tag segments for a renderer to draw differently; reachable as
+      `python -m piezo1.cli fusion 8YEZ`. Drawing it in the GUI is still open —
+      `hybrid.py`, the stated model for the seam, is itself unimplemented.
+- [x] *Validate:* **two of three pass.**
+      **C3 symmetry — PASS.** Deviation `0.0000 Å` on all 20 entries (exact by
+      construction: one envelope is solved and rotated).
+      **No steric clash — PASS on 18/20.** Clearance 21.5 Å against the tag's
+      17.6 Å radius on 8YEZ. 3JAC (17.6 Å) and 11ZC (15.7 Å) are marginal.
+      **Tag centre 4–6 nm from the pore exit — MISSES.** Measured **3.95 nm**
+      on 8YEZ and **3.27–4.21 nm (mean 3.81)** across all 20 structures. Not an
+      artefact of the unverified linker: sweeping it 1→30 residues moves the
+      answer only 3.0–4.0 nm, and *downward*, because a longer tether wraps
+      further round the channel. The 4–6 nm estimate came from adding the tag's
+      ~2 nm anchor-to-centre offset to the anchor's 2.6 nm from the pore exit,
+      which assumes the tag points straight away from the channel; averaged over
+      accessible directions the mean is pulled in. The band is not unreachable —
+      the envelope spans 1.7–7.9 nm and **51%** of it lies inside 4–6 nm — so
+      the window describes an achievable position, not the ensemble mean.
+      Round 35's nanodomain estimate should use the envelope, not the centroid.
+- [x] Two sign faults found and fixed, each of which gave a confident wrong
+      answer: the pore exit taken as the lowest protein atom is a distal blade
+      tip, and `SymmetryAxis.direction` has no fixed sign (it returns −z for
+      7WLT and 8YFG). Together they put those structures' tags 15–16 nm from
+      the "pore exit" against 3.9 nm for the same construct on 8YEZ.
 
 ### Round 32 — Labelling on the structure
 - [ ] Import `halotag_sim` kinetics; drive per-site stochastic occupancy on the

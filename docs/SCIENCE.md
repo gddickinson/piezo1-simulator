@@ -683,6 +683,42 @@ this project's residue numbering against Q92508 from outside the project:
 differs by a non-constant offset across twelve blocks (§2), this is the first
 independent confirmation that the variant table is correctly registered.
 
+## 8d. Where a C-terminal HaloTag sits
+
+PIEZO1 imaging constructs fuse HaloTag to the cytosolic C-terminus, one per
+protomer. Nothing about that placement is measured — there is no structure of
+the fusion, and the linker is flexible — so this project models it as an
+**accessible volume**, the region the tag centre can occupy without clashing,
+rather than as a pose.
+
+The experimental inputs are real. From **6U32** (1.8 Å, TMR-HaloTag ligand
+covalently bound): radius of gyration **17.6 Å**, N-terminus **19.9 Å** from the
+centre, ligand **21.8 Å** from that N-terminus. A C-terminal fusion attaches to
+the tag's N-terminus, so it is the 19.9 Å offset — not the radius of gyration —
+that sets where the body sits. From 8YEZ in the canonical frame, PIEZO1's
+C-terminus (human 2521) sits 2.6 nm from the cytosolic pore mouth.
+
+| Quantity | Value | Basis |
+|---|---|---|
+| Tag centre to pore exit, ensemble mean | 3.95 nm (8YEZ); 3.27–4.21 nm over 20 entries | this project |
+| Envelope span | 1.7–7.9 nm | this project |
+| Fraction of envelope within 4–6 nm | 51% | this project |
+| Accessible volume | 246 nm³, 65% of the tether's reach occluded | this project |
+| Linker length | 10 residues | **UNVERIFIED** — no source states it |
+
+**The ensemble mean is not the estimate a back-of-envelope calculation gives.**
+Adding the tag's ~2 nm anchor-to-centre offset to the anchor's 2.6 nm suggests
+4–6 nm, but that assumes the tag points straight away from the channel.
+Averaging over the directions actually accessible — many of which run sideways
+along the membrane — pulls the mean to 3.8 nm. Both numbers are about the same
+model; they answer different questions, and anything downstream should say which
+it is using. A calcium-nanodomain estimate at the dye should integrate over the
+envelope rather than evaluate at the centroid.
+
+The result is robust to the one assumed input: sweeping the linker from 1 to 30
+residues changes the accessible volume thirtyfold and the reported mean by under
+a nanometre — downwards, since a longer tether wraps further round the channel.
+
 ## 8c. Evolutionary constraint
 
 62 vertebrate PIEZO1 orthologs, one per species, aligned pairwise to human and

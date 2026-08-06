@@ -95,6 +95,8 @@ EXEMPT_NAMES = {
 #: Specific (module, owner, name) triples exempt for reasons of their own.
 EXEMPT = {
     ("structure/frame.py", "Frame", "n_atoms_fitted"): "counter, initialised to zero",
+    ("structure/fusion.py", "AccessibleVolume", "n_before_clash"):
+        "counter, initialised to zero",
     ("structure/frame.py", None, "CTERM_FRACTION"):
         "which slice of residues counts as the cytosolic end when orienting a "
         "structure. A criterion for reading topology off a model, not a "

@@ -27,6 +27,7 @@ from .docks import DockManager, DockSpec
 from .gl_widget import ViewportWidget
 from .menus import build_menus, make_settings
 from .alignment import AlignmentMixin
+from .companions import CompanionMixin
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
 from .presentation import PresentationController
@@ -48,8 +49,8 @@ __all__ = ["MainWindow"]
 
 
 
-class MainWindow(AlignmentMixin, AppearanceMixin, PreferencesMixin,
-                 QMainWindow):
+class MainWindow(AlignmentMixin, CompanionMixin, AppearanceMixin,
+                 PreferencesMixin, QMainWindow):
     """Top-level window."""
 
     def __init__(self) -> None:
@@ -275,15 +276,29 @@ class MainWindow(AlignmentMixin, AppearanceMixin, PreferencesMixin,
 
         st, frame = self._standardise(st, rec)
 
-        if self.view is not None:
-            self.view.clear()
+        # Order matters. `overlay.clear()` finishes by rebuilding the primary
+        # view to undo any deviation colouring, so it has to run while that view
+        # is still the old one — and *before* the old batches are removed.
+        # Clearing first meant the rebuild put them straight back, leaving the
+        # previous structure on screen for good. That was survivable only while
+        # deposited frames sat 100 Å apart; once everything is framed
+        # canonically the two superimpose and the ghost is unmistakable.
+        self.overlay.clear()
+        if self.multi_structure:
+            # Keep what was there, in its own colour, instead of discarding it.
+            self.demote_to_companion(incoming=rec.pdb)
+        else:
+            if self.view is not None:
+                self.view.clear()
+                self.view = None
+            self.clear_companions()
+
         self.record = rec
         self.structure = st
         self.modes = None
         self.physics_panel.set_modes(None)
         self.physics.reset()
         self.analysis.reset()
-        self.overlay.clear()
 
         self.view = MolecularView(self.viewport.scene, st, name=rec.pdb)
         self.view.set_species(rec.numbering_species)
@@ -313,6 +328,7 @@ class MainWindow(AlignmentMixin, AppearanceMixin, PreferencesMixin,
             f"{len(self._mode_blocks)} protomers · loaded in "
             f"{time.time() - t0:.2f} s · {rec.numbering_species} numbering"
             + (f" · {frame.summary()}" if not frame.is_identity else ""))
+        self._refresh_displayed()
         self.viewport.update()
 
     # ------------------------------------------------------------- alignment

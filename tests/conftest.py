@@ -38,6 +38,29 @@ def flat_structure():
 
 
 @pytest.fixture(scope="session")
+def qt_app():
+    """A QApplication with the GL surface format already configured.
+
+    The format has to be set before the first QOpenGLWidget exists, so it
+    cannot be left to the window's own constructor in a test process that may
+    already have made one.
+    """
+    pytest.importorskip("PyQt6.QtWidgets")
+    from PyQt6.QtWidgets import QApplication
+
+    from piezo1.ui.gl_widget import configure_surface_format
+
+    app = QApplication.instance()
+    if app is None:
+        configure_surface_format()
+        try:
+            app = QApplication([])
+        except Exception as exc:                       # pragma: no cover
+            pytest.skip(f"no Qt platform available: {exc}")
+    return app
+
+
+@pytest.fixture(scope="session")
 def structure_by_id():
     """Load any catalogued entry by id, or ``None`` when it is not downloaded.
 

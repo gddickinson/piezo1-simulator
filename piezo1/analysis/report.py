@@ -346,8 +346,51 @@ def analysis_interactions(st: Structure, species: str, **kw) -> dict:
 
 #: Name to function. The CLI and the report share this registry, so a new
 #: analysis becomes available in both at once.
+def analysis_fusion(st: Structure, species: str, **kw) -> dict:
+    """Where a C-terminal HaloTag would sit — a model, and labelled as one.
+
+    Every distance here depends on ``fusion.linker_residues``, which no source
+    for the construct states, so the linker is reported alongside the result
+    rather than left implicit.
+    """
+    from ..structure.frame import apply_frame, canonical_transform
+    from ..structure.fusion import build_fusion, load_halotag
+
+    try:
+        tag = load_halotag()
+    except FileNotFoundError as exc:
+        return {"error": str(exc)}
+
+    # The fusion geometry is quoted relative to the conduction axis, so the
+    # structure has to be in the frame that defines it.
+    framed = apply_frame(st, canonical_transform(st))
+    try:
+        model = build_fusion(framed, tag)
+    except (ValueError, RuntimeError) as exc:
+        return {"error": str(exc)}
+
+    reachable = model.volume.distances_from(model.pore_exit) / 10.0
+    return {"tag_pdb": model.meta["tag_pdb"],
+            "anchor_residues": list(model.anchor_residues),
+            "linker_residues": model.meta["linker_residues"],
+            "n_tags": model.n_tags,
+            "c3_deviation_A": model.c3_deviation(),
+            "tag_centre_to_pore_exit_nm": float(model.pore_exit_distances()[0]),
+            "envelope_median_nm": float(np.median(reachable)),
+            "envelope_range_nm": [float(reachable.min()), float(reachable.max())],
+            "fraction_in_4_to_6_nm": float(((reachable >= 4.0)
+                                            & (reachable <= 6.0)).mean()),
+            "accessible_volume_nm3": model.meta["accessible_volume_nm3"],
+            "occluded_fraction": model.volume.occluded_fraction,
+            "min_clearance_A": model.meta["min_clearance"],
+            "tag_radius_A": model.meta["tag_radius"],
+            "clashes": model.meta["clashes"],
+            "note": model.meta["note"]}
+
+
 ANALYSES = {
     "dome": analysis_dome,
+    "fusion": analysis_fusion,
     "pore": analysis_pore,
     "hydration": analysis_hydration,
     "modes": analysis_modes,

@@ -77,6 +77,9 @@ class MolecularView:
     visible_entities: frozenset = frozenset()
     values: np.ndarray | None = None          # per-atom scalar for ColorBy.VALUE
     highlight: np.ndarray | None = None       # per-atom bool
+    #: Colour used by :attr:`ColorBy.UNIFORM`. Per-view rather than global, so
+    #: several structures shown together can be told apart.
+    uniform_color: tuple = (0.55, 0.62, 0.75)
     traces: list[ChainTrace] = field(default_factory=list)
     _species: str = "human"
 
@@ -127,7 +130,7 @@ class MolecularView:
             for tr in self.traces:
                 out[tr.indices] = SS_COLORS[tr.ss]
             return out
-        return colormaps.uniform_color(st)
+        return colormaps.uniform_color(st, self.uniform_color)
 
     def set_species(self, species: str) -> None:
         self._species = species

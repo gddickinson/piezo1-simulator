@@ -115,6 +115,18 @@ class StructurePanel(QWidget):
         self.entity_checks: dict = {}
         form.addRow(self.entity_box)
 
+        # What is on screen, which is not the same question as what is in the
+        # file. Hidden while only one structure is drawn, so the normal case
+        # carries no extra furniture.
+        self.displayed_label = QLabel()
+        self.displayed_label.setWordWrap(True)
+        self.displayed_label.setToolTip(
+            "Structures currently drawn. The first is the primary one; every\n"
+            "analysis runs on it, whatever else is displayed. Turn extra\n"
+            "structures on and off under View.")
+        self.displayed_label.setVisible(False)
+        form.addRow(self.displayed_label)
+
         self.ligand_check = QCheckBox("Show lipids and ligands")
         self.ligand_check.setChecked(True)
         self.ligand_check.setToolTip(
@@ -227,6 +239,28 @@ class StructurePanel(QWidget):
     def radius_spin(self):
         """Alias so callers can read the atom-size control by one name."""
         return self.radius_slider
+
+    def set_displayed(self, names: list[str], colors: dict | None = None) -> None:
+        """Show which structures are on screen, and in which colour.
+
+        Only appears when there is more than one, since with a single structure
+        the answer is already in the chooser above.
+        """
+        colors = colors or {}
+        if len(names) < 2:
+            self.displayed_label.setVisible(False)
+            return
+
+        parts = [f"<b>{names[0]}</b> (primary)"]
+        for name in names[1:]:
+            rgb = colors.get(name)
+            swatch = ""
+            if rgb is not None:
+                hexcode = "#%02x%02x%02x" % tuple(int(255 * c) for c in rgb)
+                swatch = (f"<span style='color:{hexcode};'>&#9632;</span> ")
+            parts.append(f"{swatch}{name}")
+        self.displayed_label.setText("Displayed: " + ", ".join(parts))
+        self.displayed_label.setVisible(True)
 
     def set_entities(self, entity_map) -> None:
         """Rebuild the per-category checkboxes for the loaded structure.

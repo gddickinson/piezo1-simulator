@@ -239,7 +239,8 @@ def build_parser() -> argparse.ArgumentParser:
             ("hydration", "hydrophobic-gating prediction (Rao et al. 2019)"),
             ("modes", "elastic network normal modes with symmetry labels"),
             ("pockets", "alpha-sphere cavities and ligand contacts"),
-            ("interactions", "hydrogen bonds, salt bridges, disulfides")):
+            ("interactions", "hydrogen bonds, salt bridges, disulfides"),
+            ("fusion", "where a C-terminal HaloTag would sit (a model)")):
         p = sub.add_parser(name, help=help_text, parents=[common])
         p.add_argument("structure")
         p.add_argument("--species", choices=["human", "mouse"])

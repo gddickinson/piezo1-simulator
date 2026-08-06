@@ -39,7 +39,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
+| `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `fusion`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
 | `parameters.py` | **The single source of truth for every number a calculation uses.** Loaded from `resources/parameters.json`; each value carries a unit, bounds, a kind and a citation. Overrides are tracked, not silent — reports flag them and the claims verifier refuses to run against them. | `Parameter`, `ParameterRegistry`, `PARAMETERS`, `value()`, `set_value()`, `reset()`, `overrides()`, `resolve()` | ✅ |
 | `tour.py` | The guided tour as **data plus live measurements**, Qt-free. Eleven steps from trimer to the two null results; every number computed when the step runs, every published comparison read from the parameter registry. | `TourStep`, `TOUR`, `step_by_key()` | ✅ |
 | `parameter_audit.py` | Scans `physics/`, `structure/` and `analysis/` for numeric literals that are neither registered nor exempt **with a stated reason**. The mechanism that keeps the rule from decaying into an aspiration. | `audit()`, `Finding`, `EXEMPT`, `EXEMPT_NAMES`, `MAPPED` | ✅ |
@@ -72,6 +72,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `frame.py` | **Standardised framing.** Puts any trimer in a frame defined by its own C3 symmetry — axis on +z, cytosolic side at −z, centred — or superposes it on a reference. Deposited entries sit 29–147 Å apart; canonical framing brings them to within ~1 Å of the least-squares optimum. Searches both protomer correspondence classes, because deposited chains can run round the ring either way. | `Frame`, `canonical_transform()`, `reference_transform()`, `apply_frame()`, `standardise()`, `ALIGNMENT_MODES`, `PERMUTATIONS`, `CTERM_FRACTION` | ✅ |
 | `protomers.py` | Which chains are protomers and which residues all three share. Moved here from `ui/model_utils.py`, which had `analysis` importing from `ui`. | `protomer_blocks()`, `modelled_residues()`, `well_resolved_chains()`, `MIN_CA_PER_PROTOMER` | ✅ |
 | `geometry.py` | **Membrane-dome measurement.** Sphere fitting, radial height profile, dome depth / area / excess area. Reproduces published dome curvature. | `fit_sphere()`, `SphereFit`, `radial_profile()`, `RadialProfile`, `DomeGeometry`, `measure_dome()` | ✅ |
+| `fusion.py` | **PIEZO1–HaloTag fusion geometry**, as a model and labelled one. Reads 6U32, finds each protomer's C-terminal anchor, and builds an accessible-volume envelope for the flexible linker rather than a pose. Reports C3 deviation, tag-to-pore-exit distance and clearance. | `HaloTag`, `AccessibleVolume`, `FusionModel`, `load_halotag()`, `cterm_anchors()`, `accessible_volume()`, `build_fusion()` | ✅ |
 | `hybrid.py` | Assembles the full-length model: experimental core + AlphaFold distal blade, with the seam recorded and renderable. | `build_hybrid_model()`, `HybridModel` | 📋 |
 | `morph.py` | Conformational interpolation between endpoints: linear, distance-restrained, and elastic-network-subspace methods, each reporting its own bond-geometry error. | `morph()`, `MorphTrajectory`, `prepare_endpoints()`, `restrained_morph()`, `modal_morph()` | ✅ |
 | `pore.py` | Pore-radius profile along the conduction axis: Apollonius clearance maximisation per slice with a leash constraint, bottleneck and constriction detection, per-slice lining residues. | `pore_profile()`, `PoreProfile`, `PoreSlice` | ✅ |
@@ -145,6 +146,7 @@ geometry at a fraction of the triangle count.
 | `preferences.py` | Remembered settings and their menu handlers: layout memory, status hints, spin speed, and **what a selection does to the camera** (leave still / centre / centre and zoom). | `PreferencesMixin` | ✅ |
 | `help_content.py` | The in-application guide as data: seven topics, the shortcut table, and the document index. Includes the null result and the corrected footprint number. | `TOPICS`, `DOC_LINKS`, `SHORTCUTS` | ✅ |
 | `help_dialog.py` | Non-modal help window — feature guide, shortcuts, and links that open the shipped documents. | `HelpDialog`, `open_document()` | ✅ |
+| `companions.py` | Showing several structures at once — off by default, opt-in under View. Each extra structure is drawn in its own colour in the shared frame; analyses always run on the primary. Not the same as `overlay_controller`, which measures. | `CompanionMixin`, `Companion`, `COMPANION_COLORS` | ✅ |
 | `alignment.py` | Where the model sits: standardised framing of each load, opening a file outside the catalogue, and the camera reset. | `AlignmentMixin` | ✅ |
 | `model_utils.py` | Backwards-compatible re-export of `structure.protomers`. | `protomer_blocks()`, `modelled_residues()`, `well_resolved_chains()` | ✅ |
 | `hud.py` | Overlay drawn over the viewport: scale bar in round Angstrom/nm units, animation clock, orientation gnomon, and measured readouts. QPainter on a sibling widget, never inside `paintGL`. | `HudOverlay`, `HudSettings`, `nice_scale_length()` | ✅ |
@@ -173,7 +175,7 @@ geometry at a fraction of the triangle count.
 | `numbering_human_mouse.json` | Cached human↔mouse alignment map. | ✅ |
 | `ligands.json` | Yoda1, Yoda2, Jedi1/2, Dooku1, GsMTx4 and lipids with chemistry and binding-site residues. | 📋 |
 | `structures.json` | Registry of 21 structures with state, resolution, coverage, ligands, citation. | ✅ |
-| `parameters.json` | **61 parameters** in 12 categories — every number the calculations use, with unit, bounds, kind and citation. 31 cite a paper; 30 are method choices, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
+| `parameters.json` | **75 parameters** in 16 categories — every number the calculations use, with unit, bounds, kind and citation. 31 cite a paper; 30 are method choices, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
 
 ---
 
@@ -188,7 +190,8 @@ geometry at a fraction of the triangle count.
 | `build_variants.py` | Promotes researched variants into `variants.json` behind a validation gate. | ✅ |
 | `build_variants_clinvar.py` | Fetches ClinVar pathogenic variants, parses the protein change, verifies the wild type against Q92508, and infers direction from the disease mechanism — marking as ambiguous anything reported under both diseases. | ✅ |
 | `build_structure_registry.py` | Authors `structures.json`. | ✅ |
-| `build_parameters.py` | Authors `parameters.json`. Refuses to write unless every citation resolves in `references.json` or declares itself a method choice **and says why**. | ✅ |
+| `build_parameters.py` | The provenance gate: refuses to write unless every citation resolves in `references.json` or declares itself a method choice **and says why**. | ✅ |
+| `parameter_table.py` | The parameter table itself — 75 entries as data, so the whole set can be read and diffed without the validation machinery. | ✅ |
 | `reproduce.py` | One-command reproduction: fetch, rebuild resources, test, re-run both validations, regenerate figures, then **verify every documented number**. `--verify`, `--quick`, `--skip`, `--only`. | ✅ |
 | `render_offscreen.py` | Headless render to PNG; also a renderer regression check. | ✅ |
 | `make_figures.py` | All README/doc figures, on shared scale and orientation. | ✅ |
@@ -208,6 +211,8 @@ geometry at a fraction of the triangle count.
 | `conftest.py` | Fixtures; skips rather than fails when data is not downloaded. | ✅ |
 | `test_cif_reader.py` | Tokenizer whitespace/quoting, column alignment, residue indexing, selections. | ✅ |
 | `test_frame.py` | Camera reset idempotence (the drift that made one structure look different on each visit), the C-terminus-at-negative-z rule over **every** downloaded entry, idempotence, the measured overlap gain against the least-squares optimum, reversed protomer labelling on 8YFG, cross-species refusal, and invariance of the dome measurement under reframing. | ✅ |
+| `test_fusion.py` | The fusion model: the measured 6U32 inputs, that the anchor is the tag's N-terminus, that the envelope is a region and every point in it clears the channel, the three roadmap criteria (including the one that misses), both sign conventions, and that the reported distance is robust to the unverified linker length. | ✅ |
+| `test_ui_companions.py` | That loading replaces by default — the ghost-structure regression — and that multi-structure display adds, colours, indicates and drops correctly. The ordering fault is pinned without GL; the full-path tests skip on the offscreen platform. | ✅ |
 | `test_geometry.py` | Sphere fitting on synthetic spheres and caps; dome curvature regression against the published 10.2 nm; curved vs flat separation. | ✅ |
 | `test_superpose.py` | Kabsch round-trip, reflection exclusion, C3 exactness, reversed-handedness detection. | ✅ |
 | `test_anm.py` | Hessian symmetry, zero modes, disconnected networks, symmetry characters, and the gating-overlap result. | ✅ |
