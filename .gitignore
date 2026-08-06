@@ -1,0 +1,37 @@
+# ---- External reference material: downloaded, never committed ----
+ref/
+# ---- Runtime data: fetched or derived, regenerable via scripts/ ----
+data/
+!data/.gitkeep
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+htmlcov/
+.coverage
+coverage.xml
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+# ---- Outputs ----
+outputs/
+*.mp4
+*.gif
+!docs/img/*.gif
+*.log

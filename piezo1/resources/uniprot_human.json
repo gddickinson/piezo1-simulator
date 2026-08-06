@@ -1,0 +1,741 @@
+{
+ "accession": "Q92508",
+ "id": "PIEZ1_HUMAN",
+ "organism": "Homo sapiens",
+ "gene": "PIEZO1",
+ "length": 2521,
+ "mass_da": 286790,
+ "sequence": "MEPHVLGAVLYWLLLPCALLAACLLRFSGLSLVYLLFLLLLPWFPGPTRCGLQGHTGRLLRALLGLSLLFLVAHLALQICLHIVPRLDQLLGPSCSRWETLSRHIGVTRLDLKDIPNAIRLVAPDLGILVVSSVCLGICGRLARNTRQSPHPRELDDDERDVDASPTAGLQEAATLAPTRRSRLAARFRVTAHWLLVAAGRVLAVTLLALAGIAHPSALSSVYLLLFLALCTWWACHFPISTRGFSRLCVAVGCFGAGHLICLYCYQMPLAQALLPPAGIWARVLGLKDFVGPTNCSSPHALVLNTGLDWPVYASPGVLLLLCYATASLRKLRAYRPSGQRKEAAKGYEARELELAELDQWPQERESDQHVVPTAPDTEADNCIVHELTGQSSVLRRPVRPKRAEPREASPLHSLGHLIMDQSYVCALIAMMVWSITYHSWLTFVLLLWACLIWTVRSRHQLAMLCSPCILLYGMTLCCLRYVWAMDLRPELPTTLGPVSLRQLGLEHTRYPCLDLGAMLLYTLTFWLLLRQFVKEKLLKWAESPAALTEVTVADTEPTRTQTLLQSLGELVKGVYAKYWIYVCAGMFIVVSFAGRLVVYKIVYMFLFLLCLTLFQVYYSLWRKLLKAFWWLVVAYTMLVLIAVYTFQFQDFPAYWRNLTGFTDEQLGDLGLEQFSVSELFSSILVPGFFLLACILQLHYFHRPFMQLTDMEHVSLPGTRLPRWAHRQDAVSGTPLLREEQQEHQQQQQEEEEEEEDSRDEGLGVATPHQATQVPEGAAKWGLVAERLLELAAGFSDVLSRVQVFLRRLLELHVFKLVALYTVWVALKEVSVMNLLLVVLWAFALPYPRFRPMASCLSTVWTCVIIVCKMLYQLKVVNPQEYSSNCTEPFPNSTNLLPTEISQSLLYRGPVDPANWFGVRKGFPNLGYIQNHLQVLLLLVFEAIVYRRQEHYRRQHQLAPLPAQAVFASGTRQQLDQDLLGCLKYFINFFFYKFGLEICFLMAVNVIGQRMNFLVTLHGCWLVAILTRRHRQAIARLWPNYCLFLALFLLYQYLLCLGMPPALCIDYPWRWSRAVPMNSALIKWLYLPDFFRAPNSTNLISDFLLLLCASQQWQVFSAERTEEWQRMAGVNTDRLEPLRGEPNPVPNFIHCRSYLDMLKVAVFRYLFWLVLVVVFVTGATRISIFGLGYLLACFYLLLFGTALLQRDTRARLVLWDCLILYNVTVIISKNMLSLLACVFVEQMQTGFCWVIQLFSLVCTVKGYYDPKEMMDRDQDCLLPVEEAGIIWDSVCFFFLLLQRRVFLSHYYLHVRADLQATALLASRGFALYNAANLKSIDFHRRIEEKSLAQLKRQMERIRAKQEKHRQGRVDRSRPQDTLGPKDPGLEPGPDSPGGSSPPRRQWWRPWLDHATVIHSGDYFLFESDSEEEEEAVPEDPRPSAQSAFQLAYQAWVTNAQAVLRRRQQEQEQARQEQAGQLPTGGGPSQEVEPAEGPEEAAAGRSHVVQRVLSTAQFLWMLGQALVDELTRWLQEFTRHHGTMSDVLRAERYLLTQELLQGGEVHRGVLDQLYTSQAEATLPGPTEAPNAPSTVSSGLGAEEPLSSMTDDMGSPLSTGYHTRSGSEEAVTDPGEREAGASLYQGLMRTASELLLDRRLRIPELEEAELFAEGQGRALRLLRAVYQCVAAHSELLCYFIIILNHMVTASAGSLVLPVLVFLWAMLSIPRPSKRFWMTAIVFTEIAVVVKYLFQFGFFPWNSHVVLRRYENKPYFPPRILGLEKTDGYIKYDLVQLMALFFHRSQLLCYGLWDHEEDSPSKEHDKSGEEEQGAEEGPGVPAATTEDHIQVEARVGPTDGTPEPQVELRPRDTRRISLRFRRRKKEGPARKGAAAIEAEDREEEEGEEEKEAPTGREKRPSRSGGRVRAAGRRLQGFCLSLAQGTYRPLRRFFHDILHTKYRAATDVYALMFLADVVDFIIIIFGFWAFGKHSAATDITSSLSDDQVPEAFLVMLLIQFSTMVVDRALYLRKTVLGKLAFQVALVLAIHLWMFFILPAVTERMFNQNVVAQLWYFVKCIYFALSAYQIRCGYPTRILGNFLTKKYNHLNLFLFQGFRLVPFLVELRAVMDWVWTDTTLSLSSWMCVEDIYANIFIIKCSRETEKKYPQPKGQKKKKIVKYGMGGLIILFLIAIIWFPLLFMSLVRSVVGVVNQPIDVTVTLKLGGYEPLFTMSAQQPSIIPFTAQAYEELSRQFDPQPLAMQFISQYSPEDIVTAQIEGSSGALWRISPPSRAQMKRELYNGTADITLRFTWNFQRDLAKGGTVEYANEKHMLALAPNSTARRQLASLLEGTSDQSVVIPNLFPKYIRAPNGPEANPVKQLQPNEEADYLGVRIQLRREQGAGATGFLEWWVIELQECRTDCNLLPMVIFSDKVSPPSLGFLAGYGIMGLYVSIVLVIGKFVRGFFSEISHSIMFEELPCVDRILKLCQDIFLVRETRELELEEELYAKLIFLYRSPETMIKWTREKE",
+ "entry_version": 191,
+ "sequence_version": 4,
+ "last_modified": "2011-01-11",
+ "transmembrane": [
+  {
+   "start": 13,
+   "end": 25,
+   "description": "Helical; Name=1",
+   "name": "TM1"
+  },
+  {
+   "start": 29,
+   "end": 44,
+   "description": "Helical; Name=2",
+   "name": "TM2"
+  },
+  {
+   "start": 59,
+   "end": 81,
+   "description": "Helical; Name=3",
+   "name": "TM3"
+  },
+  {
+   "start": 122,
+   "end": 138,
+   "description": "Helical; Name=4",
+   "name": "TM4"
+  },
+  {
+   "start": 195,
+   "end": 214,
+   "description": "Helical; Name=5",
+   "name": "TM5"
+  },
+  {
+   "start": 217,
+   "end": 236,
+   "description": "Helical; Name=6",
+   "name": "TM6"
+  },
+  {
+   "start": 248,
+   "end": 268,
+   "description": "Helical; Name=7",
+   "name": "TM7"
+  },
+  {
+   "start": 310,
+   "end": 330,
+   "description": "Helical; Name=8",
+   "name": "TM8"
+  },
+  {
+   "start": 418,
+   "end": 438,
+   "description": "Helical; Name=9",
+   "name": "TM9"
+  },
+  {
+   "start": 441,
+   "end": 456,
+   "description": "Helical; Name=10",
+   "name": "TM10"
+  },
+  {
+   "start": 462,
+   "end": 484,
+   "description": "Helical; Name=11",
+   "name": "TM11"
+  },
+  {
+   "start": 513,
+   "end": 530,
+   "description": "Helical; Name=12",
+   "name": "TM12"
+  },
+  {
+   "start": 575,
+   "end": 595,
+   "description": "Helical; Name=13",
+   "name": "TM13"
+  },
+  {
+   "start": 597,
+   "end": 617,
+   "description": "Helical; Name=14",
+   "name": "TM14"
+  },
+  {
+   "start": 628,
+   "end": 649,
+   "description": "Helical; Name=15",
+   "name": "TM15"
+  },
+  {
+   "start": 680,
+   "end": 696,
+   "description": "Helical; Name=16",
+   "name": "TM16"
+  },
+  {
+   "start": 817,
+   "end": 828,
+   "description": "Helical; Name=17",
+   "name": "TM17"
+  },
+  {
+   "start": 832,
+   "end": 845,
+   "description": "Helical; Name=18",
+   "name": "TM18"
+  },
+  {
+   "start": 860,
+   "end": 874,
+   "description": "Helical; Name=19",
+   "name": "TM19"
+  },
+  {
+   "start": 927,
+   "end": 954,
+   "description": "Helical; Name=20",
+   "name": "TM20"
+  },
+  {
+   "start": 995,
+   "end": 1010,
+   "description": "Helical; Name=21",
+   "name": "TM21"
+  },
+  {
+   "start": 1013,
+   "end": 1028,
+   "description": "Helical; Name=22",
+   "name": "TM22"
+  },
+  {
+   "start": 1042,
+   "end": 1057,
+   "description": "Helical; Name=23",
+   "name": "TM23"
+  },
+  {
+   "start": 1097,
+   "end": 1118,
+   "description": "Helical; Name=24",
+   "name": "TM24"
+  },
+  {
+   "start": 1154,
+   "end": 1180,
+   "description": "Helical; Name=25",
+   "name": "TM25"
+  },
+  {
+   "start": 1186,
+   "end": 1204,
+   "description": "Helical; Name=26",
+   "name": "TM26"
+  },
+  {
+   "start": 1218,
+   "end": 1236,
+   "description": "Helical; Name=27",
+   "name": "TM27"
+  },
+  {
+   "start": 1286,
+   "end": 1302,
+   "description": "Helical; Name=28",
+   "name": "TM28"
+  },
+  {
+   "start": 1657,
+   "end": 1700,
+   "description": "Helical; Name=29",
+   "name": "TM29"
+  },
+  {
+   "start": 1705,
+   "end": 1720,
+   "description": "Helical; Name=30",
+   "name": "TM30"
+  },
+  {
+   "start": 1729,
+   "end": 1747,
+   "description": "Helical; Name=31",
+   "name": "TM31"
+  },
+  {
+   "start": 1780,
+   "end": 1801,
+   "description": "Helical; Name=32",
+   "name": "TM32"
+  },
+  {
+   "start": 1961,
+   "end": 1980,
+   "description": "Helical; Name=33",
+   "name": "TM33"
+  },
+  {
+   "start": 2001,
+   "end": 2017,
+   "description": "Helical; Name=34",
+   "name": "TM34"
+  },
+  {
+   "start": 2032,
+   "end": 2052,
+   "description": "Helical; Name=35",
+   "name": "TM35"
+  },
+  {
+   "start": 2061,
+   "end": 2076,
+   "description": "Helical; Name=36",
+   "name": "TM36"
+  },
+  {
+   "start": 2177,
+   "end": 2197,
+   "description": "Helical; Name=37",
+   "name": "TM37"
+  },
+  {
+   "start": 2432,
+   "end": 2452,
+   "description": "Helical; Name=38",
+   "name": "TM38"
+  }
+ ],
+ "topology": [
+  {
+   "start": 1,
+   "end": 12,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 26,
+   "end": 28,
+   "description": "Extracellular"
+  },
+  {
+   "start": 45,
+   "end": 58,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 82,
+   "end": 121,
+   "description": "Extracellular"
+  },
+  {
+   "start": 139,
+   "end": 194,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 215,
+   "end": 216,
+   "description": "Extracellular"
+  },
+  {
+   "start": 237,
+   "end": 247,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 269,
+   "end": 309,
+   "description": "Extracellular"
+  },
+  {
+   "start": 331,
+   "end": 417,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 439,
+   "end": 440,
+   "description": "Extracellular"
+  },
+  {
+   "start": 457,
+   "end": 461,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 485,
+   "end": 512,
+   "description": "Extracellular"
+  },
+  {
+   "start": 531,
+   "end": 574,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 596,
+   "end": 596,
+   "description": "Extracellular"
+  },
+  {
+   "start": 618,
+   "end": 627,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 650,
+   "end": 679,
+   "description": "Extracellular"
+  },
+  {
+   "start": 697,
+   "end": 816,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 829,
+   "end": 831,
+   "description": "Extracellular"
+  },
+  {
+   "start": 846,
+   "end": 859,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 875,
+   "end": 926,
+   "description": "Extracellular"
+  },
+  {
+   "start": 955,
+   "end": 994,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1011,
+   "end": 1012,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1029,
+   "end": 1041,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1058,
+   "end": 1096,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1119,
+   "end": 1153,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1181,
+   "end": 1185,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1205,
+   "end": 1217,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1237,
+   "end": 1285,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1303,
+   "end": 1656,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1701,
+   "end": 1704,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1721,
+   "end": 1728,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1748,
+   "end": 1779,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1802,
+   "end": 1960,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1981,
+   "end": 2000,
+   "description": "Extracellular"
+  },
+  {
+   "start": 2018,
+   "end": 2031,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 2053,
+   "end": 2060,
+   "description": "Extracellular"
+  },
+  {
+   "start": 2077,
+   "end": 2176,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 2198,
+   "end": 2431,
+   "description": "Extracellular"
+  },
+  {
+   "start": 2453,
+   "end": 2521,
+   "description": "Cytoplasmic"
+  }
+ ],
+ "regions": [
+  {
+   "start": 738,
+   "end": 769,
+   "description": "Disordered"
+  },
+  {
+   "start": 1356,
+   "end": 1402,
+   "description": "Disordered"
+  },
+  {
+   "start": 1462,
+   "end": 1498,
+   "description": "Disordered"
+  },
+  {
+   "start": 1576,
+   "end": 1630,
+   "description": "Disordered"
+  },
+  {
+   "start": 1811,
+   "end": 1921,
+   "description": "Disordered"
+  }
+ ],
+ "coiled_coil": [
+  {
+   "start": 1339,
+   "end": 1368,
+   "description": ""
+  }
+ ],
+ "disulfide": [
+  {
+   "start": 2411,
+   "end": 2415,
+   "description": ""
+  }
+ ],
+ "modified_residues": [
+  {
+   "position": 734,
+   "end": 734,
+   "description": "Phosphothreonine"
+  },
+  {
+   "position": 758,
+   "end": 758,
+   "description": "Phosphoserine"
+  },
+  {
+   "position": 1391,
+   "end": 1391,
+   "description": "Phosphoserine"
+  },
+  {
+   "position": 1396,
+   "end": 1396,
+   "description": "Phosphoserine"
+  },
+  {
+   "position": 1636,
+   "end": 1636,
+   "description": "Phosphoserine"
+  },
+  {
+   "position": 1646,
+   "end": 1646,
+   "description": "Phosphoserine"
+  },
+  {
+   "position": 1854,
+   "end": 1854,
+   "description": "Phosphothreonine"
+  }
+ ],
+ "glycosylation": [
+  {
+   "position": 295,
+   "end": 295,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2294,
+   "end": 2294,
+   "description": "N-linked (GlcNAc...) asparagine"
+  }
+ ],
+ "natural_variants": [
+  {
+   "position": 253,
+   "end": 253,
+   "description": "found in a patient with prune belly syndrome; uncertain significance; dbSNP:rs142027562",
+   "wt": "G",
+   "mut": "R",
+   "dbsnp": "rs142027562"
+  },
+  {
+   "position": 718,
+   "end": 718,
+   "description": "in DHS1; dbSNP:rs755885744",
+   "wt": "G",
+   "mut": "S",
+   "dbsnp": "rs755885744"
+  },
+  {
+   "position": 782,
+   "end": 782,
+   "description": "in DHS1; dbSNP:rs200970763",
+   "wt": "G",
+   "mut": "S",
+   "dbsnp": "rs200970763"
+  },
+  {
+   "position": 808,
+   "end": 808,
+   "description": "in DHS1; dbSNP:rs202103485",
+   "wt": "R",
+   "mut": "Q",
+   "dbsnp": "rs202103485"
+  },
+  {
+   "position": 939,
+   "end": 939,
+   "description": "in LMPHM6; uncertain significance; dbSNP:rs201226914",
+   "wt": "L",
+   "mut": "M",
+   "dbsnp": "rs201226914"
+  },
+  {
+   "position": 1117,
+   "end": 1117,
+   "description": "in DHS1; dbSNP:rs587777765",
+   "wt": "S",
+   "mut": "L",
+   "dbsnp": "rs587777765"
+  },
+  {
+   "position": 1358,
+   "end": 1358,
+   "description": "in DHS1; gives rise to mechanically activated currents that inactivate more slowly than wild-type currents; dbSNP:rs587776990",
+   "wt": "R",
+   "mut": "P",
+   "dbsnp": "rs587776990"
+  },
+  {
+   "position": 1763,
+   "end": 2521,
+   "description": "found in Er(a-b-) blood group phenotype; dbSNP:rs72811487",
+   "dbsnp": "rs72811487"
+  },
+  {
+   "position": 2003,
+   "end": 2003,
+   "description": "in DHS1",
+   "wt": "A",
+   "mut": "D"
+  },
+  {
+   "position": 2020,
+   "end": 2020,
+   "description": "in DHS1; gives rise to mechanically activated currents that inactivate more slowly than wild-type currents; dbSNP:rs587776989",
+   "wt": "A",
+   "mut": "T",
+   "dbsnp": "rs587776989"
+  },
+  {
+   "position": 2020,
+   "end": 2020,
+   "description": "in DHS1; dbSNP:rs587777764",
+   "wt": "A",
+   "mut": "V",
+   "dbsnp": "rs587777764"
+  },
+  {
+   "position": 2127,
+   "end": 2127,
+   "description": "in DHS1; gives rise to mechanically activated currents that inactivate more slowly than wild-type currents; dbSNP:rs587776991",
+   "wt": "T",
+   "mut": "M",
+   "dbsnp": "rs587776991"
+  },
+  {
+   "position": 2166,
+   "end": 2169,
+   "description": "in DHS1"
+  },
+  {
+   "position": 2195,
+   "end": 2195,
+   "description": "found in a patient with prune belly syndrome; uncertain significance; the orthologous mouse mutation affects channel gating properties without affecting channel conductance; dbSNP:rs766429217",
+   "wt": "S",
+   "mut": "L",
+   "dbsnp": "rs766429217"
+  },
+  {
+   "position": 2225,
+   "end": 2225,
+   "description": "in DHS1; gives rise to mechanically activated currents that inactivate more slowly than wild-type currents; dbSNP:rs587776987",
+   "wt": "M",
+   "mut": "R",
+   "dbsnp": "rs587776987"
+  },
+  {
+   "position": 2245,
+   "end": 2245,
+   "description": "found in Er(5-) blood group phenotype; dbSNP:rs2290901",
+   "wt": "R",
+   "mut": "Q",
+   "dbsnp": "rs2290901"
+  },
+  {
+   "position": 2392,
+   "end": 2392,
+   "description": "found in Er(a-b+) and Er(a-b-) blood group phenotypes; dbSNP:rs528448732",
+   "wt": "E",
+   "mut": "K",
+   "dbsnp": "rs528448732"
+  },
+  {
+   "position": 2394,
+   "end": 2394,
+   "description": "found in Er(a-b+) blood group phenotype; dbSNP:rs201950081",
+   "wt": "G",
+   "mut": "S",
+   "dbsnp": "rs201950081"
+  },
+  {
+   "position": 2407,
+   "end": 2407,
+   "description": "found in Er(4-) blood group phenotype; dbSNP:rs200291894",
+   "wt": "E",
+   "mut": "K",
+   "dbsnp": "rs200291894"
+  },
+  {
+   "position": 2407,
+   "end": 2407,
+   "description": "found in Er(4-) blood group phenotype; dbSNP:rs200291894",
+   "wt": "E",
+   "mut": "Q",
+   "dbsnp": "rs200291894"
+  },
+  {
+   "position": 2430,
+   "end": 2430,
+   "description": "in LMPHM6; uncertain significance; dbSNP:rs869025601",
+   "wt": "P",
+   "mut": "L",
+   "dbsnp": "rs869025601"
+  },
+  {
+   "position": 2456,
+   "end": 2456,
+   "description": "in LMPHM6; uncertain significance",
+   "wt": "R",
+   "mut": "C"
+  },
+  {
+   "position": 2456,
+   "end": 2456,
+   "description": "in DHS1; gives rise to mechanically activated currents that inactivate more slowly than wild-type currents; dbSNP:rs587776988",
+   "wt": "R",
+   "mut": "H",
+   "dbsnp": "rs587776988"
+  },
+  {
+   "position": 2458,
+   "end": 2458,
+   "description": "in LMPHM6; uncertain significance; dbSNP:rs577860843",
+   "wt": "F",
+   "mut": "L",
+   "dbsnp": "rs577860843"
+  },
+  {
+   "position": 2488,
+   "end": 2488,
+   "description": "in DHS1; increased cation transport in erythroid cells; dbSNP:rs749288233",
+   "wt": "R",
+   "mut": "Q",
+   "dbsnp": "rs749288233"
+  },
+  {
+   "position": 2496,
+   "end": 2496,
+   "description": "in DHS1; gives rise to mechanically activated currents that inactivate more slowly than wild-type currents",
+   "wt": "E",
+   "mut": "ELE"
+  }
+ ],
+ "mutagenesis": [
+  {
+   "position": 2456,
+   "end": 2456,
+   "description": "Does not inactivate the protein. gives rise to mechanically activated currents that inactivate more slowly than wild-type currents, suggesting it could shift the channel kinetics from phasic to tonic.",
+   "wt": "R",
+   "mut": "K"
+  }
+ ],
+ "n_transmembrane": 38
+}
