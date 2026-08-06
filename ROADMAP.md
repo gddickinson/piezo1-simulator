@@ -840,16 +840,46 @@ the failure mode to keep hunting.
       indefinite and the quadratic form stops being an energy. Suite 445 →
       **462 passed**.
 
-### Round 27 — Expand the phenotyped variant set
-- [ ] Round 20 is unambiguous: 42 variants for a large effect, 98 for a medium
-      one, against 25 available. The binding constraint on this project's
-      central claim is **data, not method**.
-- [ ] Curate from ClinVar, the ProtVar cross-check and the primary
-      electrophysiology literature, with the same wild-type verification gate
-      the existing 68 passed. Record inter-curator ambiguity explicitly rather
-      than resolving it silently.
-- [ ] Report the achieved n and recompute the minimum detectable effect. If it
-      still cannot reach a medium effect, say so.
+### Round 27 — Expand the phenotyped variant set ✅
+- [x] **ClinVar gives pathogenicity, not direction**, and this project needs
+      direction. What makes direction recoverable for PIEZO1 is that its two
+      diseases have opposite mechanisms: dehydrated hereditary stomatocytosis
+      is dominant gain-of-function, generalised lymphatic dysplasia is
+      recessive loss-of-function. So a condition can imply a direction — and
+      that is **weaker evidence than measuring the current**, recorded per
+      variant rather than pooled.
+- [x] 354 pathogenic/likely-pathogenic records fetched; **232 pass the
+      wild-type gate against Q92508**, with 3 rejected for disagreeing (P481,
+      I505, C463) and 117 for an unparseable protein change.
+- [x] **The inter-curator ambiguity is real and substantial: 11 of 63 directed
+      records are reported under *both* diseases.** ClinVar submitters routinely
+      attach the whole gene's disease list to a variant. Those carry no
+      direction and are excluded, not resolved by preferring one.
+- [x] **An independent check on the inference.** Nine of the ClinVar variants
+      are already curated from electrophysiology; the condition-based direction
+      agrees with the measured one **8 times out of 9**. The single
+      disagreement — V598M, curated GoF, inferred LoF — is *reported, not
+      resolved*: our own record reads "increased opening (one report); no
+      change in another", so the literature is genuinely mixed.
+- [x] **Achieved n: the directional missense set goes from 26 (20 GoF, 6 LoF)
+      to 46 (27 GoF, 19 LoF).** The loss-of-function class — the thing that
+      made Round 22 underpowered — more than triples, 6 → 19.
+- [x] **Minimum detectable effect: 0.61 (Round 22) → 0.41.** Now inside
+      "large" rather than beyond it, and power at a large effect rises from
+      0.50 to 0.83.
+- [x] **But a medium effect is still out of reach, and the roadmap asked to say
+      so: power at δ = 0.28 is 0.49, not 0.80.** Reaching it at this 27:19
+      ratio would need **104** variants. The constraint has loosened, not
+      lifted.
+- [x] `piezo1/analysis/variant_sets.py` assembles a set at a **stated evidence
+      level**, defaulting to the conservative `measured` one so a caller who
+      does not think about evidence strength gets the smaller answer rather
+      than the larger. The original `variants.json` is **untouched** — Round 7
+      and Round 22 reference it, and growing it underneath a frozen result
+      would invalidate it with nothing appearing to change.
+- [x] 15 tests (`tests/test_variant_sets.py`), including that the wild-type
+      gate still rejects and that the evidence levels cannot be pooled by
+      accident. Suite 462 → **477 passed**.
 
 ### Round 28 — Nonlinear footprint in the gating energetics
 - [ ] Round 18 built the elastica solver but only `DomeModel` consumes it. The

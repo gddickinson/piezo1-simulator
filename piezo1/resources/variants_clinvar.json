@@ -1,0 +1,4344 @@
+{
+ "schema": 1,
+ "source": "ClinVar via NCBI E-utilities",
+ "note": "Direction is INFERRED from the disease mechanism, not measured. Weaker evidence than electrophysiology; the `evidence` field records which.",
+ "condition_map": {
+  "dehydrated hereditary stomatocytosis": [
+   "GoF",
+   "zarychanski2012"
+  ],
+  "hereditary xerocytosis": [
+   "GoF",
+   "zarychanski2012"
+  ],
+  "stomatocytosis": [
+   "GoF",
+   "albuisson2013"
+  ],
+  "lymphatic malformation": [
+   "LoF",
+   "fotiou2015"
+  ],
+  "generalized lymphatic dysplasia": [
+   "LoF",
+   "fotiou2015"
+  ],
+  "lymphedema": [
+   "LoF",
+   "fotiou2015"
+  ],
+  "hydrops fetalis": [
+   "LoF",
+   "fotiou2015"
+  ]
+ },
+ "variants": [
+  {
+   "wt_aa": "W",
+   "residue": 1168,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "W1168*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV004879639",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 2159,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Y2159*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV004879638",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 1187,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "L1187fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV004854586",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 465,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "L465fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004852654",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 2359,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "Y2359fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV004850055",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 2255,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q2255*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Fetal anomalies with a likely genetic cause"
+   ],
+   "accession": "VCV004820297",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1748,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1748*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV004795115",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 1429,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "E1429fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004771255",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 1443,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "A1443V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004686286",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "H",
+   "residue": 1018,
+   "mut_aa": "R",
+   "kind": "missense",
+   "label": "H1018R",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Fetal anomalies with a likely genetic cause"
+   ],
+   "accession": "VCV004542093",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 141,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "R141H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "not specified"
+   ],
+   "accession": "VCV004539163",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "C",
+   "residue": 426,
+   "mut_aa": "F",
+   "kind": "missense",
+   "label": "C426F",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004536187",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 338,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "S338C",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Rare venous malformation",
+    "Lymphatic malformation"
+   ],
+   "accession": "VCV004282504",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 2283,
+   "mut_aa": "R",
+   "kind": "missense",
+   "label": "P2283R",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004282239",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2391,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "R2391fs",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV004278383",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "W",
+   "residue": 861,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "W861*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004081593",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "D",
+   "residue": 2414,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "D2414fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004081592",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 1763,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Y1763*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004081591",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 872,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "Y872fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004081590",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 632,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "L632fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004081589",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "K",
+   "residue": 346,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "K346*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004081588",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 2373,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q2373*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004080838",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "D",
+   "residue": 1424,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "D1424H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004079603",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1599,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "P1599L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004079567",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 1045,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "L1045fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004077423",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "G",
+   "residue": 1537,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "G1537fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004077422",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 900,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E900*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004077421",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 903,
+   "mut_aa": "P",
+   "kind": "missense",
+   "label": "Q903P",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV004074448",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 1996,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "S1996*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV004056811",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1578,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "P1578L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003907944",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 761,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E761*",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV003907701",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 1257,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "V1257fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV003906144",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 657,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "R657C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV003899731",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 2500,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "Y2500fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV003891953",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "W",
+   "residue": 43,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "W43C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV003888696",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "F",
+   "residue": 1736,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "F1736S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003774180",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 2293,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Y2293*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003766121",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1925,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "R1925fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003765161",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1164,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "R1164*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "not provided"
+   ],
+   "accession": "VCV003617924",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 108,
+   "mut_aa": "K",
+   "kind": "missense",
+   "label": "T108K",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003600807",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1639,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1639*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV003600432",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "M",
+   "residue": 605,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "M605V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Blood group, ER",
+    "Lymphatic malformation 6",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "not provided"
+   ],
+   "accession": "VCV003581335",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "E",
+   "residue": 1123,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E1123*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Blood group, ER"
+   ],
+   "accession": "VCV003581334",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "D",
+   "residue": 1780,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "D1780V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV003418187",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 272,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "Q272fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV003391363",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "M",
+   "residue": 1539,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "M1539fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003381148",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 560,
+   "mut_aa": "W",
+   "kind": "missense",
+   "label": "R560W",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV003380434",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 750,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E750*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV003376774",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 829,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "E829V",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV003376588",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "C",
+   "residue": 2481,
+   "mut_aa": "Y",
+   "kind": "missense",
+   "label": "C2481Y",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003376022",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 1598,
+   "mut_aa": "D",
+   "kind": "missense",
+   "label": "E1598D",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003371585",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "N",
+   "residue": 2205,
+   "mut_aa": "I",
+   "kind": "missense",
+   "label": "N2205I",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003369908",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 267,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q267*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003364744",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1031,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "R1031H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003364190",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 53,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "Q53fs",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV003362637",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 2342,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "L2342H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003359813",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 2271,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E2271*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "PIEZO1-related disorder"
+   ],
+   "accession": "VCV003355677",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 1673,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "L1673fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003342620",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "W",
+   "residue": 1730,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "W1730*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003337455",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "G",
+   "residue": 46,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "G46S",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV003306420",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "N",
+   "residue": 2364,
+   "mut_aa": "Y",
+   "kind": "missense",
+   "label": "N2364Y",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV003252228",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1052,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1052*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV003235942",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2456,
+   "mut_aa": "P",
+   "kind": "missense",
+   "label": "R2456P",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV003235926",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 1680,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Y1680*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Diffuse lymphatic malformation"
+   ],
+   "accession": "VCV003075989",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "M",
+   "residue": 2007,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "M2007L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002907501",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "W",
+   "residue": 454,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "W454*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002847238",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 1195,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Y1195*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002705448",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 2023,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "L2023V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002690672",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 1093,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "A1093fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002690671",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "I",
+   "residue": 115,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "I115fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002690670",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "M",
+   "residue": 2007,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "M2007L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002689746",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "W",
+   "residue": 484,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "W484fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002683511",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "C",
+   "residue": 513,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "C513fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002683508",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "W",
+   "residue": 916,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "W916*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002683502",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2488,
+   "mut_aa": "Q",
+   "kind": "missense",
+   "label": "R2488Q",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "not provided"
+   ],
+   "accession": "VCV002683497",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1120,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "R1120H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002662897",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "K",
+   "residue": 2025,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "K2025fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002646989",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1125,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1125*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "PIEZO1-related disorder"
+   ],
+   "accession": "VCV002637245",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 225,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "L225fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "PIEZO1-related disorder"
+   ],
+   "accession": "VCV002637086",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 2117,
+   "mut_aa": "K",
+   "kind": "missense",
+   "label": "E2117K",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "PIEZO1-related disorder"
+   ],
+   "accession": "VCV002633880",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 2003,
+   "mut_aa": "D",
+   "kind": "missense",
+   "label": "A2003D",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "PIEZO1-related disorder"
+   ],
+   "accession": "VCV002632265",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 598,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "V598L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "PIEZO1-related disorder"
+   ],
+   "accession": "VCV002629814",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1009,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "Q1009L",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002627413",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "H",
+   "residue": 1414,
+   "mut_aa": "R",
+   "kind": "missense",
+   "label": "H1414R",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV002585410",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 839,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "V839M",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002573752",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 276,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "P276L",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV002510083",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 1701,
+   "mut_aa": "I",
+   "kind": "missense",
+   "label": "V1701I",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002507090",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 1638,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Y1638*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV002506015",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1500,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "R1500L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002505675",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 1448,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "Y1448fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV002505200",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1864,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "R1864C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002500443",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 849,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "R849C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV002444549",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 946,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Y946*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV002441629",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 849,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "R849H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV002434804",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "G",
+   "residue": 1595,
+   "mut_aa": "D",
+   "kind": "missense",
+   "label": "G1595D",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002434744",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1799,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1799*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002432610",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 1907,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "T1907fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002432609",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1009,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1009*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV002431220",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 205,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "V205fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV002431217",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 2496,
+   "mut_aa": "D",
+   "kind": "missense",
+   "label": "E2496D",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV002431216",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "F",
+   "residue": 1000,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "F1000L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002429604",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2110,
+   "mut_aa": "W",
+   "kind": "missense",
+   "label": "R2110W",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002428725",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 2296,
+   "mut_aa": "P",
+   "kind": "missense",
+   "label": "T2296P",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002428516",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1653,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "R1653C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not specified",
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV002393879",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 1474,
+   "mut_aa": "T",
+   "kind": "missense",
+   "label": "A1474T",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002393658",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 378,
+   "mut_aa": "A",
+   "kind": "missense",
+   "label": "T378A",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002393657",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 393,
+   "mut_aa": "F",
+   "kind": "missense",
+   "label": "S393F",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002386482",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "G",
+   "residue": 1394,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "G1394S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "PIEZO1-related disorder",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002354954",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "K",
+   "residue": 1261,
+   "mut_aa": "N",
+   "kind": "missense",
+   "label": "K1261N",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "PIEZO1-related disorder",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002354952",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "I",
+   "residue": 1734,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "I1734V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002299058",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 308,
+   "mut_aa": "P",
+   "kind": "missense",
+   "label": "L308P",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV002298654",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 396,
+   "mut_aa": "W",
+   "kind": "missense",
+   "label": "R396W",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV002282685",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 49,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "R49*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002195015",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1855,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "P1855L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Lymphatic malformation 6",
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV002180271",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1797,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "R1797C",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV002152266",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "M",
+   "residue": 711,
+   "mut_aa": "K",
+   "kind": "missense",
+   "label": "M711K",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided",
+    "PIEZO1-related disorder"
+   ],
+   "accession": "VCV002059764",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 337,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "P337S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV002044925",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1556,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1556*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001997542",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 1721,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "S1721L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001810452",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 900,
+   "mut_aa": "A",
+   "kind": "missense",
+   "label": "E900A",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001809878",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 2431,
+   "mut_aa": "I",
+   "kind": "missense",
+   "label": "S2431I",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001809857",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 461,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q461*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV001707478",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "F",
+   "residue": 815,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "F815L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001706096",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "W",
+   "residue": 2044,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "W2044*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001705963",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1433,
+   "mut_aa": "T",
+   "kind": "missense",
+   "label": "P1433T",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001704711",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 926,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "L926V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001699812",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 2368,
+   "mut_aa": "T",
+   "kind": "missense",
+   "label": "A2368T",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001696917",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 500,
+   "mut_aa": "T",
+   "kind": "missense",
+   "label": "S500T",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001695618",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 445,
+   "mut_aa": "I",
+   "kind": "missense",
+   "label": "V445I",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV001693683",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 1702,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "T1702M",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "Lymphatic malformation 6",
+    "not provided"
+   ],
+   "accession": "VCV001693676",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2088,
+   "mut_aa": "G",
+   "kind": "missense",
+   "label": "R2088G",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "PIEZO1-related disorder",
+    "not provided"
+   ],
+   "accession": "VCV001522988",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 103,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "R103*",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV001344888",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 1308,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "L1308V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases",
+    "not specified"
+   ],
+   "accession": "VCV001331502",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "K",
+   "residue": 1878,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "K1878fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001330992",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 2277,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "L2277M",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Benign/Likely benign",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001330562",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 549,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "T549M",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "Lymphatic malformation",
+    "not provided"
+   ],
+   "accession": "VCV001330557",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "F",
+   "residue": 1513,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "F1513L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001329703",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "G",
+   "residue": 2399,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "G2399S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV001327356",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1315,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1315*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001324899",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 1664,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "L1664fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001324898",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 753,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E753*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001324897",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1111,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1111*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "PIEZO1-related disorder",
+    "Lymphatic malformation 6",
+    "not provided"
+   ],
+   "accession": "VCV001324896",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 2206,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q2206*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001323447",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 854,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "A854V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001314759",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 2231,
+   "mut_aa": "F",
+   "kind": "missense",
+   "label": "S2231F",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001312763",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1126,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "R1126C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001311511",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "G",
+   "residue": 1781,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "G1781S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001310756",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 334,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "A334V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001309345",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1036,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "R1036C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001309344",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 316,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "P316S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001308730",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "K",
+   "residue": 2323,
+   "mut_aa": "N",
+   "kind": "missense",
+   "label": "K2323N",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001307227",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "K",
+   "residue": 2158,
+   "mut_aa": "R",
+   "kind": "missense",
+   "label": "K2158R",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV001306254",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "F",
+   "residue": 615,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "F615L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001306253",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1881,
+   "mut_aa": "T",
+   "kind": "missense",
+   "label": "P1881T",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001306207",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 665,
+   "mut_aa": "G",
+   "kind": "missense",
+   "label": "E665G",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001306206",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "G",
+   "residue": 970,
+   "mut_aa": "R",
+   "kind": "missense",
+   "label": "G970R",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001305720",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2245,
+   "mut_aa": "W",
+   "kind": "missense",
+   "label": "R2245W",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001304130",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2412,
+   "mut_aa": "G",
+   "kind": "missense",
+   "label": "R2412G",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001304035",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "W",
+   "residue": 1071,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "W1071C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001302204",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "D",
+   "residue": 1207,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "D1207H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001302203",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 1687,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "S1687L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001302078",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1618,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "R1618H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001218863",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 1763,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Y1763*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV001163992",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2279,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "R2279H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV001163986",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 2385,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "V2385M",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001163589",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 2392,
+   "mut_aa": "K",
+   "kind": "missense",
+   "label": "E2392K",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "PIEZO1-related disorder",
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV001163588",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1146,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "P1146L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV001163403",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "N",
+   "residue": 915,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "N915S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV001162800",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 208,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "L208fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001071877",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "C",
+   "residue": 513,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "C513fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001069186",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "M",
+   "residue": 870,
+   "mut_aa": "I",
+   "kind": "missense",
+   "label": "M870I",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Pancytopenia",
+    "Non-immune hydrops fetalis"
+   ],
+   "accession": "VCV001065513",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "I",
+   "residue": 2270,
+   "mut_aa": "T",
+   "kind": "missense",
+   "label": "I2270T",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "Non-immune hydrops fetalis"
+   ],
+   "accession": "VCV001065482",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1906,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "P1906fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Non-immune hydrops fetalis"
+   ],
+   "accession": "VCV001065481",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 598,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "V598M",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Rare anaemia",
+    "not provided",
+    "Non-immune hydrops fetalis"
+   ],
+   "accession": "VCV001065463",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 1764,
+   "mut_aa": "Q",
+   "kind": "missense",
+   "label": "E1764Q",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001049973",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 657,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "R657H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV001049686",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "F",
+   "residue": 1930,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "F1930L",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV001033325",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2336,
+   "mut_aa": "W",
+   "kind": "missense",
+   "label": "R2336W",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "not provided"
+   ],
+   "accession": "VCV000993859",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1883,
+   "mut_aa": "W",
+   "kind": "missense",
+   "label": "R1883W",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000993760",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 737,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "L737M",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV000989266",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 1425,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "S1425fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000985646",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 2094,
+   "mut_aa": "F",
+   "kind": "missense",
+   "label": "L2094F",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000983306",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "C",
+   "residue": 1064,
+   "mut_aa": "F",
+   "kind": "missense",
+   "label": "C1064F",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000978720",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "D",
+   "residue": 1066,
+   "mut_aa": "G",
+   "kind": "missense",
+   "label": "D1066G",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000978719",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "C",
+   "residue": 513,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "C513fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Fetal anomalies with a likely genetic cause",
+    "Thickened nuchal skin fold",
+    "Hydrops fetalis",
+    "not provided"
+   ],
+   "accession": "VCV000978651",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 2322,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E2322*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000973951",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1925,
+   "mut_aa": "W",
+   "kind": "missense",
+   "label": "R1925W",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000973950",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 1485,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q1485*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000962685",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "C",
+   "residue": 262,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "C262*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000959722",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 1458,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "V1458fs",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000916578",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 1764,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E1764*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000916229",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "D",
+   "residue": 669,
+   "mut_aa": "Y",
+   "kind": "missense",
+   "label": "D669Y",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "not provided"
+   ],
+   "accession": "VCV000829815",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "S",
+   "residue": 831,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "S831L",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "not provided"
+   ],
+   "accession": "VCV000829803",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 1201,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "T1201M",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not specified",
+    "not provided"
+   ],
+   "accession": "VCV000811783",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 531,
+   "mut_aa": "C",
+   "kind": "missense",
+   "label": "R531C",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV000811346",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 251,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "A251V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000808139",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 2103,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "L2103V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "not provided",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV000808138",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "D",
+   "residue": 1265,
+   "mut_aa": "N",
+   "kind": "missense",
+   "label": "D1265N",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV000788460",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1397,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "P1397L",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV000761124",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 563,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "T563M",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV000724917",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 32,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "L32M",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV000723849",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 369,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q369*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000620419",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 1418,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "Y1418H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not specified",
+    "not provided"
+   ],
+   "accession": "VCV000618279",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "K",
+   "residue": 2070,
+   "mut_aa": "Q",
+   "kind": "missense",
+   "label": "K2070Q",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000599181",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "W",
+   "residue": 1069,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "W1069*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000599180",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 2472,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "P2472S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV000546470",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 214,
+   "mut_aa": "T",
+   "kind": "missense",
+   "label": "A214T",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000499286",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 2027,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "V2027M",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Inborn genetic diseases"
+   ],
+   "accession": "VCV000451610",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1534,
+   "mut_aa": "Q",
+   "kind": "missense",
+   "label": "R1534Q",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "not provided"
+   ],
+   "accession": "VCV000450449",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 422,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q422*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Lymphatic malformation 6",
+    "not provided"
+   ],
+   "accession": "VCV000449461",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 1838,
+   "mut_aa": "I",
+   "kind": "missense",
+   "label": "T1838I",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000430441",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "M",
+   "residue": 870,
+   "mut_aa": "V",
+   "kind": "missense",
+   "label": "M870V",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000430260",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 1061,
+   "mut_aa": "A",
+   "kind": "missense",
+   "label": "P1061A",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Conflicting classifications of pathogenicity",
+   "review_status": "criteria provided, conflicting classifications",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not specified",
+    "not provided",
+    "Lymphatic malformation 6",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV000427211",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "R",
+   "residue": 807,
+   "mut_aa": "Q",
+   "kind": "missense",
+   "label": "R807Q",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV000424596",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "N",
+   "residue": 1222,
+   "mut_aa": "S",
+   "kind": "missense",
+   "label": "N1222S",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Inborn genetic diseases",
+    "not provided"
+   ],
+   "accession": "VCV000424595",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 940,
+   "mut_aa": "I",
+   "kind": "missense",
+   "label": "V940I",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000424378",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "L",
+   "residue": 1314,
+   "mut_aa": "F",
+   "kind": "missense",
+   "label": "L1314F",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000424327",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 811,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E811*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000424326",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "C",
+   "residue": 236,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "C236*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000421170",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Y",
+   "residue": 2500,
+   "mut_aa": "fs",
+   "kind": "frameshift",
+   "label": "Y2500fs",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000420219",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "M",
+   "residue": 1964,
+   "mut_aa": "K",
+   "kind": "missense",
+   "label": "M1964K",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000393226",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 679,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E679*",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000280281",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "P",
+   "residue": 2430,
+   "mut_aa": "L",
+   "kind": "missense",
+   "label": "P2430L",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000223133",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "V",
+   "residue": 2171,
+   "mut_aa": "F",
+   "kind": "missense",
+   "label": "V2171F",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Uncertain significance",
+   "review_status": "criteria provided, single submitter",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000223131",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "Q",
+   "residue": 2228,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "Q2228*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000223129",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 1630,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E1630*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000223128",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "E",
+   "residue": 755,
+   "mut_aa": "*",
+   "kind": "nonsense",
+   "label": "E755*",
+   "classification": "LoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "fotiou2015",
+   "significance": "Pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000223127",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "T",
+   "residue": 2127,
+   "mut_aa": "M",
+   "kind": "missense",
+   "label": "T2127M",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV000055811",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 1358,
+   "mut_aa": "P",
+   "kind": "missense",
+   "label": "R1358P",
+   "classification": "GoF",
+   "evidence": "disease_mechanism",
+   "mechanism_citation": "albuisson2013",
+   "significance": "Pathogenic",
+   "review_status": "no assertion criteria provided",
+   "conditions": [
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema"
+   ],
+   "accession": "VCV000055808",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "A",
+   "residue": 2020,
+   "mut_aa": "T",
+   "kind": "missense",
+   "label": "A2020T",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic/Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000055807",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  },
+  {
+   "wt_aa": "R",
+   "residue": 2456,
+   "mut_aa": "H",
+   "kind": "missense",
+   "label": "R2456H",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "Non-immune hydrops fetalis",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "not provided",
+    "Dehydrated hereditary stomatocytosis with or without pseudohyperkalemia and/or perinatal edema",
+    "Blood group, ER",
+    "Lymphatic malformation 6"
+   ],
+   "accession": "VCV000055806",
+   "source": "clinvar",
+   "ambiguous_direction": true
+  },
+  {
+   "wt_aa": "M",
+   "residue": 2225,
+   "mut_aa": "R",
+   "kind": "missense",
+   "label": "M2225R",
+   "classification": null,
+   "evidence": "none",
+   "mechanism_citation": "",
+   "significance": "Likely pathogenic",
+   "review_status": "criteria provided, multiple submitters, no conflicts",
+   "conditions": [
+    "not provided"
+   ],
+   "accession": "VCV000055805",
+   "source": "clinvar",
+   "ambiguous_direction": false
+  }
+ ]
+}

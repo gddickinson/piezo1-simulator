@@ -1859,3 +1859,73 @@ model falls back to the uniform scale, and there is a test asserting the two
 agree to 1e-12.
 
 Suite 445 → 462 passing; 18 documented numbers reproduce.
+
+## Round 27 — more variants, and what kind of evidence they are (2026-08-06)
+
+Round 20 measured the constraint: 42 variants for a large effect, 98 for a
+medium one, against 25 usable. Round 22 then ran into it from the other side,
+with six loss-of-function missense variants. This round went looking for more.
+
+### ClinVar does not answer the question directly
+
+It reports **pathogenicity**, not **direction**. A gain-of-function and a
+loss-of-function variant are both "Pathogenic".
+
+What makes direction recoverable for PIEZO1 specifically is that its two
+diseases have opposite, well-established mechanisms — dehydrated hereditary
+stomatocytosis is dominant and acts by slowed inactivation; generalised
+lymphatic dysplasia is recessive and acts by loss of function. So the condition
+implies the direction.
+
+That is **weaker evidence than measuring the current**, because it assumes the
+variant acts by the usual mechanism for its disease. So it is recorded as a
+separate evidence level rather than pooled, and `build_analysis_set` defaults to
+the measured set: a caller who does not think about evidence strength gets the
+smaller, better-supported answer rather than the larger one.
+
+### The ambiguity is bigger than expected
+
+**Eleven of 63 directed records are reported under both diseases at once.**
+ClinVar submitters routinely attach the whole gene's disease list to a variant,
+so a single entry carries both "Dehydrated hereditary stomatocytosis" and
+"Lymphatic malformation 6". Those get no direction. Resolving them by preferring
+one disease would have manufactured 11 labels out of nothing.
+
+The wild-type gate also did its job: three records disagree with Q92508 at their
+stated position and were dropped, and 117 had a protein change that would not
+parse unambiguously.
+
+### An independent check that came free
+
+Nine of the ClinVar variants are already in the curated set from
+electrophysiology. The condition-based inference agrees with the measured
+direction **8 times out of 9** — which is the only evidence available that the
+inference is worth anything at all.
+
+The one disagreement is V598M: we have it as gain-of-function, the inference
+says loss. Our own record reads *"increased opening (one report); no change in
+another"*, so the literature is mixed and neither side is simply wrong. It is
+reported rather than resolved, because picking a side by fiat would hide that
+from any test built on the set.
+
+### What it bought
+
+The directional missense set goes from **26 (20 GoF, 6 LoF) to 46 (27 GoF,
+19 LoF)**. The loss-of-function class more than triples, which is precisely what
+Round 22 was starved of, and the design becomes far better balanced.
+
+Minimum detectable effect: **0.61 → 0.41**. Power at a large effect rises from
+0.50 to 0.83.
+
+### What it did not buy, stated because the roadmap asked
+
+**A medium effect is still out of reach.** Power at δ = 0.28 is **0.49**, not
+0.80, and reaching it at this ratio would need **104** variants against the 46
+now available. The constraint has loosened by a useful amount; it has not
+lifted.
+
+The original `variants.json` is untouched. Round 7 and Round 22 reference it,
+and growing it underneath a recorded result would invalidate that result while
+nothing appeared to change.
+
+Suite 462 → 477 passing.
