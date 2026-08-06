@@ -704,3 +704,60 @@ test with three identical sequences returned conservation 0 everywhere. Fixed
 to skip at most one exact match. Real-data numbers are unchanged, which is the
 point: the bug was only reachable with near-identical inputs, which is exactly
 what a synthetic test provides and real orthologs do not.
+
+---
+
+## Round 10 — research workflow (2026-08-06) — Block B complete
+
+A headless CLI, provenance-stamped reports, session save/load and a documented
+notebook API.
+
+The design decision worth recording is that **the CLI and the report share one
+analysis registry**. Adding an analysis to `ANALYSES` makes it available in
+both at once, and a test asserts every registered analysis is reachable from
+the command line. Two parallel dispatch tables would have drifted apart within
+a round or two.
+
+**Sessions store what you were looking at, never the data.** Structure, style,
+camera, selection, which analyses had been run and with what parameters — but
+no coordinates and no results. A session carrying its own copy of the numbers
+would let a saved file drift silently out of step with the code that produced
+them, which is precisely backwards for a reproducibility feature.
+
+### What the batch run turned up
+
+`python -m piezo1.cli batch` over all 20 structures reproduces the whole gating
+series in one command: curved entries clustered at R_c 9.3–12.5 nm against a
+published 10.2, the 8IXO intermediate at 16.5, and flat 11ZC at 21.6 as the
+only entry called conductive.
+
+It also **independently flagged 3JAC** — R_c 5.3 nm and spuriously conductive.
+That is the same entry the Round 4 ensemble excluded for having poly-UNK
+regions with arbitrary residue numbering, found again by a completely different
+route. A batch mode earns its place partly by surfacing this kind of thing
+without being asked.
+
+### The argparse trap
+
+`--json` was a top-level flag, so `cli dome 8YEZ --json` — which is how anyone
+would actually type it — failed with "unrecognized arguments". Adding it to
+each subparser via a shared parent fixed that but broke the other order:
+a subparser writes its own default over whatever the parent already parsed, so
+`cli --json dome 8YEZ` silently came back as `json=False`. `default=SUPPRESS`
+plus a default supplied in `main()` makes both orders work, and a test pins
+both.
+
+### Block B review
+
+The blind test came back null and its diagnostic was precise: the mechanical
+predictor reports *where* a residue sits, not *which* substitution occurred.
+Round 9 then showed conservation crossed with mechanics is sharp where either
+alone is blunt, and Rounds 5 and 9 converged independently on the anchor.
+
+The clearest gap now is that **the engine has raced ahead of the interface**.
+The GUI can show a structure, a dome measurement and normal modes; it cannot
+reach the pore profile, pockets, conservation, allostery or any reporting.
+Block F leads with that, then a *new* pre-registration for a second variant
+hypothesis (the Round 7 result stands as recorded and is not to be revised),
+packaging, performance, and the teaching layer — which project aim A1 asks for
+and which has had the least attention of anything.

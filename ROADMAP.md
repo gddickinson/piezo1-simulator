@@ -250,11 +250,26 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   path* computed in Round 5. Of the top 40 distal candidates, 20 are in the
   anchor. Written to `data/derived/conservation_candidates.json`.
 
-### Round 10 — Research workflow
-- [ ] Session save/load; analysis report export with full provenance.
-- [ ] Headless CLI (`python -m piezo1.cli`) for batch analysis.
-- [ ] Documented notebook API.
-- [ ] Tests; docs; commit.
+### Round 10 — Research workflow  ✅
+- [x] Session save/load; analysis report export with full provenance.
+- [x] Headless CLI (`python -m piezo1.cli`) for batch analysis.
+- [x] Documented notebook API.
+- [x] Tests; docs; commit.
+- **`python -m piezo1.cli`** with `list`, `dome`, `pore`, `modes`, `pockets`,
+  `interactions`, `variants`, `conservation`, `report` and `batch`. The CLI and
+  the report share one analysis registry, so they cannot diverge — a test
+  asserts every analysis is reachable from both.
+- **Batch across all 20 structures in one command.** The curved entries cluster
+  at R_c = 9.3–12.5 nm against a published 10.2; 8IXO (intermediate) sits at
+  16.5; 11ZC (flat) at 21.6 and is the only entry called conductive. The run
+  independently flagged **3JAC as an outlier** (R_c 5.3 nm, spuriously
+  conductive) — the same entry the ensemble analysis excluded for poly-UNK
+  numbering, found again by a different route.
+- Provenance on every report: software version, input file, parameters, library
+  versions, and any warnings. Sessions store *what you were looking at*, never
+  coordinates or results, so a saved file cannot drift out of step with the code.
+- `docs/NOTEBOOK.md` documents the headless API, including a "things that will
+  bite you" table.
 
 ---
 
@@ -389,6 +404,55 @@ is a per-variant number and an honest test of it.
 - [ ] **Write the negative-result protocol first**, so that "the predictor does
       not separate them" is a publishable outcome recorded in
       `docs/VALIDATION.md` rather than a prompt to keep tuning until it does.
+- [ ] Tests; docs; commit.
+
+---
+
+## Block F — closing the loop  *(added after the Block B review, 2026-08-06)*
+
+**Where Block B leaves us.** The blind test came back null, and its diagnostic
+was precise: the mechanical predictor reports *where a residue sits*, not
+*which substitution occurred*. Meanwhile Round 9 showed that conservation
+crossed with mechanics is sharp where either alone is blunt, and Round 5 and
+Round 9 independently converged on the anchor. The engine is now well ahead of
+the interface: the GUI can show a structure, a dome measurement and normal
+modes, but cannot reach the pore profile, pockets, conservation, allostery or
+any of the reporting.
+
+### Round 21 — Let the GUI reach the engine
+- [ ] Expose the pore profile (with the hydrophobicity trace alongside it),
+      pockets, conservation colouring and the allostery maps in the interface.
+- [ ] Colour-by-conservation and colour-by-PRS as first-class colour schemes.
+- [ ] Session save/load wired to the window; report export from a menu.
+- [ ] Tests; docs; commit.
+
+### Round 22 — A second, stated hypothesis for the variant test
+- [ ] Write a *new* pre-registration before touching the labels again. The
+      Round 7 result stands as recorded and is not to be revised.
+- [ ] Combine substitution-aware evidence (ProtVar: AlphaMissense, EVE, ESM-1b,
+      precomputed FoldX ΔΔG, all CC BY 4.0) with the mechanical and
+      conservation features this project supplies and they do not.
+- [ ] Report against the Round 7 baseline honestly, including if the addition
+      does not help.
+- [ ] Tests; docs; commit.
+
+### Round 23 — Packaging and one-command reproduction
+- [ ] `pyproject.toml`, a pinned environment lock, and a single
+      `make reproduce` that fetches data, rebuilds every resource, runs the
+      suite and regenerates every figure and number in the docs.
+- [ ] Tests; docs; commit.
+
+### Round 24 — Performance
+- [ ] Profile the slow paths. Pocket detection is ~10 s, PRS builds an N×N
+      matrix, and the ensemble PCA reloads every structure. None is fatal, all
+      are avoidable.
+- [ ] Tests; docs; commit.
+
+### Round 25 — The teaching layer
+- [ ] Project aim A1 is that this be a *learning* instrument, and it has had the
+      least attention of any aim. Add a guided tour that walks the mechanism —
+      dome, blades, lever, gate — with each step tied to the live measurement
+      it corresponds to.
 - [ ] Tests; docs; commit.
 
 ---

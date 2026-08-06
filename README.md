@@ -159,6 +159,28 @@ click any atom to identify it.
 
 ---
 
+## Headless use
+
+Everything the GUI computes is scriptable, and every result carries its
+provenance.
+
+```bash
+python -m piezo1.cli list                       # what is available
+python -m piezo1.cli dome 8YEZ --json           # membrane dome geometry
+python -m piezo1.cli pore 11ZC                  # pore profile and bottleneck
+python -m piezo1.cli modes 8YEZ --n-modes 30    # modes with symmetry labels
+python -m piezo1.cli report 8YEZ -o report.md   # everything, with provenance
+python -m piezo1.cli batch --analyses dome pore # across every structure
+```
+
+The batch run over all 20 structures reproduces the gating series in one
+command — curved entries at R_c 9.3–12.5 nm, the 8IXO intermediate at 16.5,
+flat 11ZC at 21.6 and the only one called conductive.
+
+See [`docs/NOTEBOOK.md`](docs/NOTEBOOK.md) for the Python API.
+
+---
+
 ## How it is built
 
 ```

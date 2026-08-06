@@ -37,6 +37,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
+| `cli.py` | Headless command line: `list`, `dome`, `pore`, `modes`, `pockets`, `interactions`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
 | `config.py` | All filesystem paths, physical constants, runtime settings. Every module imports paths from here. | `PROJECT_ROOT`, `REF_DIR`, `STRUCTURE_DIR`, `RESOURCE_DIR`, `HUMAN_ACC`, `MOUSE_ACC`, `KT_ROOM`, `RenderSettings`, `AppSettings`, `SETTINGS`, `ensure_dirs()` | ✅ |
 
 ### `piezo1/io/` — data acquisition and parsing
@@ -45,6 +46,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 |---|---|---|---|
 | `cif_reader.py` | Fast mmCIF/PDB coordinate readers producing numpy arrays. Handles quoting, multi-line text fields and model selection. ~0.6 s for a 34k-atom trimer. | `read_cif_atoms()`, `read_pdb_atoms()`, `read_structure_file()`, `parse_cif_categories()` | ✅ |
 | `fetch.py` | Cached downloaders for RCSB mmCIF, AlphaFold DB, UniProt, PubChem. Idempotent. AlphaFold versions discovered from the API, never guessed. | `fetch_pdb()`, `fetch_alphafold()`, `fetch_uniprot()`, `fetch_ligand()`, `fetch_all()`, `DEFAULT_PDB_IDS` | ✅ |
+| `session.py` | Session save/load. Stores what was being viewed — structure, style, camera, selection, analyses run — never coordinates or results. | `Session`, `save_session()`, `load_session()` | ✅ |
 | `registry.py` | Curated catalogue of 21 PIEZO structures: state, gating, resolved range, ligands, citation, and what each is recommended for. | `StructureRecord`, `Registry`, `load_registry()` | ✅ |
 
 ### `piezo1/core/` — data model
@@ -89,6 +91,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `contacts.py` | Residue contact maps, interface detection, contact changes between states. | `contact_map()`, `interface_residues()` | 📋 |
 | `pockets.py` | Delaunay alpha-sphere pocket detection (fpocket construction, reimplemented in numpy) with a burial filter that stops surface percolation, Monte-Carlo union volumes, ray-cast buriedness, and resolved-ligand contact mapping. | `find_pockets()`, `Pocket`, `alpha_spheres()`, `AlphaSpheres`, `ligand_contact_residues()` | ✅ |
 | `validation.py` | Non-parametric statistics for the blind test: permutation test with the (r+1)/(n+1) convention, Cliff's delta with a bootstrap CI, and tie-averaged AUROC. Implemented directly so the conventions are visible and testable. | `permutation_test()`, `cliffs_delta()`, `bootstrap_cliffs_delta()`, `auroc()` | ✅ |
+| `report.py` | Provenance-stamped analysis reports in JSON and Markdown from one object, plus the shared `ANALYSES` registry the CLI dispatches through. | `build_report()`, `AnalysisReport`, `Provenance`, `collect_provenance()`, `ANALYSES` | ✅ |
 | `docking.py` | Optional AutoDock Vina integration; degrades gracefully when absent. | `dock()`, `available()` | 📋 |
 
 ### `piezo1/render/` — OpenGL 4.1 renderer
@@ -168,6 +171,7 @@ geometry at a fraction of the triangle count.
 | `test_interactions.py` | The annotated disulfide, the R2456–E2117 inter-protomer salt bridge, cutoff enforcement, and the donor–donor exclusion. | ✅ |
 | `test_membrane.py` | Unit conversion, the κ/γ/λ triple, exact-vs-numerical profile and energy, second-order convergence, small-slope validity, and Cox's T₅₀ round trip. | ✅ |
 | `test_ensemble.py` | Shared-basis construction, paralogue exclusion, reversed-protomer detection, PC1-as-gating-coordinate, and A-mode dominance against a random control. | ✅ |
+| `test_workflow.py` | Session round-trip and format guards, provenance capture, report failure handling, and the argparse flag-position trap. | ✅ |
 | `test_conservation.py` | Entropy on synthetic columns, uncovered-position handling, species deduplication, the pore-versus-blade conservation gradient, and ranking behaviour. | ✅ |
 | `test_pockets.py` | Circumsphere geometry against a known tetrahedron, percolation prevention, union-not-sum volumes, gate/anchor recovery, and the Yoda1 groove-versus-cavity result. | ✅ |
 | `test_validation.py` | Statistical instruments against known cases, plus a pin on the published Round 7 null result so a predictor change cannot silently move it. | ✅ |
@@ -180,6 +184,7 @@ geometry at a fraction of the triangle count.
 |---|---|---|
 | `SCIENCE.md` | The scientific basis: mechanism, parameters, provenance, open gaps. | ✅ |
 | `PREREGISTRATION.md` | The frozen hypothesis, statistic and decision rule for the Round 7 blind test, written before any comparison was run. | ✅ |
+| `NOTEBOOK.md` | The documented headless API, with a "things that will bite you" table. | ✅ |
 | `VALIDATION.md` | The Round 7 result: a null result, reported in the pre-registered order with a post-hoc diagnostic of why. | ✅ |
 | `REFERENCES.md` | Generated bibliography, 51 verified references. | ✅ |
 | `img/` | Generated figures (`make_figures.py`, `screenshot_app.py`). | ✅ |
