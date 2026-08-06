@@ -258,3 +258,64 @@ Helfrich membrane-footprint solver, tension-dependent Markov gating kinetics
 (the Young et al. 2023 PNAS four-state model is fully parameterised in the
 research dossier and is the one to implement), conformational morphing between
 curved and flat endpoints, and pore-radius profiling.
+
+---
+
+## Session 1, part 3 — morphing, and the repo
+
+`piezo1/structure/morph.py` interpolates between two experimental endpoints.
+Three methods, each reporting its own geometric error so the cost of the
+interpolation is visible rather than hidden:
+
+| method | worst C-alpha bond error | note |
+|---|---|---|
+| linear | 2.94 A | the chord artefact |
+| restrained | **0.00 A** | distances restored to interpolated targets |
+| modal | 1.60 A | 30 modes capture 95.2% of the change |
+
+The chord artefact is worth naming because it is not obvious: under
+straight-line interpolation atoms cut chords through space, so C-alpha-C-alpha
+distances contract wherever the local motion is rotational. PIEZO1's blades
+swing through large arcs, so mid-path frames are measurably wrong. For
+comparison, ProDy's `calcAdaptiveANM` was benchmarked on this same 3822-site
+trimer at 18 minutes and still left bonds stretched to 5.39 A.
+
+Dome geometry tracks along the restrained path — radius of curvature
+9.2 -> 13.1 nm, dome depth 4.6 -> 2.7 nm, excess area 278 -> 316 nm2 — so the
+physics follows the morph rather than being imposed on it.
+
+**Refactor.** `main_window.py` reached 657 lines, past the project's 500-line
+rule, so dome/mode handling moved to `ui/physics_controller.py` and morph
+handling to `ui/morph_controller.py`; the window is now 364 lines. The split
+introduced two bugs, both caught by re-running the scripted GUI test rather
+than by assuming the move was safe: a guard still testing `hasattr` on an
+attribute now initialised to `None`, and a method left with its pre-split name.
+Mechanical refactors of GUI code need the smoke test run afterwards, every time.
+
+**Final research agent** returned benchmarks that independently validated the
+architecture: sparse ANM at N=7500 takes 4.4 s versus 311 s dense (71x); full
+C3 block-diagonalisation would give only 1.76x on top of that, confirming the
+decision to do symmetry *labelling* rather than symmetry-adapted solving;
+ProDy's `imANM` is an O(N^2) Python loop and unusable at this scale;
+MDAnalysis's `hole2` is an empty stub in 2.10 and HOLE has no arm64 build, so a
+native pore profiler is required.
+
+**Repository** published to github.com/gddickinson/piezo1-simulator (private),
+eight commits, 86 tracked files. `ref/` and `data/` are git-ignored and fully
+regenerable with `python -m piezo1.io.fetch`.
+
+### State at end of session
+
+Working: data layer, structure model, cross-species numbering, dome geometry,
+elastic network models with C3 symmetry labelling, conformational morphing, the
+renderer, and the GUI. 51 tests, ~15 s.
+
+Next, in order of value: the tension-dependent Markov gating model (Young et al.
+2023 PNAS four-state, fully parameterised in `ref/research/03a_kinetic_models.md`
+— sigma_50 = 1.4, b = 0.8 mN/m, all rates given); the Helfrich membrane
+footprint solver (1-D radial validates to 3.8e-3 against the exact K_0 in
+0.9 ms, then revolve; lambda = 14 nm with kappa = 20 kT implies gamma =
+0.42 mN/m); a native pore-radius profiler (a leash is mandatory — unconstrained
+the probe sphere escapes to R = 6188 A); and the hybrid full-length model,
+noting that AlphaFold **cannot** place residues 1-570 relative to the core
+(PAE 25-29 A against a 31.75 A maximum), so PIEZO2 6KG7 is the better guide.
