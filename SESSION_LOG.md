@@ -1706,3 +1706,81 @@ must degrade to a readable message before anything has been computed, and none
 may raise when handed junk. The GUI smoke test walks all eleven steps.
 
 Suite 419 → 431 passing.
+
+## Structure composition — what is actually in these files (2026-08-06)
+
+Asked to check that loading is consistent across structures and that bound
+elements are handled correctly. All 23 entries load, but auditing what is *in*
+them turned up something worth fixing.
+
+### Seven entries contain a second protein
+
+Six carry three copies of **MDFIC** — a 21-residue cysteine-rich peptide
+(`CCESSDCLEICMECCGICFPS`) that is a genuine auxiliary subunit inserting into the
+pore (Zhou et al. 2023, already in our bibliography). 6B3R carries three
+16-residue poly-UNK chains.
+
+These are *protein*, so a protein mask includes them. Worse, MDFIC is numbered
+**226–247**, which sits inside PIEZO1's own numbering. A selection keyed on
+residue number alone would pool the two.
+
+Nothing has actually been wrong: PIEZO1 resolves from residue 570 upward in
+exactly the entries that carry MDFIC, so the ranges happen not to overlap. But
+that is luck, not design, and the `> 300 C-alpha` rule that kept them out of
+protomer blocks was a coincidence of scale rather than a statement about what
+they are. There is now a test asserting no auxiliary residue number reaches a
+protomer basis, so if a future entry resolves further into the N-terminus it
+fails loudly instead of quietly averaging MDFIC into a mode.
+
+`core/entities.py` classifies every atom. The principal-chain rule is
+**relative to the largest chain**, not an absolute threshold — 4RAX is a lone
+227-residue domain and is the entire structure, while a 21-residue peptide
+beside a 1,280-residue protomer is not a protomer. Across all 23 entries the
+classifier returns 1 or 3 protomers, never anything else.
+
+The heterogens were looked up in the PDB chemical component dictionary rather
+than inferred: PLX, PEE, P5S and L9Q are phospholipids, D12 is dodecane, NAG is
+a glycan on PIEZO2.
+
+### Display is now a choice, and only display
+
+The Model panel lists the categories actually present with their atom counts,
+each independently switchable. Only present categories get a control — a
+permanent list mostly greyed out would say nothing about what you are looking
+at, and what is in *this* file is the thing worth surfacing.
+
+There is a test that hiding a category cannot change an analysis. Display and
+computation are separate questions, and the analyses always use the channel
+protomers whatever is drawn.
+
+### Three structures that legitimately cannot answer
+
+Extending the GUI smoke test beyond 8YEZ exposed that it assumed human
+numbering and full side chains. Fixed, and the three failures turned out to be
+correct behaviour needing to be *reported* rather than *fixed*:
+
+- **11ZC** is a backbone-only model — C, CA, N, O and nothing else — so there
+  are no sulfur atoms to measure.
+- **6KG7** is PIEZO2. PIEZO1 numbering does not transfer to a paralogue; the
+  second position is isoleucine.
+- **4RAX** is one isolated domain, so there is no trimer to fit a dome to.
+
+Each is now skipped with its reason. Conflating "cannot answer" with "answered
+wrongly" is the same mistake the claims registry avoids, and it makes correct
+behaviour look broken.
+
+### An observation about the disulfide
+
+Converting the curated C2411–C2415 disulfide into mouse numbering (2437/2441,
+via the sanctioned path rather than a constant) shows both residues are cysteine
+in every mouse entry — a 26-residue offset landing on cysteine twice is not
+chance, so the numbering map is doing its job.
+
+But the **bond is only modelled as formed in some of them**. Human 8YEZ and
+8YFC give 2.04 Å, and so does mouse 4RAX — the 1.45 Å X-ray structure of the
+isolated CED domain. The full-length mouse cryo-EM models put the same sulfurs
+**5.2 Å apart** (7WLT, 7WLU) or 6.7 Å (6B3R). That is a resolution and
+modelling difference between depositions rather than a biological one, and the
+smoke test now records it instead of failing on it.
+
+Suite 431 → 445 passing.

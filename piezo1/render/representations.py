@@ -70,6 +70,11 @@ class MolecularView:
     style: Style = Style.CARTOON
     color_by: ColorBy = ColorBy.DOMAIN
     ligands_as_spheres: bool = True
+    #: Entity categories to draw. Empty means "everything", so existing callers
+    #: are unaffected. See :mod:`piezo1.core.entities` — a deposited PIEZO1 file
+    #: also contains lipids, detergent, glycan and, in six entries, the MDFIC
+    #: auxiliary subunit, and which of those to show is a choice.
+    visible_entities: frozenset = frozenset()
     values: np.ndarray | None = None          # per-atom scalar for ColorBy.VALUE
     highlight: np.ndarray | None = None       # per-atom bool
     traces: list[ChainTrace] = field(default_factory=list)
@@ -78,12 +83,13 @@ class MolecularView:
     # ------------------------------------------------------------------ init
 
     def __post_init__(self) -> None:
+        self._entities = None
         self._palette = colormaps.load_domain_palette(self._species)
         self._build_traces()
 
     def _build_traces(self) -> None:
         st = self.structure
-        ca = st.mask_ca()
+        ca = self._entity_filter(st.mask_ca())
         self.traces = []
         for chain in st.chains:
             m = ca & (st.chain == chain)
@@ -177,6 +183,7 @@ class MolecularView:
         else:
             mask = np.ones(st.n_atoms, dtype=bool)
             radii = np.full(st.n_atoms, 0.42, dtype=np.float32)
+        mask = self._entity_filter(mask)
         flags = np.zeros(st.n_atoms, dtype=np.float32)
         if self.highlight is not None:
             flags[self.highlight] = 1.0
@@ -203,9 +210,23 @@ class MolecularView:
                      np.full(len(pairs), 0.20, np.float32),
                      colors[pairs[:, 0]], colors[pairs[:, 1]])
 
+    def entity_map(self):
+        """Cached per-atom entity classification for this structure."""
+        if getattr(self, "_entities", None) is None:
+            from ..core.entities import classify
+            self._entities = classify(self.structure)
+        return self._entities
+
+    def _entity_filter(self, mask: np.ndarray) -> np.ndarray:
+        """Drop atoms whose category the user has switched off."""
+        if not self.visible_entities:
+            return mask
+        allowed = self.entity_map().mask(*self.visible_entities)
+        return mask & allowed
+
     def _build_ligands(self) -> None:
         st = self.structure
-        mask = st.mask_ligands()
+        mask = self._entity_filter(st.mask_ligands())
         if not mask.any():
             return
         batch = self.scene.spheres(f"{self.name}:ligands")
@@ -217,6 +238,8 @@ class MolecularView:
 
     def update_coords(self, xyz: np.ndarray) -> None:
         """Push new coordinates. Rebuilds meshes; spheres take the fast path."""
+        # Coordinates change but the composition does not, so the cached
+        # classification stays valid through a morph or a mode animation.
         self.structure = self.structure.copy_with_coords(xyz)
         for tr in self.traces:
             tr.xyz = self.structure.xyz[tr.indices].astype(np.float64)

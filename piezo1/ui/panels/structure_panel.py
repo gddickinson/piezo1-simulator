@@ -39,6 +39,7 @@ class StructurePanel(QWidget):
     color_changed = pyqtSignal(object)
     ligands_toggled = pyqtSignal(bool)
     radius_changed = pyqtSignal(float)
+    entities_changed = pyqtSignal(object)      # frozenset of visible classes
     spin_toggled = pyqtSignal(bool)
 
     def __init__(self, parent=None) -> None:
@@ -100,6 +101,19 @@ class StructurePanel(QWidget):
             lambda v: self.radius_changed.emit(v / 100.0))
         self.radius_slider.setToolTip("Scale every atom radius; visual only")
         form.addRow("Atom size", self.radius_slider)
+
+        self.entity_box = QGroupBox("What is in this file")
+        self.entity_box.setToolTip(
+            "A deposited PIEZO1 file contains more than the channel: lipids and\n"
+            "detergent from the sample, glycan, and in six entries the MDFIC\n"
+            "auxiliary subunit. Each can be shown or hidden independently.")
+        self.entity_layout = QVBoxLayout(self.entity_box)
+        self.entity_summary = QLabel("no structure loaded")
+        self.entity_summary.setWordWrap(True)
+        self.entity_summary.setStyleSheet("color:#8a919e;")
+        self.entity_layout.addWidget(self.entity_summary)
+        self.entity_checks: dict = {}
+        form.addRow(self.entity_box)
 
         self.ligand_check = QCheckBox("Show lipids and ligands")
         self.ligand_check.setChecked(True)
@@ -214,3 +228,41 @@ class StructurePanel(QWidget):
         """Alias so callers can read the atom-size control by one name."""
         return self.radius_slider
 
+    def set_entities(self, entity_map) -> None:
+        """Rebuild the per-category checkboxes for the loaded structure.
+
+        Only categories actually present get a control. A permanent list with
+        most entries greyed out would say nothing about what you are looking
+        at, and what is in the file is exactly the thing worth surfacing.
+        """
+        from PyQt6.QtWidgets import QCheckBox
+
+        from ...core.entities import EntityClass
+
+        for widget in self.entity_checks.values():
+            self.entity_layout.removeWidget(widget)
+            widget.deleteLater()
+        self.entity_checks = {}
+
+        if entity_map is None:
+            self.entity_summary.setText("no structure loaded")
+            return
+
+        counts = entity_map.counts()
+        self.entity_summary.setText(entity_map.summary())
+        for key in entity_map.present():
+            label = f"{EntityClass.LABELS[key]} ({counts[key]:,} atoms)"
+            check = QCheckBox(label)
+            check.setChecked(True)
+            check.toggled.connect(lambda _on: self._emit_entities())
+            self.entity_layout.addWidget(check)
+            self.entity_checks[key] = check
+        self._emit_entities()
+
+    def _emit_entities(self) -> None:
+        self.entities_changed.emit(
+            frozenset(k for k, w in self.entity_checks.items() if w.isChecked()))
+
+    def visible_entities(self) -> frozenset:
+        return frozenset(k for k, w in self.entity_checks.items()
+                         if w.isChecked())

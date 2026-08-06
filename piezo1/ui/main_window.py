@@ -25,6 +25,7 @@ from .analysis_controller import AnalysisController
 from .docks import DockManager, DockSpec
 from .gl_widget import ViewportWidget
 from .menus import build_menus, make_settings
+from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
 from .presentation import PresentationController
 from .model_utils import modelled_residues, protomer_blocks
@@ -44,7 +45,7 @@ from .panels.structure_panel import StructurePanel
 __all__ = ["MainWindow"]
 
 
-class MainWindow(PreferencesMixin, QMainWindow):
+class MainWindow(AppearanceMixin, PreferencesMixin, QMainWindow):
     """Top-level window."""
 
     def __init__(self) -> None:
@@ -128,6 +129,7 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self.structure_panel.color_changed.connect(self._set_color)
         self.structure_panel.ligands_toggled.connect(self._set_ligands)
         self.structure_panel.radius_changed.connect(self._set_radius)
+        self.structure_panel.entities_changed.connect(self._set_entities)
         self.structure_panel.spin_toggled.connect(
             lambda on: self.viewport.set_spin(self._spin_speed() if on else 0.0))
 
@@ -275,6 +277,8 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self.view.rebuild()
 
         self.viewport.set_pick_source(st.xyz)
+        self.structure_panel.set_entities(self.view.entity_map())
+        self._set_status(f"{rec.pdb}: {self.view.entity_map().summary()}")
         self.presentation.refresh()
         self.overlay_panel.set_choices(self.registry.entries, exclude=rec.pdb)
         if self._sequence_window is not None:
@@ -308,6 +312,8 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.rebuild()
         self.viewport.set_pick_source(st.xyz)
+        self.structure_panel.set_entities(self.view.entity_map())
+        self._set_status(f"{rec.pdb}: {self.view.entity_map().summary()}")
         self.presentation.refresh()
         self.overlay_panel.set_choices(self.registry.entries, exclude=rec.pdb)
         if self._sequence_window is not None:
@@ -317,40 +323,6 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self._set_status(f"{st.name}: {st.n_atoms:,} atoms")
 
     # -------------------------------------------------------------- styling
-
-    def _current_style(self) -> Style:
-        from .panels.structure_panel import STYLE_LABELS
-        return STYLE_LABELS[self.structure_panel.style_combo.currentIndex()][1]
-
-    def _current_color(self) -> ColorBy:
-        from .panels.structure_panel import COLOR_LABELS
-        return COLOR_LABELS[self.structure_panel.color_combo.currentIndex()][1]
-
-    def _set_style(self, style: Style) -> None:
-        if self.view is None:
-            return
-        self.view.style = style
-        self.view.rebuild()
-        self.viewport.update()
-
-    def _set_color(self, color: ColorBy) -> None:
-        if self.view is None:
-            return
-        self.view.color_by = color
-        self.view.rebuild()
-        self.viewport.update()
-
-    def _set_ligands(self, on: bool) -> None:
-        if self.view is None:
-            return
-        self.view.ligands_as_spheres = on
-        self.view.rebuild()
-        self.viewport.update()
-
-    def _set_radius(self, scale: float) -> None:
-        if self.viewport.scene is not None:
-            self.viewport.scene.radius_scale = scale
-            self.viewport.update()
 
     def _reset_camera(self) -> None:
         if self.viewport.scene is None or self.structure is None:

@@ -21,7 +21,22 @@ MIN_CA_PER_PROTOMER = 300
 
 
 def well_resolved_chains(st: Structure) -> list[str]:
-    return [ch for ch in st.chains
+    """Chains that are channel protomers, not auxiliary subunits.
+
+    Six of the deposited entries carry three copies of MDFIC, a 21-residue
+    auxiliary subunit, and 6B3R carries three poly-UNK chains. Both are protein
+    and neither is a protomer. Classification decides by size *relative to the
+    largest chain*, so 4RAX — a 227-residue domain that is the whole structure
+    — is still recognised while a 21-residue peptide beside a 1,280-residue
+    protomer is not.
+    """
+    from ..core.entities import EntityClass, classify
+    entities = classify(st)
+    chains = [ch for ch in st.chains
+              if entities.chain_class.get(str(ch)) == EntityClass.PROTOMER]
+    # Absolute floor as well: a trimer analysis on 200 residues is not useful
+    # even when all three chains agree.
+    return [ch for ch in chains
             if (st.mask_ca() & (st.chain == ch)).sum() > MIN_CA_PER_PROTOMER]
 
 

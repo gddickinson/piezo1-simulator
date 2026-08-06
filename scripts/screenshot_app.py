@@ -65,6 +65,14 @@ def main() -> int:
         win.physics_panel.measure_dome_requested.emit()
 
     def step_shot_dome() -> None:
+        # A dome needs three protomers. 4RAX is a single isolated domain and
+        # the AlphaFold models are monomers; reporting that as a failure would
+        # make correct behaviour look broken.
+        if len(win._mode_blocks) < 3:
+            print("  skipped: dome needs three protomers, this entry has "
+                  f"{len(win._mode_blocks)}")
+            shot("dome")
+            return
         text = win.physics_panel.dome_label.text()
         print("dome:", text.replace("<br>", " | ").replace("<b>", "")
               .replace("</b>", "")[:200])
@@ -85,22 +93,58 @@ def main() -> int:
         shot("variant")
 
     def step_measure() -> None:
+        """Measure the curated disulfide — where the structure actually has one.
+
+        Three legitimate reasons a structure cannot answer, all distinguished
+        from failure because conflating them would make correct behaviour look
+        broken:
+          * the model is backbone-only, so there are no sulfur atoms (11ZC);
+          * it is a paralogue, where PIEZO1 numbering does not transfer — 6KG7
+            is PIEZO2 and has isoleucine at the second position;
+          * the residues are cysteine but the bond is not modelled as formed,
+            which is the case in both mouse entries at 5.2 A.
+        """
         import numpy as np
+
+        from piezo1.core.sequence import human_to_mouse
+
         st = win.structure
         mp = win.measure_panel
+        species = win.record.numbering_species if win.record else "human"
+        pair = ((2411, 2415) if species == "human"
+                else tuple(human_to_mouse(r) for r in (2411, 2415)))
+        chain = st.chains[0]
+        print(f"  disulfide residues in {species} numbering: {pair}")
+
+        names, sulfurs = [], []
+        for residue in pair:
+            here = (st.chain == chain) & (st.res_seq == residue)
+            names.append(next(iter(set(st.res_name[here].tolist())), "-"))
+            sulfurs.append(np.flatnonzero(here & (st.atom_name == "SG")))
+
+        if any(n != "CYS" for n in names):
+            print(f"  skipped: residues are {names}, not both cysteine "
+                  f"(paralogue or different numbering)")
+            return
+        if any(len(s) == 0 for s in sulfurs):
+            print("  skipped: no SG atoms — backbone-only model")
+            return
+
         mp.arm_button.setChecked(True)
-        for residue in (2411, 2415):
-            idx = np.flatnonzero((st.chain == "A") & (st.res_seq == residue)
-                                 & (st.atom_name == "SG"))
-            if len(idx):
-                win._on_pick(int(idx[0]))
+        for indices in sulfurs:
+            win._on_pick(int(indices[0]))
         if not mp.set.measurements:
-            failures.append("measurement produced no result")
+            failures.append("picking two resolved SG atoms produced no result")
         else:
             value = mp.set.measurements[0].value
-            print(f"measured C2411-C2415 disulfide: {value:.2f} A")
-            if not (1.8 < value < 2.5):
-                failures.append(f"disulfide measured {value:.2f} A")
+            bonded = 1.8 < value < 2.5
+            print(f"  S-S distance {value:.2f} A "
+                  f"({'disulfide' if bonded else 'not modelled as bonded'})")
+            if not (1.0 < value < 12.0):
+                failures.append(f"S-S distance {value:.2f} A is implausible")
+            elif species == "human" and not bonded:
+                failures.append(
+                    f"human disulfide measured {value:.2f} A, expected ~2.04")
         mp.arm_button.setChecked(False)
 
     def step_modes() -> None:
