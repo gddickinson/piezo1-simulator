@@ -1214,16 +1214,38 @@ intervals, cross-checks — exists and runs on every commit.
 summary of thirty rounds, and the next block should be judged on whether it
 changes that.
 
-### Round 36 — Pre-register the third variant test
-- [ ] Rounds 26 and 27 changed both sides of the question: the predictor can now
-      distinguish substitutions, and the set has 46 directional missense
-      variants at |δ| ≥ 0.41 detectable. That is a genuinely new situation and
-      warrants a new pre-registration — **written and committed first**, under
-      `docs/NEGATIVE_RESULT_PROTOCOL.md`.
-- [ ] Declare confirmatory-for-a-large-effect or exploratory **before** looking,
-      and state how the two evidence levels (measured vs disease-mechanism) are
-      handled — pooling them silently would let 20 inferred labels outvote 26
-      measured ones.
+### Round 36 — Pre-register the third variant test — **and the third null**
+- [x] `docs/PREREGISTRATION_ROUND36.md` written and committed **first, in its
+      own commit** (`af37a82`), before any comparison ran. One primary endpoint,
+      a six-test secondary family under Benjamini–Hochberg including a negative
+      control, the decision rule, the inclusion criteria and five caveats — all
+      fixed in advance. V598M excluded in writing beforehand as the one variant
+      whose curated and inferred directions disagree.
+- [x] Declared **confirmatory for a large effect, exploratory below it** (84%
+      power at δ = −0.43, 50% at −0.28). The two evidence levels are **not
+      pooled silently**: the primary uses the combined set, the document says
+      why in advance, and measured-only is a pre-declared secondary so a reader
+      can see whether the weaker labels carried it.
+- [x] **Executed. THIRD NULL.** Primary Cliff's δ = **−0.249**, CI
+      **[−0.628, +0.151]**, p = **0.405**, AUROC 0.625, on 19 GoF vs 15 LoF.
+      Direction is as hypothesised; significance is not. **Fail to reject H₀**,
+      and per the protocol the predictor is *not* adjusted and re-run.
+      Nothing in the secondary family survives correction (min q = 0.591).
+      Recorded in `docs/VALIDATION_ROUND36.md` in the prescribed order.
+- [x] **The predictor did improve, visibly.** Substitution-aware δ = −0.249
+      against the volume-only control's −0.025 on the same 34 variants — tenfold
+      larger, consistent with Round 26. Across the three tests the effect has
+      grown monotonically (−0.083 → −0.211 → −0.249). That is **suggestive and
+      not evidence**: at δ = −0.25 roughly **130 variants** would be needed for
+      80% power, against 34 available.
+- [x] Two defects found and fixed: `design.sample_size_for` returned `max_n` for
+      any *positive* effect size (sign convention against a one-sided
+      alternative), so "how many variants for a large effect?" got a confident
+      wrong answer that looked like a finding; and the AUROC call passed two
+      groups to a function taking scores plus a boolean mask, yielding `nan`.
+- [x] **FoldX could not be run at all** — 0 of 34 variants carry a value in the
+      offline cache. Recorded as untestable rather than dropped, since "could
+      not be run" and "was not significant" are different statements.
 
 ### Round 37 — Cross-check the remaining chain
 - [ ] Round 30 covered three links. Do the rest: pore radius without Apollonius

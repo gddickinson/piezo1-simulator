@@ -4,6 +4,93 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 36 — the third null, pre-registered first
+
+### Why a third test at all
+Two nulls already stand. Re-testing the same hypothesis with the same predictor
+on the same data is precisely the drift `NEGATIVE_RESULT_PROTOCOL.md` exists to
+prevent. What justified a third was that **both sides of the question had
+changed, and neither change was chosen after seeing an outcome**: Round 26 took
+the predictor's within-position variance from 4.9% to 52.5% (and deliberately
+contained no phenotype comparison), and Round 27 grew the directional set from
+26 to 46.
+
+The pre-registration was written and committed **alone**, in `af37a82`, before
+anything ran. That separation is the whole mechanism: with the document in
+history, the endpoints, the decision rule, the exclusions and the caveats cannot
+be adjusted to suit what came back.
+
+### The result
+Primary Cliff's δ = **−0.249**, CI **[−0.628, +0.151]**, p = **0.405**,
+AUROC 0.625, on 19 GoF vs 15 LoF. The direction is as hypothesised; the
+significance is not. **Fail to reject.** Nothing in the six-test secondary family
+survives Benjamini–Hochberg (min q = 0.591).
+
+Per the protocol, the predictor is **not adjusted and re-run**, and the record
+is written in the prescribed order in `docs/VALIDATION_ROUND36.md`.
+
+### What is genuinely interesting, and what it is not
+The substitution-aware predictor gives δ = −0.249 where the volume-only
+predictor Round 7 used gives −0.025 on the *same 34 variants*. Tenfold larger,
+in the predicted direction. Round 26's improvement is real and shows up here.
+
+And across the three tests the effect has grown monotonically: −0.083, −0.211,
+−0.249. It is very tempting to read that as a signal emerging as the method
+improves. It is **not evidence**, and the write-up says so in those words. Three
+point estimates drifting the right way across designs with 13%, low and 50%
+power is exactly what either a real medium effect *or* chance would produce.
+Separating them needs about 130 variants; there are 34.
+
+That is the honest reading, and writing it down was the point of having
+pre-committed the power section.
+
+### Two defects, both found by doing the round properly
+**`design.sample_size_for` returned `max_n` for any positive effect size.**
+`power_curve` defaults to `alternative="less"`, so a positive δ injected the
+effect *against* the alternative, gave ~zero power at every size, and the
+bisection walked to its ceiling — which the docstring described as "not reached
+within the search range", i.e. as a statement about the design. Anyone asking
+"how many variants would a large effect need?" got a confident wrong answer
+dressed as a finding. Fixed to use the magnitude and take the sign from
+`alternative`; it now reproduces the protocol's own recorded table.
+
+That surfaced while *writing* a power section rather than reading one, which is
+the argument for the protocol requiring the section at all.
+
+**The AUROC came back `nan`.** `auroc()` takes scores and a boolean mask; I
+passed it two groups, so the second was cast to all-True, there were no
+negatives, and it returned nan. My misuse, not a library defect — caught only
+because a nan in the output is loud. Had the arrays been ordinary integers it
+would have returned a plausible number instead.
+
+### One endpoint could not be run
+FoldX ΔΔG is absent from the offline ProtVar cache for **0 of 34** variants, so
+a pre-registered secondary endpoint was untestable. It is recorded as such
+rather than dropped: §7 forbids removing a test from the family after the fact,
+and "could not be run" is a different statement from "was not significant".
+
+### Where this leaves the destination
+Three pre-registered tests, three nulls, three different predictors. Round 34
+established the structural side cannot supply more data — one informative
+variant structure, all gain-of-function. The remaining route that needs no new
+experiments is Block K §45: harvesting T50 and inactivation constants from
+published supplementary tables, behind the same wild-type gate the curated set
+uses.
+
+Until that exists the project should state the position plainly rather than keep
+testing, and `docs/SCIENCE.md` §8b now does.
+
+### Notes
+- Also fixed a numbering collision I introduced in Round 34: Block J claimed
+  Rounds 36–40, which Block I already had. Block J renumbered to 46–50.
+- The Round 36 record is pinned by `tests/test_validation_round36.py`, including
+  a guard that the write-up still states what the null does and does not exclude.
+
+618 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 35 — the calcium nanodomain, and a prediction that held
 
 ### The result

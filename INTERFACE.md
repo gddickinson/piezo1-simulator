@@ -209,6 +209,7 @@ geometry at a fraction of the triangle count.
 | `run_validation.py` | Executes the pre-registered blind test and writes the result. | ✅ |
 | `crosscheck_chain.py` | Runs every independent re-derivation and reports where the routes agree. | ✅ |
 | `report_uncertainty.py` | Attaches a spread to each headline number and names which kind it is. | ✅ |
+| `run_validation_round36.py` | Executes the Round 36 test exactly as pre-registered — primary, secondary family with BH, a negative control, and endpoints that could not be run reported rather than dropped. | ✅ |
 | `run_validation_round22.py` | Executes the Round 22 exploratory test exactly as pre-registered — primary, secondary family with BH, equal-weight combination by leave-one-out, and the achieved power. | ✅ |
 | `make_animations.py` | The seven-animation library: gating morph, normal mode, ligand and lipid sites, variant context. | ✅ |
 | `build_references.py` | Resolves the bibliography from Europe PMC behind a title-verification gate; downloads open-access full texts. | ✅ |
@@ -260,6 +261,7 @@ geometry at a fraction of the triangle count.
 | `test_crosscheck.py` | That the sphere fit is exact on synthetic caps at every slope, that the parabola's error grows monotonically with slope and always underestimates, that the distance-space overlap is invariant to rigid motion and recovers a planted mode, and that the steady-state route must **not** reproduce the peak-based T₅₀. | ✅ |
 | `test_uncertainty.py` | That the bootstrap recovers a known interval, that a fragile statistic raises rather than narrowing, that a sensitivity range refuses to call itself a confidence interval, that a parameter sweep restores the registry even when the statistic raises — and that the dome interval contains the published value while the gating overlap is cutoff-dependent. | ✅ |
 | `test_validation.py` | Statistical instruments against known cases, plus a pin on the published Round 7 null result so a predictor change cannot silently move it. | ✅ |
+| `test_validation_round36.py` | Pins the Round 36 record: the primary numbers, that the decision follows the rule fixed in advance, that nothing survives correction, that the untestable endpoint is recorded, that the aware predictor still beats its control, and that the write-up does not soften the null. | ✅ |
 | `test_validation_round22.py` | Pins the Round 22 record: the counts, that 11 of 13 dropped variants are LoF, that three statistics agree on the primary's direction, that nothing survives BH, and that the written document does not soften the null. | ✅ |
 | `test_design.py` | Power, multiplicity and cross-validation. Pins that the fast subset-sum permutation path agrees with the real test, that the false-positive rate under a true null is α rather than more, that the injected effect matches the requested one (a sign error this caught), and the Round 7 power result. | ✅ |
 | `test_substitution.py` | The per-contact model: that different substitutions no longer give proportional patterns, that charge is felt only at charged partners and proline only near in sequence, that a spring never inverts, and the pre-registered within-position criterion on the real structures. Deliberately contains no phenotype comparison. | ✅ |
@@ -274,6 +276,8 @@ geometry at a fraction of the triangle count.
 | `SCIENCE.md` | The scientific basis: mechanism, parameters, provenance, open gaps. | ✅ |
 | `PREREGISTRATION.md` | The frozen hypothesis, statistic and decision rule for the Round 7 blind test, written before any comparison was run. | ✅ |
 | `PREREGISTRATION_ROUND22.md` | The second hypothesis — FoldX ΔΔG, LoF more destabilising than GoF — committed in its own commit before the test ran. Declares itself **exploratory** because 20-vs-6 reaches 80% power only at \|δ\| ≥ 0.61. | ✅ |
+| `PREREGISTRATION_ROUND36.md` | The third hypothesis, committed in its own commit before the test ran. Substitution-aware ΔΔG, combined 46-variant set, confirmatory for a large effect and exploratory below it. States how the two evidence levels are handled rather than pooling them. | ✅ |
+| `VALIDATION_ROUND36.md` | The third null: δ = −0.249, CI spanning zero, p = 0.405; nothing in the secondary family surviving correction. Records that the predictor improved tenfold over its own control while remaining non-significant, and that the binding constraint is n, not method. | ✅ |
 | `VALIDATION_ROUND22.md` | The second null: primary Cliff's δ −0.211 with an interval spanning zero, nothing in the secondary family surviving correction, and the pre-registered objection that explains it. | ✅ |
 | `NOTEBOOK.md` | The documented headless API, with a "things that will bite you" table. | ✅ |
 | `VALIDATION.md` | The Round 7 result: a null result, reported in the pre-registered order with a post-hoc diagnostic of why, and a Round 20 power section (§6b) bounding what the null is entitled to claim. | ✅ |

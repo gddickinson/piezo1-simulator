@@ -610,6 +610,22 @@ all**, and only R2456 appears in its own structure (8YFG).
 
 ## 8b. What the mechanical model cannot do
 
+**Three pre-registered tests, three nulls.** Round 7 (elastic-network ΔΔG,
+δ = −0.083), Round 22 (FoldX ΔΔG, δ = −0.211) and Round 36 (substitution-aware
+ΔΔG, δ = −0.249, CI [−0.628, +0.151], p = 0.405) all failed to reject. The point
+estimate has grown monotonically in the hypothesised direction across the three,
+which is suggestive and is **not evidence**: at δ = −0.25 about 130 variants
+would be needed for 80% power, against the 34 available.
+
+Round 36's design was powered at 84% for a large effect and 50% for a medium
+one, so its null **excludes a large effect and does not exclude a medium one**.
+The substitution-aware predictor beat its own volume-only control tenfold
+(−0.249 vs −0.025), so Round 26's improvement is real and still insufficient.
+
+The binding constraint is data. Round 34 showed the structural side cannot
+supply it: one informative variant structure, all gain-of-function.
+
+
 A pre-registered blind test asked whether an elastic-network ΔΔG separates
 gain-of-function from loss-of-function variants. **It does not** — p = 0.234,
 Cliff's delta −0.083 (negligible), AUROC 0.542 over 25 variants. Full report in
