@@ -39,7 +39,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `fusion`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
+| `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `fusion`, `labelling`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
 | `parameters.py` | **The single source of truth for every number a calculation uses.** Loaded from `resources/parameters.json`; each value carries a unit, bounds, a kind and a citation. Overrides are tracked, not silent — reports flag them and the claims verifier refuses to run against them. | `Parameter`, `ParameterRegistry`, `PARAMETERS`, `value()`, `set_value()`, `reset()`, `overrides()`, `resolve()` | ✅ |
 | `tour.py` | The guided tour as **data plus live measurements**, Qt-free. Eleven steps from trimer to the two null results; every number computed when the step runs, every published comparison read from the parameter registry. | `TourStep`, `TOUR`, `step_by_key()` | ✅ |
 | `parameter_audit.py` | Scans `physics/`, `structure/` and `analysis/` for numeric literals that are neither registered nor exempt **with a stated reason**. The mechanism that keeps the rule from decaying into an aspiration. | `audit()`, `Finding`, `EXEMPT`, `EXEMPT_NAMES`, `MAPPED` | ✅ |
@@ -99,6 +99,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `variant_impact.py` | Predicts a variant's mechanical effect on gating as ½·dᵀ(H_mut − H_wt)·d — the change in elastic cost of the observed gating motion. Volume-based spring perturbation, all protomers, coverage reported. | `VariantImpactModel`, `VariantPrediction`, `spring_scale_from_volume()`, `RESIDUE_VOLUME` | ✅ |
 | `external.py` | Cached, offline-tolerant client for the **ProtVar** API (EMBL-EBI, **CC BY 4.0**), serving AlphaMissense, EVE, ESM-1b, conservation and precomputed FoldX ΔΔG. Chosen over local tools because FoldX is not redistributable and SIFT4G is GPL-3.0. **A `mutant` must be passed** — a position-only `/score` query returns nineteen unlabelled entries per predictor, so only conservation is read from it. | `ProtVarClient`, `ExternalScores`, `annotate_variants()`, `PROTVAR_LICENCE`, `PROTVAR_CITATION` | ✅ |
 | `variant_sets.py` | Assembles a directional variant set at a **stated evidence level** — `measured` (electrophysiology) or `disease_mechanism` (inferred from which disease the variant causes). Defaults to the conservative level; never pools them silently. Reports curated-versus-inferred disagreements rather than resolving them. | `build_analysis_set()`, `VariantSet`, `VariantEntry`, `disagreements()`, `EVIDENCE_LEVELS` | ✅ |
+| `labelling.py` | **HaloTag labelling kinetics**, imported unchanged from `halotag_binding_sim` and reproduced to machine precision. Exposure, per-site `p(t)`, Binomial(3,p) occupancy, exact-Bernoulli population sampling, predicted brightness, and `label_sites()` putting it all on the real tag positions. `compare_with_source()` is the import check. | `LabellingConditions`, `LabellingResult`, `site_labelled_fraction()`, `occupancy_distribution()`, `simulate_population()`, `predicted_brightness()`, `label_sites()`, `compare_with_source()` | ✅ |
 | `variants.py` | Maps variants onto structure, reports domain context, contacts lost/gained. | `map_variants()`, `VariantImpact` | 📋 |
 | `ensemble.py` | Builds a cross-species, coverage-matched, protomer-corrected structure ensemble and runs PCA on it; compares principal components with elastic-network modes by overlap, subspace overlap and RWSIP. | `build_ensemble()`, `StructureEnsemble`, `PCAResult`, `rwsip()`, `subspace_overlap()`, `DEFAULT_EXCLUSIONS` | ✅ |
 | `allostery.py` | Perturbation response scanning, dynamic cross-correlation, correlation-weighted contact networks, shortest allosteric paths, via-point detour cost and path betweenness. | `perturbation_response()`, `PRSResult`, `cross_correlation()`, `build_network()`, `allosteric_path()`, `detour_cost()`, `path_betweenness()` | ✅ |
@@ -175,7 +176,7 @@ geometry at a fraction of the triangle count.
 | `numbering_human_mouse.json` | Cached human↔mouse alignment map. | ✅ |
 | `ligands.json` | Yoda1, Yoda2, Jedi1/2, Dooku1, GsMTx4 and lipids with chemistry and binding-site residues. | 📋 |
 | `structures.json` | Registry of 21 structures with state, resolution, coverage, ligands, citation. | ✅ |
-| `parameters.json` | **75 parameters** in 16 categories — every number the calculations use, with unit, bounds, kind and citation. 31 cite a paper; 30 are method choices, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
+| `parameters.json` | **83 parameters** in 17 categories — every number the calculations use, with unit, bounds, kind and citation. 31 cite a paper; 30 are method choices, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
 
 ---
 
@@ -191,10 +192,12 @@ geometry at a fraction of the triangle count.
 | `build_variants_clinvar.py` | Fetches ClinVar pathogenic variants, parses the protein change, verifies the wild type against Q92508, and infers direction from the disease mechanism — marking as ambiguous anything reported under both diseases. | ✅ |
 | `build_structure_registry.py` | Authors `structures.json`. | ✅ |
 | `build_parameters.py` | The provenance gate: refuses to write unless every citation resolves in `references.json` or declares itself a method choice **and says why**. | ✅ |
-| `parameter_table.py` | The parameter table itself — 75 entries as data, so the whole set can be read and diffed without the validation machinery. | ✅ |
+| `parameter_table.py` | The parameter table itself, as data so the whole set can be read and diffed without the validation machinery. | ✅ |
+| `parameter_table_tags.py` | The HaloTag fusion and labelling parameters, split off at a real seam: these describe the tag, not the channel. | ✅ |
 | `reproduce.py` | One-command reproduction: fetch, rebuild resources, test, re-run both validations, regenerate figures, then **verify every documented number**. `--verify`, `--quick`, `--skip`, `--only`. | ✅ |
 | `render_offscreen.py` | Headless render to PNG; also a renderer regression check. | ✅ |
 | `make_figures.py` | All README/doc figures, on shared scale and orientation. | ✅ |
+| `make_labelling_figure.py` | The labelling figure: saturation curve, the `p³` amplification, and the 1:2:3-dye histogram. Separate from `make_figures.py`, which renders through OpenGL rather than matplotlib. | ✅ |
 | `run_validation.py` | Executes the pre-registered blind test and writes the result. | ✅ |
 | `crosscheck_chain.py` | Runs every independent re-derivation and reports where the routes agree. | ✅ |
 | `report_uncertainty.py` | Attaches a spread to each headline number and names which kind it is. | ✅ |
@@ -213,6 +216,7 @@ geometry at a fraction of the triangle count.
 | `test_frame.py` | Camera reset idempotence (the drift that made one structure look different on each visit), the C-terminus-at-negative-z rule over **every** downloaded entry, idempotence, the measured overlap gain against the least-squares optimum, reversed protomer labelling on 8YFG, cross-species refusal, and invariance of the dome measurement under reframing. | ✅ |
 | `test_fusion.py` | The fusion model: the measured 6U32 inputs, that the anchor is the tag's N-terminus, that the envelope is a region and every point in it clears the channel, the three roadmap criteria (including the one that misses), both sign conventions, and that the reported distance is robust to the unverified linker length. | ✅ |
 | `test_ui_companions.py` | That loading replaces by default — the ghost-structure regression — and that multi-structure display adds, colours, indicates and drops correctly. The ordering fault is pinned without GL; the full-path tests skip on the offscreen platform. | ✅ |
+| `test_labelling.py` | The import criterion — zero difference from the source project on every quantity and identical sampled populations — plus the mathematics checked independently (exposure by quadrature, occupancy by its moments), that a channel never loses a dye, and the measured result that a dye mixture needs unreactive tags rather than a shorter incubation. | ✅ |
 | `test_geometry.py` | Sphere fitting on synthetic spheres and caps; dome curvature regression against the published 10.2 nm; curved vs flat separation. | ✅ |
 | `test_superpose.py` | Kabsch round-trip, reflection exclusion, C3 exactness, reversed-handedness detection. | ✅ |
 | `test_anm.py` | Hessian symmetry, zero modes, disconnected networks, symmetry characters, and the gating-overlap result. | ✅ |
@@ -263,7 +267,7 @@ geometry at a fraction of the triangle count.
 | `NOTEBOOK.md` | The documented headless API, with a "things that will bite you" table. | ✅ |
 | `VALIDATION.md` | The Round 7 result: a null result, reported in the pre-registered order with a post-hoc diagnostic of why, and a Round 20 power section (§6b) bounding what the null is entitled to claim. | ✅ |
 | `NEGATIVE_RESULT_PROTOCOL.md` | Standing policy, written before the Round 22 test it governs: what must exist before a test runs, power requirements, multiplicity control, cross-validation of fitted combinations, and the rule that a recorded result is superseded rather than revised. | ✅ |
-| `REFERENCES.md` | Generated bibliography, 51 verified references. | ✅ |
+| `REFERENCES.md` | Generated bibliography, 65 verified references. | ✅ |
 | `img/` | Generated figures (`make_figures.py`, `screenshot_app.py`). | ✅ |
 | `HALOTAG_CALCIUM_PLAN.md` | Design review of `halotag_binding_sim` and the plan to combine it: HaloTag fusion geometry, labelling on the trimer, 1-D PNP calcium permeation gated by the wetting verdict, and the calcium nanodomain at the tag. Feasibility checked, nothing implemented. | 📋 |
 | `ARCHITECTURE.md` | Why the code is shaped this way; the rendering approach in detail. | 📋 |

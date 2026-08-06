@@ -140,6 +140,22 @@ SEED = [
     ("schymkowitz2005foldx",
      'TITLE:"The FoldX web server: an online force field"',
      "FoldX force field - source of the precomputed ddG", "foldx"),
+    # --- HaloTag labelling, imported with the kinetics in Round 32 ----------
+    # Looked up by title rather than by remembered PMID, for the reason stated
+    # above the ProtVar block.
+    ("los2008halotag",
+     'TITLE:"HaloTag: a novel protein labeling technology for cell imaging and protein analysis"',
+     "HaloTag chemistry; source of the covalent on-rate and its irreversibility",
+     "halotag"),
+    ("grimm2015jf",
+     'TITLE:"A general method to improve fluorophores for live-cell and single-molecule microscopy"',
+     "Janelia Fluor dyes including JF646 - cell-permeable, so partition ~ 1",
+     "dye"),
+    ("bertaccini2025piezo1",
+     'TITLE:"Visualizing PIEZO1 Localization and Activity in hiPSC-Derived Single Cells and Organoids with HaloTag Technology"',
+     "The tagged-PIEZO1 experiment this labelling model describes; three tags "
+     "per channel and the multi-level brightness histogram",
+     "halotag"),
 ]
 
 

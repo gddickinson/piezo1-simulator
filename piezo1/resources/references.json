@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 62,
+ "n_references": 65,
  "unresolved": [],
  "references": [
   {
@@ -138,6 +138,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1073/pnas.1136844100",
    "section": "Methods"
+  },
+  {
+   "key": "bertaccini2025piezo1",
+   "topic": "The tagged-PIEZO1 experiment this labelling model describes; three tags per channel and the multi-level brightness histogram",
+   "title": "Visualizing PIEZO1 localization and activity in hiPSC-derived single cells and organoids with HaloTag technology",
+   "authors": "Bertaccini GA, Casanellas I, Evans EL, Nourse JL, Dickinson GD, Liu G, Seal S, Ly AT, Holt JR, Wijerathne TD, Yan S, Hui EE, Lacroix JJ, Panicker MM, Upadhyayula S, Parker I, Pathak MM.",
+   "journal": "Nature communications",
+   "year": "2025",
+   "volume": "16",
+   "pages": "5556",
+   "pmid": "40593468",
+   "pmcid": "PMC12217361",
+   "doi": "10.1038/s41467-025-59150-1",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1038/s41467-025-59150-1",
+   "section": "Other"
   },
   {
    "key": "borbiro2015",
@@ -412,6 +429,23 @@
    "section": "Structure"
   },
   {
+   "key": "grimm2015jf",
+   "topic": "Janelia Fluor dyes including JF646 - cell-permeable, so partition ~ 1",
+   "title": "A general method to improve fluorophores for live-cell and single-molecule microscopy",
+   "authors": "Grimm JB, English BP, Chen J, Slaughter JP, Zhang Z, Revyakin A, Patel R, Macklin JJ, Normanno D, Singer RH, Lionnet T, Lavis LD.",
+   "journal": "Nature methods",
+   "year": "2015",
+   "volume": "12",
+   "pages": "244-50, 3 p following 250",
+   "pmid": "25599551",
+   "pmcid": "PMC4344395",
+   "doi": "10.1038/nmeth.3256",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1038/nmeth.3256",
+   "section": "Other"
+  },
+  {
    "key": "guo2017",
    "topic": "The dome model; PDB 6BPZ",
    "title": "Structure-based membrane dome mechanism for Piezo mechanosensitivity",
@@ -649,6 +683,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.7554/elife.70988",
    "section": "Electrophysiology and kinetics"
+  },
+  {
+   "key": "los2008halotag",
+   "topic": "HaloTag chemistry; source of the covalent on-rate and its irreversibility",
+   "title": "HaloTag: a novel protein labeling technology for cell imaging and protein analysis",
+   "authors": "Los GV, Encell LP, McDougall MG, Hartzell DD, Karassina N, Zimprich C, Wood MG, Learish R, Ohana RF, Urh M, Simpson D, Mendez J, Zimmerman K, Otto P, Vidugiris G, Zhu J, Darzins A, Klaubert DH, Bulleit RF, Wood KV.",
+   "journal": "ACS chemical biology",
+   "year": "2008",
+   "volume": "3",
+   "pages": "373-382",
+   "pmid": "18533659",
+   "pmcid": null,
+   "doi": "10.1021/cb800025k",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1021/cb800025k",
+   "section": "Other"
   },
   {
    "key": "ma2018malaria",

@@ -15,6 +15,8 @@ from __future__ import annotations
 
 __all__ = ["P"]
 
+from parameter_table_tags import TAG_PARAMETERS
+
 #: kind: physical | empirical | method | convention
 P = [
     # ---------------------------------------------------------- membrane ---
@@ -403,44 +405,6 @@ P = [
          category="Statistics", citation="method_choice", source_note="10k resamples give a percentile interval stable to about the third decimal",
          description="Resamples for the effect-size confidence interval."),
 
-    # ---------------------------------------------------- HaloTag fusion ----
-    dict(key="fusion.linker_residues", name="HaloTag linker length", value=10,
-         unit="residues", minimum=0, maximum=40, kind="convention",
-         category="HaloTag fusion", citation="unverified",
-         source_note="The construct this project is meant to describe does not "
-                     "state its linker, and neither does the halotag_binding_sim "
-                     "project it comes from. 10 residues is a mid-range flexible "
-                     "linker for a C-terminal fusion. It sets how far the tag can "
-                     "reach, so it is the single assumption the fusion geometry "
-                     "rests on and must be varied, not trusted.",
-         description="Residues between PIEZO1's C-terminus and the HaloTag N-terminus."),
-    dict(key="fusion.residue_extension", name="Extension per linker residue",
-         value=3.5, unit="A", minimum=1.0, maximum=4.0, kind="convention",
-         category="HaloTag fusion", citation="convention",
-         source_note="Ca-Ca rise of a fully extended polypeptide, the standard "
-                     "value. It is an upper bound: a real flexible linker is "
-                     "coiled and reaches less, so the envelope errs generous.",
-         description="Maximum reach contributed by each linker residue."),
-    dict(key="fusion.grid_spacing", name="Accessible-volume grid spacing",
-         value=2.0, unit="A", minimum=0.5, maximum=10.0, kind="method",
-         category="HaloTag fusion", citation="method_choice",
-         source_note="resolution of the envelope; finer costs cubically and "
-                     "does not change where the envelope sits",
-         description="Grid step for sampling accessible tag positions."),
-    dict(key="fusion.pore_mouth_radius", name="Pore-mouth radius",
-         value=15.0, unit="A", minimum=5.0, maximum=40.0, kind="method",
-         category="HaloTag fusion", citation="method_choice",
-         source_note="how close to the conduction axis an atom must be to count "
-                     "as lining the cytosolic mouth rather than sitting on a "
-                     "blade. The CTD bundle is well inside it and the blades "
-                     "far outside, so the answer is flat in between; taking the "
-                     "lowest atom anywhere instead finds a blade tip and moves "
-                     "the pore exit by over 10 nm",
-         description="Radius about the axis defining the cytosolic pore mouth."),
-    dict(key="fusion.clash_clearance", name="Tag-channel clearance", value=2.0,
-         unit="A", minimum=0.0, maximum=10.0, kind="method",
-         category="HaloTag fusion", citation="method_choice",
-         source_note="added to the tag's own radius when rejecting positions, "
-                     "so contact rather than overlap is what is excluded",
-         description="Extra clearance required between tag body and channel."),
 ]
+
+P += TAG_PARAMETERS

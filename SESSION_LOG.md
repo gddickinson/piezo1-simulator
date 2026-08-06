@@ -4,6 +4,77 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 32 — HaloTag labelling: an import, and what it then says
+
+### The criterion was "exactly", so that is what was tested
+The kinetics were not derived here. `analysis/labelling.py` brings across the
+three equations from `halotag_binding_sim` — exposure, per-site `p(t)`, and
+Binomial(3, p) over the trimer — and `compare_with_source()` re-runs the
+original functions to check. Over 241 time points the maximum absolute
+difference is **0.0** for `p_site`, `p³`, the occupancy distribution and the
+sampled histogram, and the Monte-Carlo populations are identical channel for
+channel.
+
+That last part drove a design decision. The sampler reproduces the source's two
+`rng.random((n_channels, 3))` draws **in the same order**, reactivity first.
+A different order gives a statistically identical population and a numerically
+different one — which would have satisfied a "close enough" test while hiding a
+real divergence behind sampling noise. Reusing a single uniform draw across
+snapshots is also what makes an individual channel's dye count monotonic; the
+covalent bond does not reverse, and resampling per snapshot would let a
+three-dye channel drop back to two while still giving the right marginals.
+
+The equations are vendored rather than imported at runtime, because the sibling
+project is not on a fresh clone's path and A5 says a fresh clone must reproduce
+the working state. `compare_with_source()` returns `{"available": False}` there
+and the test skips; where the source *is* present it must agree exactly.
+
+### What the model then says, which was not what the round expected
+At the standard protocol — 200 nM JF646, 30 min, live cell — labelling is
+complete in **54 s** to 99%. Per-site p = 1.0000 and the population is **100%
+three-dye**. There is no kinetic dye mixture at any realistic concentration;
+producing one needs sub-nanomolar ligand or an incubation under a minute.
+
+This bears on why puncta brightness is heterogeneous, where sub-saturation
+labelling is a named candidate. The model separates two things that share that
+name. The kinetic route is closed at a saturating concentration. The other route
+is not: a population of chemically unreactive tags leaves a mixture at **every**
+time, because the ceiling is `active_fraction³`. At 90% reactive that is 72.9%
+three-dye and 24.3% two-dye, and no incubation removes it. So an observed 1:2:3
+mixture under a saturating protocol argues for unreactive tags, not for a short
+incubation.
+
+That conclusion rests on two registered-`unverified` numbers — `k_perm_live`
+and `active_fraction` — and both say so in their `source_note`. The first is a
+transport estimate, the second an assumption; neither is measured, in this
+project or the source.
+
+### What the structure adds
+`label_sites()` puts the statistics on the three tag centres from Round 31's
+fusion model, so occupancy is a set of places rather than a count. The sites are
+treated as **equivalent**, and that is a claim worth stating: the trimer is
+C3-symmetric, the three C-termini sit at the same height and radius, and the
+ligand reaches them from one cytosolic pool. Geometry therefore decides where a
+dye is drawn, not whether it binds.
+
+### Notes
+- Three references added through `build_references.py`'s title-verification
+  gate rather than by remembered PMID: `los2008halotag`, `grimm2015jf`,
+  `bertaccini2025piezo1`. 65 references resolve.
+- 8 parameters registered. Two of them are `unverified`, and two more had to be
+  reclassified from `empirical` to `method` — the audit correctly refused to let
+  an unmeasured model estimate sit in a category that promises a citation.
+- `parameter_table.py` passed 500 lines; the tag parameters moved to
+  `parameter_table_tags.py`, a real seam rather than an arbitrary cut.
+- **Not done:** the brightness *animation*. The histogram, the per-site
+  occupancy and the figure are there; nothing is rendered on the trimer over
+  time. Recorded on the roadmap rather than quietly dropped.
+
+566 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 31 — HaloTag fusion geometry, and a ghost structure
 
 ### What was built

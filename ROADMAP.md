@@ -1039,11 +1039,37 @@ BAPTA's **~0.2 µM** Kd.
       the "pore exit" against 3.9 nm for the same construct on 8YEZ.
 
 ### Round 32 — Labelling on the structure
-- [ ] Import `halotag_sim` kinetics; drive per-site stochastic occupancy on the
-      real trimer; brightness animation and the 1:2:3-dye histogram.
-- [ ] *Validate:* reproduce the source project's `p³` curve and brightness
-      mixture **exactly** — any divergence means the import is wrong, not that
-      this project found something.
+- [x] `analysis/labelling.py` imports the kinetics from `halotag_binding_sim`:
+      exposure `E(t)`, per-site `p(t) = a(1 − e^{−k_on·E})`, and Binomial(3, p)
+      over the trimer. `label_sites()` drives per-site occupancy on the **real**
+      tag positions from Round 31's fusion model. The 1:2:3-dye histogram is in
+      `docs/img/labelling.png` and `python -m piezo1.cli labelling 8YEZ`.
+      Three references added through the title-verification gate
+      (`los2008halotag`, `grimm2015jf`, `bertaccini2025piezo1`); 8 parameters
+      registered. **The brightness *animation* is not done** — the histogram and
+      per-site occupancy are, but nothing is rendered on the trimer over time.
+- [x] *Validate:* **exact, to the last bit.** `compare_with_source()` re-runs
+      the original functions over 241 time points: max |Δ| = **0.0** for
+      `p_site`, for `p³`, for the occupancy distribution and for the sampled
+      histogram, and the Monte-Carlo dye counts are **identical channel for
+      channel** (`dye_counts_identical: true`). The sampler reproduces the
+      source's two `rng.random((n,3))` draws in the same order, because a
+      different order gives a statistically identical population and a
+      numerically different one — which would have hidden a divergence behind
+      sampling noise.
+- [x] **What the model says, which is not what the round expected.** At the
+      standard protocol (200 nM JF646, 30 min, live cell) labelling is complete
+      in **54 s** to 99%: per-site p = 1.0000 and the mixture is **100%
+      three-dye**. So at any realistic concentration there is *no* kinetic dye
+      mixture — a mixture needs sub-nanomolar ligand or ≤1 min incubation. A
+      population of chemically unreactive tags does produce one at every time,
+      because the ceiling is `active_fraction³`: at 90% reactive the mixture is
+      72.9% three-dye / 24.3% two-dye and no incubation removes it. **Two
+      different things get called "sub-saturation labelling", and under a
+      saturating protocol only the unreactive-tag route is available** — so an
+      observed 1:2:3 brightness mixture argues for unreactive tags, not for a
+      short incubation. `labelling.k_perm_live` and `labelling.active_fraction`
+      are both registered `unverified`; they are the assumptions this rests on.
 
 ### Round 33 — Calcium permeation
 - [ ] 1-D Poisson–Nernst–Planck along the conduction axis over the measured

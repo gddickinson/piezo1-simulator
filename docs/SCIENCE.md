@@ -763,6 +763,43 @@ Caveat worth keeping in view: a conserved residue may be structurally
 load-bearing rather than mechanistically important. This narrows a search; it
 does not identify a mechanism.
 
+## 8e. Labelling the three tags
+
+The kinetics here are **imported**, not derived: they come from the companion
+`halotag_binding_sim` project and are reproduced to machine precision (see
+`analysis.labelling.compare_with_source`). Three equations:
+
+    E(t) = partition · [L] · (t − (1 − e^{−k_perm t}) / k_perm)      exposure, M·s
+    p(t) = a · (1 − e^{−k_on E(t)})                                  per site
+    P(k) = C(3,k) p^k (1−p)^{3−k}                                    over a channel
+
+| Quantity | Value | Source |
+|---|---|---|
+| HaloTag on-rate k_on | 2.7 × 10⁶ M⁻¹s⁻¹ | Los 2008 |
+| Tags per channel | 3 | PIEZO1 is a homotrimer (Bertaccini 2025) |
+| Ligand partition, live cell | 1.0 | JF dyes are cell-permeable (Grimm 2015) |
+| Membrane access rate k_perm | 1/120 s⁻¹ | **UNVERIFIED** — a model estimate |
+| Reactive fraction a | 1.0 | **UNVERIFIED** — assumed, and it caps everything |
+| Standard protocol | 200 nM, 30 min | Bertaccini 2025 |
+
+**Every site must bind, so a per-site shortfall is cubed.** p = 0.9 leaves only
+0.729 of channels fully labelled; the rest appear as one- and two-dye puncta.
+
+**Measured consequence.** At the standard protocol labelling is complete in
+**54 s** to 99%, giving p = 1.0000 and a **100% three-dye** population. So at any
+realistic concentration the model predicts *no* kinetic dye mixture — producing
+one would need sub-nanomolar ligand or an incubation under a minute.
+
+That matters for interpretation, because two different things get called
+"sub-saturation labelling". A population of chemically unreactive tags produces
+a mixture at **every** time, since the ceiling is a³: at a = 0.9 the steady
+mixture is 72.9% three-dye and 24.3% two-dye, and no incubation removes it.
+Under a saturating protocol only that second route is open, so an observed
+1:2:3 brightness mixture argues for unreactive tags rather than for a short
+incubation. The two `UNVERIFIED` rows above are what this conclusion rests on.
+
+![labelling](img/labelling.png)
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

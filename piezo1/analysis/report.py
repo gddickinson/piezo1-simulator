@@ -388,9 +388,63 @@ def analysis_fusion(st: Structure, species: str, **kw) -> dict:
             "note": model.meta["note"]}
 
 
+def analysis_labelling(st: Structure, species: str, **kw) -> dict:
+    """HaloTag labelling of the three C-terminal sites.
+
+    The kinetics are imported from ``halotag_binding_sim``; this reports them at
+    the registered protocol and, where the tag geometry is available, on the
+    modelled site positions.
+    """
+    from .labelling import (LabellingConditions, occupancy_distribution,
+                            population_summary, site_labelled_fraction,
+                            time_to_fraction)
+
+    conditions = LabellingConditions()
+    protocol_t = PARAMETERS.value("labelling.incubation_time")
+    times = np.linspace(0.0, max(protocol_t, 3600.0), 601)
+    result = population_summary(times, conditions)
+    at_protocol = result.at(protocol_t)
+
+    out = {"source": result.meta["source"],
+           "conditions": conditions.summary(),
+           "concentration_M": conditions.concentration,
+           "incubation_time_s": protocol_t,
+           "asymptote": conditions.asymptote,
+           "p_site_at_protocol": at_protocol["p_site"],
+           "fully_labelled_at_protocol": at_protocol["fully_labelled"],
+           "detectable_at_protocol": at_protocol["detectable"],
+           "mean_dyes_at_protocol": at_protocol["mean_dyes"],
+           "dye_histogram_at_protocol": at_protocol["occupancy"],
+           "time_to_99_percent_s": time_to_fraction(0.99, conditions)}
+
+    # What an incomplete-reactivity population would look like instead. Reported
+    # because the two routes to a dye mixture are easy to conflate and only one
+    # of them is available at a saturating concentration.
+    reduced = LabellingConditions(active_fraction=0.9)
+    ceiling_p = float(site_labelled_fraction(6 * 3600.0, reduced))
+    out["if_90_percent_reactive"] = {
+        "asymptote": reduced.asymptote,
+        "dye_histogram": occupancy_distribution(ceiling_p,
+                                                reduced.n_sites).tolist()}
+
+    try:
+        from ..structure.frame import apply_frame, canonical_transform
+        from ..structure.fusion import build_fusion, load_halotag
+        from .labelling import label_sites
+        framed = apply_frame(st, canonical_transform(st))
+        sites = label_sites(build_fusion(framed, load_halotag()), t=protocol_t)
+        out["sites"] = {"anchor_residues": sites["anchor_residues"],
+                        "n_dyes_drawn": sites["n_dyes"],
+                        "note": sites["note"]}
+    except Exception as exc:
+        out["sites"] = {"error": str(exc)}
+    return out
+
+
 ANALYSES = {
     "dome": analysis_dome,
     "fusion": analysis_fusion,
+    "labelling": analysis_labelling,
     "pore": analysis_pore,
     "hydration": analysis_hydration,
     "modes": analysis_modes,

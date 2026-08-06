@@ -97,6 +97,12 @@ EXEMPT = {
     ("structure/frame.py", "Frame", "n_atoms_fitted"): "counter, initialised to zero",
     ("structure/fusion.py", "AccessibleVolume", "n_before_clash"):
         "counter, initialised to zero",
+    ("analysis/labelling.py", "predicted_brightness", "per_dye_intensity"):
+        "defines the brightness unit rather than measuring anything: the "
+        "histogram is in units of one dye, so 1.0 IS the unit",
+    ("analysis/labelling.py", "predicted_brightness", "background"):
+        "zero-offset default; a real background is supplied by the caller in "
+        "whatever units their camera reports",
     ("structure/frame.py", None, "CTERM_FRACTION"):
         "which slice of residues counts as the cytosolic end when orienting a "
         "structure. A criterion for reading topology off a model, not a "
