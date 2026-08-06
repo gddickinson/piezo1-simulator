@@ -153,3 +153,108 @@ The missense Z of −11.3 is *not* usable: synonymous Z is −14.1, so the mutat
 model fails at this locus. ClinVar (2858 records) yields 133 sequence-level P/LP;
 truncating alleles are spread uniformly while missense P/LP density is 6–8×
 enriched in the pore module (inner helix 5.88 per 100 aa vs blade 0.69).
+
+---
+
+## Session 1, part 2 — renderer, GUI, validation
+
+### The result that matters
+
+An elastic network model built from the **closed** structure alone reproduces
+the experimentally observed gating transition. Comparing curved 7WLT with
+flattened 7WLU over the 1274 residues common to all six protomers (19.7 Å
+trimer RMSD):
+
+| | |
+|---|---|
+| Best single mode overlap | **0.705** (mode 3, symmetry A, collectivity 0.610) |
+| Cumulative overlap over 40 modes | **0.964** |
+| Best E-mode overlap | **0.0011** |
+| Fraction of overlap² in A modes | **100.00%** |
+
+The symmetry result is the part worth dwelling on. PIEZO1 is a C3 trimer, so
+every mode carries an irreducible-representation label. Isotropic membrane
+tension is itself C3-symmetric, so only A modes can couple to it at first
+order. Every E mode scores essentially zero overlap with the real transition —
+the analysis recovers the selection rule without being told about it. That is a
+strong internal consistency check, and it means the app can tell a user which
+modes are candidate gating coordinates on principle rather than by eye.
+
+### Traps found by checking rather than trusting
+
+**Protomer labels lie.** 7WLT and 7WLU label their three chains in opposite
+rotational order around the symmetry axis. Superposing by chain label gave
+71.2 Å RMSD instead of 19.7 Å, and the difference vector built from it was
+meaningless — the first overlap calculation returned a misleading 0.213 with no
+obvious sign of error. `match_protomers()` now always determines correspondence
+by superposition, and a test pins it.
+
+**Secondary structure came out 100% coil.** The distance criteria were fine;
+the C-alpha pseudo-torsion had an inverted sign, giving −51° for the PIEZO1
+inner helix where the IUPAC convention gives +51°, so the helix test never
+fired. Fixed by correcting the cross-product order. PIEZO1 now assigns as 77%
+helix / 10% strand / 13% coil, with OH, IH and the beam coiled coil all 100%
+helix and the cap correctly β-rich.
+
+**Camera framing by bounding sphere** left the molecule filling ~55% of the
+viewport. PIEZO1 is a wide flat propeller, so the bounding-sphere radius badly
+overestimates what needs to fit. `frame()` now projects into the current camera
+orientation and solves for the exact containing distance.
+
+**Disconnected networks.** Writing the ANM tests surfaced that a contact network
+in several pieces contributes six rigid-body modes *per piece*. A model with a
+detached fragment would have returned rigid-body motions as its lowest
+functional modes — silent and thoroughly misleading. `ANM.n_components()` now
+detects this and `calc_modes` discards `6 × n_components` by default.
+
+### Research integration
+
+All six literature agents completed on the second attempt (the first wave hit an
+API session limit; relaunching them against REST endpoints rather than web
+search worked). The most valuable outcome was **independent convergence**: an
+agent's alignment of human and mouse PIEZO1 reproduced this project's offset map
+block-for-block, and its Yoda1 pocket conversion (human A1718/A2075/A2078) and
+selectivity residues (E2117/E2470) matched the values computed here exactly.
+
+Two corrections were applied as a result. The "clasp" and "latch" domains were
+**removed** — neither survived verification against primary sources, and
+inventing boundaries would colour residues with false confidence. They were
+replaced with two verifiable elements: the UniProt-annotated beam coiled coil
+and the Piezo1.1 spliced segment. The anchor description was corrected:
+P2113/F2114 is primarily the anchor apex brake on the inner helix, with the
+cholesterol context secondary.
+
+### Coverage honesty
+
+Building the variant resource revealed something that shapes the whole UI: all
+six human PIEZO1 structures model from residue 570 only, and **14 of 68 curated
+variants — including the E756del malaria-associated allele — are resolved in no
+human structure at all.** Only R2456 appears in its own structure (8YFG). The
+viewer now greys those out, states the count, and warns on selection, rather
+than highlighting nothing and letting the user assume it worked.
+
+### Renderer
+
+moderngl + QOpenGLWidget, OpenGL 4.1 core, ray-cast impostors. 31 599 atoms and
+275k ribbon vertices render in 14–20 ms on an M1 Max. One Qt-specific trap worth
+recording: `QOpenGLWidget` does **not** render to framebuffer 0, so moderngl
+must be pointed at `defaultFramebufferObject()` every frame or nothing appears.
+
+### Verification
+
+43 tests, ~10 s. They pin the tokenizer's whitespace handling, the reversed-
+handedness detection, dome curvature against the published 10.2 nm, the ANM
+symmetry characters, the gating-overlap result itself, ten cross-species residue
+equivalences (each also checked for matching amino-acid identity), and an
+assertion that the numbering offset is *not* constant.
+
+A scripted GUI smoke test (`scripts/screenshot_app.py`) drives the real
+application and checks its outputs, so "the app still starts and computes" is a
+test rather than a hope.
+
+### Next
+
+Helfrich membrane-footprint solver, tension-dependent Markov gating kinetics
+(the Young et al. 2023 PNAS four-state model is fully parameterised in the
+research dossier and is the one to implement), conformational morphing between
+curved and flat endpoints, and pore-radius profiling.

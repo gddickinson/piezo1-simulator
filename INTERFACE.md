@@ -44,22 +44,22 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | File | Purpose | Key names | Status |
 |---|---|---|---|
 | `cif_reader.py` | Fast mmCIF/PDB coordinate readers producing numpy arrays. Handles quoting, multi-line text fields and model selection. ~0.6 s for a 34k-atom trimer. | `read_cif_atoms()`, `read_pdb_atoms()`, `read_structure_file()`, `parse_cif_categories()` | ✅ |
-| `fetch.py` | Cached downloaders for RCSB mmCIF, EMDB maps, AlphaFold DB, UniProt, PubChem. Idempotent; skips files already present. | `fetch_pdb()`, `fetch_alphafold()`, `fetch_uniprot()`, `fetch_ligand()`, `fetch_all()` | 📋 |
-| `registry.py` | Curated catalogue of PIEZO structures: state, species, resolution, modelled range, what each is good for. | `StructureRecord`, `REGISTRY`, `lookup()` | 📋 |
+| `fetch.py` | Cached downloaders for RCSB mmCIF, AlphaFold DB, UniProt, PubChem. Idempotent. AlphaFold versions discovered from the API, never guessed. | `fetch_pdb()`, `fetch_alphafold()`, `fetch_uniprot()`, `fetch_ligand()`, `fetch_all()`, `DEFAULT_PDB_IDS` | ✅ |
+| `registry.py` | Curated catalogue of 21 PIEZO structures: state, gating, resolved range, ligands, citation, and what each is recommended for. | `StructureRecord`, `Registry`, `load_registry()` | ✅ |
 
 ### `piezo1/core/` — data model
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
 | `structure.py` | The central structure-of-arrays container. Boolean-mask selections, residue-level index, vdW radii, element colours, PDB output. | `Structure`, `AA3TO1`, `ELEMENT_RADII`, `ELEMENT_COLORS` | ✅ |
-| `sequence.py` | Sequence alignment and the **human↔mouse residue numbering map**. The only sanctioned way to convert between numbering systems. | `align()`, `NumberingMap`, `human_to_mouse()`, `mouse_to_human()` | 📋 |
-| `annotations.py` | Loads `resources/*.json` into typed records; maps annotations onto a loaded `Structure`. | `Domain`, `Variant`, `LigandSite`, `Annotations`, `load_annotations()` | 📋 |
+| `sequence.py` | Sequence alignment and the **human↔mouse residue numbering map**, built from a real global alignment. The only sanctioned way to convert between numbering systems. | `align_global()`, `NumberingMap`, `load_numbering_map()`, `human_to_mouse()`, `mouse_to_human()` | ✅ |
+| `annotations.py` | Loads `resources/*.json` into typed records carrying provenance and confidence. Represents "we do not know" explicitly. | `Domain`, `ResidueGroup`, `Variant`, `Annotations`, `load_annotations()` | ✅ |
 
 ### `piezo1/structure/` — structural operations
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `superpose.py` | Kabsch superposition, RMSD, C3 symmetry-axis recovery, axis-to-z alignment. | `kabsch()`, `superpose()`, `rmsd()`, `SymmetryAxis`, `detect_c3_axis()`, `align_axis_to_z()`, `rotation_matrix()` | ✅ |
+| `superpose.py` | Kabsch superposition, RMSD, C3 axis recovery, and **protomer correspondence matching** — deposited chain labels are not a reliable guide to rotational order. | `kabsch()`, `superpose()`, `rmsd()`, `SymmetryAxis`, `detect_c3_axis()`, `match_protomers()`, `ProtomerMatch`, `align_axis_to_z()`, `rotation_matrix()` | ✅ |
 | `geometry.py` | **Membrane-dome measurement.** Sphere fitting, radial height profile, dome depth / area / excess area. Reproduces published dome curvature. | `fit_sphere()`, `SphereFit`, `radial_profile()`, `RadialProfile`, `DomeGeometry`, `measure_dome()` | ✅ |
 | `hybrid.py` | Assembles the full-length model: experimental core + AlphaFold distal blade, with the seam recorded and renderable. | `build_hybrid_model()`, `HybridModel` | 📋 |
 | `morph.py` | Conformational interpolation between curved and flattened states with bond-geometry restraints. | `morph()`, `MorphTrajectory` | 📋 |
@@ -69,8 +69,8 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `anm.py` | Anisotropic network model: sparse Hessian, low-frequency modes, C3 symmetry adaptation. | `ANM`, `build_hessian()`, `calc_modes()` | 📋 |
-| `modes.py` | Mode analysis: overlap with an observed transition, cumulative overlap, deformation projection. | `overlap()`, `cumulative_overlap()`, `project()` | 📋 |
+| `anm.py` | Anisotropic network model: sparse Hessian, shift-invert Lanczos modes, C3 irreducible-representation labelling, disconnected-network detection. | `ANM`, `ModeSet`, `build_hessian()`, `SPRING_MODELS` | ✅ |
+| `modes.py` | Further mode analysis beyond `ModeSet.overlap` / `.cumulative_overlap` / `.msf` / `.collectivity`, which already live on the mode set. | `hinge_sites()`, `project()` | 📋 |
 | `membrane.py` | Monge-gauge Helfrich solver for the membrane footprint around the dome. | `MembraneFootprint`, `solve_shape()`, `footprint_energy()` | 📋 |
 | `dome.py` | Dome-model energetics: ΔE = −T·ΔA, tension–area coupling, state free energies. | `DomeModel`, `gating_energy()` | 📋 |
 | `kinetics.py` | Tension-dependent Markov gating model; stochastic and deterministic solutions; simulated patch-clamp traces. | `GatingModel`, `simulate_trace()`, `open_probability()` | 📋 |
@@ -93,20 +93,20 @@ geometry at a fraction of the triangle count.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `camera.py` | Trackball camera, projection, screen↔world unprojection for picking. | `Camera` | 📋 |
-| `scene.py` | Draw-list assembly, per-frame uniform management, render passes. | `Scene`, `RenderPass` | 📋 |
-| `representations.py` | Spheres, sticks, backbone tube, cartoon, surface, membrane slab. | `Representation` and subclasses | 📋 |
-| `geometry_builders.py` | CA spline, ribbon frames, cartoon extrusion, membrane mesh. | `spline_ca()`, `build_cartoon()`, `build_membrane()` | 📋 |
-| `colormaps.py` | Colouring by chain, domain, variant, pLDDT, conservation, mode amplitude. | `ColorScheme` and subclasses | 📋 |
-| `shaders/` | GLSL 4.1 sources, loaded at runtime. | `sphere_impostor.vert/frag`, `cylinder_impostor.*`, `mesh.*` | 📋 |
+| `camera.py` | Quaternion trackball camera. `frame()` solves for the exact tight-fit distance rather than using a bounding sphere. | `Camera`, `perspective()`, `look_at()`, `quat_to_matrix()` | ✅ |
+| `scene.py` | Named batches, shared uniforms, opaque-then-transparent render order. | `Scene`, `Light` | ✅ |
+| `representations.py` | Turns a `Structure` into GPU batches; owns style and colouring state. | `MolecularView`, `Style`, `ColorBy` | ✅ |
+| `geometry_builders.py` | Swept tubes, cartoon ribbons with arrowheads, membrane surface of revolution. | `Mesh`, `build_tube()`, `build_cartoon()`, `build_membrane_mesh()`, `build_disc()` | ✅ |
+| `colormaps.py` | Chain, domain, secondary-structure, B-factor, pLDDT, element and scalar-value colouring. | `DomainPalette`, `load_domain_palette()`, `domain_colors()`, `value_colors()`, `plddt_colors()` | ✅ |
+| `shaders/` | GLSL 4.1 sources, loaded at runtime. | `sphere.vert/frag`, `cylinder.vert/frag`, `mesh.vert/frag` | ✅ |
 
 ### `piezo1/ui/` — PyQt6 application
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `main_window.py` | Application shell: menus, docks, status bar, session state. | `MainWindow` | 📋 |
-| `gl_widget.py` | `QOpenGLWidget` hosting the moderngl context; input handling. | `ViewportWidget` | 📋 |
-| `panels/` | Dockable control panels — structure, representation, variants, ligands, physics, kinetics, sequence. | one class per panel | 📋 |
+| `main_window.py` | Application shell: docks, menus, worker thread for mode calculation, mode animation, click-to-identify. | `MainWindow`, `ModeWorker`, `main()` | ✅ |
+| `gl_widget.py` | `QOpenGLWidget` hosting the moderngl context; input, picking, animation ticks. | `ViewportWidget`, `configure_surface_format()` | ✅ |
+| `panels/` | `structure_panel` (chooser + appearance), `annotation_panel` (domains, sites, variants), `physics_panel` (dome, modes, animation). | `StructurePanel`, `AnnotationPanel`, `PhysicsPanel` | ✅ |
 
 ### `piezo1/resources/` — curated data (committed)
 
@@ -114,10 +114,12 @@ geometry at a fraction of the triangle count.
 |---|---|---|
 | `uniprot_human.json` | Distilled UniProt Q92508: sequence, 38 TM segments, topology, PTMs, 26 natural variants, disulfide, coiled coil. Built by `scripts/build_uniprot_annotations.py`. | ✅ |
 | `uniprot_mouse.json` | Same for mouse E2JF22 (2547 aa). | ✅ |
-| `domains.json` | PIEZO1 architectural domains (blade THU repeats, beam, anchor, OH, IH, cap/CED, CTD) with residue ranges in both numbering systems and per-entry provenance. | 📋 |
-| `variants.json` | Curated variant table: classification, phenotype, functional effect, PMID. | 📋 |
+| `domains.json` | 17 architectural domains with ranges in both numbering systems, provenance (uniprot / derived-by-rule / literature) and confidence. | ✅ |
+| `variants.json` | 68 curated variants, every wild-type residue verified against Q92508, each annotated with which structures resolve it. | ✅ |
+| `functional_residues.json` | 37 residues in 11 groups: hydrophobic gate, selectivity glutamates, CTD constrictions, Yoda1 pocket, PIP2 cluster, basic patches. | ✅ |
+| `numbering_human_mouse.json` | Cached human↔mouse alignment map. | ✅ |
 | `ligands.json` | Yoda1, Yoda2, Jedi1/2, Dooku1, GsMTx4 and lipids with chemistry and binding-site residues. | 📋 |
-| `structures.json` | Structure registry metadata. | 📋 |
+| `structures.json` | Registry of 21 structures with state, resolution, coverage, ligands, citation. | ✅ |
 
 ---
 
@@ -127,19 +129,30 @@ geometry at a fraction of the triangle count.
 |---|---|---|
 | `create_env.sh` | Creates the `piezo1` conda environment with the full stack. | ✅ |
 | `build_uniprot_annotations.py` | Distils UniProt JSON into committed resource files. | ✅ |
-| `fetch_data.py` | Downloads every structure, sequence and ligand the app needs. | 📋 |
+| `build_domains.py` | Authors `domains.json`. | ✅ |
+| `build_functional_residues.py` | Authors `functional_residues.json`, verifying each residue against the sequence. | ✅ |
+| `build_variants.py` | Promotes researched variants into `variants.json` behind a validation gate. | ✅ |
+| `build_structure_registry.py` | Authors `structures.json`. | ✅ |
+| `render_offscreen.py` | Headless render to PNG; also a renderer regression check. | ✅ |
+| `make_figures.py` | All README/doc figures, on shared scale and orientation. | ✅ |
+| `screenshot_app.py` | Drives the real GUI as a smoke test and captures screenshots. | ✅ |
+| Data download | Use `python -m piezo1.io.fetch`. | ✅ |
 
 ## `tests/`
 
 | File | Covers | Status |
 |---|---|---|
-| `test_cif_reader.py` | Parser correctness on real files, including quoted tokens and HETATM. | 📋 |
-| `test_geometry.py` | Sphere fitting on synthetic caps; dome curvature regression against 7WLT. | 📋 |
-| `test_superpose.py` | Kabsch round-trip, C3 axis recovery. | 📋 |
+| `conftest.py` | Fixtures; skips rather than fails when data is not downloaded. | ✅ |
+| `test_cif_reader.py` | Tokenizer whitespace/quoting, column alignment, residue indexing, selections. | ✅ |
+| `test_geometry.py` | Sphere fitting on synthetic spheres and caps; dome curvature regression against the published 10.2 nm; curved vs flat separation. | ✅ |
+| `test_superpose.py` | Kabsch round-trip, reflection exclusion, C3 exactness, reversed-handedness detection. | ✅ |
+| `test_anm.py` | Hessian symmetry, zero modes, disconnected networks, symmetry characters, and the gating-overlap result. | ✅ |
+| `test_sequence_and_resources.py` | Ten cross-species equivalences, non-constant offset, resource integrity. | ✅ |
 
 ## `docs/`
 
 | File | Purpose | Status |
 |---|---|---|
-| `SCIENCE.md` | The scientific basis: mechanism, parameters, provenance, known controversies. | 📋 |
+| `SCIENCE.md` | The scientific basis: mechanism, parameters, provenance, open gaps. | ✅ |
+| `img/` | Generated figures (`make_figures.py`, `screenshot_app.py`). | ✅ |
 | `ARCHITECTURE.md` | Why the code is shaped this way; the rendering approach in detail. | 📋 |
