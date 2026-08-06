@@ -509,6 +509,50 @@ poor instrument for the *substitution*. It answers "which residues are
 mechanically coupled to the gate" well — Round 5 identified the anchor as the
 transmission hub — and "is this amino-acid swap GoF or LoF" badly.
 
+## 8c. Evolutionary constraint
+
+62 vertebrate PIEZO1 orthologs, one per species, aligned pairwise to human and
+indexed by human position. Mean conservation 0.770 over well-covered positions;
+594 positions are invariant across all of them.
+
+**Mean conservation by domain** — an independent line of evidence that lands on
+the same answer as the mechanics:
+
+| Domain | Conservation |
+|---|---|
+| Anchor | **0.987** |
+| Inner helix | 0.980 |
+| CTD | 0.960 |
+| Outer helix | 0.951 |
+| THU9 | 0.931 |
+| … | |
+| Cap | 0.805 |
+| Beam | 0.778 |
+| THU1 (distal blade) | **0.719** |
+
+The **anchor is the most constrained domain in the protein**, and Round 5
+identified it as the force-transmission hub purely from elastic-network
+mechanics. Two independent methods, one structural and one evolutionary,
+converge on the same region.
+
+At the annotated sites: the anchor-domain brake (P2113/F2114) is **invariant
+across all 62 species**; the selectivity glutamates and the PIP2 lysine cluster
+both score 0.986; the hydrophobic gate 0.934. The **Yoda1 pocket is the least
+conserved** of them at 0.859, with A2075 at only 0.63 — which is what one would
+expect of a site targeted by a synthetic agonist rather than an endogenous
+ligand, and fits Yoda1's known species selectivity.
+
+**Conservation alone is not a hypothesis.** 426 positions are invariant, carry
+no reported variant, and are structurally resolved — roughly a quarter of the
+modelled protein. Crossing that with mechanical coupling to the gate is what
+narrows it: residues **2021 and 2034** are invariant, untested, *and* lie on
+the blade-to-gate allosteric path computed in Round 5. Twenty of the top forty
+distal candidates fall in the anchor.
+
+Caveat worth keeping in view: a conserved residue may be structurally
+load-bearing rather than mechanistically important. This narrows a search; it
+does not identify a mechanism.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

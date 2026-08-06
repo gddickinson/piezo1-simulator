@@ -652,3 +652,55 @@ rather than a batch of vectors, so the batched circumsphere solve needed an
 explicit trailing axis. And the pocket tests originally took 137 s because each
 one recomputed the pockets; module-scoped fixtures and a smaller Monte-Carlo
 sample bring that to 16 s.
+
+---
+
+## Round 9 — conservation and constraint (2026-08-06)
+
+62 vertebrate orthologs from UniProt, deduplicated to one per species,
+reference-anchored to human numbering.
+
+**The result worth reporting is a convergence.** Ranked by mean conservation,
+the **anchor domain is the most constrained region of PIEZO1 (0.987)**. Round 5
+had already identified the anchor as the force-transmission hub — the only
+region with a zero detour penalty on the blade-to-gate path. Those are entirely
+independent lines of evidence: one is elastic mechanics on a single structure,
+the other is 62 genomes' worth of selection. They agree.
+
+The gradient across the whole protein is consistent with that picture: pore
+module and anchor at 0.95–0.99, the cap and beam in the middle, and the distal
+blade THU1 at 0.719 — least constrained, and also the region no experimental
+structure resolves.
+
+### Conservation alone is not a hypothesis
+
+426 positions are invariant, carry no reported variant, and are structurally
+resolved. That is about a quarter of the modelled protein, and as a "candidate
+functional site" list it is useless — PIEZO1 is simply very conserved.
+
+What makes it a hypothesis is the intersection with mechanics, which is
+something this project can do and a sequence-only method cannot. Crossing
+conservation with the Round 5 perturbation-response and path-betweenness
+profiles narrows it sharply, and the top distal candidates are dominated by the
+anchor (20 of 40). Two residues, **2021 and 2034**, are invariant across all 62
+species, have never been reported as variants, and lie *on the blade-to-gate
+allosteric path* — they appear literally in that path's residue list. Those are
+well-motivated mutagenesis targets.
+
+Also worth noting as a negative control that behaved: the **Yoda1 pocket is the
+least conserved annotated site** (0.859, with A2075 at 0.63). A synthetic
+agonist's binding site has no reason to be under selection, and this is the
+third independent observation pointing at that site being unusual — the pocket
+detector found it interfacial rather than enclosed, the PDB contains no
+agonist co-structure, and now evolution is indifferent to it.
+
+### The bug
+
+The reference sequence was skipped by testing `member.sequence == ref`, which
+discards *every* sequence identical to the reference rather than the reference
+entry itself. Two closely related species with identical sequences would both
+vanish, and on a small set that empties the alignment completely — the unit
+test with three identical sequences returned conservation 0 everywhere. Fixed
+to skip at most one exact match. Real-data numbers are unchanged, which is the
+point: the bug was only reachable with near-identical inputs, which is exactly
+what a synthetic test provides and real orthologs do not.

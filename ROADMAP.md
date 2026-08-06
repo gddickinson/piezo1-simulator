@@ -223,12 +223,32 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   6 691 Å³ / 63 residues. Parameters were chosen on pocket-size plausibility,
   **before** checking any site recovery, to avoid tuning to the answer.
 
-### Round 9 — Conservation and constraint
-- [ ] `analysis/conservation.py`: fetch orthologs, align, per-residue
+### Round 9 — Conservation and constraint  ✅
+- [x] `analysis/conservation.py`: fetch orthologs, align, per-residue
       conservation, overlay on structure.
-- [ ] Cross with variant density to find constrained regions with no reported
+- [x] Cross with variant density to find constrained regions with no reported
       variants — candidate untested functional sites.
-- [ ] Tests; docs; commit.
+- [x] Tests; docs; commit.
+- **62 vertebrate orthologs**, one per species, reference-anchored to human
+  numbering. Mean conservation 0.770 over well-covered positions; 594 invariant.
+- **An independent confirmation of Round 5.** Ranked by mean conservation, the
+  **anchor domain is the most constrained of all (0.987)**, ahead of the inner
+  helix (0.980) and CTD (0.960), while the distal blade THU1 is the least
+  (0.719). Round 5 identified the anchor as the force-transmission hub from
+  mechanics alone; evolution agrees, by a completely separate line of evidence.
+- Annotated sites score as they should: anchor brake **1.000** (invariant
+  across all 62 species), selectivity glutamates 0.986, PIP2 cluster 0.986,
+  hydrophobic gate 0.934. The Yoda1 pocket is the *least* conserved at 0.859
+  (A2075 only 0.63) — consistent with a synthetic agonist acting at a site not
+  under strong selection.
+- **Conservation alone is too blunt to be a hypothesis:** 426 positions are
+  invariant, never mutated in the literature, and structurally resolved — a
+  quarter of the protein. `rank_candidates()` therefore crosses it with the
+  Round 5 mechanical coupling, which neither could do alone.
+- **Nominated for testing:** residues **2021 and 2034** are invariant across 62
+  species, carry no reported variant, and lie *on the blade→gate allosteric
+  path* computed in Round 5. Of the top 40 distal candidates, 20 are in the
+  anchor. Written to `data/derived/conservation_candidates.json`.
 
 ### Round 10 — Research workflow
 - [ ] Session save/load; analysis report export with full provenance.
