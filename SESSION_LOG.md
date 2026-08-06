@@ -1241,3 +1241,79 @@ assumed, which is precisely what a mock encodes rather than tests.
 round-trips a session through the controller.
 
 Suite 311 → 330 passing.
+
+## Interlude — the interface, driven by using it (2026-08-06)
+
+Round 21 put the engine behind panels; actually running the application turned
+up four things that no amount of testing from inside had shown. All four came
+from the user opening it on their own machine, which is the only way some of
+these surface.
+
+### The window did not fit the screen
+
+`resize(1680, 1000)` was hard-coded. On a laptop or a 1080p display that puts
+the title bar above the top of the screen, and on some window managers the
+window then cannot be dragged back or resized. It now opens at the smaller of
+the preferred size and 95% of the *available* geometry — which already excludes
+the menu bar and dock — and centres itself.
+
+That was necessary but not sufficient. Qt will not shrink a dock below its
+content's minimum, so the tallest panel still set a floor on the whole window.
+Every panel is now wrapped in a `QScrollArea`, and the window's minimum size
+hint dropped to 535×258. There is also `--geometry WxH` for when screen
+detection misjudges a multi-monitor setup.
+
+### The model jumped whenever anything was selected
+
+Selecting a domain, site or variant called `_focus_residues`, which moved the
+camera pivot to the selection's centroid. On a 2500-residue trimer that means
+the whole structure lurches every time you click a list entry.
+
+The honest fix was not to remove it — on a structure this size a highlight can
+easily be behind the protein, and centring is genuinely useful — but to make it
+a choice. Options → *When something is selected* now offers **keep the view
+still** (the new default), **centre on the selection**, or **centre and zoom**.
+The zoom variant deliberately preserves the current *orientation*: reframing
+rotation as well would throw away the view the user had set up, which is the
+same complaint arriving by another route.
+
+### Panels could not be rearranged
+
+Docks were created with Qt's defaults, which confine each one to the two areas
+it was born in and give no way to float or close it. All five are now movable to
+any edge, floatable into their own windows, closable, and tabbable.
+
+Making them closable creates the obvious problem: a user who closes two panels
+and floats two more has no route back. So the shipped arrangement is captured
+once at startup — *before* any remembered layout is applied, so Reset is always
+the application's own layout rather than whatever was last left — and
+View → Reset layout (Ctrl+R) restores it. The trap here is `objectName`:
+`saveState`/`restoreState` key on it, and without one Qt silently declines to
+restore that dock, which looks like a corrupt settings file rather than a
+missing property.
+
+Layouts persist between runs, with the geometry clamped to the current screen on
+restore — otherwise a layout saved on a large external monitor reopens mostly
+off-screen, which is the first bug again by a different path.
+
+### Menus, help and tooltips
+
+Options and Help menus now exist. The help window is non-modal, because the
+point of a feature guide is to be read *while* driving the application.
+
+The guide has seven topics, and the one that matters most is **"What this
+application will not do"** — the pre-registered blind test that returned
+p = 0.234 and AUROC 0.542, the diagnostic that 99.8% of the predictor's variance
+is between-position, the power limit that lets the null exclude only a large
+effect, and the footprint number that turned out 3.5× too large. A test asserts
+those figures are present, because a help file is exactly where an inconvenient
+result would quietly stop being mentioned.
+
+Tooltips now carry provenance rather than restating labels: the dome button says
+what number it should produce and against which publication, the hydrophobicity
+checkbox gives 0.59 against 0.91, the mode selector explains why only A modes
+can couple to isotropic tension.
+
+Suite 330 → 342 passing, and the GUI smoke test now checks the two behaviours
+that were reported — that focus-off leaves the camera still and focus-centre
+moves it, and that reset restores hidden and floated panels.

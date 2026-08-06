@@ -66,6 +66,10 @@ class AnalysisPanel(QWidget):
 
         row = QHBoxLayout()
         self.pore_button = QPushButton("Compute pore profile")
+        self.pore_button.setToolTip(
+            "Radius of the largest sphere that fits at each height along the\n"
+            "conduction axis, with the probe tethered near the axis.\n"
+            "Without that leash the answer escapes to ~6000 A.")
         self.pore_button.clicked.connect(self.pore_requested.emit)
         row.addWidget(self.pore_button)
         self.hydro_check = QCheckBox("hydrophobicity")
@@ -87,6 +91,9 @@ class AnalysisPanel(QWidget):
         box.addWidget(self.pore_label)
 
         self.constriction_table = _table(["z (Å)", "radius (Å)", "lining"])
+        self.constriction_table.setToolTip(
+            "Local minima in the radius profile — candidate gates.\n"
+            "Select one to highlight the residues lining it.")
         self.constriction_table.itemSelectionChanged.connect(
             self._on_constriction)
         box.addWidget(self.constriction_table, 1)
@@ -158,15 +165,20 @@ class AnalysisPanel(QWidget):
         self.pocket_count = QSpinBox()
         self.pocket_count.setRange(1, 40)
         self.pocket_count.setValue(10)
+        self.pocket_count.setToolTip("How many of the largest pockets to keep")
         form.addRow("keep top", self.pocket_count)
         box.addLayout(form)
 
         self.pockets_button = QPushButton("Find pockets")
+        self.pockets_button.setToolTip(
+            "Delaunay alpha-sphere detection with a burial filter. Volumes are\n"
+            "Monte-Carlo unions, not sums of overlapping spheres.")
         self.pockets_button.clicked.connect(
             lambda: self.pockets_requested.emit(self.pocket_count.value()))
         box.addWidget(self.pockets_button)
 
         self.pocket_table = _table(["#", "volume (Å³)", "buried", "residues"])
+        self.pocket_table.setToolTip("Select a pocket to highlight and frame it")
         self.pocket_table.itemSelectionChanged.connect(self._on_pocket)
         box.addWidget(self.pocket_table, 1)
 
@@ -207,6 +219,10 @@ class AnalysisPanel(QWidget):
         conservation = QGroupBox("Conservation")
         inner = QVBoxLayout(conservation)
         self.conservation_button = QPushButton("Compute conservation")
+        self.conservation_button.setToolTip(
+            "Per-residue Shannon entropy over vertebrate PIEZO1 orthologs,\n"
+            "one sequence per species. Fetches on first use.\n"
+            "Positions covered by under 70% of orthologs are dropped.")
         self.conservation_button.clicked.connect(
             self.conservation_requested.emit)
         inner.addWidget(self.conservation_button)
@@ -233,6 +249,9 @@ class AnalysisPanel(QWidget):
         self.scalar_combo.addItem("— off —", "")
         inner.addWidget(self.scalar_combo)
         self.scalar_check = QCheckBox("apply to structure")
+        self.scalar_check.setToolTip(
+            "Colour the 3-D model by the selected per-residue value.\n"
+            "Residues with no value take the map's minimum, not zero.")
         self.scalar_check.toggled.connect(self._emit_colour)
         self.scalar_combo.currentIndexChanged.connect(
             lambda _: self._emit_colour(self.scalar_check.isChecked()))

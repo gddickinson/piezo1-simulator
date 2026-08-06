@@ -2,7 +2,7 @@
 
 import sys
 
-from .ui.main_window import main
+from .ui.app import main
 
 if __name__ == "__main__":
     sys.exit(main())

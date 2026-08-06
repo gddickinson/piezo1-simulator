@@ -58,7 +58,7 @@ class AnnotationPanel(QWidget):
         self.info.setStyleSheet(
             "color:#c3cad8; background:#161a24; border:1px solid #262c3a;"
             "border-radius:5px; padding:7px; font-size:11px;")
-        self.info.setMinimumHeight(96)
+        self.info.setMinimumHeight(64)
         layout.addWidget(self.info)
 
     # ------------------------------------------------------------- domains
@@ -142,6 +142,7 @@ class AnnotationPanel(QWidget):
 
         row = QHBoxLayout()
         self.class_filter = QComboBox()
+        self.class_filter.setToolTip('Filter variants by classification: gain-of-function,\nloss-of-function, engineered, uncertain, or blood-group.')
         self.class_filter.addItem("all classes")
         self.class_filter.addItems(self.annotations.variant_classes())
         self.class_filter.currentTextChanged.connect(self._refill_variants)

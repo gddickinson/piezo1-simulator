@@ -2,7 +2,8 @@
 
 Wires the viewport to the control panels and owns the loaded model, the
 annotation set and the physics results. Long computations run on a worker
-thread so the viewport never stalls.
+thread so the viewport never stalls. Startup and argument parsing live in
+:mod:`piezo1.ui.app`.
 """
 
 from __future__ import annotations
@@ -12,8 +13,8 @@ import time
 import numpy as np
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QKeySequence
-from PyQt6.QtWidgets import (QApplication, QDockWidget, QFileDialog, QLabel,
-                             QMainWindow, QMessageBox, QStatusBar)
+from PyQt6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
+                             QMessageBox, QStatusBar)
 
 from ..config import SETTINGS, STRUCTURE_DIR
 from ..core.annotations import load_annotations
@@ -21,7 +22,11 @@ from ..core.structure import Structure
 from ..io.registry import load_registry
 from ..render.representations import ColorBy, MolecularView, Style
 from .analysis_controller import AnalysisController
+from .docks import DockManager, DockSpec
 from .gl_widget import ViewportWidget
+from .menus import build_menus, make_settings
+from .preferences import PreferencesMixin
+from .model_utils import modelled_residues, protomer_blocks
 from .morph_controller import MorphController
 from .physics_controller import PhysicsController
 from .session_controller import SessionController
@@ -30,19 +35,20 @@ from .panels.annotation_panel import AnnotationPanel
 from .panels.measure_panel import MeasurePanel
 from .panels.physics_panel import PhysicsPanel
 from .panels.structure_panel import StructurePanel
-from .theme import apply_dark_theme
 
 __all__ = ["MainWindow"]
 
 
-class MainWindow(QMainWindow):
+class MainWindow(PreferencesMixin, QMainWindow):
     """Top-level window."""
 
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle("PIEZO1 Dynamic Structural Simulator")
-        self.resize(1680, 1000)
+        self._size_to_screen()
 
+        self.settings = make_settings()
+        self._help: HelpDialog | None = None
         self.registry = load_registry()
         self.annotations = load_annotations("human")
         self.structure: Structure | None = None
@@ -61,7 +67,15 @@ class MainWindow(QMainWindow):
         self.viewport.atom_picked.connect(self._on_pick)
 
         self._build_docks()
+        self.session = SessionController(self)
         self._build_menu()
+
+        # Captured before any saved layout is applied, so Reset always has the
+        # arrangement the application ships with rather than whatever the user
+        # last left.
+        self.docks.capture_default()
+        if self.settings.value("options/remember_layout", True, type=bool):
+            self.docks.restore(self.settings)
 
         bar = QStatusBar()
         self.setStatusBar(bar)
@@ -70,9 +84,34 @@ class MainWindow(QMainWindow):
         self.hint_label = QLabel("drag rotate · shift+drag pan · wheel zoom · "
                                  "R reset · space spin · click to identify")
         self.hint_label.setStyleSheet("color:#6f7684;")
+        self.hint_label.setVisible(
+            self.settings.value("options/show_hints", True, type=bool))
         bar.addPermanentWidget(self.hint_label)
 
     # ----------------------------------------------------------------- setup
+
+    #: The layout was designed at this size; it is a preference, not a demand.
+    PREFERRED_SIZE = (1680, 1000)
+
+    def _size_to_screen(self) -> None:
+        """Open at the preferred size, or the screen's, whichever is smaller.
+
+        A hard ``resize(1680, 1000)`` puts the title bar off the top of a
+        1080p or a scaled laptop display, and on some window managers the
+        window then cannot be moved or resized back. Clamping to the available
+        geometry — which already excludes the menu bar and dock — keeps every
+        edge reachable.
+        """
+        screen = self.screen() or QApplication.primaryScreen()
+        if screen is None:                      # headless; nothing to clamp to
+            self.resize(*self.PREFERRED_SIZE)
+            return
+        available = screen.availableGeometry()
+        width = min(self.PREFERRED_SIZE[0], int(available.width() * 0.95))
+        height = min(self.PREFERRED_SIZE[1], int(available.height() * 0.95))
+        self.resize(width, height)
+        self.move(available.left() + (available.width() - width) // 2,
+                  available.top() + (available.height() - height) // 2)
 
     def _build_docks(self) -> None:
         self.structure_panel = StructurePanel()
@@ -82,7 +121,7 @@ class MainWindow(QMainWindow):
         self.structure_panel.ligands_toggled.connect(self._set_ligands)
         self.structure_panel.radius_changed.connect(self._set_radius)
         self.structure_panel.spin_toggled.connect(
-            lambda on: self.viewport.set_spin(28.0 if on else 0.0))
+            lambda on: self.viewport.set_spin(self._spin_speed() if on else 0.0))
 
         self.annotation_panel = AnnotationPanel("human")
         self.annotation_panel.residues_selected.connect(self._highlight)
@@ -107,26 +146,11 @@ class MainWindow(QMainWindow):
             self.morph_controller.show_frame)
         self.physics_panel.morph_play_toggled.connect(self.morph_controller.play)
 
-        left = QDockWidget("Model", self)
-        left.setWidget(self.structure_panel)
-        left.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea
-                             | Qt.DockWidgetArea.RightDockWidgetArea)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, left)
-
-        right = QDockWidget("Annotation", self)
-        right.setWidget(self.annotation_panel)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, right)
-
-        measure = QDockWidget("Measure", self)
-        measure.setWidget(self.measure_panel)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, measure)
-        self.tabifyDockWidget(right, measure)
-        right.raise_()
-
         self.analysis_panel = AnalysisPanel()
         self.analysis = AnalysisController(self)
         self.analysis_panel.pore_requested.connect(self.analysis.compute_pore)
-        self.analysis_panel.pockets_requested.connect(self.analysis.compute_pockets)
+        self.analysis_panel.pockets_requested.connect(
+            self.analysis.compute_pockets)
         self.analysis_panel.conservation_requested.connect(
             self.analysis.compute_conservation)
         self.analysis_panel.allostery_requested.connect(
@@ -137,66 +161,43 @@ class MainWindow(QMainWindow):
         self.analysis_panel.pore_position_picked.connect(
             self.analysis.focus_pore_position)
 
-        physics = QDockWidget("Physics", self)
-        physics.setWidget(self.physics_panel)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, physics)
+        self.docks = DockManager(self)
+        for spec in (
+            DockSpec("model", "Model", self.structure_panel,
+                     Qt.DockWidgetArea.LeftDockWidgetArea,
+                     "Choose a structure and how it is drawn"),
+            DockSpec("physics", "Physics", self.physics_panel,
+                     Qt.DockWidgetArea.LeftDockWidgetArea,
+                     "Dome geometry, normal modes and morphing"),
+            DockSpec("annotation", "Annotation", self.annotation_panel,
+                     Qt.DockWidgetArea.RightDockWidgetArea,
+                     "Domains, functional sites and curated variants"),
+            DockSpec("analysis", "Analysis", self.analysis_panel,
+                     Qt.DockWidgetArea.RightDockWidgetArea,
+                     "Pore, pockets, conservation and allostery",
+                     tabify_with="annotation"),
+            DockSpec("measure", "Measure", self.measure_panel,
+                     Qt.DockWidgetArea.RightDockWidgetArea,
+                     "Click-to-measure distances, angles and dihedrals",
+                     tabify_with="annotation"),
+        ):
+            self.docks.add(spec)
+        self.docks.docks["annotation"].raise_()
 
-        analysis = QDockWidget("Analysis", self)
-        analysis.setWidget(self.analysis_panel)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, analysis)
-        self.tabifyDockWidget(right, analysis)
-        right.raise_()
-
-        self.resizeDocks([left, physics], [420, 520], Qt.Orientation.Vertical)
-        self.resizeDocks([right], [400], Qt.Orientation.Horizontal)
+        # Proportional, not absolute: a fixed 420+520 split needs a 940 px
+        # column, which a laptop does not have once menu and status bars are
+        # taken.
+        usable = max(self.height() - 120, 320)
+        self.resizeDocks([self.docks.docks["model"], self.docks.docks["physics"]],
+                         [int(usable * 0.45), int(usable * 0.55)],
+                         Qt.Orientation.Vertical)
+        self.resizeDocks([self.docks.docks["annotation"]],
+                         [min(400, max(self.width() // 4, 280))],
+                         Qt.Orientation.Horizontal)
 
     def _build_menu(self) -> None:
-        file_menu = self.menuBar().addMenu("&File")
-        act = QAction("&Open structure…", self)
-        act.setShortcut(QKeySequence.StandardKey.Open)
-        act.triggered.connect(self._open_file)
-        file_menu.addAction(act)
-        file_menu.addSeparator()
+        build_menus(self)
 
-        self.session = SessionController(self)
-        for label, shortcut, callback in (
-                ("&Save session…", "Ctrl+S", self.session.save),
-                ("Load &session…", "Ctrl+L", self.session.load),
-                ("&Export analysis report…", "Ctrl+E",
-                 self.session.export_report)):
-            a = QAction(label, self)
-            a.setShortcut(QKeySequence(shortcut))
-            a.triggered.connect(callback)
-            file_menu.addAction(a)
-        file_menu.addSeparator()
-
-        act = QAction("&Quit", self)
-        act.setShortcut(QKeySequence.StandardKey.Quit)
-        act.triggered.connect(self.close)
-        file_menu.addAction(act)
-
-        view_menu = self.menuBar().addMenu("&View")
-        for label, cb in (("Reset camera", lambda: self._reset_camera()),
-                          ("Clear highlight", lambda: self._highlight([], ""))):
-            a = QAction(label, self)
-            a.triggered.connect(cb)
-            view_menu.addAction(a)
-
-        analysis_menu = self.menuBar().addMenu("&Analysis")
-        for label, callback in (
-                ("Pore profile", lambda: self.analysis.compute_pore()),
-                ("Find pockets", lambda: self.analysis.compute_pockets(10)),
-                ("Conservation", lambda: self.analysis.compute_conservation()),
-                ("Coupling to the gate (PRS)",
-                 lambda: self.analysis.compute_allostery())):
-            a = QAction(label, self)
-            a.triggered.connect(callback)
-            analysis_menu.addAction(a)
-
-        help_menu = self.menuBar().addMenu("&Help")
-        a = QAction("About", self)
-        a.triggered.connect(self._about)
-        help_menu.addAction(a)
 
     # ------------------------------------------------------------- lifecycle
 
@@ -250,46 +251,15 @@ class MainWindow(QMainWindow):
         self._refresh_measurements()
         self._reset_camera()
 
-        modelled = self._modelled_residues(st)
+        modelled = modelled_residues(st)
         self.annotation_panel.set_structure_context(rec.pdb, modelled)
-        self._mode_blocks = self._protomer_blocks(st)
+        self._mode_blocks, self._mode_residues = protomer_blocks(st)
 
         self._set_status(
             f"{rec.pdb}: {st.n_atoms:,} atoms, {st.n_residues:,} residues, "
             f"{len(self._mode_blocks)} protomers · loaded in "
             f"{time.time() - t0:.2f} s · {rec.numbering_species} numbering")
         self.viewport.update()
-
-    def _modelled_residues(self, st: Structure) -> set[int]:
-        per = []
-        for ch in st.chains:
-            m = st.mask_ca() & (st.chain == ch)
-            if m.sum() > 300:
-                per.append(set(st.res_seq[m].tolist()))
-        return set.intersection(*per) if per else set()
-
-    def _protomer_blocks(self, st: Structure) -> list[np.ndarray]:
-        """Equal-length C-alpha blocks, one per protomer, identically ordered."""
-        chains = []
-        for ch in st.chains:
-            m = st.mask_ca() & (st.chain == ch)
-            if m.sum() > 300:
-                chains.append((st.xyz[m], st.res_seq[m]))
-        if len(chains) < 3:
-            return []
-        common = set(chains[0][1].tolist())
-        for _, seq in chains[1:]:
-            common &= set(seq.tolist())
-        common_arr = np.array(sorted(common))
-        blocks = []
-        for xyz, seq in chains[:3]:
-            idx = np.searchsorted(seq, common_arr)
-            blocks.append(xyz[idx].astype(np.float64))
-        # Keep the residue numbering the blocks were built on. Anything that
-        # maps a per-site result back onto the model needs it, and rebuilding
-        # it independently is how the two fall out of step.
-        self._mode_residues = common_arr
-        return blocks
 
     def _open_file(self) -> None:
         path, _ = QFileDialog.getOpenFileName(
@@ -304,7 +274,7 @@ class MainWindow(QMainWindow):
         self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.rebuild()
         self.viewport.set_pick_source(st.xyz)
-        self._mode_blocks = self._protomer_blocks(st)
+        self._mode_blocks, self._mode_residues = protomer_blocks(st)
         self._reset_camera()
         self._set_status(f"{st.name}: {st.n_atoms:,} atoms")
 
@@ -383,13 +353,25 @@ class MainWindow(QMainWindow):
         self.viewport.update()
 
     def _focus_residues(self, residues) -> None:
-        if self.structure is None or self.viewport.scene is None or not residues:
+        """Move the camera to a selection, if the user has asked for that."""
+        mode = self.focus_mode()
+        if (mode == "none" or self.structure is None
+                or self.viewport.scene is None or not residues):
             return
         mask = np.isin(self.structure.res_seq,
                        np.asarray(list(residues), dtype=np.int32))
-        if mask.any():
-            self.viewport.scene.camera.pivot = self.structure.xyz[mask].mean(axis=0)
-            self.viewport.update()
+        if not mask.any():
+            return
+        camera = self.viewport.scene.camera
+        if mode == "frame":
+            # Keep the orientation the user has set; only the pivot and the
+            # distance change. Reframing rotation as well would throw away the
+            # view they had chosen, which is the complaint this option exists
+            # to answer.
+            camera.frame(self.structure.xyz[mask])
+        else:
+            camera.pivot = self.structure.xyz[mask].mean(axis=0)
+        self.viewport.update()
 
     def _set_measure_mode(self, on: bool) -> None:
         self.viewport.measure_mode = on
@@ -451,20 +433,11 @@ class MainWindow(QMainWindow):
             "carries its provenance — see the panels for sources.</p>")
 
     def closeEvent(self, event) -> None:
+        if self.settings.value("options/remember_layout", True, type=bool):
+            self.docks.save(self.settings)
         self.physics.cleanup()
         self.analysis.cleanup()
         if self.viewport.scene is not None:
             self.viewport.makeCurrent()
             self.viewport.scene.release()
         super().closeEvent(event)
-
-
-def main() -> int:
-    import sys
-    from .gl_widget import configure_surface_format
-    configure_surface_format(SETTINGS.render)
-    app = QApplication(sys.argv)
-    apply_dark_theme(app)
-    win = MainWindow()
-    win.show()
-    return app.exec()

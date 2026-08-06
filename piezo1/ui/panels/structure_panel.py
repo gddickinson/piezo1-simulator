@@ -58,6 +58,9 @@ class StructurePanel(QWidget):
 
         self.structure_combo = QComboBox()
         self.structure_combo.setMinimumWidth(260)
+        self.structure_combo.setToolTip(
+            "21 curated PIEZO structures. Each states its gating state,\n"
+            "resolved residue range, numbering species and citation.")
         self.structure_combo.currentIndexChanged.connect(self._on_structure)
         form.addRow("Entry", self.structure_combo)
 
@@ -77,6 +80,10 @@ class StructurePanel(QWidget):
             self.style_combo.addItem(label)
         self.style_combo.currentIndexChanged.connect(
             lambda i: self.style_changed.emit(STYLE_LABELS[i][1]))
+        self.style_combo.setToolTip(
+            "Cartoon uses secondary structure assigned from C-alpha geometry\n"
+            "(P-SEA), because most of these entries have no backbone atoms.\n"
+            "Spheres and sticks are ray-cast impostors, so they are exact.")
         form.addRow("Representation", self.style_combo)
 
         self.color_combo = QComboBox()
@@ -91,14 +98,20 @@ class StructurePanel(QWidget):
         self.radius_slider.setValue(100)
         self.radius_slider.valueChanged.connect(
             lambda v: self.radius_changed.emit(v / 100.0))
+        self.radius_slider.setToolTip("Scale every atom radius; visual only")
         form.addRow("Atom size", self.radius_slider)
 
         self.ligand_check = QCheckBox("Show lipids and ligands")
         self.ligand_check.setChecked(True)
+        self.ligand_check.setToolTip(
+            "Show resolved lipids and ligands as spheres. These are modelled\n"
+            "densities, not docked poses.")
         self.ligand_check.toggled.connect(self.ligands_toggled.emit)
         form.addRow(self.ligand_check)
 
         self.spin_check = QCheckBox("Auto-rotate")
+        self.spin_check.setToolTip(
+            "Rotate continuously. Speed is set in Options.")
         self.spin_check.toggled.connect(self.spin_toggled.emit)
         form.addRow(self.spin_check)
         layout.addWidget(box)

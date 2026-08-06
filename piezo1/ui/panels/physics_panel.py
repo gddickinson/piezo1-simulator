@@ -40,6 +40,7 @@ class PhysicsPanel(QWidget):
         box = QGroupBox("Membrane dome")
         v = QVBoxLayout(box)
         self.measure_button = QPushButton("Measure dome geometry")
+        self.measure_button.setToolTip('Fit a sphere to the transmembrane surface.\nCurved structures give about 9.7 nm against the\npublished 10.2 nm (Haselwandter & MacKinnon 2018).')
         self.measure_button.clicked.connect(self.measure_dome_requested.emit)
         v.addWidget(self.measure_button)
         self.dome_label = QLabel("Not measured.")
@@ -71,11 +72,15 @@ class PhysicsPanel(QWidget):
         form.addRow("Spring model", self.spring_combo)
 
         self.nmodes_spin = QSpinBox()
+
+        self.nmodes_spin.setToolTip('How many low-frequency modes to solve for. The first\nsix are rigid-body and are discarded automatically\n(more if the network is disconnected).')
         self.nmodes_spin.setRange(6, 60)
         self.nmodes_spin.setValue(24)
         form.addRow("Modes", self.nmodes_spin)
 
         self.compute_button = QPushButton("Compute normal modes")
+
+        self.compute_button.setToolTip('Build the elastic network and solve its lowest modes.\nRuns on a worker thread; takes a few seconds.')
         self.compute_button.clicked.connect(self._emit_compute)
         form.addRow(self.compute_button)
 
@@ -89,6 +94,7 @@ class PhysicsPanel(QWidget):
         box = QGroupBox("Mode animation")
         v = QVBoxLayout(box)
         self.mode_combo = QComboBox()
+        self.mode_combo.setToolTip('Each mode is labelled A or E by its behaviour under the\nthree-fold rotation. Membrane tension is isotropic, so\nONLY A modes can couple to it at first order.')
         self.mode_combo.setEnabled(False)
         self.mode_combo.currentIndexChanged.connect(self._on_mode)
         v.addWidget(self.mode_combo)
@@ -102,6 +108,7 @@ class PhysicsPanel(QWidget):
         row = QHBoxLayout()
         row.addWidget(QLabel("Amplitude"))
         self.amp_slider = QSlider(Qt.Orientation.Horizontal)
+        self.amp_slider.setToolTip('Visualisation amplitude. This is a display choice, not a\nprediction of how far the protein actually moves.')
         self.amp_slider.setRange(1, 60)
         self.amp_slider.setValue(18)
         self.amp_slider.valueChanged.connect(
@@ -115,12 +122,15 @@ class PhysicsPanel(QWidget):
 
         row = QHBoxLayout()
         self.animate_button = QPushButton("Animate")
+        self.animate_button.setToolTip('Drive the structure back and forth along the selected\nmode.')
         self.animate_button.setCheckable(True)
         self.animate_button.setEnabled(False)
         self.animate_button.toggled.connect(self._on_animate)
         row.addWidget(self.animate_button)
 
         self.color_button = QPushButton("Colour by displacement")
+
+        self.color_button.setToolTip('Colour each residue by how far this mode moves it.')
         self.color_button.setCheckable(True)
         self.color_button.setEnabled(False)
         self.color_button.toggled.connect(self.color_by_mode_requested.emit)
@@ -145,10 +155,14 @@ class PhysicsPanel(QWidget):
         form.addRow("Method", self.morph_method)
 
         self.morph_button = QPushButton("Build morph")
+
+        self.morph_button.setToolTip('Build the interpolation. This is an interpolation, not a\nsimulated trajectory.')
         self.morph_button.clicked.connect(self._emit_morph)
         form.addRow(self.morph_button)
 
         self.morph_slider = QSlider(Qt.Orientation.Horizontal)
+
+        self.morph_slider.setToolTip('Scrub along the morph.')
         self.morph_slider.setRange(0, 100)
         self.morph_slider.setEnabled(False)
         self.morph_slider.valueChanged.connect(
@@ -156,6 +170,8 @@ class PhysicsPanel(QWidget):
         form.addRow("Curved → flat", self.morph_slider)
 
         self.morph_play = QPushButton("Play")
+
+        self.morph_play.setToolTip('Play the morph as an animation.')
         self.morph_play.setCheckable(True)
         self.morph_play.setEnabled(False)
         self.morph_play.toggled.connect(self.morph_play_toggled.emit)

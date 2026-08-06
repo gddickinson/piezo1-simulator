@@ -29,12 +29,15 @@ class MeasurePanel(QWidget):
 
         row = QHBoxLayout()
         self.kind_combo = QComboBox()
+        self.kind_combo.setToolTip('Distance needs two atoms, angle three, dihedral four.')
         self.kind_combo.addItems(sorted(MEASUREMENT_KINDS))
         self.kind_combo.setCurrentText("distance")
         self.kind_combo.currentTextChanged.connect(self._set_kind)
         row.addWidget(self.kind_combo, 1)
 
         self.arm_button = QPushButton("Measure")
+
+        self.arm_button.setToolTip('Arm picking, then click atoms in the viewport.\nThe regression case is the C2411-C2415 disulfide at 2.04 A.')
         self.arm_button.setCheckable(True)
         self.arm_button.toggled.connect(self._arm)
         row.addWidget(self.arm_button)

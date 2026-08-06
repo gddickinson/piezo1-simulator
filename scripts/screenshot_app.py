@@ -131,6 +131,42 @@ def main() -> int:
             failures.append("hydrophobicity trace missing from the pore plot")
         shot("pore")
 
+    def step_focus_mode() -> None:
+        """The reported bug: clicking a list entry moved the whole model."""
+        import numpy as np
+        if win.viewport.scene is None or win.structure is None:
+            failures.append("no GL scene for the focus-mode check")
+            return
+        camera = win.viewport.scene.camera
+        residues = [int(win.structure.res_seq[100])]
+
+        win._set_focus_mode("none")
+        before = np.array(camera.pivot, dtype=float).copy()
+        win._focus_residues(residues)
+        still = np.allclose(camera.pivot, before)
+
+        win._set_focus_mode("centre")
+        win._focus_residues(residues)
+        moved = not np.allclose(camera.pivot, before)
+
+        win._set_focus_mode("none")
+        camera.pivot = before
+        print(f"focus mode: off -> view still {still}; centre -> view moved {moved}")
+        if not still:
+            failures.append("focus off still moved the camera")
+        if not moved:
+            failures.append("focus centre did not move the camera")
+
+    def step_layout() -> None:
+        docks = win.docks.docks
+        docks["measure"].hide()
+        docks["model"].setFloating(True)
+        win._reset_layout()
+        ok = docks["measure"].isVisible() and not docks["model"].isFloating()
+        print(f"layout reset restored hidden and floating panels: {ok}")
+        if not ok:
+            failures.append("reset layout did not restore the docks")
+
     def step_session() -> None:
         """Round-trip a session through the controller, without a file dialog."""
         import tempfile
@@ -153,7 +189,7 @@ def main() -> int:
               step_variant, step_shot_variant, step_measure]
     if args.analysis:
         steps += [step_pore, None, None, None, None, None, step_shot_pore,
-                  step_session]
+                  step_focus_mode, step_layout, step_session]
     if args.modes:
         steps += [step_modes, None, None, None, step_shot_modes]
 

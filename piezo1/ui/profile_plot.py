@@ -77,7 +77,9 @@ class ProfilePlot(QWidget):
         self.right = _Axis(label="", color="#f2a65a")
         self._x = _Axis()
         self._cursor: float | None = None
-        self.setMinimumHeight(190)
+        # Small enough that a dock can still shrink on a short display; the
+        # size policy below lets it grow whenever there is room.
+        self.setMinimumHeight(120)
         self.setSizePolicy(QSizePolicy.Policy.Expanding,
                            QSizePolicy.Policy.Expanding)
         self.setMouseTracking(True)

@@ -120,7 +120,14 @@ geometry at a fraction of the triangle count.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `main_window.py` | Application shell: docks, menus, structure loading, highlighting, click-to-identify. | `MainWindow`, `main()` | ✅ |
+| `main_window.py` | Application shell: owns the model, panels and controllers. | `MainWindow` | ✅ |
+| `app.py` | Launcher: `--geometry WxH`, `--structure`, `--maximised`, and the Qt event loop. | `main()` | ✅ |
+| `docks.py` | Every panel as a movable, floatable, closable dock in any area; captures the shipped layout at startup so **Reset layout** always has somewhere to return to, and persists geometry through `QSettings` with a clamp so a layout saved on a large monitor cannot reopen off-screen. | `DockManager`, `DockSpec` | ✅ |
+| `menus.py` | File, View, Analysis, Options and Help menus, with tooltips carrying what each analysis computes. | `build_menus()`, `make_settings()` | ✅ |
+| `preferences.py` | Remembered settings and their menu handlers: layout memory, status hints, spin speed, and **what a selection does to the camera** (leave still / centre / centre and zoom). | `PreferencesMixin` | ✅ |
+| `help_content.py` | The in-application guide as data: seven topics, the shortcut table, and the document index. Includes the null result and the corrected footprint number. | `TOPICS`, `DOC_LINKS`, `SHORTCUTS` | ✅ |
+| `help_dialog.py` | Non-modal help window — feature guide, shortcuts, and links that open the shipped documents. | `HelpDialog`, `open_document()` | ✅ |
+| `model_utils.py` | Which residues are resolved in all three protomers, and the equal-length C-alpha blocks built from them. | `protomer_blocks()`, `modelled_residues()`, `well_resolved_chains()` | ✅ |
 | `physics_controller.py` | Dome measurement, threaded mode calculation, mode animation and displacement colouring. | `PhysicsController`, `ModeWorker` | ✅ |
 | `analysis_controller.py` | Threaded pore, pockets, conservation and allostery runs; maps per-residue scalars onto atoms and colours the model through `ColorBy.VALUE`. Unmeasured residues take the map's floor, not zero. | `AnalysisController`, `AnalysisWorker` | ✅ |
 | `session_controller.py` | File-menu session save/load and report export. Sessions record what was being viewed, never results. | `SessionController` | ✅ |

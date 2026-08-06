@@ -143,8 +143,18 @@ Silicon, Metal-backed GL 4.1); Linux and Windows should work but are untested.
 
 ![Application](docs/img/app_modes.png)
 
+```bash
+python -m piezo1                      # or --geometry 1280x800, --structure 8YEZ
+```
+
 Drag to rotate, shift-drag to pan, wheel to zoom, `R` to reset, space to spin,
-click any atom to identify it.
+click any atom to identify it. `F1` opens a feature guide that explains every
+panel, including a section on what the application has been *tested to not do*.
+
+Every panel is a dock: drag it to any edge, tear it off into its own window, or
+close it and bring it back from **View → Panels**. **Ctrl+R** restores the
+shipped arrangement. Whether selecting a residue recentres the view is a setting
+under **Options**, defaulting to leaving the camera where you put it.
 
 - **Model** — choose a structure; each shows its state, resolved residue range,
   numbering system, bound ligands and citation.
