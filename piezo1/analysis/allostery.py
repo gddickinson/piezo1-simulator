@@ -121,6 +121,17 @@ class PRSResult:
         np.fill_diagonal(m, 0.0)
         return m.mean(axis=0)
 
+    @property
+    def is_symmetric(self) -> bool:
+        """Whether the response matrix equals its own transpose.
+
+        It does, for the unnormalised matrix: the entry is the Frobenius norm
+        of a covariance block, and that norm is invariant under transpose.
+        Effector and sensor are therefore the *same* residues under this
+        formulation, not two populations to be compared.
+        """
+        return bool(np.allclose(self.matrix, self.matrix.T, atol=1e-9))
+
     def response_at(self, target_sites) -> np.ndarray:
         """Response at a chosen set of sites to a force at each site in turn.
 

@@ -761,3 +761,52 @@ Block F leads with that, then a *new* pre-registration for a second variant
 hypothesis (the Round 7 result stands as recorded and is not to be revised),
 packaging, performance, and the teaching layer — which project aim A1 asks for
 and which has had the least attention of anything.
+
+---
+
+## Round 16 — the feature table (2026-08-06)
+
+`analysis/features.py` assembles everything the project computes into one row
+per residue: PRS gate response and coupling, path betweenness, correlation to
+the gate, amplitude along the lowest symmetric mode, fluctuation, relative
+SASA, conservation, geometry and domain. 1279 residues × 11 features for 8YEZ
+in 9 s.
+
+**No phenotype comparison was run, deliberately.** The Round 7 blind test
+returned a null result which stands as recorded; re-testing these features
+against the variant labels needs the new pre-registration scheduled for Round
+22. Assembling predictors and evaluating them in the same breath is exactly how
+a blind test stops being blind, so the validation here is entirely structural:
+gate response falls off with distance to the gate (r = −0.55), relative SASA
+lies in [0, 1], the mode used as the gating coordinate is confirmed to be
+A-symmetric, and the conservation join reproduces Round 9's domain ranking
+exactly — which it would not if the residue join were off by a single position.
+
+### The redundancy the tests caught
+
+I wrote a test asserting that no two feature columns correlate above 0.99, on
+the general principle that a near-perfect correlation means a duplicated
+column. It fired immediately, and what it exposed is worth stating.
+
+**The PRS response matrix is symmetric.** Its entries are Frobenius norms of
+covariance blocks, and the Frobenius norm is invariant under transpose, so
+‖C_ij‖ = ‖C_ji‖. Row and column means are therefore the *same numbers*:
+"effectiveness" and "sensitivity" — effector and sensor — are not two
+populations to compare, they are one quantity written twice.
+
+Row normalisation appears to break the symmetry, and I initially "fixed" the
+problem that way. It does not work either. Normalisation forces every row mean
+to 1, so effectiveness becomes near-constant (spread/mean 0.0018, a range of
+0.9655–0.9999), and the normalised *column* mean still correlates with the raw
+row mean at **0.998**. Two columns, one quantity, wearing different scales.
+
+Shipping both would have looked like two independent lines of mechanical
+evidence and been one — the sort of thing that quietly inflates a combined
+score. The table now carries a single, honestly named `prs_coupling`, and the
+symmetry is documented on `PRSResult.is_symmetric` so the next person does not
+re-derive it.
+
+Highest remaining inter-feature correlation is 0.953 (`prs_coupling` against
+`gating_amplitude`), which is high but genuinely two things: how strongly a
+residue couples to the whole protein, and how far it moves along the specific
+gating coordinate.

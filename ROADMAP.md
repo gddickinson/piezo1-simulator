@@ -374,13 +374,33 @@ coordinate and matches an A-symmetric mode at 0.804, and the anchor domain is
 the dominant force-transmission hub. What is still missing for the destination
 is a per-variant number and an honest test of it.
 
-### Round 16 — Allostery-derived variant features
-- [ ] Per-residue features from the machinery now in place: PRS response at the
+### Round 16 — Allostery-derived variant features  ✅
+- [x] Per-residue features from the machinery now in place: PRS response at the
       gate, path betweenness, DCC coupling to the gate, mode-6 displacement
       amplitude, burial (SASA), and domain membership.
-- [ ] These are the structure-derived predictors that feed Round 6, and they
+- [x] These are the structure-derived predictors that feed Round 6, and they
       exist now only because Round 5 built them.
-- [ ] Tests; docs; commit.
+- [x] Tests; docs; commit.
+- **`analysis/features.py`**: 1279 residues × 11 features for 8YEZ in 9 s —
+  PRS gate response and coupling, path betweenness, DCC to the gate, amplitude
+  along the lowest **A**-symmetric mode, mean-square fluctuation, relative
+  SASA, conservation, distance to gate and axis, contact count, domain.
+- **Structural validation only. No phenotype comparison was run**, deliberately;
+  the Round 7 null result stands and re-testing needs the new pre-registration
+  in Round 22. Checks used instead: gate response falls off with distance to
+  the gate (r = −0.55), relative SASA lies in [0, 1], the gating mode used is
+  confirmed symmetric, and the conservation join reproduces Round 9's domain
+  ranking exactly (anchor highest at 0.987) — which it would not if the residue
+  join were off by even one.
+- **Two redundant features found and removed**, by a test that forbids any pair
+  of columns correlating above 0.99. The PRS response matrix is *symmetric*
+  (‖C_ij‖_F = ‖C_ji‖_F, the Frobenius norm being transpose-invariant), so
+  "effectiveness" and "sensitivity" are literally the same numbers — effector
+  and sensor coincide under this formulation. Row normalisation appears to
+  separate them but makes effectiveness near-constant (spread/mean 0.0018) and
+  leaves the normalised sensitivity correlating with raw coupling at **0.998**.
+  Shipping both would have looked like two independent lines of evidence and
+  been one. The table now carries a single honestly named `prs_coupling`.
 
 ### Round 17 — External predictors, licence-clean
 - [ ] Integrate the **ProtVar API** (`https://www.ebi.ac.uk/ProtVar/api`,
