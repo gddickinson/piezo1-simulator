@@ -26,6 +26,9 @@ class PhysicsPanel(QWidget):
     animate_toggled = pyqtSignal(bool)
     amplitude_changed = pyqtSignal(float)
     color_by_mode_requested = pyqtSignal(bool)
+    morph_requested = pyqtSignal(dict)
+    morph_position_changed = pyqtSignal(float)
+    morph_play_toggled = pyqtSignal(bool)
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -125,6 +128,46 @@ class PhysicsPanel(QWidget):
         v.addLayout(row)
         layout.addWidget(box)
 
+        # ----------------------------------------------------------- morphing
+        box = QGroupBox("Gating morph")
+        form = QFormLayout(box)
+        self.morph_combo = QComboBox()
+        self.morph_combo.setToolTip(
+            "Curved and flattened experimental endpoints from the same study")
+        form.addRow("Endpoints", self.morph_combo)
+
+        self.morph_method = QComboBox()
+        self.morph_method.addItems(["restrained", "modal", "linear"])
+        self.morph_method.setToolTip(
+            "restrained: linear interpolation with C-alpha distances restored\n"
+            "modal: follow the elastic-network subspace\n"
+            "linear: straight-line, shown for comparison — it contracts bonds")
+        form.addRow("Method", self.morph_method)
+
+        self.morph_button = QPushButton("Build morph")
+        self.morph_button.clicked.connect(self._emit_morph)
+        form.addRow(self.morph_button)
+
+        self.morph_slider = QSlider(Qt.Orientation.Horizontal)
+        self.morph_slider.setRange(0, 100)
+        self.morph_slider.setEnabled(False)
+        self.morph_slider.valueChanged.connect(
+            lambda v: self.morph_position_changed.emit(v / 100.0))
+        form.addRow("Curved → flat", self.morph_slider)
+
+        self.morph_play = QPushButton("Play")
+        self.morph_play.setCheckable(True)
+        self.morph_play.setEnabled(False)
+        self.morph_play.toggled.connect(self.morph_play_toggled.emit)
+        form.addRow(self.morph_play)
+
+        self.morph_label = QLabel("No morph built.")
+        self.morph_label.setWordWrap(True)
+        self.morph_label.setTextFormat(Qt.TextFormat.RichText)
+        self.morph_label.setStyleSheet("color:#9aa3b2; font-size:11px;")
+        form.addRow(self.morph_label)
+        layout.addWidget(box)
+
         layout.addStretch(1)
         self._modes = None
 
@@ -136,6 +179,42 @@ class PhysicsPanel(QWidget):
             "spring": self.spring_combo.currentText(),
             "n_modes": self.nmodes_spin.value(),
         })
+
+    def _emit_morph(self) -> None:
+        pair = self.morph_combo.currentData()
+        if pair is None:
+            return
+        self.morph_requested.emit({
+            "start": pair[0], "end": pair[1],
+            "method": self.morph_method.currentText(),
+        })
+
+    def set_morph_pairs(self, pairs) -> None:
+        self.morph_combo.clear()
+        for a, b in pairs:
+            self.morph_combo.addItem(f"{a} → {b}", (a, b))
+        self.morph_button.setEnabled(bool(pairs))
+        if not pairs:
+            self.morph_label.setText(
+                "No curved/flat endpoint pair is available locally.")
+
+    def set_morph(self, trajectory) -> None:
+        enabled = trajectory is not None
+        self.morph_slider.setEnabled(enabled)
+        self.morph_play.setEnabled(enabled)
+        if not enabled:
+            self.morph_label.setText("No morph built.")
+            return
+        captured = trajectory.meta.get("fraction_captured_by_modes")
+        extra = (f" · elastic-network subspace captures {captured:.0%} of the "
+                 f"change" if captured is not None else "")
+        self.morph_label.setText(
+            f"<b>{len(trajectory)} frames</b> · endpoint RMSD "
+            f"{trajectory.endpoint_rmsd:.1f} Å · worst C-alpha bond error "
+            f"{trajectory.bond_error.max():.2f} Å{extra}<br>"
+            f"<span style='color:#7f8798'>An interpolation between two observed "
+            f"states, not a simulated trajectory — it shows a plausible path, "
+            f"not the energy barrier or the order of events.</span>")
 
     def _on_mode(self, index: int) -> None:
         if self._modes is None or index < 0:

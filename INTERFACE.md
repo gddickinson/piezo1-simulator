@@ -62,7 +62,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `superpose.py` | Kabsch superposition, RMSD, C3 axis recovery, and **protomer correspondence matching** — deposited chain labels are not a reliable guide to rotational order. | `kabsch()`, `superpose()`, `rmsd()`, `SymmetryAxis`, `detect_c3_axis()`, `match_protomers()`, `ProtomerMatch`, `align_axis_to_z()`, `rotation_matrix()` | ✅ |
 | `geometry.py` | **Membrane-dome measurement.** Sphere fitting, radial height profile, dome depth / area / excess area. Reproduces published dome curvature. | `fit_sphere()`, `SphereFit`, `radial_profile()`, `RadialProfile`, `DomeGeometry`, `measure_dome()` | ✅ |
 | `hybrid.py` | Assembles the full-length model: experimental core + AlphaFold distal blade, with the seam recorded and renderable. | `build_hybrid_model()`, `HybridModel` | 📋 |
-| `morph.py` | Conformational interpolation between curved and flattened states with bond-geometry restraints. | `morph()`, `MorphTrajectory` | 📋 |
+| `morph.py` | Conformational interpolation between endpoints: linear, distance-restrained, and elastic-network-subspace methods, each reporting its own bond-geometry error. | `morph()`, `MorphTrajectory`, `prepare_endpoints()`, `restrained_morph()`, `modal_morph()` | ✅ |
 | `pore.py` | Pore radius profile along the conduction axis (HOLE-equivalent, self-contained). | `pore_profile()`, `PoreProfile` | 📋 |
 
 ### `piezo1/physics/` — the simulation engine
@@ -104,7 +104,9 @@ geometry at a fraction of the triangle count.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `main_window.py` | Application shell: docks, menus, worker thread for mode calculation, mode animation, click-to-identify. | `MainWindow`, `ModeWorker`, `main()` | ✅ |
+| `main_window.py` | Application shell: docks, menus, structure loading, highlighting, click-to-identify. | `MainWindow`, `main()` | ✅ |
+| `physics_controller.py` | Dome measurement, threaded mode calculation, mode animation and displacement colouring. | `PhysicsController`, `ModeWorker` | ✅ |
+| `morph_controller.py` | Builds and plays back the curved-to-flat morph. | `MorphController` | ✅ |
 | `gl_widget.py` | `QOpenGLWidget` hosting the moderngl context; input, picking, animation ticks. | `ViewportWidget`, `configure_surface_format()` | ✅ |
 | `panels/` | `structure_panel` (chooser + appearance), `annotation_panel` (domains, sites, variants), `physics_panel` (dome, modes, animation). | `StructurePanel`, `AnnotationPanel`, `PhysicsPanel` | ✅ |
 
@@ -148,6 +150,7 @@ geometry at a fraction of the triangle count.
 | `test_superpose.py` | Kabsch round-trip, reflection exclusion, C3 exactness, reversed-handedness detection. | ✅ |
 | `test_anm.py` | Hessian symmetry, zero modes, disconnected networks, symmetry characters, and the gating-overlap result. | ✅ |
 | `test_sequence_and_resources.py` | Ten cross-species equivalences, non-constant offset, resource integrity. | ✅ |
+| `test_morph.py` | Endpoint preparation, the chord artefact and its removal, modal capture fraction, mismatched-mode-set rejection. | ✅ |
 
 ## `docs/`
 

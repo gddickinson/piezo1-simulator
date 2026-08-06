@@ -10,7 +10,7 @@ from __future__ import annotations
 import time
 
 import numpy as np
-from PyQt6.QtCore import QObject, Qt, QThread, pyqtSignal
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QKeySequence
 from PyQt6.QtWidgets import (QApplication, QDockWidget, QFileDialog, QLabel,
                              QMainWindow, QMessageBox, QStatusBar)
@@ -19,40 +19,16 @@ from ..config import SETTINGS, STRUCTURE_DIR
 from ..core.annotations import load_annotations
 from ..core.structure import Structure
 from ..io.registry import load_registry
-from ..physics.anm import ANM
 from ..render.representations import ColorBy, MolecularView, Style
-from ..structure.geometry import measure_dome
 from .gl_widget import ViewportWidget
+from .morph_controller import MorphController
+from .physics_controller import PhysicsController
 from .panels.annotation_panel import AnnotationPanel
 from .panels.physics_panel import PhysicsPanel
 from .panels.structure_panel import StructurePanel
 from .theme import apply_dark_theme
 
 __all__ = ["MainWindow"]
-
-
-class ModeWorker(QObject):
-    """Runs the elastic-network calculation off the GUI thread."""
-
-    finished = pyqtSignal(object, object, float)   # modes, anm, seconds
-    failed = pyqtSignal(str)
-
-    def __init__(self, blocks: list[np.ndarray], params: dict) -> None:
-        super().__init__()
-        self.blocks = blocks
-        self.params = params
-
-    def run(self) -> None:
-        try:
-            t0 = time.time()
-            anm = ANM.from_trimer(self.blocks,
-                                  cutoff=self.params["cutoff"],
-                                  spring=self.params["spring"]).build()
-            modes = anm.calc_modes(n_modes=self.params["n_modes"])
-            anm.label_symmetry(modes)
-            self.finished.emit(modes, anm, time.time() - t0)
-        except Exception as exc:  # surfaced in the status bar
-            self.failed.emit(f"{type(exc).__name__}: {exc}")
 
 
 class MainWindow(QMainWindow):
@@ -69,13 +45,7 @@ class MainWindow(QMainWindow):
         self.view: MolecularView | None = None
         self.record = None
         self.modes = None
-        self.anm = None
         self._mode_blocks: list[np.ndarray] = []
-        self._mode_index = 0
-        self._amplitude = 18.0
-        self._phase = 0.0
-        self._base_coords: np.ndarray | None = None
-        self._thread: QThread | None = None
 
         self.viewport = ViewportWidget(SETTINGS.render)
         self.setCentralWidget(self.viewport)
@@ -112,12 +82,18 @@ class MainWindow(QMainWindow):
         self.annotation_panel.focus_requested.connect(self._focus_residues)
 
         self.physics_panel = PhysicsPanel()
-        self.physics_panel.measure_dome_requested.connect(self.measure_dome)
-        self.physics_panel.compute_modes_requested.connect(self.compute_modes)
-        self.physics_panel.mode_selected.connect(self._select_mode)
-        self.physics_panel.animate_toggled.connect(self._animate_mode)
-        self.physics_panel.amplitude_changed.connect(self._set_amplitude)
-        self.physics_panel.color_by_mode_requested.connect(self._color_by_mode)
+        self.physics = PhysicsController(self)
+        self.physics_panel.measure_dome_requested.connect(self.physics.measure_dome)
+        self.physics_panel.compute_modes_requested.connect(self.physics.compute_modes)
+        self.physics_panel.mode_selected.connect(self.physics.select_mode)
+        self.physics_panel.animate_toggled.connect(self.physics.animate_mode)
+        self.physics_panel.amplitude_changed.connect(self.physics.set_amplitude)
+        self.physics_panel.color_by_mode_requested.connect(self.physics.color_by_mode)
+        self.morph_controller = MorphController(self)
+        self.physics_panel.morph_requested.connect(self.morph_controller.build)
+        self.physics_panel.morph_position_changed.connect(
+            self.morph_controller.show_frame)
+        self.physics_panel.morph_play_toggled.connect(self.morph_controller.play)
 
         left = QDockWidget("Model", self)
         left.setWidget(self.structure_panel)
@@ -163,6 +139,8 @@ class MainWindow(QMainWindow):
     # ------------------------------------------------------------- lifecycle
 
     def _on_scene_ready(self, scene) -> None:
+        pairs = [(a.pdb, b.pdb) for a, b in self.registry.morph_pairs()]
+        self.physics_panel.set_morph_pairs(pairs)
         rec = self.registry.default()
         if rec is not None:
             self.structure_panel.select(rec.pdb)
@@ -192,9 +170,9 @@ class MainWindow(QMainWindow):
             self.view.clear()
         self.record = rec
         self.structure = st
-        self.modes = self.anm = None
+        self.modes = None
         self.physics_panel.set_modes(None)
-        self._base_coords = None
+        self.physics.reset()
 
         self.view = MolecularView(self.viewport.scene, st, name=rec.pdb)
         self.view.set_species(rec.numbering_species)
@@ -357,166 +335,6 @@ class MainWindow(QMainWindow):
             bits.append(f"variant {v['label']} ({v['classification']})")
         self._set_status("   ·   ".join(bits))
 
-    # --------------------------------------------------------------- physics
-
-    def measure_dome(self) -> None:
-        if not self._mode_blocks or self.structure is None:
-            self.physics_panel.set_dome(None)
-            return
-        species = self.record.numbering_species if self.record else "human"
-        surface = self._tm_surface(species)
-        if surface is None or len(surface) < 12:
-            self.physics_panel.set_dome(None)
-            return
-        try:
-            dome = measure_dome(self._mode_blocks, surface)
-        except Exception as exc:
-            self._set_status(f"dome measurement failed: {exc}")
-            return
-        ref = ("<br>published closed-state value: 10.2 nm "
-               "(Haselwandter &amp; MacKinnon 2018)")
-        self.physics_panel.set_dome(dome, ref)
-        self._set_status(f"dome: {dome.summary()}")
-
-    def _tm_surface(self, species: str) -> np.ndarray | None:
-        """Mid-membrane surface points: the centre of every TM helix."""
-        import json
-        from ..config import RESOURCE_DIR
-        path = RESOURCE_DIR / f"uniprot_{species}.json"
-        if not path.exists() or self.structure is None:
-            return None
-        tms = json.loads(path.read_text())["transmembrane"]
-        st = self.structure
-        pts = []
-        for ch in st.chains:
-            m = st.mask_ca() & (st.chain == ch)
-            if m.sum() < 300:
-                continue
-            xyz, seq = st.xyz[m], st.res_seq[m]
-            for tm in tms:
-                mid = 0.5 * (tm["start"] + tm["end"])
-                half = max(2.0, (tm["end"] - tm["start"]) / 6.0)
-                sel = (seq >= mid - half) & (seq <= mid + half)
-                if sel.sum() >= 3:
-                    pts.append(xyz[sel].mean(axis=0))
-        return np.array(pts) if pts else None
-
-    def compute_modes(self, params: dict) -> None:
-        if not self._mode_blocks:
-            self._set_status("need three equivalent protomers for an ANM")
-            return
-        if self._thread is not None:
-            return
-        n = len(self._mode_blocks[0]) * 3
-        self._set_status(f"building elastic network over {n:,} C-alpha sites…")
-        self.physics_panel.set_busy(True)
-
-        self._thread = QThread(self)
-        self._worker = ModeWorker(self._mode_blocks, params)
-        self._worker.moveToThread(self._thread)
-        self._thread.started.connect(self._worker.run)
-        self._worker.finished.connect(self._on_modes)
-        self._worker.failed.connect(self._on_modes_failed)
-        self._thread.start()
-
-    def _cleanup_thread(self) -> None:
-        if self._thread is not None:
-            self._thread.quit()
-            self._thread.wait()
-            self._thread = None
-        self.physics_panel.set_busy(False)
-
-    def _on_modes(self, modes, anm, seconds: float) -> None:
-        self._cleanup_thread()
-        self.modes = modes
-        self.anm = anm
-        self._base_coords = np.vstack(self._mode_blocks)
-        self.physics_panel.set_modes(modes)
-        n_a = int((modes.symmetry == "A").sum()) if modes.symmetry is not None else 0
-        self._set_status(
-            f"{modes.n_modes} modes in {seconds:.1f} s · {n_a} symmetric (A), "
-            f"{modes.n_modes - n_a} degenerate (E) · "
-            f"lowest eigenvalue {modes.eigenvalues[0]:.5f}")
-
-    def _on_modes_failed(self, message: str) -> None:
-        self._cleanup_thread()
-        self._set_status(f"mode calculation failed — {message}")
-
-    def _select_mode(self, index: int) -> None:
-        self._mode_index = index
-        self._phase = 0.0
-
-    def _set_amplitude(self, value: float) -> None:
-        self._amplitude = value
-
-    def _animate_mode(self, on: bool) -> None:
-        self.viewport.clear_animations()
-        if not on or self.modes is None or self.structure is None:
-            if self.view is not None and self._base_coords is not None:
-                self._apply_mode_displacement(0.0)
-            return
-
-        def step(dt: float) -> bool:
-            self._phase += dt * 1.6
-            self._apply_mode_displacement(np.sin(self._phase))
-            return True
-
-        self.viewport.add_animation(step)
-
-    def _apply_mode_displacement(self, scale: float) -> None:
-        """Displace the C-alpha network and carry whole residues with it."""
-        if self.modes is None or self.structure is None or self.view is None:
-            return
-        disp = self.modes.mode(self._mode_index, self._amplitude) * scale
-        st = self.structure
-        # Map the per-protomer C-alpha displacement back onto every atom by
-        # nearest C-alpha within the same chain.
-        if not hasattr(self, "_ca_map") or self._ca_map_for != st.name:
-            self._build_ca_map()
-        moved = st.xyz.copy()
-        flat = disp.reshape(-1, 3)
-        moved += flat[self._ca_map]
-        self.view.update_coords(moved)
-        self.viewport.update()
-
-    def _build_ca_map(self) -> None:
-        """For each atom, the index of its protomer-block C-alpha site."""
-        st = self.structure
-        assert st is not None
-        blocks_per = len(self._mode_blocks[0])
-        chains = [ch for ch in st.chains
-                  if (st.mask_ca() & (st.chain == ch)).sum() > 300][:3]
-        mapping = np.zeros(st.n_atoms, dtype=np.int64)
-        for p, ch in enumerate(chains):
-            m = st.mask_ca() & (st.chain == ch)
-            ca_seq = st.res_seq[m]
-            common = np.array(sorted(set.intersection(
-                *[set(st.res_seq[st.mask_ca() & (st.chain == c)].tolist())
-                  for c in chains])))
-            atom_mask = st.chain == ch
-            # nearest common residue for every atom of this chain
-            pos = np.searchsorted(common, st.res_seq[atom_mask])
-            pos = np.clip(pos, 0, len(common) - 1)
-            mapping[atom_mask] = p * blocks_per + pos
-            del ca_seq
-        self._ca_map = np.clip(mapping, 0, 3 * blocks_per - 1)
-        self._ca_map_for = st.name
-
-    def _color_by_mode(self, on: bool) -> None:
-        if self.view is None or self.modes is None or self.structure is None:
-            return
-        if not on:
-            self.view.color_by = self._current_color()
-            self.view.values = None
-        else:
-            if not hasattr(self, "_ca_map"):
-                self._build_ca_map()
-            mag = np.linalg.norm(self.modes.vectors[self._mode_index], axis=1)
-            self.view.values = mag[self._ca_map]
-            self.view.color_by = ColorBy.VALUE
-        self.view.rebuild()
-        self.viewport.update()
-
     def _about(self) -> None:
         QMessageBox.about(
             self, "PIEZO1 Dynamic Structural Simulator",
@@ -528,7 +346,7 @@ class MainWindow(QMainWindow):
             "carries its provenance — see the panels for sources.</p>")
 
     def closeEvent(self, event) -> None:
-        self._cleanup_thread()
+        self.physics.cleanup()
         if self.viewport.scene is not None:
             self.viewport.makeCurrent()
             self.viewport.scene.release()
