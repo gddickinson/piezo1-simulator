@@ -58,13 +58,20 @@ class MorphController:
             self.win._set_status(f"morph failed — {type(exc).__name__}: {exc}")
             return
 
-        # Show the morph on the start structure, reduced to the common residues.
-        self.win.load_structure(start_rec.pdb)
+        # Show the morph on the start structure. Going through the structure
+        # panel rather than calling load_structure directly keeps the chooser
+        # in sync with what is actually on screen.
+        self.win.structure_panel.select(start_rec.pdb)
+        if self.win.record is None or self.win.record.pdb != start_rec.pdb:
+            self.win.load_structure(start_rec.pdb)
         self.trajectory = traj
         self.residues = common
         self._phase = 0.0
         self._build_map(common)
         self.win.physics_panel.set_morph(traj)
+        # Frame on the widest point of the path, so nothing swings out of view
+        # as the user drags the slider.
+        self._frame_whole_path()
         self.win._set_status(
             f"morph {start_rec.pdb} → {end_rec.pdb}: {len(traj)} frames, "
             f"{info['n_common_residues']} common residues, endpoint RMSD "
@@ -72,6 +79,20 @@ class MorphController:
             f"{traj.bond_error.max():.2f} Å"
             + (" (protomer order was reversed)"
                if info["handedness_flipped"] else ""))
+
+    def _frame_whole_path(self) -> None:
+        """Fit the camera to the union of the first, middle and last frames.
+
+        Framing on the start structure alone would let the blades swing outside
+        the viewport as the dome flattens, since the flat state is
+        substantially wider.
+        """
+        if self.trajectory is None or self.win.viewport.scene is None:
+            return
+        tr = self.trajectory
+        sample = np.vstack([tr.frames[0], tr.frames[len(tr) // 2], tr.frames[-1]])
+        self.win.viewport.scene.camera.frame(sample)
+        self.win.viewport.update()
 
     def _blocks_and_residues(self, st: Structure):
         chains = []
@@ -86,7 +107,7 @@ class MorphController:
         return ([xyz[np.searchsorted(seq, arr)].astype(np.float64)
                  for xyz, seq in chains[:3]], arr)
 
-    def _build_morph_map(self, common: np.ndarray) -> None:
+    def _build_map(self, common: np.ndarray) -> None:
         """Map every atom of the displayed structure onto a morph site."""
         st = self.win.structure
         assert st is not None
