@@ -1,0 +1,944 @@
+{
+ "entries": [
+  {
+   "pdb": "8ZU3",
+   "file": "8ZU3.cif",
+   "resolution": 3.1,
+   "released": "2025-01-15",
+   "title": "Human PIEZO1-MDFIC",
+   "journal": "Elife",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-60479"
+   ],
+   "n_atoms": 32172,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "B",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "D",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    }
+   ],
+   "ligands": [
+    "D12",
+    "L9Q"
+   ],
+   "species": "human",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Human PIEZO1 in complex with its auxiliary subunit MDFIC.",
+   "recommended_for": [
+    "mdfic_complex"
+   ]
+  },
+  {
+   "pdb": "8YFC",
+   "file": "8YFC.cif",
+   "resolution": 3.2,
+   "released": "2025-01-15",
+   "title": "Human PIEZO1-A1988V-MDFIC",
+   "journal": "Elife",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-39219"
+   ],
+   "n_atoms": 32172,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "B",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "D",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    }
+   ],
+   "ligands": [
+    "D12",
+    "L9Q"
+   ],
+   "species": "human",
+   "state": "curved",
+   "gating": "closed",
+   "note": "A1988V with MDFIC.",
+   "recommended_for": [
+    "variant_structure"
+   ]
+  },
+  {
+   "pdb": "9VMX",
+   "file": "9VMX.cif",
+   "resolution": 3.2,
+   "released": "2025-07-16",
+   "title": "Human PIEZO1-E756del-MDFIC",
+   "journal": "Elife",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-65195"
+   ],
+   "n_atoms": 32172,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "B",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "D",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    }
+   ],
+   "ligands": [
+    "D12",
+    "L9Q"
+   ],
+   "species": "human",
+   "state": "curved",
+   "gating": "closed",
+   "note": "E756del (the African malaria-associated allele) with MDFIC. E756 is not modelled.",
+   "recommended_for": [
+    "variant_structure"
+   ]
+  },
+  {
+   "pdb": "8YEZ",
+   "file": "8YEZ.cif",
+   "resolution": 3.3,
+   "released": "2025-01-22",
+   "title": "Human PIEZO1",
+   "journal": "Elife",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-39205"
+   ],
+   "n_atoms": 31599,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1279,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "B",
+     "n_ca": 1279,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "C",
+     "n_ca": 1279,
+     "first": 570,
+     "last": 2521
+    }
+   ],
+   "ligands": [
+    "L9Q"
+   ],
+   "species": "human",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Highest-resolution apo human PIEZO1.",
+   "recommended_for": [
+    "default",
+    "human_reference",
+    "variant_mapping"
+   ]
+  },
+  {
+   "pdb": "8ZU8",
+   "file": "8ZU8.cif",
+   "resolution": 3.9,
+   "released": "2025-01-29",
+   "title": "Human PIEZO1-A1988V",
+   "journal": "Elife",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-60481"
+   ],
+   "n_atoms": 31401,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1279,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "B",
+     "n_ca": 1279,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "C",
+     "n_ca": 1279,
+     "first": 570,
+     "last": 2521
+    }
+   ],
+   "ligands": [
+    "L9Q"
+   ],
+   "species": "human",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Gain-of-function variant A1988V. Note A1988 itself is not modelled.",
+   "recommended_for": [
+    "variant_structure"
+   ]
+  },
+  {
+   "pdb": "8YFG",
+   "file": "8YFG.cif",
+   "resolution": 4.5,
+   "released": "2025-01-22",
+   "title": "Human PIEZO1-R2456H_MDFIC",
+   "journal": "Elife",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-39223"
+   ],
+   "n_atoms": 31599,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "B",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    },
+    {
+     "chain": "D",
+     "n_ca": 1280,
+     "first": 570,
+     "last": 2521
+    }
+   ],
+   "ligands": [],
+   "species": "human",
+   "state": "curved",
+   "gating": "closed",
+   "note": "R2456H with MDFIC. The only disease variant whose mutated residue is actually resolved in its own structure.",
+   "recommended_for": [
+    "variant_structure"
+   ]
+  },
+  {
+   "pdb": "4RAX",
+   "file": "4RAX.cif",
+   "resolution": 1.45,
+   "released": "2015-09-23",
+   "title": "A regulatory domain of an ion channel",
+   "journal": "Nature",
+   "year": 2015,
+   "pmid": null,
+   "doi": null,
+   "emdb": [],
+   "n_atoms": 1807,
+   "n_protomers": 0,
+   "protomer_chains": [],
+   "ligands": [],
+   "species": "mouse",
+   "state": "fragment",
+   "gating": "n/a",
+   "note": "X-ray structure of the cap/CED at 1.45 A - by far the highest resolution available for any part of PIEZO1.",
+   "recommended_for": [
+    "cap_detail"
+   ]
+  },
+  {
+   "pdb": "7WLT",
+   "file": "7WLT.cif",
+   "resolution": 3.46,
+   "released": "2022-04-13",
+   "title": "the Curved Structure of mPIEZO1 in Lipid Bilayer",
+   "journal": "Nature",
+   "year": 2022,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-32592"
+   ],
+   "n_atoms": 33912,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1353,
+     "first": 784,
+     "last": 2547
+    },
+    {
+     "chain": "C",
+     "n_ca": 1353,
+     "first": 784,
+     "last": 2547
+    },
+    {
+     "chain": "E",
+     "n_ca": 1353,
+     "first": 784,
+     "last": 2547
+    }
+   ],
+   "ligands": [
+    "P5S",
+    "PEE",
+    "PLX"
+   ],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Curved mPIEZO1 in a lipid bilayer. Curved endpoint of the classic flattening pair.",
+   "recommended_for": [
+    "morph_start",
+    "dome_reference"
+   ]
+  },
+  {
+   "pdb": "9VED",
+   "file": "9VED.cif",
+   "resolution": 3.63,
+   "released": "2026-04-08",
+   "title": "The cryo-EM structure of mouse Piezo1-MDFI complex",
+   "journal": "Proc Natl Acad Sci U S A",
+   "year": 2026,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-64998"
+   ],
+   "n_atoms": 29400,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1223,
+     "first": 784,
+     "last": 2547
+    },
+    {
+     "chain": "C",
+     "n_ca": 1223,
+     "first": 784,
+     "last": 2547
+    },
+    {
+     "chain": "B",
+     "n_ca": 1223,
+     "first": 784,
+     "last": 2547
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "mouse Piezo1-MDFI complex (2026).",
+   "recommended_for": [
+    "mdfic_complex"
+   ]
+  },
+  {
+   "pdb": "8IMZ",
+   "file": "8IMZ.cif",
+   "resolution": 3.66,
+   "released": "2023-08-09",
+   "title": "Cryo-EM structure of mouse Piezo1-MDFIC complex (composite map)",
+   "journal": "Science",
+   "year": 2023,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-35577"
+   ],
+   "n_atoms": 29409,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1223,
+     "first": 784,
+     "last": 2547
+    },
+    {
+     "chain": "C",
+     "n_ca": 1223,
+     "first": 784,
+     "last": 2547
+    },
+    {
+     "chain": "B",
+     "n_ca": 1223,
+     "first": 784,
+     "last": 2547
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "mouse Piezo1-MDFIC complex.",
+   "recommended_for": [
+    "mdfic_complex"
+   ]
+  },
+  {
+   "pdb": "11YE",
+   "file": "11YE.cif",
+   "resolution": 3.7,
+   "released": "2026-04-29",
+   "title": "Curved structure of mPiezo1 in plasma membrane vesicles",
+   "journal": "Sci Adv",
+   "year": 2026,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-76184"
+   ],
+   "n_atoms": 29295,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "C",
+     "n_ca": 1335,
+     "first": 784,
+     "last": 2547
+    },
+    {
+     "chain": "D",
+     "n_ca": 1335,
+     "first": 784,
+     "last": 2547
+    },
+    {
+     "chain": "E",
+     "n_ca": 1335,
+     "first": 784,
+     "last": 2547
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Curved mPiezo1 in native plasma-membrane vesicles.",
+   "recommended_for": [
+    "morph_start",
+    "dome_reference"
+   ]
+  },
+  {
+   "pdb": "6B3R",
+   "file": "6B3R.cif",
+   "resolution": 3.8,
+   "released": "2017-12-20",
+   "title": "Structure of the mechanosensitive channel Piezo1",
+   "journal": "Elife",
+   "year": 2017,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-7042"
+   ],
+   "n_atoms": 35718,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1502,
+     "first": 577,
+     "last": 2546
+    },
+    {
+     "chain": "C",
+     "n_ca": 1502,
+     "first": 577,
+     "last": 2546
+    },
+    {
+     "chain": "E",
+     "n_ca": 1502,
+     "first": 577,
+     "last": 2546
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Classic 2017 structure; largest resolved residue count.",
+   "recommended_for": [
+    "historical"
+   ]
+  },
+  {
+   "pdb": "6BPZ",
+   "file": "6BPZ.cif",
+   "resolution": 3.8,
+   "released": "2017-12-27",
+   "title": "Structure of the mechanically activated ion channel Piezo1",
+   "journal": "Nature",
+   "year": 2018,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-7128"
+   ],
+   "n_atoms": 21453,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 900,
+     "first": 1137,
+     "last": 2544
+    },
+    {
+     "chain": "B",
+     "n_ca": 900,
+     "first": 1137,
+     "last": 2544
+    },
+    {
+     "chain": "C",
+     "n_ca": 900,
+     "first": 1137,
+     "last": 2544
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Guo & MacKinnon; source of the dome model.",
+   "recommended_for": [
+    "historical",
+    "dome_reference"
+   ]
+  },
+  {
+   "pdb": "6KG7",
+   "file": "6KG7.cif",
+   "resolution": 3.8,
+   "released": "2019-09-04",
+   "title": "Cryo-EM Structure of the Mammalian Tactile Channel Piezo2",
+   "journal": "Nature",
+   "year": 2019,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-9975"
+   ],
+   "n_atoms": 44868,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1817,
+     "first": 8,
+     "last": 2822
+    },
+    {
+     "chain": "B",
+     "n_ca": 1817,
+     "first": 8,
+     "last": 2822
+    },
+    {
+     "chain": "C",
+     "n_ca": 1817,
+     "first": 8,
+     "last": 2822
+    }
+   ],
+   "ligands": [
+    "NAG"
+   ],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "PIEZO2, for comparison. Resolves residues 8-823, so it is the best experimental view of the distal blade.",
+   "recommended_for": [
+    "piezo2",
+    "distal_blade"
+   ]
+  },
+  {
+   "pdb": "5Z10",
+   "file": "5Z10.cif",
+   "resolution": 3.97,
+   "released": "2018-01-31",
+   "title": "Structure of the mechanosensitive Piezo1 channel",
+   "journal": "Nature",
+   "year": 2018,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-6865"
+   ],
+   "n_atoms": 29142,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1304,
+     "first": 576,
+     "last": 2547
+    },
+    {
+     "chain": "B",
+     "n_ca": 1304,
+     "first": 576,
+     "last": 2547
+    },
+    {
+     "chain": "C",
+     "n_ca": 1304,
+     "first": 576,
+     "last": 2547
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Zhao et al. 2018; the lever-like transduction model.",
+   "recommended_for": [
+    "historical"
+   ]
+  },
+  {
+   "pdb": "8IXO",
+   "file": "8IXO.cif",
+   "resolution": 4.0,
+   "released": "2025-01-01",
+   "title": "Intermediate structure of mPIEZO1-S2472E",
+   "journal": "Neuron",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-35800"
+   ],
+   "n_atoms": 32112,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "F",
+     "n_ca": 1395,
+     "first": 576,
+     "last": 2547
+    },
+    {
+     "chain": "A",
+     "n_ca": 1395,
+     "first": 576,
+     "last": 2547
+    },
+    {
+     "chain": "B",
+     "n_ca": 1395,
+     "first": 576,
+     "last": 2547
+    }
+   ],
+   "ligands": [
+    "P5S",
+    "PEE",
+    "PLX"
+   ],
+   "species": "mouse",
+   "state": "intermediate",
+   "gating": "intermediate",
+   "note": "S2472E intermediate. Best-matched resolution pair with 8IXN and the only pair crossing a gating boundary.",
+   "recommended_for": [
+    "morph_end",
+    "intermediate_state"
+   ]
+  },
+  {
+   "pdb": "8IXN",
+   "file": "8IXN.cif",
+   "resolution": 4.07,
+   "released": "2025-01-01",
+   "title": "Curved structure of mPIEZO1-S2472E",
+   "journal": "Neuron",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-35799"
+   ],
+   "n_atoms": 30043,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "C",
+     "n_ca": 1350,
+     "first": 576,
+     "last": 2547
+    },
+    {
+     "chain": "A",
+     "n_ca": 1350,
+     "first": 576,
+     "last": 2547
+    },
+    {
+     "chain": "D",
+     "n_ca": 1350,
+     "first": 576,
+     "last": 2547
+    }
+   ],
+   "ligands": [
+    "P5S",
+    "PEE",
+    "PLX"
+   ],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "S2472E phosphomimetic, curved.",
+   "recommended_for": [
+    "morph_start"
+   ]
+  },
+  {
+   "pdb": "6LQI",
+   "file": "6LQI.cif",
+   "resolution": 4.5,
+   "released": "2020-03-04",
+   "title": "Cryo-EM structure of the mouse Piezo1 isoform Piezo1.1",
+   "journal": "Neuron",
+   "year": 2020,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-0946"
+   ],
+   "n_atoms": 26934,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1301,
+     "first": 576,
+     "last": 2523
+    },
+    {
+     "chain": "B",
+     "n_ca": 1301,
+     "first": 576,
+     "last": 2523
+    },
+    {
+     "chain": "C",
+     "n_ca": 1301,
+     "first": 576,
+     "last": 2523
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "The Piezo1.1 splice isoform (delta 1382-1405).",
+   "recommended_for": [
+    "isoform"
+   ]
+  },
+  {
+   "pdb": "3JAC",
+   "file": "3JAC.cif",
+   "resolution": 4.8,
+   "released": "2015-09-23",
+   "title": "Cryo-EM study of a channel",
+   "journal": "Nature",
+   "year": 2015,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-6343"
+   ],
+   "n_atoms": 15741,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 918,
+     "first": 201,
+     "last": 2544
+    },
+    {
+     "chain": "B",
+     "n_ca": 918,
+     "first": 201,
+     "last": 2544
+    },
+    {
+     "chain": "C",
+     "n_ca": 918,
+     "first": 201,
+     "last": 2544
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "curved",
+   "gating": "closed",
+   "note": "The first Piezo1 cryo-EM structure (2015). Much of the chain is poly-UNK with arbitrary numbering.",
+   "recommended_for": [
+    "historical"
+   ]
+  },
+  {
+   "pdb": "11ZC",
+   "file": "11ZC.cif",
+   "resolution": 6.0,
+   "released": "2026-04-29",
+   "title": "Flat structure of mPiezo1 in plasma membrane vesicles",
+   "journal": "Sci Adv",
+   "year": 2026,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-76212"
+   ],
+   "n_atoms": 16644,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "C",
+     "n_ca": 1387,
+     "first": 589,
+     "last": 2547
+    },
+    {
+     "chain": "E",
+     "n_ca": 1387,
+     "first": 589,
+     "last": 2547
+    },
+    {
+     "chain": "A",
+     "n_ca": 1387,
+     "first": 589,
+     "last": 2547
+    }
+   ],
+   "ligands": [],
+   "species": "mouse",
+   "state": "flat",
+   "gating": "open-like",
+   "note": "Flat mPiezo1 in native plasma-membrane vesicles. The only flat endpoint with pore changes consistent with conduction. 6.0 A and largely backbone-only.",
+   "recommended_for": [
+    "morph_end",
+    "open_state"
+   ]
+  },
+  {
+   "pdb": "7WLU",
+   "file": "7WLU.cif",
+   "resolution": 6.81,
+   "released": "2022-04-13",
+   "title": "The Flattened Structure of mPIEZO1 in Lipid Bilayer",
+   "journal": "Nature",
+   "year": 2022,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-32593"
+   ],
+   "n_atoms": 34761,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1498,
+     "first": 576,
+     "last": 2547
+    },
+    {
+     "chain": "C",
+     "n_ca": 1498,
+     "first": 576,
+     "last": 2547
+    },
+    {
+     "chain": "E",
+     "n_ca": 1498,
+     "first": 576,
+     "last": 2547
+    }
+   ],
+   "ligands": [
+    "PLX"
+   ],
+   "species": "mouse",
+   "state": "flattened",
+   "gating": "closed",
+   "note": "Flattened mPIEZO1 in a lipid bilayer. Low resolution (6.81 A) and the pore remains closed.",
+   "recommended_for": [
+    "morph_end"
+   ]
+  }
+ ]
+}
