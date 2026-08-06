@@ -802,6 +802,74 @@ the failure mode to keep hunting.
 
 ---
 
+## Block H — HaloTag constructs and calcium  *(added 2026-08-06, on request)*
+
+Plan and feasibility review in **`docs/HALOTAG_CALCIUM_PLAN.md`**. The companion
+project `halotag_binding_sim` supplies a complete, well-provenanced kinetic
+model of covalent HaloTag labelling that is **entirely non-spatial** — it knows
+a PIEZO1 trimer has three sites, not where they are. This project supplies the
+geometry, the structure and the ion physics. Import that kinetics; do not
+reimplement it.
+
+Feasibility already checked: HaloTag structures **6U32** (1.8 Å, with ligand
+bound) and **6U2M** (HaloCaMP calcium indicator) exist; PIEZO1's C-terminus sits
+at **z = −60.4 Å, 8 Å below the CTD constriction**, putting a tag centre 4–6 nm
+from the pore exit; and the nanodomain there is of order **200 µM** against
+BAPTA's **~0.2 µM** Kd.
+
+### Round 31 — HaloTag fusion geometry
+- [ ] Fetch 6U32; build the fusion at each of the three C-termini; render the
+      seam visibly, as `hybrid.py` does. The placement is a **model, not a
+      measurement** — there is no structure of the fusion — so show an
+      accessible-volume envelope for the flexible linker rather than one pose.
+- [ ] *Validate:* C3 symmetry preserved across the three tags; tag centre
+      4–6 nm from the pore exit; no steric clash with the CTD.
+
+### Round 32 — Labelling on the structure
+- [ ] Import `halotag_sim` kinetics; drive per-site stochastic occupancy on the
+      real trimer; brightness animation and the 1:2:3-dye histogram.
+- [ ] *Validate:* reproduce the source project's `p³` curve and brightness
+      mixture **exactly** — any divergence means the import is wrong, not that
+      this project found something.
+
+### Round 33 — Calcium permeation
+- [ ] 1-D Poisson–Nernst–Planck along the conduction axis over the measured
+      `PoreProfile`, **gated by the Round 19 wetting verdict**: a dewetted pore
+      carries no current because the hydration shell an ion needs is absent.
+      All-atom MD stays a non-goal.
+- [ ] *Validate:* unitary conductance **25–30 pS** (Shi 2020; Vaisey &
+      MacKinnon 2026) for an open structure, ~0 for closed — and report *which*
+      mechanism blocks which, since 8YEZ is shut both sterically and by wetting
+      while 7WLU is shut only sterically.
+- [ ] Particle animation whose flux is **set by** the computed current, with the
+      HUD stating what the frame rate is in real time. The morph clock's
+      discipline applies.
+
+### Round 34 — Variant permeation
+- [ ] Apply to the four deposited variant structures (8ZU3, 8ZU8, 8YFC, 8YFG).
+- [ ] *Validate:* direction of change against the measured phenotype where one
+      is published, and **state the coverage honestly** — four structures
+      against sixty-eight curated variants is the same data limit Round 22 hit
+      from the other side.
+
+### Round 35 — The calcium nanodomain at the tag
+- [ ] Buffered-diffusion Green's function
+      `[Ca](r) = i_Ca/(4πFD r)·exp(−r/λ)`, `λ = √(D/(k_on^B[B]))` — the same
+      screened form as the membrane footprint already implemented, needing
+      exactly the two numbers Rounds 31 and 33 produce.
+- [ ] **The prediction to test:** at 4–6 nm the nanodomain is ~200 µM against
+      BAPTA's ~0.2 µM Kd, so a JF646-BAPTA HaloTag should be **saturated
+      whenever its own channel opens** — reporting opening as a binary event
+      rather than graded calcium. If so, published puncta brightness reflects
+      how many tags are labelled and how often the channel opens, not local
+      calcium amplitude.
+- [ ] *Validate:* sensitivity sweep over tag distance (2–20 nm), Ca²⁺ fraction
+      and cytosolic buffering — **intervals, not a point estimate**, since the
+      tag distance is modelled rather than measured — plus an explicit statement
+      of what would falsify the prediction.
+
+---
+
 ## Standing per-round checklist
 
 1. Run the full test suite; fix anything red before adding features.

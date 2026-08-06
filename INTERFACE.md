@@ -229,4 +229,5 @@ geometry at a fraction of the triangle count.
 | `NEGATIVE_RESULT_PROTOCOL.md` | Standing policy, written before the Round 22 test it governs: what must exist before a test runs, power requirements, multiplicity control, cross-validation of fitted combinations, and the rule that a recorded result is superseded rather than revised. | ✅ |
 | `REFERENCES.md` | Generated bibliography, 51 verified references. | ✅ |
 | `img/` | Generated figures (`make_figures.py`, `screenshot_app.py`). | ✅ |
+| `HALOTAG_CALCIUM_PLAN.md` | Design review of `halotag_binding_sim` and the plan to combine it: HaloTag fusion geometry, labelling on the trimer, 1-D PNP calcium permeation gated by the wetting verdict, and the calcium nanodomain at the tag. Feasibility checked, nothing implemented. | 📋 |
 | `ARCHITECTURE.md` | Why the code is shaped this way; the rendering approach in detail. | 📋 |
