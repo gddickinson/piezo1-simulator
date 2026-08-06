@@ -137,6 +137,35 @@ protein alone.
 result is that the membrane deformation extending *beyond* the protein, decaying
 over λ ≈ 14 nm, dominates the tension sensitivity — not the dome itself.
 
+### The footprint, solved
+
+The linearised Helfrich energy in the Monge gauge,
+
+    E = ∫ [ (κ/2)(∇²h)² + (γ/2)|∇h|² ] dA
+
+minimises to κ∇⁴h − γ∇²h = 0, whose axisymmetric decaying solution is
+`h(r) = A·K₀(r/λ)` with **λ = √(κ/γ)**. For a fixed contact slope `s` at the
+inclusion radius `r₀` the energy has the closed form
+
+    E = π κ s² (r₀/λ) K₀(r₀/λ) / K₁(r₀/λ)
+
+Note the direction of that Bessel ratio — inverting it gives an answer 2.5×
+too large at the r₀/λ where PIEZO1 sits.
+
+Our solver reproduces this to second order and recovers λ = 13.998 nm from its
+own output against an input of 14.0 nm. Applied to the measured 7WLT dome it
+stores **622 nm² of excess area against the dome's own 256 nm²**, i.e. the
+surrounding membrane holds about 2.4× as much deformable area as the dome —
+the quantitative form of Haselwandter & MacKinnon's claim that the footprint,
+not the dome, dominates tension sensitivity.
+
+**Validity caveat, stated because it matters.** PIEZO1's dome meets the bilayer
+at a contact slope near 2.0, about 63°. The small-slope expansion behind the
+Monge gauge drops terms of order |∇h|², so at that slope the neglected terms
+are larger than the ones kept. The solver returns numbers and flags them as
+indicative of scale and trend only; quantitative work needs a full nonlinear
+Helfrich or Euler–elastica treatment.
+
 ### An unresolved discrepancy, stated plainly
 
 Reported area changes for gating differ by more than an order of magnitude
@@ -149,8 +178,20 @@ depending on how they are obtained:
   expansion (Yang et al. 2022), up to 500 nm² by some measures.
 
 These are measuring *different quantities* and should not be quoted
-interchangeably. The application reports what it measures from coordinates and
-labels it as such.
+interchangeably. The dome model makes the consequence explicit by computing the
+half-activation tension each would imply, holding ΔG₀ = 9.7 k_BT fixed:
+
+| ΔA source | ΔA (nm²) | Kind | Implied T₅₀ (mN/m) |
+|---|---|---|---|
+| Cox 2016 | 8 | functional | **4.99** |
+| Dixit 2025 | 40 | structural | 1.00 |
+| Guo & MacKinnon 2017 | 120 | structural | 0.33 |
+| Yang 2022 | 300 | structural | 0.13 |
+
+Measured T₅₀ is 2.7–5.1 mN/m. The functional area reproduces it — which is a
+consistency check, since all three of Cox's numbers come from the same fit —
+while the structural areas under-predict the threshold by 5–40×. They are not
+the gating area.
 
 ### What this code measures
 

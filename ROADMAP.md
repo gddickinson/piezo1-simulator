@@ -4,7 +4,7 @@ Planned work, organised into ~20-minute rounds. Each round: implement, test,
 fix, update docs, commit. Items are marked `[ ]` planned, `[~]` in progress,
 `[x]` done. New improvements are appended after every fifth round.
 
-**Status:** Round 3 of 5 (block A)
+**Status:** Round 4 of 5 (block A)
 
 ---
 
@@ -65,15 +65,34 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   biology. Fold changes transfer between preparations; absolute time constants
   do not. Now pinned by a test.
 
-### Round 3 — Membrane mechanics
-- [ ] `physics/membrane.py`: Monge-gauge Helfrich solver for the membrane
+### Round 3 — Membrane mechanics  ✅
+- [x] `physics/membrane.py`: Monge-gauge Helfrich solver for the membrane
       footprint. 1-D radial solve validated against the exact modified-Bessel
       K₀ solution, then revolved.
-- [ ] `physics/dome.py`: ΔE = −T·ΔA energetics, tension–area coupling, and the
+- [x] `physics/dome.py`: ΔE = −T·ΔA energetics, tension–area coupling, and the
       footprint contribution — which dominates tension sensitivity
       (λ = 14 nm, κ = 20 k_BT ⟹ γ = 0.42 mN/m).
-- [ ] Validate against λ = √(κ/γ) and the published dome free energies.
-- [ ] Tests; docs; commit.
+- [x] Validate against λ = √(κ/γ) and the published dome free energies.
+- [x] Tests; docs; commit.
+- **Result:** λ = 14 nm with κ = 20 k_BT gives γ = **0.420 mN/m** (published
+  0.42), and the unit conversion comes out at **4.116 mN/m per k_BT/nm²**
+  (published 4.114). The solver is second-order convergent against the exact
+  K₀ solution and recovers λ = **13.998 nm** from its own profile.
+  Cox et al.'s ΔG₀ = 9.7 k_BT and ΔA = 8 nm² reproduce **T₅₀ = 4.99 mN/m**
+  against their measured 5.1 ± 0.2 mN/m.
+- **The footprint does dominate**, as Haselwandter & MacKinnon argued: around
+  the measured 7WLT dome it stores **622 nm² of excess area against the dome's
+  256 nm²** — 243% on top.
+- **Two things had to be fixed, and one flagged.** Building the biharmonic
+  operator as `L @ L` squares the Laplacian's condition number: it converged to
+  a 47 nm decay length where the answer is 14 nm, with a 59% energy error that
+  did not improve on refinement. Rewritten as a coupled second-order system.
+  And the closed-form energy had the Bessel ratio inverted (K₁/K₀ rather than
+  K₀/K₁), which is 2.5x too large at PIEZO1's r₀/λ — caught only by integrating
+  the functional over the exact profile.
+  **Flagged:** PIEZO1's measured contact slope is ~2.0 (63°), far outside the
+  small-slope regime the linearised Monge gauge assumes. The solution reports
+  this rather than presenting the numbers as quantitative.
 
 ### Round 4 — Experimental conformational space
 - [ ] `analysis/ensemble.py`: superpose all structures onto a common residue

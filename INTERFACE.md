@@ -71,8 +71,8 @@ testable headlessly and lets the whole engine be driven from a notebook.
 |---|---|---|---|
 | `anm.py` | Anisotropic network model: sparse Hessian, shift-invert Lanczos modes, C3 irreducible-representation labelling, disconnected-network detection. | `ANM`, `ModeSet`, `build_hessian()`, `SPRING_MODELS` | ✅ |
 | `modes.py` | Further mode analysis beyond `ModeSet.overlap` / `.cumulative_overlap` / `.msf` / `.collectivity`, which already live on the mode set. | `hinge_sites()`, `project()` | 📋 |
-| `membrane.py` | Monge-gauge Helfrich solver for the membrane footprint around the dome. | `MembraneFootprint`, `solve_shape()`, `footprint_energy()` | 📋 |
-| `dome.py` | Dome-model energetics: ΔE = −T·ΔA, tension–area coupling, state free energies. | `DomeModel`, `gating_energy()` | 📋 |
+| `membrane.py` | Linearised Helfrich footprint: exact K₀ solution, second-order-convergent finite-difference solver (coupled second-order form), energy, excess area, decay-length recovery, and an explicit small-slope validity check. | `MembraneParameters`, `FootprintSolution`, `solve_footprint()`, `analytic_profile()`, `analytic_energy()`, `decay_length()` | ✅ |
+| `dome.py` | Two-state dome energetics ΔG = ΔG₀ − T·ΔA, open probability, T₅₀, footprint coupling, and a side-by-side comparison of functional vs structural ΔA estimates. | `DomeModel`, `DomeGeometrySummary`, `open_probability()`, `half_activation_tension()`, `PUBLISHED_AREA_ESTIMATES` | ✅ |
 | `kinetics.py` | Four-state tension-dependent Markov gating (Young et al. 2023): rate matrix with enforced microscopic reversibility, steady state, step/ramp protocols, Gillespie single-channel simulation, and fold-change-calibrated mutant presets. | `GatingModel`, `GatingResult`, `MUTANT_PRESETS`, `STATE_NAMES` | ✅ |
 
 ### `piezo1/analysis/` — interpretation
@@ -160,6 +160,7 @@ geometry at a fraction of the triangle count.
 | `test_kinetics.py` | Published rate values, microscopic reversibility, generator validity, half-activation against measured T50, Gillespie-vs-analytic agreement, and mutant direction. | ✅ |
 | `test_measure.py` | Geometry on analytic shapes, SASA of an isolated atom against 4πr², determinism, and the pore-helix tilt result. | ✅ |
 | `test_interactions.py` | The annotated disulfide, the R2456–E2117 inter-protomer salt bridge, cutoff enforcement, and the donor–donor exclusion. | ✅ |
+| `test_membrane.py` | Unit conversion, the κ/γ/λ triple, exact-vs-numerical profile and energy, second-order convergence, small-slope validity, and Cox's T₅₀ round trip. | ✅ |
 
 ## `docs/`
 
