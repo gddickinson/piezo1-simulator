@@ -1473,3 +1473,60 @@ rarely resolve the same residues and `match_protomers` cannot compare blocks of
 different length. The basis has to be shared across both.
 
 Suite 352 → 376 passing.
+
+## Round 23 — one command, and a guard against the docs going stale (2026-08-06)
+
+Aim A5 says a fresh clone plus an environment plus a fetch should reproduce the
+whole working state. The packaging half of that is routine: `pyproject.toml`,
+two pinned lock files, a `Makefile` whose targets each wrap `conda run` so they
+work from a bare shell. One decision worth recording — **the GUI dependencies
+are an optional extra, not a requirement**. Everything below `render` runs
+headless, and that is precisely what makes the science testable without a
+display; making PyQt mandatory would quietly give that up.
+
+### The half that actually matters
+
+This project states a great many specific numbers in prose. A dome radius of
+9.7 nm. A mode overlap of 0.705. A half-activation tension of 2.71 mN/m. A
+footprint of 179 nm² that replaced one of 622. Two null results with their
+p-values and effect sizes.
+
+**Prose does not fail a test suite.** A solver rewrite, a re-fetched structure
+or a changed default can leave `docs/SCIENCE.md` confidently asserting a value
+the code no longer produces, and nothing in the repository would notice. Given
+how many recorded numbers have already needed correcting here — the footprint
+was wrong by 3.5×, the Bessel ratio by 2.5×, the decay length by a factor of
+three — the risk is not hypothetical.
+
+So `piezo1/analysis/claims.py` holds seventeen claims. Each names the documented
+value, its tolerance, the document it appears in, and a callable that recomputes
+it from scratch. `make verify` runs them in about ten seconds. All seventeen
+currently reproduce.
+
+A claim is not a test, and the distinction is the point. Tests assert the code
+behaves; claims assert **the documentation is still true of the code**. They
+fail for different reasons and both are worth having.
+
+### Two design decisions inside that
+
+**Frozen claims.** The four recorded validation numbers — Round 7's p-value and
+AUROC, Round 22's effect size and AUROC — are marked `frozen`. If one drifts,
+the report prints an explicit instruction *not* to edit the document to match,
+but to work out why the computation changed. The obvious way to resolve a
+failing claim is to update the prose, and for a recorded null result that would
+be exactly the wrong move.
+
+**Skipped is not drifted.** A claim that cannot run because a structure has not
+been downloaded reports as skipped. Conflating that with drift would make every
+fresh clone look like it had a broken scientific record, and the person seeing
+it would learn to ignore the report.
+
+### Testing the detector
+
+A drift detector that has never detected drift is decoration. There is a test
+that feeds it a deliberately wrong claim and requires it to complain, and
+another that feeds it a claim raising `FileNotFoundError` and requires *skipped*
+rather than *drifted*. Both would have passed vacuously if the registry simply
+returned success.
+
+Suite 376 → 390 passing.

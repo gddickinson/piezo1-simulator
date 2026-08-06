@@ -682,11 +682,43 @@ any of the reporting.
   pre-registered, neither revised. The central claim remains **untested at
   adequate power**, and the binding constraint is data (Round 27), not method.
 
-### Round 23 — Packaging and one-command reproduction
-- [ ] `pyproject.toml`, a pinned environment lock, and a single
-      `make reproduce` that fetches data, rebuilds every resource, runs the
-      suite and regenerates every figure and number in the docs.
-- [ ] Tests; docs; commit.
+### Round 23 — Packaging and one-command reproduction ✅
+- [x] `pyproject.toml` with metadata, classifiers, console entry points
+      (`piezo1`, `piezo1-gui`) and tool config. **GUI dependencies are
+      optional**: everything below `render` runs headless, which is what makes
+      the science testable without a display, so PyQt is an extra rather than a
+      requirement. Curated resources ship as package data; `ref/` and `data/`
+      downloads never do. Verified with an editable install — the `piezo1`
+      console script resolves and runs.
+- [x] Pinned locks: `environment.lock.yml` (230 conda entries) and
+      `requirements.lock.txt` (25 pip entries, all `==` or VCS-pinned).
+- [x] `Makefile` with `env`, `lock`, `fetch`, `resources`, `test`, `lint`,
+      `sizes`, `gui`, `figures`, `validate`, `verify`, `quick`, `reproduce`.
+      Each wraps `conda run`, so `make test` works from a bare shell.
+      `make sizes` enforces the project's 500-line limit as a build step
+      rather than a habit.
+- [x] `scripts/reproduce.py` runs every step in dependency order — fetch,
+      resources, tests, both pre-registered validations, figures, GUI
+      screenshots — and finishes by verifying the documentation.
+- [x] **The part that earns the round: `piezo1/analysis/claims.py`.** The
+      project asserts a lot of specific numbers in prose, and prose does not
+      fail a test suite; a solver rewrite can leave `docs/SCIENCE.md`
+      confidently stating a value the code stopped producing. Seventeen claims
+      now name the documented number, its tolerance, the document it appears
+      in, and a callable that recomputes it from scratch.
+- [x] **All 17 reproduce**, in about 10 s: dome 9.7245 nm, gating overlap
+      0.7048, T₅₀ 2.7109 mN/m, γ 0.4200 mN/m, λ 13.9897 nm, elastica 25.2702
+      k_BT / 178.93 nm² / 3.649× overestimate, pore 0.9518 and 3.2973 Å,
+      wetting 0.8227 and 0.0000, CDS identity 1.0000, and the four frozen
+      validation results.
+- [x] **Frozen claims cannot be fixed by editing prose.** The four recorded
+      validation numbers are marked, and drift in one prints an explicit
+      instruction not to edit the document to match but to work out why the
+      computation changed.
+- [x] The drift detector is itself tested — a deliberately wrong claim must be
+      reported, and a claim that cannot run for want of downloaded data must be
+      reported as *skipped* rather than as drift, so a fresh clone does not
+      look broken. 14 tests; suite 376 → **390 passed**.
 
 ### Round 24 — Performance
 - [ ] Profile the slow paths. Pocket detection is ~10 s, PRS builds an N×N

@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "piezo1-simulator"
+version = "0.23.0"
+description = "PIEZO1 dynamic structural simulator: physics-driven 3D rendering, elastic-network dynamics and variant analysis"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "PIEZO1 simulator contributors" }]
+keywords = ["PIEZO1", "mechanosensation", "ion channel", "structural biology",
+            "elastic network model", "membrane mechanics", "cryo-EM"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+# The engine only. Everything below `render` runs headless, which is what makes
+# the science testable without a display; the GUI extra adds the viewer.
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "biopython>=1.83",
+]
+
+[project.optional-dependencies]
+gui = [
+    "PyQt6>=6.6",
+    "moderngl>=5.10",
+    "PyOpenGL>=3.1",
+]
+figures = ["matplotlib>=3.8", "pillow>=10.0"]
+dev = ["pytest>=8.0", "ruff>=0.5"]
+all = ["piezo1-simulator[gui,figures,dev]"]
+
+[project.scripts]
+piezo1 = "piezo1.cli:main"
+
+[project.gui-scripts]
+piezo1-gui = "piezo1.ui.app:main"
+
+[project.urls]
+Repository = "https://github.com/gddickinson/piezo1-simulator"
+
+[tool.setuptools.packages.find]
+include = ["piezo1*"]
+
+[tool.setuptools.package-data]
+# Curated annotation is authored content with provenance and IS shipped.
+# Downloads are not: ref/ and data/ stay out of the distribution entirely.
+"piezo1.resources" = ["*.json"]
+"piezo1.render.shaders" = ["*.vert", "*.frag"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# Qt method names are camelCase by inheritance, and tests import fixtures late.
+"piezo1/ui/*" = ["N802"]
+"tests/*" = ["E402", "F401"]

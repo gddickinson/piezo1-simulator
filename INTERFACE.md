@@ -23,7 +23,9 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | Path | Contents |
 |---|---|
 | `piezo1/` | The application package |
-| `scripts/` | One-shot maintenance scripts (env setup, resource building) |
+| `scripts/` | One-shot maintenance scripts (env setup, resource building, reproduction) |
+| `Makefile` | Entry point for every task: `make reproduce`, `make verify`, `make test`, `make gui`, `make sizes` |
+| `pyproject.toml` | Package metadata, optional GUI extras, console entry points |
 | `docs/` | Science notes, architecture notes, figures |
 | `tests/` | pytest suite |
 | `ref/` | Downloaded reference material — **git-ignored, regenerable** |
@@ -96,6 +98,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `contacts.py` | Residue contact maps, interface detection, contact changes between states. | `contact_map()`, `interface_residues()` | 📋 |
 | `pockets.py` | Delaunay alpha-sphere pocket detection (fpocket construction, reimplemented in numpy) with a burial filter that stops surface percolation, Monte-Carlo union volumes, ray-cast buriedness, and resolved-ligand contact mapping. | `find_pockets()`, `Pocket`, `alpha_spheres()`, `AlphaSpheres`, `ligand_contact_residues()` | ✅ |
 | `validation.py` | Non-parametric statistics for the blind test: permutation test with the (r+1)/(n+1) convention, Cliff's delta with a bootstrap CI, and tie-averaged AUROC. Implemented directly so the conventions are visible and testable. | `permutation_test()`, `cliffs_delta()`, `bootstrap_cliffs_delta()`, `auroc()` | ✅ |
+| `claims.py` | **Documentation drift guard.** Every headline number in the docs with its tolerance, the document it appears in, and a callable that recomputes it. Recorded validation results are `frozen` so drift cannot be resolved by editing prose. | `Claim`, `ClaimResult`, `CLAIMS`, `verify_claims()`, `claims_by_cost()` | ✅ |
 | `report.py` | Provenance-stamped analysis reports in JSON and Markdown from one object, plus the shared `ANALYSES` registry the CLI dispatches through. | `build_report()`, `AnalysisReport`, `Provenance`, `collect_provenance()`, `ANALYSES` | ✅ |
 | `design.py` | **Study design**, the questions asked around a result rather than by it: simulated power of the pre-registered permutation test, minimum detectable effect, required sample size, Benjamini–Hochberg FDR with a named primary endpoint, and leave-one-out cross-validation with every label-consuming step inside the fold. Established that Round 7 reached 80% power only at \|δ\| ≥ 0.55. | `power_curve()`, `PowerResult`, `minimum_detectable_effect()`, `sample_size_for()`, `benjamini_hochberg()`, `MultipleComparisons`, `leave_one_out()`, `LeaveOneOutResult`, `shift_for_delta()` | ✅ |
 | `docking.py` | Optional AutoDock Vina integration; degrades gracefully when absent. | `dock()`, `available()` | 📋 |
@@ -167,6 +170,7 @@ geometry at a fraction of the triangle count.
 | `build_functional_residues.py` | Authors `functional_residues.json`, verifying each residue against the sequence. | ✅ |
 | `build_variants.py` | Promotes researched variants into `variants.json` behind a validation gate. | ✅ |
 | `build_structure_registry.py` | Authors `structures.json`. | ✅ |
+| `reproduce.py` | One-command reproduction: fetch, rebuild resources, test, re-run both validations, regenerate figures, then **verify every documented number**. `--verify`, `--quick`, `--skip`, `--only`. | ✅ |
 | `render_offscreen.py` | Headless render to PNG; also a renderer regression check. | ✅ |
 | `make_figures.py` | All README/doc figures, on shared scale and orientation. | ✅ |
 | `run_validation.py` | Executes the pre-registered blind test and writes the result. | ✅ |
@@ -197,6 +201,7 @@ geometry at a fraction of the triangle count.
 | `test_ensemble.py` | Shared-basis construction, paralogue exclusion, reversed-protomer detection, PC1-as-gating-coordinate, and A-mode dominance against a random control. | ✅ |
 | `test_features.py` | Column completeness and documentation, distance/response falloff, the symmetric-PRS finding, and a guard forbidding any two columns from being the same quantity. | ✅ |
 | `test_measurement_set.py` | Pick accumulation, double-click rejection, kind switching, CSV export, and the disulfide measured on real coordinates. | ✅ |
+| `test_reproducibility.py` | The claims registry — that tolerances are tight enough to mean something, that recorded results are frozen, that drift is actually detected, and that missing data reports as skipped rather than drift. Plus packaging: GUI deps optional, entry points resolving, downloads not shipped. | ✅ |
 | `test_workflow.py` | Session round-trip and format guards, provenance capture, report failure handling, and the argparse flag-position trap. | ✅ |
 | `test_ui_shell.py` | Docks, menus, layout reset, window sizing, focus-mode and the help content — including a guard that the guide still states the null result. | ✅ |
 | `test_ui_display.py` | Scale-bar rounding, HUD settings round-trip, and the overlay: protomer rematching, rigid-motion check, per-residue deviation. | ✅ |
