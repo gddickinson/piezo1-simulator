@@ -63,7 +63,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `geometry.py` | **Membrane-dome measurement.** Sphere fitting, radial height profile, dome depth / area / excess area. Reproduces published dome curvature. | `fit_sphere()`, `SphereFit`, `radial_profile()`, `RadialProfile`, `DomeGeometry`, `measure_dome()` | ✅ |
 | `hybrid.py` | Assembles the full-length model: experimental core + AlphaFold distal blade, with the seam recorded and renderable. | `build_hybrid_model()`, `HybridModel` | 📋 |
 | `morph.py` | Conformational interpolation between endpoints: linear, distance-restrained, and elastic-network-subspace methods, each reporting its own bond-geometry error. | `morph()`, `MorphTrajectory`, `prepare_endpoints()`, `restrained_morph()`, `modal_morph()` | ✅ |
-| `pore.py` | Pore radius profile along the conduction axis (HOLE-equivalent, self-contained). | `pore_profile()`, `PoreProfile` | 📋 |
+| `pore.py` | Pore-radius profile along the conduction axis: Apollonius clearance maximisation per slice with a leash constraint, bottleneck and constriction detection, per-slice lining residues. | `pore_profile()`, `PoreProfile`, `PoreSlice` | ✅ |
 
 ### `piezo1/physics/` — the simulation engine
 
@@ -151,6 +151,7 @@ geometry at a fraction of the triangle count.
 | `test_anm.py` | Hessian symmetry, zero modes, disconnected networks, symmetry characters, and the gating-overlap result. | ✅ |
 | `test_sequence_and_resources.py` | Ten cross-species equivalences, non-constant offset, resource integrity. | ✅ |
 | `test_morph.py` | Endpoint preparation, the chord artefact and its removal, modal capture fraction, mismatched-mode-set rejection. | ✅ |
+| `test_pore.py` | Leash enforcement, closed-vs-open bottleneck, and agreement between detected constrictions and the curated gate/CTD residues. | ✅ |
 
 ## `docs/`
 

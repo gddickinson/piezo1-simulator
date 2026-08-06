@@ -224,6 +224,37 @@ always determined by superposition
 
 ---
 
+## 4b. The pore, measured from coordinates
+
+The pore-radius profile is the largest sphere that fits at each height along
+the three-fold axis without overlapping any van der Waals surface, with the
+probe tethered within 8 Å of the axis.
+
+**The leash is not a convenience, it is a correctness requirement.** The
+clearance function has no interior maximum — a free probe leaves the pore
+sideways and finds bulk solvent, growing without bound. Unconstrained on real
+PIEZO1 coordinates it reaches R ≈ 6188 Å, which is a true maximum and a
+completely useless answer.
+
+Measured on the closed human structure 8YEZ:
+
+| Feature | z (Å) | Radius (Å) | Lining |
+|---|---|---|---|
+| Transmembrane hydrophobic gate | −17.7 | **3.01** | 2449, 2450, 2451 |
+| CTD constriction 1 | −46.2 | **1.24** | M2467 |
+| CTD constriction 2 | −55.2 | **0.76** | 2509, 2514 |
+
+The global bottleneck is 0.76 Å, so the structure is not conductive — correct
+for a closed channel. The flat, open-like 11ZC gives 3.25 Å and is conductive.
+
+These constrictions were found from coordinates alone. That they coincide with
+the residues independently curated from the literature as the hydrophobic gate
+(I2447/V2450/F2454) and the CTD constrictions (M2467/F2468, P2510/E2511) is a
+mutual validation of the profiler and the annotation.
+
+Note that HOLE cannot be used here: it has no Apple-Silicon build, and
+MDAnalysis's `hole2` wrapper is an empty stub as of 2.10.
+
 ## 5. Electrophysiology
 
 | Quantity | Value | Notes |
