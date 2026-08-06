@@ -196,19 +196,34 @@ def minimum_detectable_effect(n_a: int, n_b: int, target_power: float = 0.8,
 def sample_size_for(delta: float, target_power: float = 0.8,
                     ratio: float = 1.0, alpha: float = 0.05,
                     n_simulations: int = 1000, n_permutations: int = 499,
-                    max_n: int = 400, seed: int = 0) -> int:
-    """Group size ``n_a`` needed to detect ``delta``; ``n_b = ratio·n_a``.
+                    max_n: int = 400, seed: int = 0,
+                    alternative: str = "less") -> int:
+    """Group size ``n_a`` needed to detect an effect of size ``|delta|``.
 
-    Returns ``max_n`` if the target is not reached within the search range,
-    which is a statement about the design rather than a failure.
+    ``n_b = ratio·n_a``. Returns ``max_n`` if the target is not reached within
+    the search range, which is a statement about the design rather than a
+    failure.
+
+    **Only the magnitude of ``delta`` is used.** A one-sided test is powered
+    against an effect in the direction it tests, so the sign is set by
+    ``alternative`` rather than by the caller. Taking the sign literally was a
+    real bug: ``power_curve`` defaults to ``alternative="less"``, so a caller
+    asking the natural question — "how many variants for a large effect?" with
+    ``delta=0.43`` — injected the effect *against* the alternative, got roughly
+    zero power at every size, and received ``max_n`` back. The docstring
+    presented that as "not reachable", so the wrong answer looked like a
+    finding about the design.
     """
+    magnitude = abs(float(delta))
+    signed = -magnitude if alternative == "less" else magnitude
+
     lo, hi = 4, max_n
     while lo < hi:
         mid = (lo + hi) // 2
         result = power_curve(mid, max(2, int(round(mid * ratio))),
-                             deltas=[delta], n_simulations=n_simulations,
+                             deltas=[signed], n_simulations=n_simulations,
                              n_permutations=n_permutations, alpha=alpha,
-                             seed=seed)
+                             alternative=alternative, seed=seed)
         if result.power[0] >= target_power:
             hi = mid
         else:

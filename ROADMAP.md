@@ -1296,7 +1296,11 @@ changes that.
 
 ## Block J — review after Rounds 31–35
 
-Written after five rounds of tag, labelling, permeation and variant work. What
+Written after five rounds of tag, labelling, permeation and variant work.
+*Numbered from 46: Block I already claimed 36–40 and Block K 41–45. The
+collision was mine, and the blocks are independent — any can be worked
+first.*
+ What
 those rounds actually established, and what it implies for the destination.
 
 **The structural route to direction is empirically blocked, not just unproven.**
@@ -1311,7 +1315,7 @@ labelling curve (imported and exact), and the conductance (spans 16–94 pS acro
 unmeasured parameters, so not an independent prediction). Keeping those three
 distinguishable from one another is worth more than improving any of them.
 
-### Round 36 — Where the model *can* be tested
+### Round 46 — Where the model *can* be tested
 - [ ] The one comparison Round 34 leaves open: **8YFG (R2456H) against 8YEZ
       (wild type)**, both human, both closed, mutation resolved in one. Report
       bottleneck, wetting score and blocking mechanisms as a *paired* structural
@@ -1320,14 +1324,14 @@ distinguishable from one another is worth more than improving any of them.
       than the wild-type entries differ among themselves — the only control that
       makes a single pair interpretable.
 
-### Round 37 — A predictor that could survive its own data limit
+### Round 47 — A predictor that could survive its own data limit
 - [ ] Round 26 raised within-position variance from 4.9% to 52.5%. Ask the
       question that follows: given 39 directioned variants, what effect size is
       now detectable, and does the substitution-aware predictor reach it?
 - [ ] *Validate:* against `design.minimum_detectable_effect`, and **do not run
       the comparison** unless the pre-registration protocol is followed first.
 
-### Round 38 — The LoF gap, addressed rather than lamented
+### Round 48 — The LoF gap, addressed rather than lamented
 - [ ] Loss-of-function variants are absent from the structures but present in
       the curated set. Test whether they are also structurally distinguishable
       *in the wild type* — do LoF positions differ from GoF positions in burial,
@@ -1336,12 +1340,12 @@ distinguishable from one another is worth more than improving any of them.
       exact confound Round 7 died of. Pre-register, and report the
       between-position variance share alongside any result.
 
-### Round 39 — Provenance of the whole chain
+### Round 49 — Provenance of the whole chain
 - [ ] One command that walks a claim from the figure back to the file, the
       parameter set and the commit. `verify_claims` checks numbers; this checks
       that the *path* to each number is reconstructible.
 
-### Round 40 — What a user should not be able to do
+### Round 50 — What a user should not be able to do
 - [ ] Audit the UI for ways to produce a confident wrong number: analyses run on
       a cross-species overlay, a modified registry left unmarked, a companion
       structure mistaken for the primary. Round 33's menu audit found real gaps;

@@ -275,3 +275,65 @@ def test_leave_one_out_on_the_round7_predictors(round7):
     result = leave_one_out(values, is_lof)
     assert result.n == 25
     assert result.auroc_out < 0.65
+
+
+def test_sample_size_uses_the_magnitude_not_the_sign():
+    """A positive effect size used to return max_n, and it looked like an answer.
+
+    `power_curve` defaults to `alternative="less"`, so `sample_size_for(0.43)`
+    injected the effect *against* the alternative, found ~zero power at every
+    size, and the bisection walked to its ceiling. The docstring described that
+    ceiling as "not reached within the search range" — a statement about the
+    design — so a caller asking the obvious question got a confident wrong
+    answer. A one-sided test is powered against an effect in the direction it
+    tests, so only the magnitude is the caller's to supply.
+    """
+    for magnitude in (0.43, 0.28):
+        negative = sample_size_for(-magnitude, n_simulations=400,
+                                   n_permutations=199, seed=3)
+        positive = sample_size_for(+magnitude, n_simulations=400,
+                                   n_permutations=199, seed=3)
+        assert negative == positive, f"asymmetric at |delta| = {magnitude}"
+        assert negative < 400, "should be reachable well inside the search range"
+
+    # And a larger effect must need fewer variants than a smaller one.
+    assert sample_size_for(0.43, n_simulations=400, n_permutations=199,
+                           seed=3) < sample_size_for(
+        0.28, n_simulations=400, n_permutations=199, seed=3)
+
+
+def test_sample_size_reproduces_the_recorded_protocol_table():
+    """The numbers `NEGATIVE_RESULT_PROTOCOL.md` quotes must still come out.
+
+    Loose bounds, because these are simulated and the recorded values (42 for a
+    large effect, 98 for a medium one) carry their own Monte-Carlo error. The
+    point is that the function agrees with the document that instructs people to
+    use it — for a while it did not.
+    """
+    large = 2 * sample_size_for(0.43, n_simulations=600, n_permutations=299,
+                                seed=0)
+    medium = 2 * sample_size_for(0.28, n_simulations=600, n_permutations=299,
+                                 seed=0)
+    assert 30 <= large <= 60, f"large-effect n = {large}, recorded 42"
+    assert 80 <= medium <= 130, f"medium-effect n = {medium}, recorded 98"
+    assert large < medium
+
+
+def test_the_round36_design_is_what_the_preregistration_claims():
+    """The design numbers the pre-registration commits to, checked here.
+
+    A pre-registration whose power section drifts from the code is worse than
+    none, because it looks like a commitment and is not one.
+    """
+    from piezo1.analysis.variant_sets import build_analysis_set
+
+    measured = build_analysis_set(levels=("measured",)).missense()
+    combined = build_analysis_set(
+        levels=("measured", "disease_mechanism")).missense()
+
+    assert len(measured) == 26 and measured.counts() == {"GoF": 20, "LoF": 6}
+    assert len(combined) == 46 and combined.counts() == {"GoF": 27, "LoF": 19}
+
+    # And the minimum detectable effects the document quotes.
+    assert minimum_detectable_effect(20, 6) == pytest.approx(0.61, abs=0.08)
+    assert minimum_detectable_effect(27, 19) == pytest.approx(0.41, abs=0.08)
