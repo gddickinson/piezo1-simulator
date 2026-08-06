@@ -155,6 +155,17 @@ too large at the r₀/λ where PIEZO1 sits.
 Our solver reproduces this to second order and recovers λ = 13.998 nm from its
 own output against an input of 14.0 nm.
 
+**Intervals (Round 29).** The dome radius of curvature is **9.73 nm with a 95%
+confidence interval of [8.83, 10.34]**, bootstrapped over the 66 transmembrane
+surface points. The published closed-state value of 10.2 nm lies *inside* that
+interval: the measurement and the publication are statistically
+indistinguishable, not merely close. The elastic-network gating overlap is
+**0.705 but ranges 0.554–0.723** across network cutoffs from 10 to 20 Å — the
+qualitative result survives every cutoff, the third digit does not. Ensemble PC1
+is **0.900 [0.796, 0.972]** over ten structures. None of these captures model
+error: a bootstrap says how well a sphere fit is determined, not whether a
+sphere was the right shape.
+
 **But it must not be applied to PIEZO1 at face value.** The dome meets the
 bilayer at a contact slope near 2.0, about 63°. The Monge expansion drops terms
 of order |∇h|², so at that slope the neglected terms are *larger than the ones

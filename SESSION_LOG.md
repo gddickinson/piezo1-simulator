@@ -1985,3 +1985,74 @@ Knowing that a candidate explanation has been ruled out is a real result, and it
 took building the better model to rule it out.
 
 Suite 477 → 489 passing; 19 documented numbers reproduce.
+
+## Round 29 — intervals, and three different things people call one (2026-08-06)
+
+Rounds 18 to 28 kept finding the same failure: a number recorded with more
+confidence than it had earned. The footprint area wrong by 3.5×. A null result
+that could only ever have excluded a large effect. A T₅₀ eighteen times off. A
+point estimate invites that, so this round attaches a spread.
+
+### The distinction that shapes the module
+
+Three things get called "the uncertainty" and they mean different things:
+
+- **Bootstrap** — resample the data. This is a genuine confidence interval for
+  sampling variability and the only one that deserves the name.
+- **Sensitivity** — vary a method choice, such as the elastic-network cutoff.
+  There is no sampling distribution here; a cutoff is not a random variable.
+  Quoting its spread as a confidence interval would be a second kind of
+  overconfidence dressed as a cure for the first.
+- **Parameter range** — vary a registered input over its published values.
+  Propagated uncertainty from someone else's measurement, not a statement about
+  this dataset.
+
+They are separate classes with different names, and the printed summary of a
+sensitivity range says *"sensitivity, not a confidence interval"* in so many
+words.
+
+### Two headline numbers change meaning
+
+**The dome radius.** 9.73 nm with a 95% CI of **[8.83, 10.34]**, bootstrapped
+over 66 transmembrane surface points. The published 10.2 nm is *inside* that
+interval.
+
+The project has been reporting this as agreement-with-a-small-gap — "our 9.7
+against their 10.2". The honest statement is that the two are **statistically
+indistinguishable**: a stronger claim of consistency, and a weaker claim of
+precision than the two-decimal figure implied.
+
+**The gating overlap.** 0.705 at the default cutoff, but **0.554–0.723** across
+cutoffs from 10 to 20 Å, non-monotonically. The qualitative conclusion — a
+substantial overlap carried entirely by A-symmetric modes — holds at every
+cutoff, and the E-mode contribution stays negligible throughout. The third digit
+was never meaningful, and it has been quoted as though it were since Round 4.
+
+Ensemble PC1 is 0.900 [0.796, 0.972] over ten structures; dropping 11ZC alone
+moves it to 0.832, which is the largest single influence but not a dominating
+one.
+
+### Two details worth recording
+
+The confidence level is **derived from `stats.alpha`** rather than written as
+0.95. Two copies of a significance level drift, and this project already
+registers one — setting α to 0.01 now widens every interval automatically.
+
+The parameter sweep restores the registry in a `finally`, including when the
+statistic raises. Leaving it modified would make every later number in the
+session incomparable with the documentation, which is exactly what the override
+tracking from the parameter round exists to prevent.
+
+### What none of it does
+
+**It does not capture model error.** Bootstrapping a sphere fit tells you how
+well the sphere is determined; it says nothing about whether a sphere was the
+right shape for the dome, or whether springs are the right physics for a
+2500-residue trimer. That is stated on every result rather than left for the
+reader to remember, because it is precisely the assumption an interval invites
+you to stop questioning.
+
+The parameter audit caught the new module on its first run — seven unregistered
+literals — which is the rule from the parameter round working as intended.
+
+Suite 489 → 507 passing.

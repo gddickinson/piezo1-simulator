@@ -912,12 +912,41 @@ the failure mode to keep hunting.
 - [x] 12 tests (`tests/test_gating_area.py`); the 71 nm² is pinned as a
       documented claim. Suite 477 → **489 passed**, 19 numbers reproduce.
 
-### Round 29 — Uncertainty on every reported quantity
-- [ ] Dome curvature, pore radius, mode overlaps and ΔΔG are all reported as
-      point estimates. Add intervals: bootstrap over atoms for the sphere fit,
-      over structures for the ensemble PCs, over network cutoff for the ANM.
-- [ ] A number without an interval invites exactly the overconfidence Rounds
-      18–20 kept finding.
+### Round 29 — Uncertainty on every reported quantity ✅
+- [x] `piezo1/analysis/uncertainty.py` with **three kinds of spread kept
+      apart**, because conflating them would be a second kind of
+      overconfidence rather than a cure for the first: a **bootstrap**
+      confidence interval (resampling data), a **sensitivity range** (varying a
+      method choice — a network cutoff has no sampling distribution), and a
+      **parameter range** (propagating a registered input over its published
+      values). The class names and the printed summaries all say which.
+- [x] **The dome radius reframes a headline claim.** 9.73 nm with a 95% CI of
+      **[8.83, 10.34]** over 66 surface points — and the published 10.2 nm sits
+      *inside* it. The project has been reporting this as "close but not
+      exact"; the honest statement is that the two are **statistically
+      indistinguishable**, which is a stronger claim of consistency and a
+      weaker claim of precision.
+- [x] **The gating overlap is not robust to three digits.** Across network
+      cutoffs from 10 to 20 Å it ranges **0.554–0.723**, a 24% spread, and
+      non-monotonically. The qualitative result — a substantial overlap carried
+      entirely by A-symmetric modes — survives every cutoff; the specific 0.705
+      does not, and was being quoted as though it did.
+- [x] **Ensemble PC1 is 0.900 [0.796, 0.972]** over ten structures. Leaving out
+      11ZC alone moves it to 0.832, the largest single influence, but no entry
+      dominates.
+- [x] Footprint energy over the published κ range (20–25 k_BT): 25.27–26.94
+      k_BT, a 6.6% propagated spread.
+- [x] The confidence level is **derived from `stats.alpha`** rather than
+      repeated, so the two cannot drift; setting α to 0.01 widens every
+      interval. The parameter sweep restores the registry even when the
+      statistic raises, since leaving it modified would make every later number
+      in the session incomparable with the documentation.
+- [x] **Stated on every result: none of this captures model error.**
+      Bootstrapping a sphere fit says how well the sphere is determined, not
+      whether a sphere was the right question.
+- [x] `scripts/report_uncertainty.py`; 18 tests (`tests/test_uncertainty.py`),
+      including that a statistic failing on most resamples raises rather than
+      silently narrowing the interval. Suite 489 → **507 passed**.
 
 ### Round 30 — Adversarial review of the whole chain
 - [ ] Re-derive each headline result by a deliberately different route and

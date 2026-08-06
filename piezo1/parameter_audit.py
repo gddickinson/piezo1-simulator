@@ -50,6 +50,10 @@ EXEMPT_NAMES = {
     "n_points": "quadrature or plotting density",
     "n_samples": "Monte-Carlo sample count",
     "n_simulations": "Monte-Carlo replicate count",
+    "n_resamples": "bootstrap replicate count; changes the precision of an "
+                   "interval, never the quantity being estimated",
+    "digits": "how many decimals to print; presentation only",
+    "level": "derived from stats.alpha rather than set independently",
     "n_bins": "histogram resolution",
     "n_angular": "mesh resolution for rendering",
     "n_frames": "animation length",
