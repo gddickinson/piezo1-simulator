@@ -48,7 +48,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `cif_reader.py` | Fast mmCIF/PDB coordinate readers producing numpy arrays. Handles quoting, multi-line text fields and model selection. ~0.6 s for a 34k-atom trimer. | `read_cif_atoms()`, `read_pdb_atoms()`, `read_structure_file()`, `parse_cif_categories()` | ✅ |
+| `cif_reader.py` | Fast mmCIF/PDB coordinate readers producing numpy arrays. Handles quoting, multi-line text fields and model selection. ~0.19 s for a 31k-atom trimer, via a `str.split()` fast path for the 99.5% of lines with no quote or comment; the careful path is unchanged and merely bypassed. | `read_cif_atoms()`, `read_pdb_atoms()`, `read_structure_file()`, `parse_cif_categories()` | ✅ |
 | `fetch.py` | Cached downloaders for RCSB mmCIF, AlphaFold DB, UniProt, PubChem. Idempotent. AlphaFold versions discovered from the API, never guessed. | `fetch_pdb()`, `fetch_alphafold()`, `fetch_uniprot()`, `fetch_ligand()`, `fetch_chap_grid()`, `fetch_all()`, `DEFAULT_PDB_IDS` | ✅ |
 | `session.py` | Session save/load. Stores what was being viewed — structure, style, camera, selection, analyses run — never coordinates or results. | `Session`, `save_session()`, `load_session()` | ✅ |
 | `registry.py` | Curated catalogue of 21 PIEZO structures: state, gating, resolved range, ligands, citation, and what each is recommended for. | `StructureRecord`, `Registry`, `load_registry()` | ✅ |
@@ -206,6 +206,7 @@ geometry at a fraction of the triangle count.
 | `test_ensemble.py` | Shared-basis construction, paralogue exclusion, reversed-protomer detection, PC1-as-gating-coordinate, and A-mode dominance against a random control. | ✅ |
 | `test_features.py` | Column completeness and documentation, distance/response falloff, the symmetric-PRS finding, and a guard forbidding any two columns from being the same quantity. | ✅ |
 | `test_measurement_set.py` | Pick accumulation, double-click rejection, kind switching, CSV export, and the disulfide measured on real coordinates. | ✅ |
+| `test_performance.py` | The optimisations, asserting **identity not closeness**: the fast tokenizer path against the careful one over a whole deposited file, SASA against the direct norm formulation, the Monte-Carlo volume against the un-optimised loop, and the content-keyed conservation cache. Timings are loose ceilings only. | ✅ |
 | `test_parameters.py` | The registry and its enforcement: every citation resolving, defaults inside their own bounds, overrides tracked and clamped, claims refusing to run against a modified registry, reports flagging it — and the audit, including a test that it would catch a newly invented constant. | ✅ |
 | `test_reproducibility.py` | The claims registry — that tolerances are tight enough to mean something, that recorded results are frozen, that drift is actually detected, and that missing data reports as skipped rather than drift. Plus packaging: GUI deps optional, entry points resolving, downloads not shipped. | ✅ |
 | `test_workflow.py` | Session round-trip and format guards, provenance capture, report failure handling, and the argparse flag-position trap. | ✅ |

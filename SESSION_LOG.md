@@ -1604,3 +1604,62 @@ decoration.
 `make reproduce`. The rule is written into `CLAUDE.md`. Suite 390 → 408 passing,
 and all 17 documented numbers still reproduce, which is the check that the
 migration changed nothing scientific.
+
+## Round 24 — performance, and profiling before optimising (2026-08-06)
+
+The roadmap named three slow paths. Profiling found that two of them were not
+the problem and the real one was not on the list.
+
+- **PRS**: 0.52 s. Never a problem.
+- **Pocket detection**: 4.2 s, not the ~10 s the roadmap assumed.
+- **Ensemble PCA**: 12.4 s — but **99% of that was mmCIF parsing**, not the
+  PCA at all.
+- **SASA**: 7.5 s, and the roadmap did not mention it.
+
+Recording that is worth more than the speedups. A round spent optimising PRS
+because a note said it was slow would have been a round wasted.
+
+### The rule for this round
+
+An optimisation that alters a number is a bug, not a speedup. Every change here
+is a reformulation with the same value, and the tests assert **identity**, not
+closeness.
+
+### What was actually slow
+
+**SASA, 7.54 → 1.27 s.** The inner loop built a (256 × neighbours × 3) array per
+atom and took a square root. Two observations remove both: `d ≥ r` and `d² ≥ r²`
+decide the same way for non-negative values, so the root was never needed; and
+expanding `|t − x_j|² = |v_j|² + r_i² + 2r_i(p_k · v_j)` turns the 3-D broadcast
+into a single BLAS product. Bit-identical across all 31,599 atoms —
+`np.array_equal`, not `allclose`.
+
+**The mmCIF tokenizer, and through it the ensemble, 12.35 → 2.05 s.** The
+tokenizer walked characters in a Python loop, 321,913 times per ensemble load.
+But 99.5% of mmCIF lines contain no quote and no comment, and for those
+`str.split()` is exactly equivalent — its default whitespace set is the same one
+the function uses, and it discards empty fields the same way.
+
+I checked that claim rather than asserting it: 245,528 lines of deposited
+structure, **zero mismatches**. This is the function whose whitespace handling
+once shifted every column by one and produced `invalid literal for int(): 'ATOM'`,
+so the careful path is left exactly as it was and merely bypassed.
+
+**Conservation, 3.67 s → 0.003 s.** Aligning 61 orthologs dominated anything
+needing conservation, and the result depends only on the sequences. The cache is
+keyed on a **content hash** of the reference and the ortholog sequences rather
+than on a filename or timestamp, so re-fetching or changing the reference
+invalidates it automatically. A cache that can go stale is worse than no cache:
+it would report last week's conservation against this week's alignment, and
+nothing would look wrong.
+
+### The check that matters
+
+Overall 33.8 → 12.5 s, and every number unchanged: SASA total 197490.5582 Å²,
+top pocket 6593.6 Å³, ensemble PC1 0.9000, pore bottleneck 0.9518 Å. All 17
+documented numbers still reproduce, which is the guard Round 23 built for
+exactly this kind of change. The suite itself went 118 → 97 s.
+
+Timing assertions in the tests are loose ceilings only. Pinning a runtime would
+fail on a slower machine for no scientific reason; what is worth pinning is that
+the fast path and the careful path agree.

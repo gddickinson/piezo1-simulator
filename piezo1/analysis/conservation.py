@@ -20,6 +20,7 @@ Conservation narrows a search; it does not identify a mechanism.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import urllib.parse
 import urllib.request
@@ -27,7 +28,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from ..config import SEQUENCE_DIR
+from ..config import CACHE_DIR, SEQUENCE_DIR
 from ..core.sequence import align_global, human_sequence
 from ..parameters import PARAMETERS as _P
 
@@ -166,17 +167,55 @@ class ConservationProfile:
         return {k: float(np.mean(v)) for k, v in out.items() if v}
 
 
+def _profile_cache_key(ref: str, orthologs: OrthologSet,
+                       min_coverage: float) -> str:
+    """Content hash of everything the profile depends on.
+
+    Keyed on the sequences themselves rather than on a file timestamp, so
+    re-fetching orthologs or changing the reference invalidates the cache
+    automatically. A cache that can go stale is worse than no cache — it would
+    report last week's conservation against this week's alignment.
+    """
+    digest = hashlib.sha256()
+    digest.update(ref.encode())
+    digest.update(f"{min_coverage:.6f}".encode())
+    for member in sorted(orthologs.members, key=lambda m: m.organism):
+        digest.update(member.organism.encode())
+        digest.update(member.sequence.encode())
+    return digest.hexdigest()[:16]
+
+
 def conservation_profile(orthologs: OrthologSet,
                          reference: str | None = None,
-                         min_coverage: float = 0.5) -> ConservationProfile:
+                         min_coverage: float = 0.5,
+                         use_cache: bool = True) -> ConservationProfile:
     """Per-position conservation, anchored to human numbering.
 
     Each ortholog is aligned pairwise to the reference and its residues mapped
     onto reference positions. Gaps are excluded from the frequency count but
     tracked as ``coverage``, so a column that only three species align to is
     not mistaken for an invariant one.
+
+    Aligning 61 orthologs takes ~3.5 s and dominates anything that needs
+    conservation, so the result is cached on disk under a **content hash** of
+    the reference and the ortholog sequences.
     """
     ref = reference or human_sequence()
+    cache_path = None
+    if use_cache:
+        cache_path = (CACHE_DIR / "conservation" /
+                      f"profile_{_profile_cache_key(ref, orthologs, min_coverage)}.npz")
+        if cache_path.exists():
+            try:
+                stored = np.load(cache_path, allow_pickle=True)
+                return ConservationProfile(
+                    residues=stored["residues"], entropy=stored["entropy"],
+                    identity=stored["identity"], coverage=stored["coverage"],
+                    n_orthologs=int(stored["n_orthologs"]),
+                    organisms=tuple(stored["organisms"].tolist()),
+                    meta=dict(stored["meta"].item()) | {"source": "cache"})
+            except Exception:
+                cache_path.unlink(missing_ok=True)
     n = len(ref)
     counts = np.zeros((n, len(AMINO_ACIDS)), dtype=np.float64)
     aligned = np.zeros(n, dtype=np.float64)
@@ -213,7 +252,7 @@ def conservation_profile(orthologs: OrthologSet,
     coverage = aligned / n_other
     entropy = np.where(coverage > 0, entropy, 1.0)
 
-    return ConservationProfile(
+    profile = ConservationProfile(
         residues=np.arange(1, n + 1), entropy=entropy,
         identity=np.divide(identical, np.maximum(aligned, 1.0)),
         coverage=coverage, n_orthologs=n_other,
@@ -222,6 +261,15 @@ def conservation_profile(orthologs: OrthologSet,
               "note": ("reference-anchored pairwise alignment, not a true MSA; "
                        "adequate here because vertebrate PIEZO1 orthologs are "
                        "colinear")})
+    if cache_path is not None:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(
+            cache_path, residues=profile.residues, entropy=profile.entropy,
+            identity=profile.identity, coverage=profile.coverage,
+            n_orthologs=profile.n_orthologs,
+            organisms=np.array(profile.organisms, dtype=object),
+            meta=np.array(profile.meta, dtype=object))
+    return profile
 
 
 # --------------------------------------------------------------------------

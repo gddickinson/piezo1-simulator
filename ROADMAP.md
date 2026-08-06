@@ -720,11 +720,43 @@ any of the reporting.
       reported as *skipped* rather than as drift, so a fresh clone does not
       look broken. 14 tests; suite 376 → **390 passed**.
 
-### Round 24 — Performance
-- [ ] Profile the slow paths. Pocket detection is ~10 s, PRS builds an N×N
-      matrix, and the ensemble PCA reloads every structure. None is fatal, all
-      are avoidable.
-- [ ] Tests; docs; commit.
+### Round 24 — Performance ✅
+- [x] **Profiled first, and the roadmap's premises were partly wrong.** PRS is
+      0.52 s and was never a problem; pocket detection was 4.2 s, not ~10 s.
+      The genuine costs were **SASA at 7.5 s**, which the roadmap did not
+      mention at all, and the ensemble at 12.4 s — of which **99% was mmCIF
+      parsing**, not the PCA.
+- [x] **SASA 7.54 → 1.27 s (5.9×), bit-identical.** The hot loop built a
+      (256 × neighbours × 3) array per atom and took a square root it did not
+      need. Expanding `|t−x|² = |v|² + r² + 2r(p·v)` turns that into one BLAS
+      product, and `d ≥ r` and `d² ≥ r²` decide the same way for non-negative
+      values. `np.array_equal` on all 31,599 atoms.
+- [x] **Ensemble 12.35 → 2.05 s (6.0×).** The mmCIF tokenizer walked characters
+      in Python; 99.5% of lines contain no quote or comment, where
+      `str.split()` is exactly equivalent and runs in C. Verified on **245,528
+      lines of deposited structure with zero mismatches** before relying on it.
+      The careful path — where the whitespace bug once shifted every column by
+      one — is untouched and merely bypassed. Also replaced an O(n) `pop(0)`
+      running several million times per load.
+- [x] **Conservation 3.67 s → 0.003 s** via a disk cache keyed on a **content
+      hash** of the reference and ortholog sequences, so re-fetching or
+      changing the reference invalidates it automatically. A cache that can go
+      stale is worse than none — it would report last week's conservation
+      against this week's alignment.
+- [x] Pockets 4.21 → 3.60 s (squared distances, and points already inside are
+      not carried into the next block — `inside` is monotone, so this cannot
+      change the answer). Structure load 0.37 → 0.19 s. Feature table
+      7.99 → 4.07 s.
+- [x] **Overall 33.8 → 12.5 s (2.7×) with every number unchanged**: SASA total
+      197490.5582 Å², top pocket 6593.6 Å³, PC1 0.9000, bottleneck 0.9518 Å.
+      The test suite itself dropped 118 → 97 s.
+- [x] 11 tests (`tests/test_performance.py`) asserting **identity, not
+      closeness** — the fast tokenizer against the careful one over a whole
+      deposited file, SASA against the direct formulation, the Monte-Carlo
+      volume against the un-optimised loop, and the conservation cache against
+      an uncached rebuild. Timing assertions are loose ceilings only; pinning a
+      runtime would fail on a slower machine for no scientific reason.
+      Suite 408 → **419 passed**; all 17 documented numbers still reproduce.
 
 ### Round 25 — The teaching layer
 - [ ] Project aim A1 is that this be a *learning* instrument, and it has had the
