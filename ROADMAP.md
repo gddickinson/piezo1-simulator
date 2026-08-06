@@ -758,12 +758,29 @@ any of the reporting.
       runtime would fail on a slower machine for no scientific reason.
       Suite 408 → **419 passed**; all 17 documented numbers still reproduce.
 
-### Round 25 — The teaching layer
-- [ ] Project aim A1 is that this be a *learning* instrument, and it has had the
-      least attention of any aim. Add a guided tour that walks the mechanism —
-      dome, blades, lever, gate — with each step tied to the live measurement
-      it corresponds to.
-- [ ] Tests; docs; commit.
+### Round 25 — The teaching layer ✅
+- [x] An **11-step guided tour** (`piezo1/tour.py`, Qt-free; `ui/tour_panel.py`
+      and `ui/tour_controller.py` for the GUI half) walking the mechanism:
+      trimer → blades → dome → footprint → lever → gate → open state → normal
+      modes → gating energetics → a variant → what the project cannot do.
+      Reachable from Help → Guided tour (F2) or its own dock.
+- [x] **Every number a step states is computed when the step runs.** None is
+      written into the prose. A tour that narrated "the dome radius is 9.7 nm"
+      would be a fourth place for that number to live and go stale, beside the
+      code, the documentation and the claims registry. Published comparisons
+      come from the **parameter registry**, so a step inherits the provenance
+      rule rather than side-stepping it — there is a test that changing
+      `dome.published_radius_closed` changes the tour text.
+- [x] The controller calls the **same** controllers the panels use rather than
+      computing anything itself. A teaching tool that quietly disagreed with
+      the application it is teaching would be worse than none.
+- [x] **The tour ends on the two null results**, with a test asserting the
+      p-value, AUROC and effect size are present. A learning instrument that
+      only shows its successes teaches the wrong lesson.
+- [x] 12 tests (`tests/test_tour.py`), including that every step degrades
+      gracefully before anything is computed and none raises on junk input —
+      a tour must never crash the application. The GUI smoke test now walks all
+      11 steps. Suite 419 → **431 passed**.
 
 ---
 

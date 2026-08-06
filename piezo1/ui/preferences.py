@@ -182,3 +182,12 @@ class PreferencesMixin:
                 "drag rotate · shift+drag pan · wheel zoom · R reset · "
                 "space spin · click to identify")
             self.hint_label.setStyleSheet("color:#6f7684;")
+
+    def _start_tour(self) -> None:
+        """Show the tour dock and begin at the first step."""
+        dock = self.docks.docks.get("tour")
+        if dock is not None:
+            dock.show()
+            dock.raise_()
+        self.tour_panel.start()
+        self._set_status("guided tour — every number is measured, not quoted")

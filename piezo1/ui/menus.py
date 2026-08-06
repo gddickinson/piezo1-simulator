@@ -186,6 +186,9 @@ def _options_menu(win, bar) -> None:
 def _help_menu(win, bar) -> None:
     menu = bar.addMenu("&Help")
     menu.setToolTipsVisible(True)
+    _action(menu, "&Guided tour", win._start_tour, "F2",
+            "Walk the mechanism — dome, blades, lever, gate — with every "
+            "number measured live rather than quoted")
     _action(menu, "&Feature guide…", win._show_help, "F1",
             "What every panel does, and what the numbers mean")
     _action(menu, "&Keyboard and mouse…",

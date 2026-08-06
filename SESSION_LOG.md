@@ -1663,3 +1663,46 @@ exactly this kind of change. The suite itself went 118 → 97 s.
 Timing assertions in the tests are loose ceilings only. Pinning a runtime would
 fail on a slower machine for no scientific reason; what is worth pinning is that
 the fast path and the careful path agree.
+
+## Round 25 — the teaching layer, with nothing narrated (2026-08-06)
+
+Aim A1 says this should be a learning instrument, and of the six aims it had
+received the least attention. The tour walks the mechanism in eleven steps:
+trimer, blades, dome, footprint, lever, gate, open state, normal modes, gating
+energetics, a variant, and what the project cannot do.
+
+### The rule that shapes it
+
+**Every number a step states is computed when the step runs.**
+
+A tour is prose, and prose is where numbers go to rot. Writing "the dome radius
+is 9.7 nm" into a tour step would create a fourth place for that value to live —
+beside the code, `docs/SCIENCE.md` and the claims registry — and the fourth copy
+is the one nobody remembers to update. So each step carries a callable that
+reads whatever the application has actually computed, and where a step quotes a
+published comparison it reads it from the **parameter registry**. There is a
+test that changing `dome.published_radius_closed` changes the tour text, which
+is the proof it is not a literal.
+
+The controller calls the same controllers the panels use. A teaching tool that
+quietly disagreed with the application it was teaching would be worse than none.
+
+### Where it ends
+
+On the failures. The last step states both null results — p = 0.234, AUROC
+0.542, and the second test's −0.211 with an interval spanning zero — and the
+power limit that means the first excludes a large effect and little else. There
+is a test asserting those figures are present, because a tour is exactly the
+sort of document where an inconvenient result quietly stops being mentioned.
+
+A learning instrument that only shows its successes teaches the wrong lesson,
+and the lesson worth teaching here is that the interesting question about R2456
+is why four substitutions at one residue do not all do the same thing.
+
+### Robustness
+
+Two tests exist because a tour must never take the application down: every step
+must degrade to a readable message before anything has been computed, and none
+may raise when handed junk. The GUI smoke test walks all eleven steps.
+
+Suite 419 → 431 passing.

@@ -34,6 +34,8 @@ from .session_controller import SessionController
 from .overlay_controller import OverlayController
 from .panels.analysis_panel import AnalysisPanel
 from .panels.overlay_panel import OverlayPanel
+from .tour_controller import TourController
+from .tour_panel import TourPanel
 from .panels.annotation_panel import AnnotationPanel
 from .panels.measure_panel import MeasurePanel
 from .panels.physics_panel import PhysicsPanel
@@ -176,6 +178,10 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self.overlay_panel.deviation_colour_requested.connect(
             self.overlay.color_reference_by_deviation)
 
+        self.tour_panel = TourPanel()
+        self.tour = TourController(self)
+        self.tour_panel.step_requested.connect(self.tour.run_step)
+
         self.docks = DockManager(self)
         for spec in (
             DockSpec("model", "Model", self.structure_panel,
@@ -199,6 +205,10 @@ class MainWindow(PreferencesMixin, QMainWindow):
                      Qt.DockWidgetArea.RightDockWidgetArea,
                      "Superpose a second structure and compare them",
                      tabify_with="annotation"),
+            DockSpec("tour", "Guided tour", self.tour_panel,
+                     Qt.DockWidgetArea.LeftDockWidgetArea,
+                     "Walk the mechanism, with every number measured live",
+                     tabify_with="physics"),
         ):
             self.docks.add(spec)
         self.docks.docks["annotation"].raise_()

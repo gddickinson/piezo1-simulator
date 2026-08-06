@@ -32,6 +32,7 @@ class PhysicsPanel(QWidget):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
+        self.dome_result = None
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(10)
@@ -250,6 +251,9 @@ class PhysicsPanel(QWidget):
         self.measure_button.setEnabled(not busy)
 
     def set_dome(self, dome, reference: str = "") -> None:
+        # Kept so anything wanting the numbers rather than the formatted text
+        # can read them without reparsing a label.
+        self.dome_result = dome
         if dome is None:
             self.dome_label.setText("Could not measure — need three protomers.")
             return

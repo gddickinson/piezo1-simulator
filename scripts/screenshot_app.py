@@ -167,6 +167,21 @@ def main() -> int:
         if not ok:
             failures.append("reset layout did not restore the docks")
 
+    def step_tour() -> None:
+        """Walk the tour, checking each step actually measures something."""
+        win._start_tour()
+        empty = []
+        for i in range(win.tour_panel.steps.count()):
+            win.tour_panel.steps.setCurrentRow(i)
+            step = win.tour_panel.current_step()
+            text = win.tour_panel.measurement.text()
+            if step.measure is not None and (not text or "running" in text):
+                empty.append(step.key)
+        print(f"tour: {win.tour_panel.steps.count()} steps walked, "
+              f"{len(empty)} without a measurement {empty}")
+        if len(empty) > 4:
+            failures.append(f"tour steps reported nothing: {empty}")
+
     def step_session() -> None:
         """Round-trip a session through the controller, without a file dialog."""
         import tempfile
@@ -189,7 +204,7 @@ def main() -> int:
               step_variant, step_shot_variant, step_measure]
     if args.analysis:
         steps += [step_pore, None, None, None, None, None, step_shot_pore,
-                  step_focus_mode, step_layout, step_session]
+                  step_focus_mode, step_layout, step_tour, step_session]
     if args.modes:
         steps += [step_modes, None, None, None, step_shot_modes]
 

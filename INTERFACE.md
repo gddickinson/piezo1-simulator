@@ -41,6 +41,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 |---|---|---|---|
 | `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
 | `parameters.py` | **The single source of truth for every number a calculation uses.** Loaded from `resources/parameters.json`; each value carries a unit, bounds, a kind and a citation. Overrides are tracked, not silent — reports flag them and the claims verifier refuses to run against them. | `Parameter`, `ParameterRegistry`, `PARAMETERS`, `value()`, `set_value()`, `reset()`, `overrides()`, `resolve()` | ✅ |
+| `tour.py` | The guided tour as **data plus live measurements**, Qt-free. Eleven steps from trimer to the two null results; every number computed when the step runs, every published comparison read from the parameter registry. | `TourStep`, `TOUR`, `step_by_key()` | ✅ |
 | `parameter_audit.py` | Scans `physics/`, `structure/` and `analysis/` for numeric literals that are neither registered nor exempt **with a stated reason**. The mechanism that keeps the rule from decaying into an aspiration. | `audit()`, `Finding`, `EXEMPT`, `EXEMPT_NAMES`, `MAPPED` | ✅ |
 | `config.py` | All filesystem paths, physical constants, runtime settings. Every module imports paths from here. | `PROJECT_ROOT`, `REF_DIR`, `STRUCTURE_DIR`, `RESOURCE_DIR`, `HUMAN_ACC`, `MOUSE_ACC`, `KT_ROOM`, `RenderSettings`, `AppSettings`, `SETTINGS`, `ensure_dirs()` | ✅ |
 
@@ -130,6 +131,8 @@ geometry at a fraction of the triangle count.
 | `app.py` | Launcher: `--geometry WxH`, `--structure`, `--maximised`, and the Qt event loop. | `main()` | ✅ |
 | `docks.py` | Every panel as a movable, floatable, closable dock in any area; captures the shipped layout at startup so **Reset layout** always has somewhere to return to, and persists geometry through `QSettings` with a clamp so a layout saved on a large monitor cannot reopen off-screen. | `DockManager`, `DockSpec` | ✅ |
 | `menus.py` | File, View, Analysis, Options and Help menus, with tooltips carrying what each analysis computes. | `build_menus()`, `make_settings()` | ✅ |
+| `tour_panel.py` | Step list, prose, the live measurement and the citation line. | `TourPanel` | ✅ |
+| `tour_controller.py` | Applies a step's view state and triggers the **same** analysis controllers the panels use — never a second implementation. | `TourController` | ✅ |
 | `parameters_dialog.py` | The parameter editor (Options → Parameters, Ctrl+P): every registered number with its default, unit and citation, the full reference on the tooltip. Overridden rows are marked amber. | `ParametersDialog` | ✅ |
 | `preferences.py` | Remembered settings and their menu handlers: layout memory, status hints, spin speed, and **what a selection does to the camera** (leave still / centre / centre and zoom). | `PreferencesMixin` | ✅ |
 | `help_content.py` | The in-application guide as data: seven topics, the shortcut table, and the document index. Includes the null result and the corrected footprint number. | `TOPICS`, `DOC_LINKS`, `SHORTCUTS` | ✅ |
@@ -206,6 +209,7 @@ geometry at a fraction of the triangle count.
 | `test_ensemble.py` | Shared-basis construction, paralogue exclusion, reversed-protomer detection, PC1-as-gating-coordinate, and A-mode dominance against a random control. | ✅ |
 | `test_features.py` | Column completeness and documentation, distance/response falloff, the symmetric-PRS finding, and a guard forbidding any two columns from being the same quantity. | ✅ |
 | `test_measurement_set.py` | Pick accumulation, double-click rejection, kind switching, CSV export, and the disulfide measured on real coordinates. | ✅ |
+| `test_tour.py` | That the tour covers the mechanism, ends on what the project cannot do, states no number of its own, follows the parameter registry when a published value changes, and never raises — before anything is computed or on junk input. | ✅ |
 | `test_performance.py` | The optimisations, asserting **identity not closeness**: the fast tokenizer path against the careful one over a whole deposited file, SASA against the direct norm formulation, the Monte-Carlo volume against the un-optimised loop, and the content-keyed conservation cache. Timings are loose ceilings only. | ✅ |
 | `test_parameters.py` | The registry and its enforcement: every citation resolving, defaults inside their own bounds, overrides tracked and clamped, claims refusing to run against a modified registry, reports flagging it — and the audit, including a test that it would catch a newly invented constant. | ✅ |
 | `test_reproducibility.py` | The claims registry — that tolerances are tight enough to mean something, that recorded results are frozen, that drift is actually detected, and that missing data reports as skipped rather than drift. Plus packaging: GUI deps optional, entry points resolving, downloads not shipped. | ✅ |

@@ -62,7 +62,8 @@ def test_every_panel_is_a_full_dock(window):
     from PyQt6.QtWidgets import QDockWidget
 
     assert set(window.docks.docks) == {"model", "physics", "annotation",
-                                       "analysis", "measure", "overlay"}
+                                       "analysis", "measure", "overlay",
+                                       "tour"}
     for key, dock in window.docks.docks.items():
         features = dock.features()
         for wanted in (QDockWidget.DockWidgetFeature.DockWidgetMovable,
