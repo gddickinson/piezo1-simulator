@@ -810,3 +810,86 @@ Highest remaining inter-feature correlation is 0.953 (`prs_coupling` against
 `gating_amplitude`), which is high but genuinely two things: how strongly a
 residue couples to the whole protein, and how far it moves along the specific
 gating coordinate.
+
+## Round 17 — external predictors, and a payload that lies by omission (2026-08-06)
+
+The mechanical ΔΔG cannot see the substitution (Round 7). The obvious response
+is to bring in predictors that can — AlphaMissense, EVE, ESM-1b, FoldX. The
+obstacle was never the science, it was the licences.
+
+### Why an API rather than local tools
+
+FoldX is not redistributable at all: academic use needs a signed agreement, and
+the community Python wrapper carries no licence file, which means all rights
+reserved rather than permissive. SIFT4G is GPL-3.0, so calling it would drag
+this whole PyQt application under copyleft. Everything on biosig.lab.uq.edu.au
+— mCSM, DynaMut2 and relatives — publishes no licence text whatsoever, so
+nothing is granted and using it would be a bet, not a permission. VarSite and
+VarMap are both retired.
+
+ProtVar (EMBL-EBI) serves all four predictors plus per-position conservation
+from one endpoint, and I confirmed **CC BY 4.0** by reading `info.license` in
+the service's own OpenAPI document rather than assuming it from the EBI's usual
+terms. One source, one licence, no local models, attribution recorded on every
+cached response and in `docs/REFERENCES.md`.
+
+### The trap
+
+`/score/{acc}/{pos}` returns nineteen entries per predictor — one per possible
+substitution — and **no field anywhere in the payload says which entry is which
+mutation**. Nothing errors. You get a well-formed JSON array of plausible
+pathogenicity scores, and if you read them in array order, or assume they are
+alphabetical by residue, you attribute the wrong score to every variant in the
+study and never find out.
+
+The fix is an undocumented `mt=` query parameter, which returns the single
+score for the substitution asked for. A position-only query now keeps *only*
+the conservation value, which is genuinely position-level; the missense scores
+are dropped rather than guessed. `/prediction/foldx/` needed no such care — it
+labels every entry with `mutatedType`, which is how the endpoint should behave
+and how I noticed the other one did not. (The documented
+`/prediction/interaction/` endpoint 404s; not needed here.)
+
+This is the second time in this project that a silent field-alignment error has
+been the real danger — the first was the mmCIF tokenizer shifting every column
+by one because a trailing newline was not treated as whitespace. Both produce
+confident numbers. Neither raises.
+
+### What came back
+
+64 of 65 single substitutions annotated in 77 s: conservation 64,
+AlphaMissense 51, EVE 51, ESM-1b 51, FoldX ΔΔG 50. The 13 without missense
+scores are nonsense and frameshift variants, where a missense predictor
+correctly has nothing to say — absence there is right behaviour, and there is a
+test asserting it stays that way.
+
+### An unplanned validation worth more than the scores
+
+ProtVar reports the wild-type residue it holds at each position, so annotating
+the variants cross-checked our numbering against Q92508 from outside the
+project. **Zero mismatches out of 64.** Rounds 1–2 established that the human
+and mouse numbering differ by a non-constant offset across twelve blocks, and
+that work has until now been checked only against itself. This is the first
+independent confirmation that every curated variant sits on the residue we say
+it does, and it is now a test.
+
+### What these predictors still cannot do
+
+All three missense predictors emit a single *pathogenicity* axis, benign to
+damaging. That axis has no dimension in which to express **direction**. The
+demonstration is R2456: all four substitutions score PATHOGENIC, but R2456H,
+R2456K and R2456P are gain-of-function and R2456C is loss-of-function. A
+predictor that calls all four damaging is not wrong — it is answering a
+different question from the one this project is aiming at.
+
+So the position after this round is that we hold two families of features that
+fail in *opposite* directions: mechanical ones that see the position but not
+the substitution, and sequence ones that see the substitution but not the
+direction. Whether combining them recovers direction is a real hypothesis and
+the only reason to run Round 22.
+
+**No phenotype comparison was run.** Round 7's null result stands as recorded.
+Touching the 68 labels again requires the new pre-registration to be written
+first — that is the whole point of pre-registering, and the temptation to
+"just peek" at 51 fresh AlphaMissense scores is exactly what the discipline is
+for. Suite 243 → 254 passing, all of the new tests offline from cache.

@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 51,
+ "n_references": 56,
  "unresolved": [],
  "references": [
   {
@@ -140,6 +140,23 @@
    "section": "Lipids and pharmacology"
   },
   {
+   "key": "brandes2023esm1b",
+   "topic": "ESM-1b variant effects",
+   "title": "Genome-wide prediction of disease variant effects with a deep protein language model",
+   "authors": "Brandes N, Goldman G, Wang CH, Ye CJ, Ntranos V.",
+   "journal": "Nature genetics",
+   "year": "2023",
+   "volume": "55",
+   "pages": "1512-1522",
+   "pmid": "37563329",
+   "pmcid": "PMC10484790",
+   "doi": "10.1038/s41588-023-01465-0",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1038/s41588-023-01465-0",
+   "section": "Methods"
+  },
+  {
    "key": "buyan2020",
    "topic": "PIP2 and cholesterol sites; K2166-K2169",
    "title": "Piezo1 Forms Specific, Functionally Important Interactions with Phosphoinositides and Cholesterol",
@@ -172,6 +189,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1016/j.bpj.2022.07.022",
    "section": "Lipids and pharmacology"
+  },
+  {
+   "key": "cheng2023alphamissense",
+   "topic": "AlphaMissense pathogenicity",
+   "title": "Accurate proteome-wide missense variant effect prediction with AlphaMissense",
+   "authors": "Cheng J, Novati G, Pan J, Bycroft C, \u017demgulyt\u0117 A, Applebaum T, Pritzel A, Wong LH, Zielinski M, Sargeant T, Schneider RG, Senior AW, Jumper J, Hassabis D, Kohli P, Avsec \u017d.",
+   "journal": "Science (New York, N.Y.)",
+   "year": "2023",
+   "volume": "381",
+   "pages": "eadg7492",
+   "pmid": "37733863",
+   "pmcid": null,
+   "doi": "10.1126/science.adg7492",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1126/science.adg7492",
+   "section": "Methods"
   },
   {
    "key": "chong2021",
@@ -291,6 +325,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1038/ncomms9085",
    "section": "Genetics and disease"
+  },
+  {
+   "key": "frazer2021eve",
+   "topic": "EVE - unsupervised variant effect from evolutionary data",
+   "title": "Disease variant prediction with deep generative models of evolutionary data",
+   "authors": "Frazer J, Notin P, Dias M, Gomez A, Min JK, Brock K, Gal Y, Marks DS.",
+   "journal": "Nature",
+   "year": "2021",
+   "volume": "599",
+   "pages": "91-95",
+   "pmid": "34707284",
+   "pmcid": null,
+   "doi": "10.1038/s41586-021-04043-8",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1038/s41586-021-04043-8",
+   "section": "Methods"
   },
   {
    "key": "ge2015",
@@ -651,6 +702,23 @@
    "section": "Structure"
   },
   {
+   "key": "schymkowitz2005foldx",
+   "topic": "FoldX force field - source of the precomputed ddG",
+   "title": "The FoldX web server: an online force field",
+   "authors": "Schymkowitz J, Borg J, Stricher F, Nys R, Rousseau F, Serrano L.",
+   "journal": "Nucleic acids research",
+   "year": "2005",
+   "volume": "33",
+   "pages": "W382-8",
+   "pmid": "15980494",
+   "pmcid": "PMC1160148",
+   "doi": "10.1093/nar/gki387",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1093/nar/gki387",
+   "section": "Methods"
+  },
+  {
    "key": "shi2020",
    "topic": "Sphingomyelinase disables inactivation",
    "title": "Sphingomyelinase Disables Inactivation in Endogenous PIEZO1 Channels",
@@ -682,6 +750,23 @@
    "is_open_access": false,
    "has_pdf": false,
    "url": "https://doi.org/10.1016/s0263-7855(97)00009-x",
+   "section": "Methods"
+  },
+  {
+   "key": "stephenson2024protvar",
+   "topic": "ProtVar API - serves the predictors below under CC BY 4.0",
+   "title": "ProtVar: mapping and contextualizing human missense variation",
+   "authors": "Stephenson JD, Totoo P, Burke DF, J\u00e4nes J, Beltrao P, Martin MJ.",
+   "journal": "Nucleic acids research",
+   "year": "2024",
+   "volume": "52",
+   "pages": "W140-W147",
+   "pmid": "38769064",
+   "pmcid": "PMC11223857",
+   "doi": "10.1093/nar/gkae413",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1093/nar/gkae413",
    "section": "Methods"
   },
   {

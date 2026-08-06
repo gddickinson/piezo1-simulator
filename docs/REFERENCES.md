@@ -9,7 +9,7 @@ Open-access full texts are downloaded to `ref/papers/` with
 git-ignored: the papers are other people's copyright, and the
 bibliography here is enough to retrieve them.
 
-**51 references.** 29 are open access.
+**56 references.** 32 are open access.
 
 ## Structure
 
@@ -124,10 +124,20 @@ bibliography here is enough to retrieve them.
   <sub>Used for: P-SEA: secondary structure from CA geometry</sub>
 - **`atilgan2001`** — Atilgan AR, Durell SR, Jernigan RL, Demirel MC, Keskin O, Bahar I. *Anisotropy of fluctuation dynamics of proteins with an elastic network model.* Biophysical journal 2001;80:505-515. [PMID 11159421](https://pubmed.ncbi.nlm.nih.gov/11159421/) · [doi:10.1016/s0006-3495(01)76033-x](https://doi.org/10.1016/s0006-3495(01)76033-x)  
   <sub>Used for: Anisotropic network model</sub>
+- **`schymkowitz2005foldx`** — Schymkowitz J, Borg J, Stricher F, Nys R, Rousseau F, Serrano L. *The FoldX web server: an online force field.* Nucleic acids research 2005;33:W382-8. [PMID 15980494](https://pubmed.ncbi.nlm.nih.gov/15980494/) · [doi:10.1093/nar/gki387](https://doi.org/10.1093/nar/gki387) · **OA**  
+  <sub>Used for: FoldX force field - source of the precomputed ddG</sub>
 - **`bahar2010`** — Bahar I, Lezon TR, Bakan A, Shrivastava IH. *Normal mode analysis of biomolecular structures: functional mechanisms of membrane proteins.* Chemical reviews 2010;110:1463-1497. [PMID 19785456](https://pubmed.ncbi.nlm.nih.gov/19785456/) · [doi:10.1021/cr900095e](https://doi.org/10.1021/cr900095e)  
   <sub>Used for: Normal mode analysis of membrane proteins - review</sub>
+- **`frazer2021eve`** — Frazer J, Notin P, Dias M, Gomez A, Min JK, Brock K, Gal Y, Marks DS. *Disease variant prediction with deep generative models of evolutionary data.* Nature 2021;599:91-95. [PMID 34707284](https://pubmed.ncbi.nlm.nih.gov/34707284/) · [doi:10.1038/s41586-021-04043-8](https://doi.org/10.1038/s41586-021-04043-8)  
+  <sub>Used for: EVE - unsupervised variant effect from evolutionary data</sub>
 - **`jumper2021`** — Jumper J, Evans R, Pritzel A, Green T, Figurnov M, Ronneberger O, Tunyasuvunakool K, Bates R, Žídek A, Potapenko A, Bridgland A, Meyer C, Kohl SAA, Ballard AJ, Cowie A, Romera-Paredes B, Nikolov S, Jain R, Adler J, Back T, Petersen S, Reiman D, Clancy E, Zielinski M, Steinegger M, Pacholska M, Berghammer T, Bodenstein S, Silver D, Vinyals O, Senior AW, Kavukcuoglu K, Kohli P, Hassabis D. *Highly accurate protein structure prediction with AlphaFold.* Nature 2021;596:583-589. [PMID 34265844](https://pubmed.ncbi.nlm.nih.gov/34265844/) · [doi:10.1038/s41586-021-03819-2](https://doi.org/10.1038/s41586-021-03819-2) · **OA**  
   <sub>Used for: AlphaFold</sub>
+- **`brandes2023esm1b`** — Brandes N, Goldman G, Wang CH, Ye CJ, Ntranos V. *Genome-wide prediction of disease variant effects with a deep protein language model.* Nature genetics 2023;55:1512-1522. [PMID 37563329](https://pubmed.ncbi.nlm.nih.gov/37563329/) · [doi:10.1038/s41588-023-01465-0](https://doi.org/10.1038/s41588-023-01465-0) · **OA**  
+  <sub>Used for: ESM-1b variant effects</sub>
+- **`cheng2023alphamissense`** — Cheng J, Novati G, Pan J, Bycroft C, Žemgulytė A, Applebaum T, Pritzel A, Wong LH, Zielinski M, Sargeant T, Schneider RG, Senior AW, Jumper J, Hassabis D, Kohli P, Avsec Ž. *Accurate proteome-wide missense variant effect prediction with AlphaMissense.* Science (New York, N.Y.) 2023;381:eadg7492. [PMID 37733863](https://pubmed.ncbi.nlm.nih.gov/37733863/) · [doi:10.1126/science.adg7492](https://doi.org/10.1126/science.adg7492)  
+  <sub>Used for: AlphaMissense pathogenicity</sub>
+- **`stephenson2024protvar`** — Stephenson JD, Totoo P, Burke DF, Jänes J, Beltrao P, Martin MJ. *ProtVar: mapping and contextualizing human missense variation.* Nucleic acids research 2024;52:W140-W147. [PMID 38769064](https://pubmed.ncbi.nlm.nih.gov/38769064/) · [doi:10.1093/nar/gkae413](https://doi.org/10.1093/nar/gkae413) · **OA**  
+  <sub>Used for: ProtVar API - serves the predictors below under CC BY 4.0</sub>
 - **`varadi2024`** — Varadi M, Bertoni D, Magana P, Paramval U, Pidruchna I, Radhakrishnan M, Tsenkov M, Nair S, Mirdita M, Yeo J, Kovalevskiy O, Tunyasuvunakool K, Laydon A, Žídek A, Tomlinson H, Hariharan D, Abrahamson J, Green T, Jumper J, Birney E, Steinegger M, Hassabis D, Velankar S. *AlphaFold Protein Structure Database in 2024: providing structure coverage for over 214 million protein sequences.* Nucleic acids research 2024;52:D368-D375. [PMID 37933859](https://pubmed.ncbi.nlm.nih.gov/37933859/) · [doi:10.1093/nar/gkad1011](https://doi.org/10.1093/nar/gkad1011) · **OA**  
   <sub>Used for: AlphaFold DB</sub>
 

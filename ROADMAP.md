@@ -402,15 +402,46 @@ is a per-variant number and an honest test of it.
   Shipping both would have looked like two independent lines of evidence and
   been one. The table now carries a single honestly named `prs_coupling`.
 
-### Round 17 — External predictors, licence-clean
-- [ ] Integrate the **ProtVar API** (`https://www.ebi.ac.uk/ProtVar/api`,
-      **CC BY 4.0**), which serves AlphaMissense, EVE, ESM-1b, conservation and
-      **precomputed FoldX ΔΔG** for a UniProt accession and position.
-- [ ] This sidesteps the licensing traps entirely: FoldX itself is not
-      redistributable, SIFT4G is GPL-3.0 copyleft, and every tool on
-      biosig.lab.uq.edu.au carries no licence at all. VarSite and VarMap are
-      both retired. Cache responses locally; degrade gracefully offline.
-- [ ] Tests; docs; commit.
+### Round 17 — External predictors, licence-clean ✅
+- [x] Integrated the **ProtVar API** (`https://www.ebi.ac.uk/ProtVar/api`,
+      **CC BY 4.0** — confirmed from the service's own OpenAPI `info.license`,
+      not assumed) in `piezo1/analysis/external.py`. Serves AlphaMissense, EVE,
+      ESM-1b, conservation and **precomputed FoldX ΔΔG** per accession/position.
+- [x] Sidesteps the licensing traps: FoldX itself is not redistributable,
+      SIFT4G is GPL-3.0 copyleft, everything on biosig.lab.uq.edu.au carries no
+      licence at all, VarSite and VarMap are retired. Responses cache to
+      `data/cache/protvar/`; an offline client returns `None` rather than
+      raising, so a missing score weakens an analysis instead of aborting it.
+- [x] **Live annotation of the curated variants: 64/65 single substitutions in
+      77 s.** Coverage — conservation 64, AlphaMissense 51, EVE 51, ESM-1b 51,
+      FoldX ΔΔG 50. The 13 without missense scores are nonsense/frameshift
+      variants, where a missense predictor correctly has nothing to say.
+- [x] **Cross-validation, unplanned and worth recording: 0 wild-type mismatches
+      out of 64.** ProtVar reports the wild-type residue it holds for each
+      position, so this is an *external* confirmation that every variant in our
+      table is numbered correctly against Q92508 — an independent check on the
+      numbering work from Rounds 1–2 that we had no other way to make.
+- [x] **A correctness trap found and closed.** `/score/{acc}/{pos}` returns
+      nineteen entries per predictor — one per possible substitution — and the
+      payload contains **no field saying which is which**. Reading them in
+      array order, or assuming alphabetical, would have silently attributed the
+      wrong pathogenicity to every variant. The undocumented `mt=` query
+      parameter resolves it; a position-only query now keeps *only*
+      conservation, which is genuinely position-level. `/prediction/foldx/`
+      needs no such care — it labels each entry with `mutatedType`.
+      (Also found: the documented `/prediction/interaction/` endpoint 404s.)
+- [x] **Recorded limitation.** AlphaMissense, EVE and ESM-1b each emit a single
+      *pathogenicity* axis, which by construction cannot express **direction**.
+      Observed concretely: all four R2456 substitutions score PATHOGENIC, yet
+      R2456H/K/P are gain-of-function and R2456C is loss-of-function. These
+      predictors are therefore complementary to the mechanical features, not a
+      replacement — which is exactly the hypothesis Round 22 must pre-register.
+- [x] 11 tests (`tests/test_external.py`), all running **offline from the
+      cache**, so the suite needs no network and does not hammer a public
+      service. Suite 243 → **254 passed**; GUI smoke test clean.
+- [x] **No phenotype comparison was run.** Round 7's null result stands as
+      recorded; re-testing against the 68 labels requires Round 22's new
+      pre-registration to be written *first*.
 
 ### Round 18 — Nonlinear membrane mechanics
 - [ ] Round 3 flagged that PIEZO1's contact slope of ~2.0 (63°) is far outside

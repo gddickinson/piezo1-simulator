@@ -509,6 +509,39 @@ poor instrument for the *substitution*. It answers "which residues are
 mechanically coupled to the gate" well — Round 5 identified the anchor as the
 transmission hub — and "is this amino-acid swap GoF or LoF" badly.
 
+### What sequence-based predictors add, and what they do not
+
+The complementary failure is worth stating precisely, because it defines what a
+combined predictor would have to do. Through the **ProtVar** API (EMBL-EBI,
+CC BY 4.0 — Stephenson *et al.* 2024) the project reads AlphaMissense (Cheng
+*et al.* 2023), EVE (Frazer *et al.* 2021), ESM-1b (Brandes *et al.* 2023),
+per-position conservation and precomputed FoldX ΔΔG (Schymkowitz *et al.*
+2005). This route was taken because FoldX is not redistributable, SIFT4G is
+GPL-3.0 copyleft, and the biosig.lab.uq.edu.au tools carry no licence at all.
+
+Coverage over the curated variants is 64/65 for conservation and 51/65 for the
+missense predictors; the shortfall is nonsense and frameshift variants, which a
+missense predictor cannot score by construction.
+
+Each of those three predictors emits **one pathogenicity axis**, benign to
+damaging. A single axis cannot encode direction. R2456 shows it concretely: all
+four substitutions score PATHOGENIC, yet R2456H/K/P are gain-of-function and
+R2456C is loss-of-function.
+
+So the two feature families fail in opposite directions — mechanical features
+resolve the *position* but not the *substitution*, sequence features resolve
+the *substitution* but not the *direction*. Neither alone can answer the
+question this project is aimed at. Whether their combination can is an open
+hypothesis, to be tested only under a new pre-registration (Round 22); the
+Round 7 null result stands unrevised.
+
+**An incidental external check.** ProtVar returns the wild-type residue it
+holds at each position. Annotating the curated variants therefore validated
+this project's residue numbering against Q92508 from outside the project:
+**0 mismatches in 64 variants**. Given that human and mouse PIEZO1 numbering
+differs by a non-constant offset across twelve blocks (§2), this is the first
+independent confirmation that the variant table is correctly registered.
+
 ## 8c. Evolutionary constraint
 
 62 vertebrate PIEZO1 orthologs, one per species, aligned pairwise to human and

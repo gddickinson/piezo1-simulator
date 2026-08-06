@@ -107,6 +107,25 @@ SEED = [
     ("kabsch1976", "DOI:10.1107/S0567739476001873", "Optimal rotation superposition", "rotation"),
     ("jumper2021", "PMID:34265844", "AlphaFold", "protein structure prediction"),
     ("varadi2024", "PMID:37933859", "AlphaFold DB", "alphafold"),
+    # --- external variant predictors, reached through ProtVar (CC BY 4.0) ---
+    # Free-text queries rather than remembered PMIDs: six citations in Round 8
+    # were resolved from memory to entirely unrelated papers, so every entry
+    # here is looked up by title and gated on `expect`.
+    ("stephenson2024protvar",
+     'TITLE:"ProtVar: mapping and contextualizing human missense variation"',
+     "ProtVar API - serves the predictors below under CC BY 4.0", "protvar"),
+    ("cheng2023alphamissense",
+     'TITLE:"Accurate proteome-wide missense variant effect prediction with AlphaMissense"',
+     "AlphaMissense pathogenicity", "alphamissense"),
+    ("frazer2021eve",
+     'TITLE:"Disease variant prediction with deep generative models of evolutionary data"',
+     "EVE - unsupervised variant effect from evolutionary data", "variant"),
+    ("brandes2023esm1b",
+     'TITLE:"Genome-wide prediction of disease variant effects with a deep protein language model"',
+     "ESM-1b variant effects", "language model"),
+    ("schymkowitz2005foldx",
+     'TITLE:"The FoldX web server: an online force field"',
+     "FoldX force field - source of the precomputed ddG", "foldx"),
 ]
 
 
@@ -297,6 +316,9 @@ SECTION_OF = {
     "atilgan2001": "Methods", "yang2009": "Methods", "bahar2010": "Methods",
     "smart1996hole": "Methods", "labesse1997": "Methods", "kabsch1976": "Methods",
     "jumper2021": "Methods", "varadi2024": "Methods",
+    "stephenson2024protvar": "Methods", "cheng2023alphamissense": "Methods",
+    "frazer2021eve": "Methods", "brandes2023esm1b": "Methods",
+    "schymkowitz2005foldx": "Methods",
 }
 
 
