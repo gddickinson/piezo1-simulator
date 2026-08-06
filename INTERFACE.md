@@ -164,6 +164,7 @@ geometry at a fraction of the triangle count.
 | `render_offscreen.py` | Headless render to PNG; also a renderer regression check. | ✅ |
 | `make_figures.py` | All README/doc figures, on shared scale and orientation. | ✅ |
 | `run_validation.py` | Executes the pre-registered blind test and writes the result. | ✅ |
+| `run_validation_round22.py` | Executes the Round 22 exploratory test exactly as pre-registered — primary, secondary family with BH, equal-weight combination by leave-one-out, and the achieved power. | ✅ |
 | `make_animations.py` | The seven-animation library: gating morph, normal mode, ligand and lipid sites, variant context. | ✅ |
 | `build_references.py` | Resolves the bibliography from Europe PMC behind a title-verification gate; downloads open-access full texts. | ✅ |
 | `screenshot_app.py` | Drives the real GUI as a smoke test and captures screenshots. | ✅ |
@@ -196,6 +197,7 @@ geometry at a fraction of the triangle count.
 | `test_external.py` | ProtVar client, run **offline from the disk cache** so the suite needs no network. Covers the `mt`-parameter disambiguation, FoldX keying by `mutatedType`, graceful degradation to `None`, licence recording, and an external cross-check that ProtVar's wild-type residues match all 64 of our numbered variants. | ✅ |
 | `test_pockets.py` | Circumsphere geometry against a known tetrahedron, percolation prevention, union-not-sum volumes, gate/anchor recovery, and the Yoda1 groove-versus-cavity result. | ✅ |
 | `test_validation.py` | Statistical instruments against known cases, plus a pin on the published Round 7 null result so a predictor change cannot silently move it. | ✅ |
+| `test_validation_round22.py` | Pins the Round 22 record: the counts, that 11 of 13 dropped variants are LoF, that three statistics agree on the primary's direction, that nothing survives BH, and that the written document does not soften the null. | ✅ |
 | `test_design.py` | Power, multiplicity and cross-validation. Pins that the fast subset-sum permutation path agrees with the real test, that the false-positive rate under a true null is α rather than more, that the injected effect matches the requested one (a sign error this caught), and the Round 7 power result. | ✅ |
 | `test_variant_impact.py` | The quadratic-form identity against an explicit Hessian, sign conventions, all-protomer mutation, and honest coverage reporting. Deliberately contains no phenotype comparison. | ✅ |
 | `test_allostery.py` | Correlation-matrix validity, chunking invariance, the anchor on the optimal route, the beam as a near-degenerate alternative, and the invariant that a constrained path can never beat a free one. | ✅ |
@@ -206,6 +208,8 @@ geometry at a fraction of the triangle count.
 |---|---|---|
 | `SCIENCE.md` | The scientific basis: mechanism, parameters, provenance, open gaps. | ✅ |
 | `PREREGISTRATION.md` | The frozen hypothesis, statistic and decision rule for the Round 7 blind test, written before any comparison was run. | ✅ |
+| `PREREGISTRATION_ROUND22.md` | The second hypothesis — FoldX ΔΔG, LoF more destabilising than GoF — committed in its own commit before the test ran. Declares itself **exploratory** because 20-vs-6 reaches 80% power only at \|δ\| ≥ 0.61. | ✅ |
+| `VALIDATION_ROUND22.md` | The second null: primary Cliff's δ −0.211 with an interval spanning zero, nothing in the secondary family surviving correction, and the pre-registered objection that explains it. | ✅ |
 | `NOTEBOOK.md` | The documented headless API, with a "things that will bite you" table. | ✅ |
 | `VALIDATION.md` | The Round 7 result: a null result, reported in the pre-registered order with a post-hoc diagnostic of why, and a Round 20 power section (§6b) bounding what the null is entitled to claim. | ✅ |
 | `NEGATIVE_RESULT_PROTOCOL.md` | Standing policy, written before the Round 22 test it governs: what must exist before a test runs, power requirements, multiplicity control, cross-validation of fitted combinations, and the rule that a recorded result is superseded rather than revised. | ✅ |

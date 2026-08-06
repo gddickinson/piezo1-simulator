@@ -642,25 +642,45 @@ any of the reporting.
       `scripts/screenshot_app.py --analysis` exercises the new panel end to
       end. Suite 311 → **330 passed**.
 
-### Round 22 — A second, stated hypothesis for the variant test
-- [ ] Write a *new* pre-registration before touching the labels again. The
-      Round 7 result stands as recorded and is not to be revised.
-- [ ] Combine substitution-aware evidence (ProtVar: AlphaMissense, EVE, ESM-1b,
-      precomputed FoldX ΔΔG, all CC BY 4.0) with the mechanical and
-      conservation features this project supplies and they do not.
-- [ ] Report against the Round 7 baseline honestly, including if the addition
-      does not help.
-- [ ] **Bound by Round 20's power result, which is not optional.** The 25
-      usable variants give 80% power only at |δ| ≥ 0.55. Round 22 must
-      therefore state *in its pre-registration, before testing*, whether it is
-      (a) confirmatory for a large effect, accepting that a null excludes only
-      large effects, or (b) exploratory — reporting effect sizes with intervals
-      rather than decisions. Choosing after seeing the p-value is prohibited by
-      `docs/NEGATIVE_RESULT_PROTOCOL.md`.
-- [ ] Name **one** primary endpoint; correct the rest by Benjamini–Hochberg
-      over the whole family including uninteresting tests. Cross-validate any
-      fitted combination and report the optimism.
-- [ ] Tests; docs; commit.
+### Round 22 — A second, stated hypothesis for the variant test ✅
+- [x] `docs/PREREGISTRATION_ROUND22.md` written **and committed in its own
+      commit before the test was run**. Round 7's null stands unrevised.
+- [x] **The design finding, obtained blind and worse than Round 7.** Of 39
+      variants with a directional label only 26 are single-residue
+      substitutions, and **11 of the 13 dropped are loss-of-function** nonsense,
+      frameshift or deletion variants. That is biology, not curation: loss of
+      function is commonly achieved by truncation and no missense predictor can
+      score a stop codon. Usable design **20 GoF vs 6 LoF**, so 80% power needs
+      **|δ| ≥ 0.61** against Round 7's 0.55; power at a large effect is 0.52.
+- [x] **Declared EXPLORATORY** under `NEGATIVE_RESULT_PROTOCOL.md` §3. The
+      confirmatory alternative was declined because at this n a "confirmatory
+      null" would exclude only effects beyond large.
+- [x] Primary endpoint named in advance: **FoldX ΔΔG**, hypothesis *LoF more
+      destabilising than GoF* — loss can be achieved by breaking the protein,
+      gain cannot, since a channel that opens too readily must still fold,
+      traffic and gate.
+- [x] **Result: nothing separates the classes, and the primary runs opposite to
+      the hypothesis.** Cliff's δ = **−0.211**, CI **[−0.684, +0.298]**,
+      AUROC **0.395**; mean ΔΔG **0.767 (LoF) vs 1.309 (GoF)**. Three
+      statistics agree on direction, so it is not a sign error. The interval
+      spans zero, so this is uninformative rather than a reversal.
+- [x] **The pre-registered objection explains it, and was recorded first.**
+      Excluding the truncating LoF variants removes exactly the "break the
+      protein" mechanism, leaving a LoF subset selected for *not* being
+      truncating — a destabilisation predictor asked about the one subset of
+      loss-of-function variants that does not act by destabilisation.
+- [x] Secondary family (BH): **nothing significant, nothing close** — smallest
+      q = 0.448. AlphaMissense +0.183, EVE +0.133, ESM-1b −0.350, conservation
+      +0.200, mechanical +0.125, every interval spanning zero. The
+      pre-registered expectation of *no separation* from the three pathogenicity
+      predictors **held**.
+- [x] Combined score, equal weights, leave-one-out **AUROC 0.535**, optimism
+      **0.000**. Combining recovers nothing the parts lacked.
+- [x] `docs/VALIDATION_ROUND22.md`; 10 tests pinning the recorded numbers.
+      Suite 342 → **352 passed**.
+- **Standing position:** two nulls from two different predictors, both
+  pre-registered, neither revised. The central claim remains **untested at
+  adequate power**, and the binding constraint is data (Round 27), not method.
 
 ### Round 23 — Packaging and one-command reproduction
 - [ ] `pyproject.toml`, a pinned environment lock, and a single

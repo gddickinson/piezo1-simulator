@@ -1317,3 +1317,81 @@ can couple to isotropic tension.
 Suite 330 → 342 passing, and the GUI smoke test now checks the two behaviours
 that were reported — that focus-off leaves the camera still and focus-centre
 moves it, and that reset restores hidden and floated panels.
+
+## Round 22 — the second null, and why it was foreseen (2026-08-06)
+
+Round 7 tested a mechanical predictor and returned a null whose diagnostic was
+precise: 99.8% of its variance was between-position, so it reported *where a
+residue sits* rather than *which substitution occurred*. Round 17 brought in
+four substitution-aware predictors. This round asked whether they do better.
+
+The pre-registration was written and **committed in its own commit before the
+test ran**. That is not ceremony. A rule written after seeing a p-value is a
+rule fitted to it, and with 68 curated variants and one primary claim, the
+resource being spent is finite.
+
+### The design was worse than Round 7, and I knew that before testing
+
+Of 39 variants carrying a directional label, only 26 are single-residue
+substitutions. **Eleven of the thirteen dropped are loss-of-function** — stop
+codons, frameshifts, deletions.
+
+That is not a curation artefact. It is how loss of function actually happens:
+you break the protein. And no missense predictor can score a stop codon.
+
+So the usable design is 20 GoF against 6 LoF, and 80% power needs |δ| ≥ 0.61
+where Round 7 needed 0.55. Power at a conventionally large effect is 0.52 — a
+coin toss. Under the Round 20 protocol that forces a declaration, and I declared
+the round **exploratory**: at this n a "confirmatory null" would exclude only
+effects beyond large, and calling that confirmation of anything would overstate
+it.
+
+### The hypothesis, and the objection recorded alongside it
+
+Primary endpoint: FoldX ΔΔG. The mechanism is that loss of function can be
+achieved by breaking the protein, while gain of function cannot — a channel that
+opens too readily must still fold, traffic and gate, so gain-of-function
+variants are constrained to be structurally tolerable. Prediction: LoF more
+destabilising.
+
+I also recorded, in the same document, the objection: excluding the truncating
+LoF variants removes precisely the "break the protein" mechanism, leaving a LoF
+subset selected for **not** being truncating. Writing that down first is what
+stops it later being a post-hoc rescue.
+
+### The result
+
+**Cliff's δ = −0.211, CI [−0.684, +0.298], AUROC 0.395.** Mean ΔΔG 0.767 for
+LoF against 1.309 for GoF — the point estimate runs *opposite* to the
+hypothesis. Mean difference, Cliff's delta and AUROC all agree on the direction,
+so it is not a sign error. The interval spans zero, so it is uninformative
+rather than a reversal.
+
+The secondary family: nothing significant, nothing close, smallest adjusted
+q = 0.448. The pre-registered expectation that AlphaMissense, EVE and ESM-1b
+would show *no* separation held — a single pathogenicity axis has no room for
+direction when both classes are pathogenic. Combining all five by equal weights
+gives leave-one-out AUROC 0.535 with zero optimism: nothing recovered.
+
+### What the foreseen objection now looks like
+
+It looks like the explanation. A destabilisation predictor was asked about the
+one subset of loss-of-function variants that does not act by destabilisation,
+because the subset that does was excluded for being unscoreable. That it was
+written down before the run is the only reason it can be offered at all.
+
+### Where this leaves the project
+
+Two nulls, two different predictors, both pre-registered, neither revised. The
+central claim is not refuted — it is **untested at adequate power**, and after
+two attempts the constraint is clearly data rather than method. Fifty-three
+variants would be needed for a large effect at this class ratio, 148 for a
+medium one, against 26 available. Round 27 is now the round that matters.
+
+There is also a sharper question hiding in the counts. Eleven of seventeen
+loss-of-function variants are truncating, and predicting *those* from structure
+is close to trivial. The hard and interesting question — distinguishing "opens
+too easily" from "does not open" among missense variants — has a sample size of
+six. That is the honest scope of what this project can currently ask.
+
+Suite 342 → 352 passing.
