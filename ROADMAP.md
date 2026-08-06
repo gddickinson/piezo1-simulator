@@ -881,14 +881,36 @@ the failure mode to keep hunting.
       gate still rejects and that the evidence levels cannot be pooled by
       accident. Suite 462 → **477 passed**.
 
-### Round 28 — Nonlinear footprint in the gating energetics
-- [ ] Round 18 built the elastica solver but only `DomeModel` consumes it. The
-      two-state model's ΔA and the footprint contribution to T₅₀ still use
-      linear numbers that are known to be 3.5× too large.
-- [ ] Propagate the nonlinear areas through `dome.py` and re-derive T₅₀.
-      Compare with the measured 2.7 ± 0.1 and 5.1 ± 0.2 mN/m and report the
-      change, **including if the linear version happened to agree better** —
-      a wrong model can fit a right number.
+### Round 28 — Nonlinear footprint in the gating energetics ✅
+- [x] **ΔA is a change, not an absolute area** — a distinction Round 3's
+      framing invited getting wrong. `DomeModel.gating_area_change` measures
+      the closed→open difference: the dome's projected area grows, and the
+      footprint releases the excess area it was storing.
+- [x] Both endpoints measured from deposited coordinates: **7WLT** R_c 9.72 nm,
+      contact slope 1.992 (63.3°); **7WLU** R_c 18.38 nm, slope 0.839 (40.0°).
+- [x] **The correction is larger on the difference than on either endpoint.**
+      The closed state sits at 63°, where the linear theory is badly wrong; the
+      open state at 40°, where it is much less so. So the footprint's
+      contribution to ΔA falls from **463 nm² to 71 nm² — a factor of 6.5**,
+      against the 3.5× Round 18 found for the closed state alone. Total ΔA
+      664 → 272 nm².
+- [x] **The roadmap's question, answered explicitly: the linear version did
+      *not* agree better.** T₅₀ moves from 0.060 to 0.147 mN/m — toward the
+      measured 2.7 ± 0.1, not away. There is a test asserting that direction,
+      because a wrong model fitting a right number was a real possibility.
+- [x] **But the correction does not close the gap, and that is the more useful
+      half of the result.** Improving the membrane physics 6.5× moves T₅₀ by
+      2.4× and leaves it **~18× below measurement**. The structural ΔA is still
+      34× the functional 8 nm². So the structural-versus-functional
+      discrepancy is **not a membrane-modelling error** — it is about which
+      quantity each number measures, and no refinement of the footprint will
+      fix it.
+- [x] `compare_gating_area_routes` reports all four routes side by side with
+      the T₅₀ each implies, and a test requires every row to satisfy
+      T₅₀ = ΔG₀/ΔA so the table cannot drift from the model. The functional
+      route still reproduces Cox at 4.99 against 5.1 ± 0.2.
+- [x] 12 tests (`tests/test_gating_area.py`); the 71 nm² is pinned as a
+      documented claim. Suite 477 → **489 passed**, 19 numbers reproduce.
 
 ### Round 29 — Uncertainty on every reported quantity
 - [ ] Dome curvature, pore radius, mode overlaps and ΔΔG are all reported as

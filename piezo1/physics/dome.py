@@ -220,6 +220,92 @@ class DomeModel:
         """Excess area stored in the surrounding membrane, nm², exactly."""
         return self.footprint_nonlinear(**kw).excess_area
 
+    def gating_area_change(self, open_geometry: "DomeGeometrySummary",
+                           nonlinear: bool = True) -> dict:
+        """ΔA between this (closed) dome and an open one, with the footprint.
+
+        The two-state model is driven by the **change** in projected in-plane
+        area, not by any absolute area. Two things contribute:
+
+        * the dome's own projected area grows as it flattens;
+        * the surrounding footprint flattens too, releasing the excess area it
+          was storing into projected area.
+
+        The second term is where Round 18's correction bites. At the closed
+        state's 63° contact slope the linearised footprint overstates the
+        stored area 3.5×, and because the open state sits at 40° — where the
+        linear theory is much less wrong — the *difference* is overstated far
+        more than either endpoint. Passing ``nonlinear=False`` reproduces the
+        linear route for comparison.
+        """
+        if self.geometry is None:
+            raise ValueError("no geometry attached; measure a dome first")
+        from .elastica import compare_with_linear
+
+        closed = self.geometry
+        dome_term = open_geometry.projected_area - closed.projected_area
+
+        def footprint_area(geometry) -> tuple[float, float]:
+            radius = float(np.sqrt(max(geometry.projected_area, 0.0) / np.pi))
+            slope = float(radius / np.sqrt(
+                max(geometry.radius_of_curvature ** 2 - radius ** 2, 1e-9)))
+            comparison = compare_with_linear(radius, slope, self.membrane)
+            return (comparison.nonlinear_excess_area,
+                    comparison.linear_excess_area)
+
+        closed_nl, closed_lin = footprint_area(closed)
+        open_nl, open_lin = footprint_area(open_geometry)
+        footprint_term = ((closed_nl - open_nl) if nonlinear
+                          else (closed_lin - open_lin))
+
+        total = dome_term + footprint_term
+        return {
+            "delta_area_nm2": total,
+            "dome_term_nm2": dome_term,
+            "footprint_term_nm2": footprint_term,
+            "footprint_term_linear_nm2": closed_lin - open_lin,
+            "footprint_term_nonlinear_nm2": closed_nl - open_nl,
+            "closed_footprint_nm2": closed_nl if nonlinear else closed_lin,
+            "open_footprint_nm2": open_nl if nonlinear else open_lin,
+            "nonlinear": nonlinear,
+            "t50_mnm": kt_per_nm2_to_mnm(
+                half_activation_tension(total, self.delta_g0)),
+        }
+
+    def compare_gating_area_routes(self, open_geometry) -> list[dict]:
+        """Every route to ΔA side by side, with the T₅₀ each implies.
+
+        The point of the table is that improving the membrane physics does
+        **not** close the structural-versus-functional gap. It is a real
+        correction in the right direction and it is nowhere near enough, which
+        says the gap is about *what is being measured* rather than about the
+        accuracy of the membrane model.
+        """
+        nonlinear = self.gating_area_change(open_geometry, nonlinear=True)
+        linear = self.gating_area_change(open_geometry, nonlinear=False)
+        rows = [
+            {"route": "functional (Cox 2016 fit)",
+             "delta_area_nm2": self.delta_area,
+             "t50_mnm": self.half_activation_mnm,
+             "note": "the number that reproduces measured tension-response"},
+            {"route": "structural, dome projected area only",
+             "delta_area_nm2": nonlinear["dome_term_nm2"],
+             "t50_mnm": kt_per_nm2_to_mnm(half_activation_tension(
+                 nonlinear["dome_term_nm2"], self.delta_g0)),
+             "note": "ignores the surrounding membrane entirely"},
+            {"route": "structural, dome + linear footprint",
+             "delta_area_nm2": linear["delta_area_nm2"],
+             "t50_mnm": linear["t50_mnm"],
+             "note": "the pre-Round-18 route; the footprint term is 6.5x too "
+                     "large"},
+            {"route": "structural, dome + nonlinear footprint",
+             "delta_area_nm2": nonlinear["delta_area_nm2"],
+             "t50_mnm": nonlinear["t50_mnm"],
+             "note": "correct membrane physics; still far from the functional "
+                     "number"},
+        ]
+        return rows
+
     def compare_footprint_theories(self) -> dict:
         """Linear vs nonlinear footprint for this dome, side by side.
 

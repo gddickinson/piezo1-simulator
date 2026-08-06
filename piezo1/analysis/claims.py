@@ -298,6 +298,22 @@ def _within_position_variance() -> float:
     return variance_decomposition(positions, values).within_fraction
 
 
+def _footprint_area_change() -> float:
+    """Footprint contribution to the gating area change, nonlinear, nm^2.
+
+    The Round 28 quantity. The linear route gives 463 nm^2 for the same
+    endpoints, so a change here that does not move the linear number too means
+    the elastica solver has drifted rather than the geometry.
+    """
+    from ..physics.dome import DomeGeometrySummary, DomeModel
+    closed = DomeGeometrySummary(radius_of_curvature=9.72, dome_area=493.2,
+                                 projected_area=237.3)
+    open_state = DomeGeometrySummary(radius_of_curvature=18.38,
+                                     dome_area=816.8, projected_area=438.1)
+    model = DomeModel(geometry=closed)
+    return model.gating_area_change(open_state)["footprint_term_nonlinear_nm2"]
+
+
 def _cds_identity() -> float:
     from ..core.sequences import compare_sequences, load_named_sequences
     seqs = {s.key: s for s in load_named_sequences()}
@@ -358,6 +374,10 @@ CLAIMS: list[Claim] = [
     Claim("hydration.score_11zc", "Rao 2019 wetting score, flat 11ZC",
           0.00, 0.01, "", "docs/SCIENCE.md",
           lambda: _wetting_score("11ZC"), "medium"),
+    Claim("dome.footprint_area_change",
+          "Footprint contribution to the gating area change (nonlinear)",
+          70.9, 3.0, "nm^2", "docs/SCIENCE.md", _footprint_area_change,
+          "medium", published="linear route gives 463 nm^2 for the same pair"),
     Claim("substitution.within_position_variance",
           "Within-position share of the mechanical ddG variance",
           0.525, 0.03, "fraction", "docs/SCIENCE.md",

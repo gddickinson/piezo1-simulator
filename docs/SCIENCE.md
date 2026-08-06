@@ -204,6 +204,33 @@ What can be said from our numbers is narrower and firmer: at PIEZO1's contact
 slope the linearised footprint is not quantitatively usable, and the corrected
 areas of dome and footprint are comparable, with the dome slightly larger.
 
+### The footprint in the gating area change (Round 28)
+
+ΔA is a **change** between states, not an absolute area. Measured from the
+deposited pair — 7WLT closed (R_c 9.72 nm, contact slope 1.992, 63.3°) and 7WLU
+flattened (R_c 18.38 nm, slope 0.839, 40.0°) — two terms contribute: the dome's
+projected area grows by **201 nm²**, and the surrounding footprint releases the
+excess area it was storing.
+
+The nonlinear correction bites harder on the *difference* than on either
+endpoint, because the closed state sits where the linear theory fails badly and
+the open state where it does not:
+
+| | linear | nonlinear |
+|---|---|---|
+| footprint stored, closed (63°) | 622 nm² | 179 nm² |
+| footprint stored, open (40°) | 159 nm² | 108 nm² |
+| **footprint released on opening** | **463 nm²** | **71 nm²** |
+| total ΔA with the dome term | 664 nm² | **272 nm²** |
+
+The resulting T₅₀ = ΔG₀/ΔA moves from **0.060 to 0.147 mN/m** — toward the
+measured 2.7 ± 0.1, not away, so the linear version was not accidentally right.
+
+**It remains ~18× too low.** Improving the membrane physics by a factor of six
+moved the answer by a factor of 2.4. That is the useful finding: the
+structural-versus-functional discrepancy below is **not a membrane-modelling
+error**, and no further refinement of the footprint will close it.
+
 ### An unresolved discrepancy, stated plainly
 
 Reported area changes for gating differ by more than an order of magnitude

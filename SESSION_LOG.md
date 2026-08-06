@@ -1929,3 +1929,59 @@ and growing it underneath a recorded result would invalidate that result while
 nothing appeared to change.
 
 Suite 462 → 477 passing.
+
+## Round 28 — the footprint in the area change (2026-08-06)
+
+Round 18 built the nonlinear footprint solver and showed the linearised version
+is 3.5× too large at PIEZO1's 63° contact slope. Only `DomeModel` consumed it;
+the gating energetics still ran on linear numbers.
+
+### The quantity was wrong before the model was
+
+ΔA is a **change between states**, not an absolute area. Round 3's framing —
+"the footprint stores 622 nm² against the dome's 256" — invites treating a
+stored area as the gating area, and they are different things. What tension does
+work on is the *increase* in projected in-plane area on opening.
+
+So both endpoints had to be measured: 7WLT closed at R_c 9.72 nm and contact
+slope 1.992 (63.3°), 7WLU flattened at R_c 18.38 nm and slope 0.839 (40.0°).
+
+### The correction is bigger on the difference than on either endpoint
+
+This is the part I did not anticipate. The closed state sits at 63°, where the
+small-slope expansion fails badly; the open state at 40°, where it is much less
+wrong. Taking a difference between one badly overestimated number and one mildly
+overestimated one amplifies the error rather than cancelling it:
+
+- footprint stored closed: 622 → 179 nm² (3.5×, as Round 18 found)
+- footprint stored open: 159 → 108 nm² (1.5×)
+- **footprint released on opening: 463 → 71 nm² (6.5×)**
+
+Total ΔA falls from 664 to 272 nm².
+
+### The roadmap's question, answered
+
+It asked to report the change *including if the linear version happened to agree
+better*, since a wrong model can fit a right number. It did not: T₅₀ moves from
+0.060 to 0.147 mN/m, toward the measured 2.7 ± 0.1 rather than away. There is a
+test asserting that direction, because the opposite was a live possibility and
+would have been the more interesting result.
+
+### What the round actually established
+
+**The correction does not close the gap, and that is worth more than the
+correction.** Improving the membrane physics by a factor of six moved T₅₀ by a
+factor of 2.4 and left it about **eighteen times below measurement**. The
+structural ΔA is still 34× the functional 8 nm².
+
+So the structural-versus-functional discrepancy that `docs/SCIENCE.md` has
+carried since Round 3 is **not a membrane-modelling error**. No further
+refinement of the footprint will fix it. The two numbers measure different
+things: the functional ΔA is the area change along the gating reaction
+coordinate, the structural one is the whole protein-plus-footprint deformation,
+and only part of that is coupled to the gate.
+
+Knowing that a candidate explanation has been ruled out is a real result, and it
+took building the better model to rule it out.
+
+Suite 477 → 489 passing; 19 documented numbers reproduce.
