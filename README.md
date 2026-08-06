@@ -95,6 +95,28 @@ C3 axis recovery is exact: 120.00°, 0.00 Å RMSD.
 
 ---
 
+## Animations
+
+![PIEZO1 gating](docs/img/gating_morph_small.gif)
+
+*The gating transition, morphed between the two experimental endpoints. Every
+frame is captioned with what it shows and what was measured, and states plainly
+that it is an interpolation rather than a simulated trajectory.*
+
+```bash
+python scripts/make_animations.py --list       # what is available
+python scripts/make_animations.py              # render all as GIF
+python scripts/make_animations.py --format mp4 # smaller, better quality
+```
+
+Seven animations ship: the gating morph, the lowest symmetric elastic-network
+mode (labelled with its symmetry and what that permits), the Yoda1 pocket, the
+PIP2 lysine cluster, the hydrophobic gate, the resolved pore lipid with its
+detected contacts, and R2456H in structural context. Output goes to
+`docs/anim/` and is git-ignored — it is regenerable.
+
+---
+
 ## Install
 
 ```bash

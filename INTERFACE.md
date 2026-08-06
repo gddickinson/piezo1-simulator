@@ -100,6 +100,7 @@ geometry at a fraction of the triangle count.
 | `representations.py` | Turns a `Structure` into GPU batches; owns style and colouring state. | `MolecularView`, `Style`, `ColorBy` | ✅ |
 | `geometry_builders.py` | Swept tubes, cartoon ribbons with arrowheads, membrane surface of revolution. | `Mesh`, `build_tube()`, `build_cartoon()`, `build_membrane_mesh()`, `build_disc()` | ✅ |
 | `colormaps.py` | Chain, domain, secondary-structure, B-factor, pLDDT, element and scalar-value colouring. | `DomainPalette`, `load_domain_palette()`, `domain_colors()`, `value_colors()`, `plddt_colors()` | ✅ |
+| `animation.py` | Offscreen frame capture, ease-in-out and ping-pong timing, burnt-in captions and progress bar, GIF (shared adaptive palette) and MP4 writers. | `Animator`, `AnimationSpec`, `ease_in_out()`, `ping_pong()`, `write_gif()`, `write_mp4()` | ✅ |
 | `shaders/` | GLSL 4.1 sources, loaded at runtime. | `sphere.vert/frag`, `cylinder.vert/frag`, `mesh.vert/frag` | ✅ |
 
 ### `piezo1/ui/` — PyQt6 application
@@ -139,6 +140,8 @@ geometry at a fraction of the triangle count.
 | `build_structure_registry.py` | Authors `structures.json`. | ✅ |
 | `render_offscreen.py` | Headless render to PNG; also a renderer regression check. | ✅ |
 | `make_figures.py` | All README/doc figures, on shared scale and orientation. | ✅ |
+| `make_animations.py` | The seven-animation library: gating morph, normal mode, ligand and lipid sites, variant context. | ✅ |
+| `build_references.py` | Resolves the bibliography from Europe PMC behind a title-verification gate; downloads open-access full texts. | ✅ |
 | `screenshot_app.py` | Drives the real GUI as a smoke test and captures screenshots. | ✅ |
 | Data download | Use `python -m piezo1.io.fetch`. | ✅ |
 

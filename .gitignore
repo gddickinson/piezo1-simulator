@@ -29,6 +29,9 @@ Thumbs.db
 .vscode/
 *.swp
 *~
+# ---- Generated animations: regenerable with scripts/make_animations.py ----
+docs/anim/
+
 # ---- Outputs ----
 outputs/
 *.mp4

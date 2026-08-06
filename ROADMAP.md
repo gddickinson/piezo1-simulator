@@ -188,25 +188,30 @@ measured P50 and inactivation kinetics.** Each round closes one link.
 
 ## Block D — animation  *(added on request, 2026-08-05)*
 
-### Round 14 — Animation engine
-- [ ] `render/animation.py`: a timeline that interpolates camera, coordinates,
+### Round 14 — Animation engine  ✅
+- [x] `render/animation.py`: a timeline that interpolates camera, coordinates,
       colours and visibility; frame-accurate offscreen capture.
-- [ ] GIF and MP4 export (imageio/ffmpeg), with a legibility-first default:
+- [x] GIF and MP4 export (imageio/ffmpeg), with a legibility-first default:
       slow ease-in-out, a held first and last frame, and an on-frame caption
       stating what is being shown.
-- [ ] Tests; docs; commit.
+- [x] Tests; docs; commit.
 
-### Round 15 — The animation library
-- [ ] Normal-mode animations, per mode, with porcupine displacement arrows.
-- [ ] The gating morph, with the dome profile and pore radius plotted live
+### Round 15 — The animation library  ✅
+- [x] Normal-mode animations, per mode, with porcupine displacement arrows.
+- [x] The gating morph, with the dome profile and pore radius plotted live
       alongside the structure.
-- [ ] Tension-driven gating: tension ramp → dome flattening → pore opening →
+- [x] Tension-driven gating: tension ramp → dome flattening → pore opening →
       simulated current trace, all in one synchronised animation.
-- [ ] Ligand and lipid interaction animations: the Yoda1 pocket, the PIP2
+- [x] Ligand and lipid interaction animations: the Yoda1 pocket, the PIP2
       lysine cluster, and the pore lipid that contacts R2456.
-- [ ] Variant comparison animations: wild type against a gain-of-function
+- [x] Variant comparison animations: wild type against a gain-of-function
       mutant, side by side on the same clock.
-- [ ] Tests; docs; commit.
+- [x] Tests; docs; commit.
+- **Result:** seven animations render offscreen. MP4 is ~10x smaller than GIF
+  for the same content (3.8 MB vs 34 MB for the gating morph at full size), so
+  it is the recommended format. `docs/anim/` is git-ignored and regenerable,
+  consistent with the rule that nothing generated is committed; one small GIF
+  is kept for the README.
 
 ---
 
