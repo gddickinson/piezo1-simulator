@@ -2056,3 +2056,72 @@ The parameter audit caught the new module on its first run — seven unregistere
 literals — which is the rule from the parameter round working as intended.
 
 Suite 489 → 507 passing.
+
+## Round 30 — checking without reusing the derivation (2026-08-06)
+
+Round 18 is the reason this round exists. The elastica solver integrated
+Euler–Lagrange equations derived by hand, and a boundary-value solver converges
+happily onto wrong equations. What caught the error was evaluating the exact
+functional in a different gauge — a check that reused none of the derivation
+being checked. A test written from the same understanding as the code shares its
+blind spots; if the author misread the physics, the test encodes the misreading.
+
+Three headline results, each re-derived by a route sharing no machinery with the
+original. Two of the three taught me something.
+
+### The dome: a disagreement, and the checking route was the wrong one
+
+A parabola through the radial height profile gave **8.12 nm against the sphere
+fit's 9.72** — 16.6% apart. That looks like a finding.
+
+It was, but not the one it appeared to be. On synthetic caps of *known* radius,
+the parabola is accurate to 0.6% at an 8.6° contact angle and **25.8% low at
+63.4°** — and PIEZO1's dome sits at 63.3°. The parabola `h = h₀ − r²/2R` is a
+shallow-cap approximation, which is the *same small-slope failure* Round 18
+found in the membrane theory, now turning up in a geometry method. The sphere
+fit is exact at every slope on the same synthetics.
+
+So I built a route that is actually valid: the exact cap relation
+`R = −(h² + r²)/2h`, inverted per point, no fitting and no expansion. It gives
+**10.17 nm against 9.72** — 4.5% apart, both inside Round 29's bootstrap
+interval and both consistent with the published 10.2.
+
+Both alternative routes are kept. The invalid one is worth keeping precisely
+because knowing *why* a check disagrees is the useful part, and a future reader
+who reaches for a parabolic fit should find the answer already written down.
+
+### The overlap: superposition-free, and it holds
+
+Distances between sites are invariant to rotation and translation. Comparing the
+observed transition and each normal mode in *pairwise distance changes* uses no
+Kabsch fit and no protomer matching — so neither can manufacture the result.
+**0.641 against 0.705, 9.0% apart.** Given this project has been bitten twice by
+protomer correspondence, that is a check worth having.
+
+### T₅₀: a disagreement that was mine
+
+The first alternative used the analytic steady state and returned zero. I nearly
+wrote that up as a discrepancy.
+
+The diagnosis: at equilibrium this channel sits **~96% inactivated at every
+tension**, so steady-state open occupancy runs only 0.030 to 0.036 and never has
+a half-maximum. The route was computing a *different quantity*. T₅₀ is
+necessarily a property of the peak transient — which is also what a patch-clamp
+measures, so the pipeline's definition is the experimentally right one.
+
+Replaced with adaptive Runge–Kutta integration of the same master equation: same
+quantity, different numerics, no matrix exponential. **2.727 against 2.711 —
+0.6%.** The steady-state function is kept, with a test asserting it must *not*
+reproduce the peak-based number: if it ever does, one of the two has stopped
+computing what it claims.
+
+### A small thing the audit prompted
+
+The parameter audit flagged the new module twice. The second flag was
+`OPEN_STATE = 1`, an array index. Rather than exempt it, it now derives from
+`STATE_NAMES.index("O")` — a hardcoded index would silently read the wrong
+occupancy if the state order ever changed, and that is exactly the class of
+error this round is about.
+
+Suite 507 → 518 passing. Block I appended after the thirty-round review,
+numbered from 36 since Block H already claims 31–35.

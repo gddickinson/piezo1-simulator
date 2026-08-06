@@ -396,6 +396,16 @@ P = [
                      "positive semi-definite",
          description="Floor on the per-contact spring scale."),
 
+    dict(key="crosscheck.min_pair_separation",
+         name="Minimum pair separation, distance-space overlap", value=8.0,
+         unit="A", minimum=2.0, maximum=40.0, kind="method",
+         category="Cross-checks", citation="method_choice",
+         source_note="pairs closer than this barely change length during the "
+                     "transition, so they add noise rather than signal to the "
+                     "distance-space correlation",
+         description="Shortest C-alpha pair used in the superposition-free "
+                     "overlap."),
+
     # -------------------------------------------------------- statistics --
     dict(key="stats.alpha", name="Significance level", value=0.05, unit="",
          minimum=0.001, maximum=0.2, kind="convention", category="Statistics",

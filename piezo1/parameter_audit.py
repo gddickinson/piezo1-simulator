@@ -52,6 +52,8 @@ EXEMPT_NAMES = {
     "n_simulations": "Monte-Carlo replicate count",
     "n_resamples": "bootstrap replicate count; changes the precision of an "
                    "interval, never the quantity being estimated",
+    "n_pairs": "how many site pairs are sampled; changes the precision of the "
+               "correlation, not its expected value",
     "digits": "how many decimals to print; presentation only",
     "level": "derived from stats.alpha rather than set independently",
     "n_bins": "histogram resolution",

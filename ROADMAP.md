@@ -948,12 +948,46 @@ the failure mode to keep hunting.
       including that a statistic failing on most resamples raises rather than
       silently narrowing the interval. Suite 489 → **507 passed**.
 
-### Round 30 — Adversarial review of the whole chain
-- [ ] Re-derive each headline result by a deliberately different route and
-      record where the two disagree: dome curvature without sphere fitting,
-      mode overlap without superposition, T₅₀ without the Markov scheme.
-- [ ] The Round 18 lesson generalised: the useful check is the one that does
-      not reuse the derivation being checked.
+### Round 30 — Adversarial review of the whole chain ✅
+- [x] `piezo1/analysis/crosscheck.py` re-derives each headline by a route
+      sharing no machinery with the original, plus
+      `scripts/crosscheck_chain.py` to run them all.
+- [x] **Dome curvature, two alternatives, and the first one disagreed.** A
+      parabola through the radial height profile gave **8.12 nm against the
+      sphere fit's 9.72 — 16.6% apart.** Diagnosed on synthetic caps of *known*
+      radius: the parabola is a **shallow-cap approximation**, accurate to 0.6%
+      at an 8.6° contact angle and **25.8% low at 63.4°**, which is exactly
+      where PIEZO1 sits. This is the Round 18 small-slope lesson reappearing in
+      a geometry method. The sphere fit is exact at every slope on the same
+      synthetics.
+- [x] So a genuinely valid alternative was built — the **exact cap relation
+      R = −(h²+r²)/2h** inverted per point, no fitting, no expansion. It gives
+      **10.17 nm against 9.72, 4.5% apart**, both inside Round 29's bootstrap
+      interval [8.83, 10.34] and both consistent with the published 10.2.
+- [x] **Mode overlap without superposing anything.** Distances are invariant to
+      rotation and translation, so comparing the transition and each mode in
+      *pairwise distance changes* uses no Kabsch fit and no protomer matching.
+      **0.641 against 0.705 — 9.0%**, so the overlap is not an artefact of the
+      superposition.
+- [x] **T₅₀: a disagreement that turned out to be my error, and worth
+      recording.** The first alternative used the analytic steady state and
+      returned 0. Investigation showed why: at equilibrium the channel sits
+      **~96% inactivated at every tension**, so steady-state open occupancy
+      runs only 0.030–0.036 and has no half-maximum. It was computing a
+      *different quantity*. T₅₀ is necessarily a property of the peak
+      transient — which is also what a patch-clamp measures. Replaced with
+      adaptive Runge–Kutta integration of the same master equation: **2.727
+      against 2.711, 0.6%**.
+- [x] The parameter audit caught the new module twice, and the second catch
+      prompted deriving the open-state index from `STATE_NAMES` rather than
+      writing `1` — a hardcoded index would silently read the wrong occupancy
+      if the state order ever changed.
+- [x] 11 tests (`tests/test_crosscheck.py`), including that the sphere fit is
+      exact on synthetic caps at every slope, that the parabola's error grows
+      monotonically with slope and always underestimates, that the
+      distance-space overlap is invariant to a rigid motion, and that the
+      steady-state route must **not** reproduce the peak-based T₅₀. Suite
+      507 → **518 passed**.
 
 ---
 
@@ -1022,6 +1056,76 @@ BAPTA's **~0.2 µM** Kd.
       and cytosolic buffering — **intervals, not a point estimate**, since the
       tag distance is modelled rather than measured — plus an explicit statement
       of what would falsify the prediction.
+
+---
+
+## Block I — after the Round 30 review  *(added 2026-08-06)*
+
+*Numbered from 36; Block H already claims 31–35 for the HaloTag work,
+and the two blocks are independent — either can be worked first.*
+
+**Where thirty rounds leave us.** The physics chain is closed, every link
+validated against an independent published number, and — since Round 18 — every
+link also checked by a route that does not reuse its own derivation. What the
+last ten rounds mostly did was find out how much the project did *not* know:
+
+- Round 18 overturned a Round 3 headline by 3.5×.
+- Round 20 showed the Round 7 null could only ever have excluded a large effect.
+- Round 22 added a second null, with its explanation recorded in advance.
+- Round 26 found the mechanical ΔΔG's blindness was **algebraic** — a rank-one
+  product — and repaired it (within-position variance 4.9% → 52.5%).
+- Round 27 tripled the loss-of-function class but left a medium effect out of
+  reach: 46 variants against the 104 needed.
+- Round 29 found the dome radius and the published value are statistically
+  **indistinguishable**, and that the gating overlap's third digit was never
+  meaningful.
+- Round 30 found a cross-check that failed because the *checking* route was the
+  invalid one.
+
+The through-line has not changed since Block G: every round that looked hard at
+a recorded number found it stated with more confidence than it had earned. The
+difference now is that the machinery to catch that — claims, parameters,
+intervals, cross-checks — exists and runs on every commit.
+
+**The destination remains untested at adequate power.** That is the honest
+summary of thirty rounds, and the next block should be judged on whether it
+changes that.
+
+### Round 36 — Pre-register the third variant test
+- [ ] Rounds 26 and 27 changed both sides of the question: the predictor can now
+      distinguish substitutions, and the set has 46 directional missense
+      variants at |δ| ≥ 0.41 detectable. That is a genuinely new situation and
+      warrants a new pre-registration — **written and committed first**, under
+      `docs/NEGATIVE_RESULT_PROTOCOL.md`.
+- [ ] Declare confirmatory-for-a-large-effect or exploratory **before** looking,
+      and state how the two evidence levels (measured vs disease-mechanism) are
+      handled — pooling them silently would let 20 inferred labels outvote 26
+      measured ones.
+
+### Round 37 — Cross-check the remaining chain
+- [ ] Round 30 covered three links. Do the rest: pore radius without Apollonius
+      maximisation, SASA without Shrake–Rupley, conservation without pairwise
+      alignment, PCA without SVD.
+- [ ] Any disagreement is either a bug or a diagnosed approximation, and both
+      are worth the round.
+
+### Round 38 — Systematic error, not just statistical
+- [ ] Round 29 attached intervals but stated plainly that none captures model
+      error. Estimate it where possible: fit the dome with a spheroid as well as
+      a sphere, run the ANM with two spring models, measure the pore with two
+      probe conventions.
+- [ ] Report the model spread beside the sampling interval, and say which
+      dominates.
+
+### Round 39 — The GUI reaches the variant pipeline
+- [ ] The variant work is the project's central claim and is still CLI-only.
+      Surface the evidence levels, the power statement and both null results
+      where a user meets a variant.
+
+### Round 40 — Reproduce a published figure end to end
+- [ ] Pick one figure from Haselwandter & MacKinnon 2018 or Young 2023 and
+      regenerate it from this codebase. Agreement is a strong integration test;
+      disagreement is a finding.
 
 ---
 
