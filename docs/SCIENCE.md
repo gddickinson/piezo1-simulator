@@ -323,6 +323,43 @@ mutual validation of the profiler and the annotation.
 Note that HOLE cannot be used here: it has no Apple-Silicon build, and
 MDAnalysis's `hole2` wrapper is an empty stub as of 2.10.
 
+## 4c. Force transmission from blade to gate
+
+PIEZO1's blades are up to 100 Å from the gate they open, so the mechanistic
+question is which route the force takes. Three covariance-derived analyses of
+the elastic network answer it.
+
+**Perturbation response scanning** applies a unit force at each residue and
+measures the displacement elsewhere. Ranking residues by how much they move the
+hydrophobic gate puts the inner helix first (expected — it *is* the gate), but
+the next tiers are the **anchor** and **outer helix**, with THU9 behind them:
+the pore module plus the anchor, which is exactly the lever-like transduction
+machinery.
+
+**Allosteric pathways** weight each contact edge by −log|DCC| and take the
+shortest route, so strongly correlated neighbours are cheap to cross. Measured
+as a *detour cost* — how much extra it costs to force the blade→gate path
+through a given region:
+
+| Region | Detour penalty | Path betweenness |
+|---|---|---|
+| Anchor (2077–2176) | **−0.000** | 5.19 |
+| CTD (2453–2521) | −0.000 | 7.67 |
+| Beam (1305–1370) | **+0.010** | 1.30 |
+| Cap (2198–2431) | +0.055 | low |
+
+The anchor is already on the optimal route. The **beam is a near-degenerate
+parallel channel** rather than the dominant one — it does not appear on the
+single cheapest path, but routing through it costs almost nothing. That is a
+softer statement than the lever model's, and it is what the coordinates
+support. The cap is not a force-transmission route.
+
+**A methodological warning.** Asking "does the path pass through X" by
+computing source→X and X→target separately and summing is wrong: each leg picks
+its own best endpoints, which on a C3 trimer can lie in *different protomers*,
+so the legs never join. Done that way the detour came out cheaper than the
+unconstrained shortest path — an impossibility that is now an invariant test.
+
 ## 5. Electrophysiology
 
 | Quantity | Value | Notes |

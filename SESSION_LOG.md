@@ -481,3 +481,62 @@ The general lesson: an ensemble method will happily report the largest axis of
 variation without caring whether that variation is the biology you were asking
 about. Deciding what belongs in the ensemble is part of the analysis, not a
 preliminary to it, and every exclusion here carries its reason in the code.
+
+---
+
+## Round 5 — allostery and force transmission (2026-08-06)
+
+Completes Block A. Perturbation response scanning, dynamic cross-correlation
+and correlation-weighted allosteric pathways, all from the elastic network's
+covariance — which is never formed in full, since for a PIEZO1 trimer it would
+be an 11466² matrix of about a gigabyte.
+
+**The anchor is the transmission hub.** Forcing the blade→gate path through it
+costs a detour penalty of −0.000: it is already on the optimal route. It ranks
+second by betweenness (5.19) behind only the CTD (7.67), and the cap is clearly
+not a transmission route (+0.055).
+
+**The beam result is softer than the prediction, and is reported that way.**
+The lever model says the beam carries blade motion to the pore. It does not
+appear on the single shortest path; but forcing the route through it costs only
++0.010, so it is a near-degenerate parallel channel rather than an excluded
+one, with low but real betweenness (1.30). The honest statement is "viable
+parallel route, not the dominant one" — not "confirms the lever model" and not
+"refutes it".
+
+Worth noting the beam is fully resolved (all 66 residues) in 8YEZ, so this is a
+genuine negative rather than an artefact of missing density. That was checked
+before drawing the conclusion.
+
+### The error: a detour cheaper than the direct path
+
+Asking whether the signal passes through a region by computing source→region
+and region→target separately and adding their costs is wrong. Each leg
+independently picks its best endpoints, and on a C3 trimer those can be in
+*different protomers* — so the two legs never join into a path at all. Done
+that way, routing "via the beam" came out at 0.101 against a direct path of
+0.223: cheaper than the shortest path, which is impossible by definition.
+
+The tell was the impossibility itself. A constrained optimum can never beat an
+unconstrained one over the same feasible set, so a negative penalty is not a
+surprising result, it is proof of a bug. `detour_cost()` now minimises
+`d(source→v) + d(v→target)` over a shared via-point `v`, and an invariant test
+asserts the constrained path is never cheaper.
+
+Single shortest paths also turned out to be fragile — one marginally better
+edge reroutes the whole thing — so `path_betweenness()` aggregates over many
+source/target pairs, which is the standard dynamical-network-analysis answer
+and far more stable.
+
+### Block A review
+
+The physics chain is closed and every link is validated against a published
+number. The two results strong enough to build on: PC1 of the experimental
+ensemble *is* the gating coordinate and matches an A-symmetric mode at 0.804,
+and the anchor is the dominant force-transmission hub. Block E has been added
+to the roadmap: allostery-derived per-variant features, licence-clean external
+predictors via the ProtVar API, nonlinear membrane mechanics to fix the flagged
+small-slope violation, pore wetting prediction, and — written *before* the
+blind test rather than after — a statistical protocol under which "the
+predictor does not separate GoF from LoF" is a recordable outcome rather than a
+prompt to keep tuning.

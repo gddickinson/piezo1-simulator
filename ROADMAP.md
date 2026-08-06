@@ -4,7 +4,7 @@ Planned work, organised into ~20-minute rounds. Each round: implement, test,
 fix, update docs, commit. Items are marked `[ ]` planned, `[~]` in progress,
 `[x]` done. New improvements are appended after every fifth round.
 
-**Status:** Round 5 of 5 (block A)
+**Status:** Block A complete (rounds 1–5). Blocks B–E outstanding.
 
 ---
 
@@ -125,15 +125,31 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   whole component on its own and splits the gating coordinate across PC1 (58%)
   and PC2 (36%); excluded, PC1 is a single clean 90%.
 
-### Round 5 — Allostery and force transmission
-- [ ] `analysis/allostery.py`: Perturbation Response Scanning — apply unit
+### Round 5 — Allostery and force transmission  ✅
+- [x] `analysis/allostery.py`: Perturbation Response Scanning — apply unit
       forces at every residue, measure the response at the gate. Identifies
       sensor and effector residues from first principles.
-- [ ] Dynamic cross-correlation from the ANM covariance; shortest-path
+- [x] Dynamic cross-correlation from the ANM covariance; shortest-path
       allosteric pathway from blade tip to pore gate.
-- [ ] Validate: the beam and anchor should appear on the dominant pathway, as
+- [x] Validate: the beam and anchor should appear on the dominant pathway, as
       the lever-like transduction model predicts.
-- [ ] Tests; docs; commit.
+- [x] Tests; docs; commit.
+- **Result:** the anchor domain sits **on the optimal route** — forcing the
+  blade→gate path through it costs a detour penalty of −0.000, i.e. it is
+  already there — and it ranks second by path betweenness (5.19) behind only
+  the CTD (7.67). The cap is not a transmission route (+0.055 penalty).
+- **The beam result is more nuanced than the prediction.** It does *not* appear
+  on the single shortest path, but forcing the route through it costs only
+  **+0.010**, so it is a near-degenerate parallel channel rather than an
+  excluded one. Its betweenness is real but low (1.30). Reported as measured
+  rather than rounded towards the lever model.
+- **An error worth recording:** asking "does the path go through X" by computing
+  source→X and X→target separately and adding is wrong. Each leg picks its own
+  best endpoints, which on a C3 trimer can be in *different protomers*, so the
+  legs never join. Done that way the detour came out **cheaper** than the
+  unconstrained shortest path, which is impossible. `detour_cost()` now shares
+  a single via-point, and an invariant test asserts a constrained path can
+  never beat the free one.
 
 ---
 
@@ -253,6 +269,62 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   it is the recommended format. `docs/anim/` is git-ignored and regenerable,
   consistent with the rule that nothing generated is committed; one small GIF
   is kept for the README.
+
+---
+
+## Block E — sharpening the prediction  *(added after the Block A review, 2026-08-06)*
+
+**Where Block A leaves us.** The physics chain is closed: structure → elastic
+network → gating coordinate → dome and footprint energetics → open probability,
+with every link validated against a published number. Two results are strong
+enough to build on — PC1 of the experimental ensemble *is* the gating
+coordinate and matches an A-symmetric mode at 0.804, and the anchor domain is
+the dominant force-transmission hub. What is still missing for the destination
+is a per-variant number and an honest test of it.
+
+### Round 16 — Allostery-derived variant features
+- [ ] Per-residue features from the machinery now in place: PRS response at the
+      gate, path betweenness, DCC coupling to the gate, mode-6 displacement
+      amplitude, burial (SASA), and domain membership.
+- [ ] These are the structure-derived predictors that feed Round 6, and they
+      exist now only because Round 5 built them.
+- [ ] Tests; docs; commit.
+
+### Round 17 — External predictors, licence-clean
+- [ ] Integrate the **ProtVar API** (`https://www.ebi.ac.uk/ProtVar/api`,
+      **CC BY 4.0**), which serves AlphaMissense, EVE, ESM-1b, conservation and
+      **precomputed FoldX ΔΔG** for a UniProt accession and position.
+- [ ] This sidesteps the licensing traps entirely: FoldX itself is not
+      redistributable, SIFT4G is GPL-3.0 copyleft, and every tool on
+      biosig.lab.uq.edu.au carries no licence at all. VarSite and VarMap are
+      both retired. Cache responses locally; degrade gracefully offline.
+- [ ] Tests; docs; commit.
+
+### Round 18 — Nonlinear membrane mechanics
+- [ ] Round 3 flagged that PIEZO1's contact slope of ~2.0 (63°) is far outside
+      the small-slope regime the Monge gauge assumes. Implement an axisymmetric
+      **Euler–elastica / full-curvature** solve so the footprint energies
+      become quantitative rather than indicative.
+- [ ] Validate the nonlinear solver against the linear one in the small-slope
+      limit, where they must agree.
+- [ ] Tests; docs; commit.
+
+### Round 19 — Pore hydration and wetting
+- [ ] Radius alone does not predict conduction: a wide but hydrophobic neck can
+      dewet and block. Combine the pore radius profile with the hydrophobicity
+      profile into a CHAP-style conduction prediction.
+- [ ] Check it calls closed 8YEZ non-conductive and flat 11ZC conductive for
+      the *right reason*, not just by bottleneck radius.
+- [ ] Tests; docs; commit.
+
+### Round 20 — Statistical rigour for the blind test
+- [ ] Before Round 7 reports anything: permutation test for the GoF/LoF
+      separation, leave-one-out cross-validation, effect size with a confidence
+      interval, and a pre-registered decision rule.
+- [ ] **Write the negative-result protocol first**, so that "the predictor does
+      not separate them" is a publishable outcome recorded in
+      `docs/VALIDATION.md` rather than a prompt to keep tuning until it does.
+- [ ] Tests; docs; commit.
 
 ---
 
