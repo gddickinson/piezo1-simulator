@@ -1395,3 +1395,81 @@ too easily" from "does not open" among missense variants — has a sample size o
 six. That is the honest scope of what this project can currently ask.
 
 Suite 342 → 352 passing.
+
+## Interlude II — measurement furniture, sequences and overlays (2026-08-06)
+
+Four more requests from actually using the application. Each turned out to have
+a correctness question hiding inside what sounded like a display feature.
+
+### Scale bars and a clock
+
+A structure screenshot without a scale bar states nothing quantitative; a reader
+cannot recover the scale of a perspective projection by eye. The bar rounds to a
+tidy length — 1, 2, 5, 10, 20 … Å — because a bar labelled 47 Å is unreadable.
+It is exact in the plane through the camera pivot, which is where the molecule
+is, and the docstring says so rather than implying a perspective bar is exact
+everywhere.
+
+The animation clock raised the more interesting question. For a **mode sweep**
+it reports elapsed seconds and the fraction of a display cycle, explicitly
+labelled *not a physical period*: the frequency of an elastic-network mode is
+not time. For a **morph** it refuses to report seconds at all and gives percent
+along the path, because a morph is an interpolation between two endpoints and a
+seconds axis would imply kinetics the model does not contain.
+
+### Presentation mode
+
+Full screen hides the panels and menu. The detail worth recording is that
+leaving it restores each panel's **previous** visibility rather than showing
+them all — someone who had closed a panel before presenting should not find it
+reopened afterwards. And Escape leaves, because with the menu bar hidden there
+is otherwise no visible way out.
+
+### The sequence window
+
+Three kinds of sequence are involved and they are **not** interchangeable:
+UniProt (the reference numbering variants are quoted in), structure (only
+resolved residues, with gaps, starting at 570 for 8YEZ), and translated CDS.
+`NamedSequence` carries its own positions for exactly this reason — a viewer
+that showed "the sequence" without saying which one is a numbering bug waiting
+to happen, and this project has already been bitten by three of those.
+
+For DNA I fetched the real Ensembl transcript rather than back-translating. A
+back-translation would look like a gene, invent every codon choice, and make
+silent variants unrepresentable. The check that the right transcript was
+fetched: **the human CDS translates to Q92508 at 100% identity over 2521
+residues.** Mouse gives 99.9% — three differences at 147, 229 and 1572, being
+the reference genome against the TrEMBL submission. That is recorded in a test
+rather than smoothed over.
+
+I also guessed the mouse transcript ID from memory and it 400'd, which is the
+same failure mode as the six wrong PMIDs in Round 8. Looked it up properly.
+
+Comparison offers global alignment or pairing by residue number, and the second
+is not a lesser option: when two sequences already share a numbering, an aligner
+can slide a run of residues to buy score and manufacture differences that are
+alignment artefacts. Pairing by number is refused across species, where it would
+be meaningless.
+
+### The structure overlay
+
+The comparison this project needs constantly — curved against flattened, wild
+type against variant — is two structures in one frame.
+
+The correctness question is protomer correspondence. Round 4 found four
+deposited entries labelled in the reverse rotational order. Overlaying 7WLU on
+7WLT, correspondence search rematches to (2, 1, 0) and gives 12.3 Å; taken at
+chain-label face value the two sit **90.7 Å** apart. A viewer that trusted
+labels would display an enormous conformational change that does not exist —
+and it is exactly the conclusion someone would want to draw. Both numbers are
+reported.
+
+A second guard: cross-species overlays are refused outright. Residue numbers are
+the join key, and human and mouse numbering do not correspond, so the fit would
+be confidently wrong rather than obviously wrong.
+
+Building the protomer blocks per structure also failed, because two entries
+rarely resolve the same residues and `match_protomers` cannot compare blocks of
+different length. The basis has to be shared across both.
+
+Suite 352 → 376 passing.

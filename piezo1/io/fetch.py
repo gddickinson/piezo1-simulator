@@ -22,7 +22,8 @@ from ..config import (DERIVED_DIR, HUMAN_ACC, HUMAN_PIEZO2_ACC, LIGAND_DIR,
                       MOUSE_ACC, SEQUENCE_DIR, STRUCTURE_DIR, ensure_dirs)
 
 __all__ = ["fetch_pdb", "fetch_alphafold", "fetch_uniprot", "fetch_ligand",
-           "fetch_all", "fetch_chap_grid", "DEFAULT_PDB_IDS", "DEFAULT_LIGANDS",
+           "fetch_all", "fetch_chap_grid", "fetch_cds", "CDS_TRANSCRIPTS",
+           "DEFAULT_PDB_IDS", "DEFAULT_LIGANDS",
            "CHAP_GRID_URL", "CHAP_LICENCE"]
 
 #: The water free-energy landscape underlying the Rao et al. 2019 hydrophobic
@@ -173,6 +174,29 @@ def fetch_chap_grid(force: bool = False) -> FetchResult:
                      force)
 
 
+#: Canonical coding sequences, from the Ensembl transcript UniProt cross-links
+#: to. Recorded here rather than looked up each time so the exact transcript is
+#: part of the provenance: PIEZO1 has splice isoforms, and 6LQI is one of them.
+CDS_TRANSCRIPTS = {
+    "human": ("ENST00000301015", "Q92508"),
+    "mouse": ("ENSMUST00000156333", "E2JF22"),
+}
+
+
+def fetch_cds(species: str = "human", force: bool = False) -> FetchResult:
+    """Download the canonical coding sequence for a species.
+
+    Real DNA, not a back-translation. Back-translating a protein would produce
+    a sequence that looks like a gene and is not one — the codon choices would
+    be invented, and silent variants could not be represented at all.
+    """
+    transcript, _accession = CDS_TRANSCRIPTS[species]
+    return _download(
+        f"https://rest.ensembl.org/sequence/id/{transcript}"
+        f"?type=cds;content-type=text/x-fasta",
+        SEQUENCE_DIR / f"{transcript}_{species}_PIEZO1_cds.fasta", force)
+
+
 def fetch_all(force: bool = False, structures: bool = True,
               sequences: bool = True, ligands: bool = True,
               alphafold: bool = True, pae: bool = False,
@@ -218,6 +242,13 @@ def fetch_all(force: bool = False, structures: bool = True,
             for r in fetch_ligand(name, cid, force):
                 note(f"{name} {r.path.stem[-2:]}", r)
                 results.append(r)
+
+    if sequences:
+        print("Coding sequences (Ensembl)")
+        for species in CDS_TRANSCRIPTS:
+            r = fetch_cds(species, force)
+            note(f"{species} CDS", r)
+            results.append(r)
 
     print("CHAP hydrophobic-gating grid")
     r = fetch_chap_grid(force)

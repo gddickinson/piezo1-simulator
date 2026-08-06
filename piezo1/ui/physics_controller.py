@@ -153,16 +153,35 @@ class PhysicsController:
     def set_amplitude(self, value: float) -> None:
         self._amplitude = value
 
+    #: Angular frequency of the displayed mode sweep, rad/s. A display choice:
+    #: the true frequency of an elastic-network mode is not physical time, and
+    #: the clock says so rather than implying a real period.
+    SWEEP_RATE = 1.6
+
     def animate_mode(self, on: bool) -> None:
         self.win.viewport.clear_animations()
+        hud = self.win.viewport.hud
         if not on or self.win.modes is None or self.win.structure is None:
             if self.win.view is not None and self._base_coords is not None:
                 self._apply_mode_displacement(0.0)
+            hud.set_clock("")
             return
 
+        self._elapsed = 0.0
+        self._frames = 0
+        period = 2.0 * np.pi / self.SWEEP_RATE
+
         def step(dt: float) -> bool:
-            self._phase += dt * 1.6
+            self._phase += dt * self.SWEEP_RATE
+            self._elapsed += dt
+            self._frames += 1
             self._apply_mode_displacement(np.sin(self._phase))
+            cycle = (self._elapsed % period) / period
+            hud.set_clock(
+                f"{self._elapsed:6.2f} s   frame {self._frames}",
+                f"mode {self._mode_index + 1} sweep, "
+                f"{cycle * 100:.0f}% of a {period:.1f} s display cycle "
+                f"(not a physical period)")
             return True
 
         self.win.viewport.add_animation(step)

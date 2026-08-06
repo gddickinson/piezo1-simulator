@@ -12,6 +12,8 @@ user is most likely to have spent time arranging.
 
 from __future__ import annotations
 
+import json
+
 from PyQt6.QtWidgets import QTabWidget
 
 from .help_dialog import HelpDialog, open_document
@@ -89,3 +91,45 @@ class PreferencesMixin:
         self.docks.reset()
         self._size_to_screen()
         self._set_status("options and layout restored to defaults")
+
+    # ------------------------------------------------------- presentation
+
+    def _toggle_fullscreen(self) -> None:
+        self.presentation.toggle()
+        self._set_status("presentation mode — press F11 or Escape to leave"
+                         if self.presentation.active else "windowed")
+
+    def _show_display_options(self) -> None:
+        from .presentation import DisplayOptionsDialog
+        dialog = DisplayOptionsDialog(self.viewport.hud, self)
+        if dialog.exec():
+            dialog.apply()
+            self.settings.setValue("hud/settings",
+                                   json.dumps(self.viewport.hud.settings.as_dict()))
+            self.presentation.refresh()
+            self._set_status("display options updated")
+
+    def _restore_hud_settings(self) -> None:
+        from .hud import HudSettings
+        raw = self.settings.value("hud/settings", "", type=str)
+        if not raw:
+            return
+        try:
+            self.viewport.hud.settings = HudSettings.from_dict(json.loads(raw))
+        except (ValueError, TypeError):
+            # A settings file written by an older build should not stop the
+            # application starting; fall back to defaults silently.
+            pass
+
+    def _show_sequences(self) -> None:
+        """Open the sequence window, creating it on first use."""
+        from .sequence_window import SequenceWindow
+        if self._sequence_window is None:
+            self._sequence_window = SequenceWindow(self)
+            self._sequence_window.residues_selected.connect(self._highlight)
+        if self.structure is not None:
+            species = (self.record.numbering_species if self.record else "human")
+            self._sequence_window.set_structure(self.structure, species)
+        self._sequence_window.show()
+        self._sequence_window.raise_()
+        self._sequence_window.activateWindow()

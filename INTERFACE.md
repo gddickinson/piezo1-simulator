@@ -56,6 +56,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `structure.py` | The central structure-of-arrays container. Boolean-mask selections, residue-level index, vdW radii, element colours, PDB output. | `Structure`, `AA3TO1`, `ELEMENT_RADII`, `ELEMENT_COLORS` | ✅ |
 | `sequence.py` | Sequence alignment and the **human↔mouse residue numbering map**, built from a real global alignment. The only sanctioned way to convert between numbering systems. | `align_global()`, `NumberingMap`, `load_numbering_map()`, `human_to_mouse()`, `mouse_to_human()` | ✅ |
 | `annotations.py` | Loads `resources/*.json` into typed records carrying provenance and confidence. Represents "we do not know" explicitly. | `Domain`, `ResidueGroup`, `Variant`, `Annotations`, `load_annotations()` | ✅ |
+| `sequences.py` | Named sequences and their comparison, Qt-free. Keeps UniProt, structure and translated-CDS sequences **distinct**, each with its own numbering; global or by-residue-number comparison. | `NamedSequence`, `SequenceComparison`, `compare_sequences()`, `load_named_sequences()`, `translate()`, `CODON_TABLE` | ✅ |
 
 ### `piezo1/structure/` — structural operations
 
@@ -128,6 +129,11 @@ geometry at a fraction of the triangle count.
 | `help_content.py` | The in-application guide as data: seven topics, the shortcut table, and the document index. Includes the null result and the corrected footprint number. | `TOPICS`, `DOC_LINKS`, `SHORTCUTS` | ✅ |
 | `help_dialog.py` | Non-modal help window — feature guide, shortcuts, and links that open the shipped documents. | `HelpDialog`, `open_document()` | ✅ |
 | `model_utils.py` | Which residues are resolved in all three protomers, and the equal-length C-alpha blocks built from them. | `protomer_blocks()`, `modelled_residues()`, `well_resolved_chains()` | ✅ |
+| `hud.py` | Overlay drawn over the viewport: scale bar in round Angstrom/nm units, animation clock, orientation gnomon, and measured readouts. QPainter on a sibling widget, never inside `paintGL`. | `HudOverlay`, `HudSettings`, `nice_scale_length()` | ✅ |
+| `presentation.py` | Full-screen mode that restores each panel's *previous* visibility, and the dialog choosing which readouts appear. | `PresentationController`, `DisplayOptionsDialog`, `READOUTS` | ✅ |
+| `overlay_controller.py` | Superposes a second structure onto the loaded one. Searches protomer correspondence rather than trusting chain labels — 7WLU onto 7WLT is 12.3 Å matched against 90.7 Å by label — and refuses cross-species pairs whose residue numbers do not correspond. | `OverlayController`, `OverlayWorker`, `OverlayResult` | ✅ |
+| `sequence_view.py` | Monospace sequence grid painted in one pass, with drag selection reported in **residue numbers** and an optional codon track. | `SequenceView`, `ResidueStyle` | ✅ |
+| `sequence_window.py` | Separate window: browse protein and coding sequences, colour by domain/variant/site, select onto the 3-D model, and compare two sequences by global alignment or by residue number. | `SequenceWindow` | ✅ |
 | `physics_controller.py` | Dome measurement, threaded mode calculation, mode animation and displacement colouring. | `PhysicsController`, `ModeWorker` | ✅ |
 | `analysis_controller.py` | Threaded pore, pockets, conservation and allostery runs; maps per-residue scalars onto atoms and colours the model through `ColorBy.VALUE`. Unmeasured residues take the map's floor, not zero. | `AnalysisController`, `AnalysisWorker` | ✅ |
 | `session_controller.py` | File-menu session save/load and report export. Sessions record what was being viewed, never results. | `SessionController` | ✅ |
@@ -192,6 +198,9 @@ geometry at a fraction of the triangle count.
 | `test_features.py` | Column completeness and documentation, distance/response falloff, the symmetric-PRS finding, and a guard forbidding any two columns from being the same quantity. | ✅ |
 | `test_measurement_set.py` | Pick accumulation, double-click rejection, kind switching, CSV export, and the disulfide measured on real coordinates. | ✅ |
 | `test_workflow.py` | Session round-trip and format guards, provenance capture, report failure handling, and the argparse flag-position trap. | ✅ |
+| `test_ui_shell.py` | Docks, menus, layout reset, window sizing, focus-mode and the help content — including a guard that the guide still states the null result. | ✅ |
+| `test_ui_display.py` | Scale-bar rounding, HUD settings round-trip, and the overlay: protomer rematching, rigid-motion check, per-residue deviation. | ✅ |
+| `test_sequences.py` | Genetic code, gapped-sequence numbering, codon indexing, and the real data — human CDS translating to UniProt at 100%, mouse differing at exactly 3 positions. | ✅ |
 | `test_ui_analysis.py` | The Analysis dock, run on the **offscreen** Qt platform with real widgets rather than mocks. Two-axis scaling, NaN handling, click-to-locate, panel plumbing, the residue-to-atom value map, session round-trip, and that each worker reproduces the headless function it wraps rather than reimplementing it. | ✅ |
 | `test_conservation.py` | Entropy on synthetic columns, uncovered-position handling, species deduplication, the pore-versus-blade conservation gradient, and ranking behaviour. | ✅ |
 | `test_external.py` | ProtVar client, run **offline from the disk cache** so the suite needs no network. Covers the `mt`-parameter disambiguation, FoldX keying by `mutatedType`, graceful degradation to `None`, licence recording, and an external cross-check that ProtVar's wild-type residues match all 64 of our numbered variants. | ✅ |

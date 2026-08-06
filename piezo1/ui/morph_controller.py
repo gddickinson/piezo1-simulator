@@ -135,17 +135,31 @@ class MorphController:
     def play(self, on: bool) -> None:
         self.win.viewport.clear_animations()
         self.win.physics_panel.morph_play.setText("Stop" if on else "Play")
+        hud = self.win.viewport.hud
         if not on or self.trajectory is None:
+            hud.set_clock("")
             return
+
+        self._elapsed = 0.0
+        self._frames = 0
 
         def step(dt: float) -> bool:
             self._phase += dt * 0.35
+            self._elapsed += dt
+            self._frames += 1
             # Ping-pong so the user sees both directions of the transition.
             f = abs((self._phase % 2.0) - 1.0)
             self.win.physics_panel.morph_slider.blockSignals(True)
             self.win.physics_panel.morph_slider.setValue(int(f * 100))
             self.win.physics_panel.morph_slider.blockSignals(False)
             self.show_frame(f)
+            # Reported as a fraction along the path, never as a time: a morph
+            # is an interpolation between two endpoints, not a trajectory, and
+            # a seconds axis would imply kinetics the model does not contain.
+            hud.set_clock(
+                f"{f * 100:5.1f}% along the path   frame {self._frames}",
+                f"interpolation, not a trajectory · {self._elapsed:.1f} s "
+                f"of playback")
             return True
 
         self.win.viewport.add_animation(step)

@@ -156,6 +156,19 @@ close it and bring it back from **View → Panels**. **Ctrl+R** restores the
 shipped arrangement. Whether selecting a residue recentres the view is a setting
 under **Options**, defaulting to leaving the camera where you put it.
 
+- **Overlay** — superpose a second structure and see where the two differ.
+  Protomer correspondence is searched rather than taken from chain labels;
+  overlaying 7WLU on 7WLT gives 12.3 Å matched against 90.7 Å by label.
+- **Presentation mode** (`F11`) fills the screen. **Ctrl+D** chooses what the
+  overlay shows: a scale bar in round units, an animation clock, orientation
+  axes, and any measured values — so a screenshot carries its own scale and its
+  own numbers.
+- **Sequences** (`Ctrl+Shift+S`) opens a separate window for the protein and
+  coding sequences. Drag to select and the residues highlight in 3-D; compare
+  two sequences by global alignment or by residue number. The DNA is the real
+  Ensembl transcript, not a back-translation — the human CDS translates to
+  Q92508 at 100% identity, which is the check that the right one was fetched.
+
 - **Model** — choose a structure; each shows its state, resolved residue range,
   numbering system, bound ligands and citation.
 - **Annotation** — browse domains, functional sites and variants. Selecting one

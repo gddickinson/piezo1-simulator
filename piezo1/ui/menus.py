@@ -91,6 +91,13 @@ def _view_menu(win, bar) -> None:
     _action(menu, "Reset &window size", win._size_to_screen, "",
             "Resize the window to fit the current screen")
     menu.addSeparator()
+    _action(menu, "&Presentation mode (full screen)", win._toggle_fullscreen,
+            "F11",
+            "Hide the panels and menu so the 3-D view fills the screen")
+    _action(menu, "&Display options…", win._show_display_options, "Ctrl+D",
+            "Choose what the overlay shows: scale bar, animation clock, "
+            "orientation axes and which measured values")
+    menu.addSeparator()
     _action(menu, "Reset &camera", win._reset_camera, "",
             "Reframe the model to fill the viewport")
     _action(menu, "&Clear highlight", lambda: win._highlight([], ""), "",
@@ -112,6 +119,10 @@ def _analysis_menu(win, bar) -> None:
             "Per-residue conservation across vertebrate PIEZO1 orthologs")
     _action(menu, "Coupling to the &gate (PRS)", win.analysis.compute_allostery,
             "", "Perturbation response scanning. Needs normal modes first.")
+    menu.addSeparator()
+    _action(menu, "&Sequences…", win._show_sequences, "Ctrl+Shift+S",
+            "Browse the protein and coding sequences, select onto the model, "
+            "and compare sequences with alignment options")
 
 
 def _options_menu(win, bar) -> None:

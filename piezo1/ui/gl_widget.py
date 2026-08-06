@@ -20,6 +20,7 @@ from PyQt6.QtWidgets import QWidget
 
 from ..config import RenderSettings
 from ..render.scene import Scene
+from .hud import HudOverlay
 
 __all__ = ["ViewportWidget", "configure_surface_format"]
 
@@ -72,6 +73,9 @@ class ViewportWidget(QOpenGLWidget):
         # simply failed to appear. A sibling widget has its own paint event and
         # cannot interfere with the scene at all.
         self.overlay = _LabelOverlay(self)
+        #: Scale bar, animation clock and measured readouts. Same reasoning as
+        #: the label overlay: a sibling widget, not QPainter inside paintGL.
+        self.hud = HudOverlay(self)
 
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._on_tick)
@@ -99,6 +103,9 @@ class ViewportWidget(QOpenGLWidget):
         # See the module docstring: Qt owns the target framebuffer.
         self.ctx.detect_framebuffer(self.defaultFramebufferObject()).use()
         self.scene.render()
+        # The scale bar depends on camera distance, so it would go stale on
+        # every zoom if it were not repainted alongside the scene.
+        self._refresh_overlays()
 
     def set_overlay_labels(self, labels) -> None:
         self.overlay_labels = list(labels)
@@ -107,6 +114,7 @@ class ViewportWidget(QOpenGLWidget):
     def resizeEvent(self, event) -> None:
         super().resizeEvent(event)
         self.overlay.setGeometry(self.rect())
+        self.hud.setGeometry(self.rect())
 
     # ------------------------------------------------------------ animation
 
@@ -119,6 +127,12 @@ class ViewportWidget(QOpenGLWidget):
 
     def set_spin(self, degrees_per_second: float) -> None:
         self._spin_speed = degrees_per_second
+
+    def _refresh_overlays(self) -> None:
+        """Repaint the 2-D overlays. The scale bar depends on camera distance,
+        so it goes stale on every zoom unless it is repainted with the scene."""
+        self.overlay.update()
+        self.hud.update()
 
     def _on_tick(self) -> None:
         dt = 1.0 / max(self.settings.target_fps, 1)

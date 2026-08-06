@@ -26,11 +26,14 @@ from .docks import DockManager, DockSpec
 from .gl_widget import ViewportWidget
 from .menus import build_menus, make_settings
 from .preferences import PreferencesMixin
+from .presentation import PresentationController
 from .model_utils import modelled_residues, protomer_blocks
 from .morph_controller import MorphController
 from .physics_controller import PhysicsController
 from .session_controller import SessionController
+from .overlay_controller import OverlayController
 from .panels.analysis_panel import AnalysisPanel
+from .panels.overlay_panel import OverlayPanel
 from .panels.annotation_panel import AnnotationPanel
 from .panels.measure_panel import MeasurePanel
 from .panels.physics_panel import PhysicsPanel
@@ -48,7 +51,8 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self._size_to_screen()
 
         self.settings = make_settings()
-        self._help: HelpDialog | None = None
+        self._help = None
+        self._sequence_window = None
         self.registry = load_registry()
         self.annotations = load_annotations("human")
         self.structure: Structure | None = None
@@ -68,11 +72,13 @@ class MainWindow(PreferencesMixin, QMainWindow):
 
         self._build_docks()
         self.session = SessionController(self)
+        self.presentation = PresentationController(self)
         self._build_menu()
 
         # Captured before any saved layout is applied, so Reset always has the
         # arrangement the application ships with rather than whatever the user
         # last left.
+        self._restore_hud_settings()
         self.docks.capture_default()
         if self.settings.value("options/remember_layout", True, type=bool):
             self.docks.restore(self.settings)
@@ -161,6 +167,15 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self.analysis_panel.pore_position_picked.connect(
             self.analysis.focus_pore_position)
 
+        self.overlay_panel = OverlayPanel()
+        self.overlay = OverlayController(self)
+        self.overlay_panel.overlay_requested.connect(self.overlay.load)
+        self.overlay_panel.clear_requested.connect(self.overlay.clear)
+        self.overlay_panel.style_changed.connect(self.overlay.set_style)
+        self.overlay_panel.visibility_changed.connect(self.overlay.set_visible)
+        self.overlay_panel.deviation_colour_requested.connect(
+            self.overlay.color_reference_by_deviation)
+
         self.docks = DockManager(self)
         for spec in (
             DockSpec("model", "Model", self.structure_panel,
@@ -179,6 +194,10 @@ class MainWindow(PreferencesMixin, QMainWindow):
             DockSpec("measure", "Measure", self.measure_panel,
                      Qt.DockWidgetArea.RightDockWidgetArea,
                      "Click-to-measure distances, angles and dihedrals",
+                     tabify_with="annotation"),
+            DockSpec("overlay", "Overlay", self.overlay_panel,
+                     Qt.DockWidgetArea.RightDockWidgetArea,
+                     "Superpose a second structure and compare them",
                      tabify_with="annotation"),
         ):
             self.docks.add(spec)
@@ -237,6 +256,7 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self.physics_panel.set_modes(None)
         self.physics.reset()
         self.analysis.reset()
+        self.overlay.clear()
 
         self.view = MolecularView(self.viewport.scene, st, name=rec.pdb)
         self.view.set_species(rec.numbering_species)
@@ -245,6 +265,10 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self.view.rebuild()
 
         self.viewport.set_pick_source(st.xyz)
+        self.presentation.refresh()
+        self.overlay_panel.set_choices(self.registry.entries, exclude=rec.pdb)
+        if self._sequence_window is not None:
+            self._sequence_window.set_structure(st, rec.numbering_species)
         # Atom indices are per-structure, so measurements taken on the previous
         # one would silently point at different atoms.
         self.measure_panel.set.clear()
@@ -274,6 +298,10 @@ class MainWindow(PreferencesMixin, QMainWindow):
         self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.rebuild()
         self.viewport.set_pick_source(st.xyz)
+        self.presentation.refresh()
+        self.overlay_panel.set_choices(self.registry.entries, exclude=rec.pdb)
+        if self._sequence_window is not None:
+            self._sequence_window.set_structure(st, rec.numbering_species)
         self._mode_blocks, self._mode_residues = protomer_blocks(st)
         self._reset_camera()
         self._set_status(f"{st.name}: {st.n_atoms:,} atoms")
@@ -432,11 +460,23 @@ class MainWindow(PreferencesMixin, QMainWindow):
             "UniProt; predicted structure from AlphaFold DB. Every annotation "
             "carries its provenance — see the panels for sources.</p>")
 
+    def keyPressEvent(self, event) -> None:      # noqa: N802 (Qt naming)
+        """Escape leaves presentation mode.
+
+        Without it a user who enters full screen with the menu bar hidden has
+        no visible way out, which on some window managers means force-quitting.
+        """
+        if (event.key() == Qt.Key.Key_Escape and self.presentation.active):
+            self._toggle_fullscreen()
+            return
+        super().keyPressEvent(event)
+
     def closeEvent(self, event) -> None:
         if self.settings.value("options/remember_layout", True, type=bool):
             self.docks.save(self.settings)
         self.physics.cleanup()
         self.analysis.cleanup()
+        self.overlay.cleanup()
         if self.viewport.scene is not None:
             self.viewport.makeCurrent()
             self.viewport.scene.release()
