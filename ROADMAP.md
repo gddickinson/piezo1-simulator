@@ -157,12 +157,25 @@ measured P50 and inactivation kinetics.** Each round closes one link.
 
 *Added after Round 5 review.*
 
-### Round 6 — Variant impact prediction
-- [ ] `analysis/variant_impact.py`: perturb the elastic network at a mutated
+### Round 6 — Variant impact prediction  ✅
+- [x] `analysis/variant_impact.py`: perturb the elastic network at a mutated
       residue (contact-weighted spring modification), recompute the low-frequency
       A-mode spectrum, and report the shift in the gating coordinate.
-- [ ] Predicted ΔΔG of gating per variant.
-- [ ] Tests; docs; commit.
+- [x] Predicted ΔΔG of gating per variant.
+- [x] Tests; docs; commit.
+- [x] **`docs/PREREGISTRATION.md` written now, before Round 7** — pulling Round
+      20's protocol forward, because a test is only blind if the rule was fixed
+      first.
+- **Method:** ΔΔG_gating = ½·dᵀ(H_mut − H_wt)·d, the change in elastic cost of
+  the *observed* gating motion. Since H_mut − H_wt is non-zero only at the
+  mutated residue's contacts, this costs O(contacts) rather than a
+  re-diagonalisation, and it is **exact to 7e-16** against an explicitly
+  rebuilt Hessian.
+- **Coverage:** 48 of 68 variants scored; 17 residues fall outside the resolved
+  range and 3 are not single substitutions. Reported, not silently dropped.
+- **No phenotype comparison was performed in this round**, deliberately. The
+  ΔΔG distribution is balanced a priori (23 stiffening, 21 softening), which is
+  what an untuned predictor should look like.
 
 ### Round 7 — Blind validation
 - [ ] Run the pipeline over all 68 curated variants.

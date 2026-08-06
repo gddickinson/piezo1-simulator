@@ -81,7 +81,8 @@ testable headlessly and lets the whole engine be driven from a notebook.
 |---|---|---|---|
 | `measure.py` | Distance/angle/dihedral, radius of gyration, principal axes, helix axis, tilt and crossing angles, Shrake–Rupley SASA, buried interface area, and the pore hydrophobicity profile. | `distance()`, `angle()`, `dihedral()`, `sasa()`, `buried_area()`, `helix_axis()`, `tilt_angle()`, `hydrophobicity_profile()` | ✅ |
 | `interactions.py` | Hydrogen bonds, salt bridges, hydrophobic contacts, π-stacking, cation–π and disulfides, with published geometric criteria; cross-selection mode for interfaces; state-to-state comparison. | `detect_interactions()`, `Interaction`, `InteractionSet`, `compare_interactions()`, `CUTOFFS` | ✅ |
-| `variants.py` | Maps variants onto structure, reports domain context, contacts lost/gained, predicted mode perturbation. | `map_variants()`, `VariantImpact` | 📋 |
+| `variant_impact.py` | Predicts a variant's mechanical effect on gating as ½·dᵀ(H_mut − H_wt)·d — the change in elastic cost of the observed gating motion. Volume-based spring perturbation, all protomers, coverage reported. | `VariantImpactModel`, `VariantPrediction`, `spring_scale_from_volume()`, `RESIDUE_VOLUME` | ✅ |
+| `variants.py` | Maps variants onto structure, reports domain context, contacts lost/gained. | `map_variants()`, `VariantImpact` | 📋 |
 | `ensemble.py` | Builds a cross-species, coverage-matched, protomer-corrected structure ensemble and runs PCA on it; compares principal components with elastic-network modes by overlap, subspace overlap and RWSIP. | `build_ensemble()`, `StructureEnsemble`, `PCAResult`, `rwsip()`, `subspace_overlap()`, `DEFAULT_EXCLUSIONS` | ✅ |
 | `allostery.py` | Perturbation response scanning, dynamic cross-correlation, correlation-weighted contact networks, shortest allosteric paths, via-point detour cost and path betweenness. | `perturbation_response()`, `PRSResult`, `cross_correlation()`, `build_network()`, `allosteric_path()`, `detour_cost()`, `path_betweenness()` | ✅ |
 | `contacts.py` | Residue contact maps, interface detection, contact changes between states. | `contact_map()`, `interface_residues()` | 📋 |
@@ -164,6 +165,7 @@ geometry at a fraction of the triangle count.
 | `test_interactions.py` | The annotated disulfide, the R2456–E2117 inter-protomer salt bridge, cutoff enforcement, and the donor–donor exclusion. | ✅ |
 | `test_membrane.py` | Unit conversion, the κ/γ/λ triple, exact-vs-numerical profile and energy, second-order convergence, small-slope validity, and Cox's T₅₀ round trip. | ✅ |
 | `test_ensemble.py` | Shared-basis construction, paralogue exclusion, reversed-protomer detection, PC1-as-gating-coordinate, and A-mode dominance against a random control. | ✅ |
+| `test_variant_impact.py` | The quadratic-form identity against an explicit Hessian, sign conventions, all-protomer mutation, and honest coverage reporting. Deliberately contains no phenotype comparison. | ✅ |
 | `test_allostery.py` | Correlation-matrix validity, chunking invariance, the anchor on the optimal route, the beam as a near-degenerate alternative, and the invariant that a constrained path can never beat a free one. | ✅ |
 
 ## `docs/`
@@ -171,5 +173,7 @@ geometry at a fraction of the triangle count.
 | File | Purpose | Status |
 |---|---|---|
 | `SCIENCE.md` | The scientific basis: mechanism, parameters, provenance, open gaps. | ✅ |
+| `PREREGISTRATION.md` | The frozen hypothesis, statistic and decision rule for the Round 7 blind test, written before any comparison was run. | ✅ |
+| `REFERENCES.md` | Generated bibliography, 51 verified references. | ✅ |
 | `img/` | Generated figures (`make_figures.py`, `screenshot_app.py`). | ✅ |
 | `ARCHITECTURE.md` | Why the code is shaped this way; the rendering approach in detail. | 📋 |
