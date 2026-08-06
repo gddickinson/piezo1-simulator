@@ -535,14 +535,54 @@ is a per-variant number and an honest test of it.
       rather than fail when the grid is not downloaded. Suite 272 →
       **288 passed**; GUI smoke test clean.
 
-### Round 20 — Statistical rigour for the blind test
-- [ ] Before Round 7 reports anything: permutation test for the GoF/LoF
-      separation, leave-one-out cross-validation, effect size with a confidence
-      interval, and a pre-registered decision rule.
-- [ ] **Write the negative-result protocol first**, so that "the predictor does
-      not separate them" is a publishable outcome recorded in
-      `docs/VALIDATION.md` rather than a prompt to keep tuning until it does.
-- [ ] Tests; docs; commit.
+### Round 20 — Statistical rigour for the blind test ✅
+- [x] Permutation test, effect size with a bootstrap CI and a pre-registered
+      decision rule were delivered ahead of schedule in Rounds 6–7
+      (`analysis/validation.py`, `docs/PREREGISTRATION.md`). This round adds
+      what was genuinely missing: **power, multiplicity and cross-validation**,
+      in a new `piezo1/analysis/design.py`. The split is deliberate —
+      `validation.py` answers "did it work?", `design.py` answers "could it
+      have worked, and did we look too many times?".
+- [x] **Leave-one-out cross-validation**, with every label-consuming step
+      inside the fold. On the Round 7 predictors: AUROC **0.535 out-of-sample
+      against 0.542 in-sample**, optimism +0.007 — so there was no hidden
+      overfitting inflating the original number.
+- [x] **Benjamini–Hochberg FDR** with a named primary endpoint. BH rather than
+      Bonferroni because the sequence predictors read the same evolutionary
+      signal and are strongly correlated. Worked illustration: of six candidate
+      predictors, **three clear p < 0.05 and none survives correction**.
+- [x] **Power analysis, and it produced the round's real finding.** Simulating
+      the pre-registered test at Round 7's actual group sizes (16 vs 9), under
+      both a normal model and resampling from the observed heavy-tailed ΔΔG
+      pool — which agree — **80% power is reached only at |δ| ≥ 0.55**, past
+      'large'. Power at the observed effect was **0.13**; at a medium effect,
+      0.35; at a large effect, 0.60.
+- [x] **This qualifies the recorded null without revising it.** Round 7
+      excludes a *large* mechanical effect and is close to uninformative about
+      a small or medium one. Added as `docs/VALIDATION.md` §6b, explicitly
+      marked as not amending §§1–3. The §6 diagnostic (99.8% of ΔΔG variance is
+      between-position) remains the mechanistic explanation and is independent
+      of this; both are true, and the power limit was the one not stated at the
+      time.
+- [x] **Sample sizes needed** at 80% power, equal groups: **42** variants for a
+      large effect, **98** for medium, ≥600 for small. Only 25 of the 68
+      curated variants survive the inclusion criteria and relaxing them cannot
+      reach ~45 — so **a confirmatory test of anything below a large effect is
+      not available from this variant set.** Round 22 is bound by that.
+- [x] **`docs/NEGATIVE_RESULT_PROTOCOL.md` written first**, before the Round 22
+      hypothesis it governs, so the rule cannot be tuned to a result already
+      seen. Fixes what must exist before a test is run, that a recorded result
+      is never revised (only superseded by a new entry that points back, as
+      Round 18 did to Round 3), and that re-running a hypothesis with a changed
+      predictor is a **new** test needing a **new** pre-registration.
+- [x] A sign error caught by its own diagnostic: `power_curve` injected the
+      effect into the wrong group, reporting the power to detect the *opposite*
+      direction. The achieved-vs-target Cliff's delta check exists precisely
+      because a power curve looks perfectly sensible when inverted.
+- [x] 23 tests (`tests/test_design.py`), including that the fast subset-sum
+      permutation path agrees with the real test, and that the rejection rate
+      under a true null is α rather than more. Suite 288 → **311 passed**; GUI
+      smoke test clean.
 
 ---
 
@@ -572,6 +612,16 @@ any of the reporting.
       conservation features this project supplies and they do not.
 - [ ] Report against the Round 7 baseline honestly, including if the addition
       does not help.
+- [ ] **Bound by Round 20's power result, which is not optional.** The 25
+      usable variants give 80% power only at |δ| ≥ 0.55. Round 22 must
+      therefore state *in its pre-registration, before testing*, whether it is
+      (a) confirmatory for a large effect, accepting that a null excludes only
+      large effects, or (b) exploratory — reporting effect sizes with intervals
+      rather than decisions. Choosing after seeing the p-value is prohibited by
+      `docs/NEGATIVE_RESULT_PROTOCOL.md`.
+- [ ] Name **one** primary endpoint; correct the rest by Benjamini–Hochberg
+      over the whole family including uninteresting tests. Cross-validate any
+      fitted combination and report the optimism.
 - [ ] Tests; docs; commit.
 
 ### Round 23 — Packaging and one-command reproduction
@@ -592,6 +642,73 @@ any of the reporting.
       dome, blades, lever, gate — with each step tied to the live measurement
       it corresponds to.
 - [ ] Tests; docs; commit.
+
+---
+
+## Block G — after the Round 20 review  *(added 2026-08-06)*
+
+**Where twenty rounds leave us.** The physics chain is closed and every link
+validated against an independent published number. The engine now also knows
+its own limits, which took three rounds to establish and is the more useful
+half of the progress:
+
+- Round 18 overturned a Round 3 headline — the linearised footprint is 3.5×
+  too large at PIEZO1's 63° contact slope, and the footprint holds *less*
+  excess area than the dome, not 2.4× more.
+- Round 19 showed the pore verdict must separate steric occlusion from
+  hydrophobic gating, because two deposited states are shut for one reason and
+  not the other.
+- Round 20 showed the Round 7 null excludes only a *large* effect, and that no
+  confirmatory test below that is available from 25 variants.
+
+The through-line: every round that looked hard at a previously reported number
+found the number was reported with more confidence than it had earned. That is
+the failure mode to keep hunting.
+
+### Round 26 — Substitution-aware mechanics
+- [ ] The Round 7 diagnostic said the mechanical ΔΔG reports *position*, not
+      *substitution* (99.8% between-position variance). Fix the cause rather
+      than adding predictors around it: perturb the network by charge change,
+      hydrogen-bonding capacity and proline backbone disruption, not volume
+      alone, so that four substitutions at R2456 can differ.
+- [ ] Success criterion fixed now: **within-position variance must exceed 20%**
+      of total, measured on the four R2456 substitutions and the other
+      multiply-substituted positions. If it does not, the approach has failed
+      and that is the reported result.
+
+### Round 27 — Expand the phenotyped variant set
+- [ ] Round 20 is unambiguous: 42 variants for a large effect, 98 for a medium
+      one, against 25 available. The binding constraint on this project's
+      central claim is **data, not method**.
+- [ ] Curate from ClinVar, the ProtVar cross-check and the primary
+      electrophysiology literature, with the same wild-type verification gate
+      the existing 68 passed. Record inter-curator ambiguity explicitly rather
+      than resolving it silently.
+- [ ] Report the achieved n and recompute the minimum detectable effect. If it
+      still cannot reach a medium effect, say so.
+
+### Round 28 — Nonlinear footprint in the gating energetics
+- [ ] Round 18 built the elastica solver but only `DomeModel` consumes it. The
+      two-state model's ΔA and the footprint contribution to T₅₀ still use
+      linear numbers that are known to be 3.5× too large.
+- [ ] Propagate the nonlinear areas through `dome.py` and re-derive T₅₀.
+      Compare with the measured 2.7 ± 0.1 and 5.1 ± 0.2 mN/m and report the
+      change, **including if the linear version happened to agree better** —
+      a wrong model can fit a right number.
+
+### Round 29 — Uncertainty on every reported quantity
+- [ ] Dome curvature, pore radius, mode overlaps and ΔΔG are all reported as
+      point estimates. Add intervals: bootstrap over atoms for the sphere fit,
+      over structures for the ensemble PCs, over network cutoff for the ANM.
+- [ ] A number without an interval invites exactly the overconfidence Rounds
+      18–20 kept finding.
+
+### Round 30 — Adversarial review of the whole chain
+- [ ] Re-derive each headline result by a deliberately different route and
+      record where the two disagree: dome curvature without sphere fitting,
+      mode overlap without superposition, T₅₀ without the Markov scheme.
+- [ ] The Round 18 lesson generalised: the useful check is the one that does
+      not reuse the derivation being checked.
 
 ---
 

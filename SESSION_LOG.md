@@ -1071,3 +1071,95 @@ out right: 8YEZ and 7WLT shut on both counts, 7WLU and 8IXO shut on sterics
 alone, 11ZC open.
 
 Suite 272 → 288 passing; GUI smoke test clean.
+
+## Round 20 — what the null was entitled to claim (2026-08-06)
+
+Most of this round's list was already done. Rounds 6–7 delivered the permutation
+test, the bootstrap effect size and the pre-registered decision rule; Round 7
+recorded the null. What was missing were the two questions asked *around* a
+result rather than by it — could the design have detected the effect, and did we
+look in too many places — plus cross-validation. Those went into a new
+`analysis/design.py`, kept separate from `validation.py` because "did it work?"
+and "could it have worked?" are different questions and conflating them is how
+underpowered nulls get overclaimed.
+
+### The finding
+
+Simulating the pre-registered test at Round 7's actual group sizes, 16
+gain-of-function against 9 loss-of-function, one-sided at α = 0.05:
+
+| effect | Cliff's δ | power |
+|---|---|---|
+| **observed in Round 7** | −0.083 | **0.13** |
+| small | −0.11 | 0.16 |
+| medium | −0.28 | 0.35 |
+| large | −0.43 | 0.60 |
+
+**80% power is reached only at |δ| ≥ 0.55**, past 'large' on the usual
+thresholds. I ran it twice — once from a normal model, once resampling the
+observed heavy-tailed ΔΔG values, because a difference-in-means test loses power
+on heavy tails and the normal model would flatter the design. They agree: 0.55
+and 0.56.
+
+So the Round 7 null **excludes a large mechanical effect and is close to
+uninformative about a small or medium one.** That is a real qualification and it
+was not stated at the time. I have added it as `VALIDATION.md` §6b, explicitly
+marked as not amending §§1–3: the result stands, its scope is now bounded. The
+existing §6 diagnostic — 99.8% of ΔΔG variance is between-position — remains the
+mechanistic explanation and is independent of this. Both are true. The power
+limit is simply the one nobody wrote down.
+
+### The constraint that binds the rest of the project
+
+At 80% power with equal groups: **42 variants for a large effect, 98 for a
+medium one, 600+ for a small one.** Twenty-five survive Round 7's inclusion
+criteria, and relaxing every criterion cannot reach forty-five.
+
+So a *confirmatory* test of anything below a large effect is not available from
+this variant set, however good the predictor gets. Round 22 is now explicitly
+bound to declare in advance whether it is confirmatory-for-a-large-effect or
+exploratory, and I have added Round 27 — expand the phenotyped set — because the
+binding constraint on this project's central claim turns out to be **data, not
+method**. That is worth knowing at round 20 rather than round 40.
+
+### Why the protocol had to be written now
+
+`docs/NEGATIVE_RESULT_PROTOCOL.md` is deliberately written *between* Round 7's
+null and Round 22's hypothesis. Written after Round 22 it would be a rule fitted
+to a result already seen, which is the thing it exists to prevent.
+
+The failure mode it guards against is not dishonesty, it is drift: a null comes
+back, and there is always one more defensible adjustment — drop the noisy
+variants, use the normalised score, go two-sided. Each is reasonable alone.
+Together they are an unrecorded search, and the p-value at the end means nothing
+like what it appears to. With 68 curated variants and one primary claim, that
+resource is finite and non-renewable.
+
+The multiplicity worked example makes the point better than the argument does.
+Six candidate predictors with plausible p-values: three clear 0.05, and after
+Benjamini–Hochberg **none survives**. Reporting AlphaMissense at p = 0.012
+without its family would be a false discovery manufactured by looking six times.
+
+### A sign error caught by its own diagnostic
+
+`power_curve` injected the effect into the wrong group. `shift_for_delta` is
+defined with a ~ N(0,1) and b ~ N(shift,1), so the displacement belongs on group
+b; I added it to a. The resulting power curve rose monotonically with effect
+size, saturated at 1.0, and was entirely plausible — it was simply the power to
+detect the opposite direction.
+
+It was caught because `power_curve` measures the Cliff's delta it actually
+achieved rather than assuming it got what it asked for. That diagnostic existed
+only because Round 18 had just taught the same lesson: the useful check is the
+one that does not reuse the thing being checked. It is now a test.
+
+### Cross-validation
+
+Leave-one-out on the Round 7 predictors gives AUROC 0.535 out-of-sample against
+0.542 in-sample, optimism +0.007. Small because the default combination is
+unsupervised, and reassuring: there was no hidden overfitting inflating the
+original number. The machinery matters more for Round 22, where a *fitted*
+combination of six predictors on 25 variants would otherwise measure how well 25
+points can be fitted.
+
+Suite 288 → 311 passing; GUI smoke test clean.

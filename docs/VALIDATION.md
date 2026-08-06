@@ -117,6 +117,45 @@ by position, and positions do not have phenotypes — variants do.
 The GoF and LoF ΔΔG ranges overlap completely (GoF [−1.95 × 10⁻⁴, +2.20 × 10⁻⁴],
 LoF [−8.38 × 10⁻⁶, +1.70 × 10⁻⁴]).
 
+## 6b. Power — added Round 20, qualifying the scope of this null
+
+**This section does not revise the result above.** H0 was not rejected and that
+stands. It records what the design was capable of detecting, which determines
+what the null is entitled to claim.
+
+Simulating the pre-registered test at the design's actual group sizes —
+16 versus 9, one-sided, α = 0.05 — using both a normal model and resampling
+from the observed heavy-tailed ΔΔG pool, which agree:
+
+| Effect | Cliff's δ | Power |
+|---|---|---|
+| **observed here** | −0.083 | **0.13** |
+| small | −0.11 | 0.16 |
+| medium | −0.28 | 0.35 |
+| large | −0.43 | 0.60 |
+
+**80% power is reached only at \|δ\| ≥ 0.55**, which is past 'large' on the
+usual thresholds.
+
+So this null **excludes a large mechanical effect and is close to uninformative
+about a small or medium one**. §7 below should be read with that scope: the
+correct statement is not "there is no effect" but "there is no large effect,
+and this design could not have seen a smaller one". The §6 diagnostic — that
+99.8% of the ΔΔG variance is between-position — remains the mechanistic
+explanation, and it is independent of the power argument. Both are true, and
+the power limit was the one not stated at the time.
+
+Sample sizes that would be needed at 80% power, equal groups: **42** variants
+total for a large effect, **98** for medium, ≥600 for small. Only 25 of the 68
+curated variants survive the inclusion criteria, so a confirmatory test of
+anything below a large effect is not available from this variant set. That
+constraint is now binding policy in `docs/NEGATIVE_RESULT_PROTOCOL.md`.
+
+Leave-one-out cross-validation of the two Round 7 predictors gives AUROC 0.535
+out-of-sample against 0.542 in-sample (optimism +0.007) — consistent with the
+null rather than additional evidence for it, and confirming there was no
+hidden overfitting inflating the original number.
+
 ## 7. What this does and does not mean
 
 **It does not** invalidate the physics chain. Every link in it was validated
@@ -146,6 +185,8 @@ than a retrofit:
    the gate" is a question the elastic network can answer well (Round 5 showed
    the anchor is the transmission hub). "Is this particular amino-acid swap
    GoF or LoF" may simply be the wrong question to put to it.
-4. **More variants.** n = 25 gives little power for a small effect. A
-   pre-registered replication on an expanded, independently curated set would
-   be worth more than any reanalysis of these 25.
+4. **More variants.** n = 25 gives little power for a small effect — Round 20
+   now quantifies that: 0.13 at the observed effect, and 98 variants would be
+   needed for a medium one. A pre-registered replication on an expanded,
+   independently curated set would be worth more than any reanalysis of these
+   25, and no reanalysis of these 25 can settle the question either way.

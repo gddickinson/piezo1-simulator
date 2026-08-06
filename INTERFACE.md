@@ -96,6 +96,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `pockets.py` | Delaunay alpha-sphere pocket detection (fpocket construction, reimplemented in numpy) with a burial filter that stops surface percolation, Monte-Carlo union volumes, ray-cast buriedness, and resolved-ligand contact mapping. | `find_pockets()`, `Pocket`, `alpha_spheres()`, `AlphaSpheres`, `ligand_contact_residues()` | ✅ |
 | `validation.py` | Non-parametric statistics for the blind test: permutation test with the (r+1)/(n+1) convention, Cliff's delta with a bootstrap CI, and tie-averaged AUROC. Implemented directly so the conventions are visible and testable. | `permutation_test()`, `cliffs_delta()`, `bootstrap_cliffs_delta()`, `auroc()` | ✅ |
 | `report.py` | Provenance-stamped analysis reports in JSON and Markdown from one object, plus the shared `ANALYSES` registry the CLI dispatches through. | `build_report()`, `AnalysisReport`, `Provenance`, `collect_provenance()`, `ANALYSES` | ✅ |
+| `design.py` | **Study design**, the questions asked around a result rather than by it: simulated power of the pre-registered permutation test, minimum detectable effect, required sample size, Benjamini–Hochberg FDR with a named primary endpoint, and leave-one-out cross-validation with every label-consuming step inside the fold. Established that Round 7 reached 80% power only at \|δ\| ≥ 0.55. | `power_curve()`, `PowerResult`, `minimum_detectable_effect()`, `sample_size_for()`, `benjamini_hochberg()`, `MultipleComparisons`, `leave_one_out()`, `LeaveOneOutResult`, `shift_for_delta()` | ✅ |
 | `docking.py` | Optional AutoDock Vina integration; degrades gracefully when absent. | `dock()`, `available()` | 📋 |
 
 ### `piezo1/render/` — OpenGL 4.1 renderer
@@ -184,6 +185,7 @@ geometry at a fraction of the triangle count.
 | `test_external.py` | ProtVar client, run **offline from the disk cache** so the suite needs no network. Covers the `mt`-parameter disambiguation, FoldX keying by `mutatedType`, graceful degradation to `None`, licence recording, and an external cross-check that ProtVar's wild-type residues match all 64 of our numbered variants. | ✅ |
 | `test_pockets.py` | Circumsphere geometry against a known tetrahedron, percolation prevention, union-not-sum volumes, gate/anchor recovery, and the Yoda1 groove-versus-cavity result. | ✅ |
 | `test_validation.py` | Statistical instruments against known cases, plus a pin on the published Round 7 null result so a predictor change cannot silently move it. | ✅ |
+| `test_design.py` | Power, multiplicity and cross-validation. Pins that the fast subset-sum permutation path agrees with the real test, that the false-positive rate under a true null is α rather than more, that the injected effect matches the requested one (a sign error this caught), and the Round 7 power result. | ✅ |
 | `test_variant_impact.py` | The quadratic-form identity against an explicit Hessian, sign conventions, all-protomer mutation, and honest coverage reporting. Deliberately contains no phenotype comparison. | ✅ |
 | `test_allostery.py` | Correlation-matrix validity, chunking invariance, the anchor on the optimal route, the beam as a near-degenerate alternative, and the invariant that a constrained path can never beat a free one. | ✅ |
 
@@ -194,7 +196,8 @@ geometry at a fraction of the triangle count.
 | `SCIENCE.md` | The scientific basis: mechanism, parameters, provenance, open gaps. | ✅ |
 | `PREREGISTRATION.md` | The frozen hypothesis, statistic and decision rule for the Round 7 blind test, written before any comparison was run. | ✅ |
 | `NOTEBOOK.md` | The documented headless API, with a "things that will bite you" table. | ✅ |
-| `VALIDATION.md` | The Round 7 result: a null result, reported in the pre-registered order with a post-hoc diagnostic of why. | ✅ |
+| `VALIDATION.md` | The Round 7 result: a null result, reported in the pre-registered order with a post-hoc diagnostic of why, and a Round 20 power section (§6b) bounding what the null is entitled to claim. | ✅ |
+| `NEGATIVE_RESULT_PROTOCOL.md` | Standing policy, written before the Round 22 test it governs: what must exist before a test runs, power requirements, multiplicity control, cross-validation of fitted combinations, and the rule that a recorded result is superseded rather than revised. | ✅ |
 | `REFERENCES.md` | Generated bibliography, 51 verified references. | ✅ |
 | `img/` | Generated figures (`make_figures.py`, `screenshot_app.py`). | ✅ |
 | `ARCHITECTURE.md` | Why the code is shaped this way; the rendering approach in detail. | 📋 |
