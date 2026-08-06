@@ -214,21 +214,39 @@
    "declared_numbering": "mouse"
   },
   {
-   "id": "clasp",
-   "name": "Clasp",
+   "id": "coiled_coil",
+   "name": "Beam coiled coil",
    "category": "lever",
    "human": {
-    "start": 1371,
-    "end": 1501
+    "start": 1339,
+    "end": 1370
    },
    "mouse": {
-    "start": 1366,
-    "end": 1492
+    "start": 1334,
+    "end": 1365
    },
-   "description": "Intracellular region following the beam that packs against the blade; proposed to stabilise blade-beam coupling. Boundaries are approximate and partly unresolved in cryo-EM.",
-   "source": "Zhao et al. Nature 2018 (PMID 30089899)",
-   "confidence": "low",
+   "description": "Coiled-coil segment at the distal end of the beam, annotated independently by UniProt in both species.",
+   "source": "UniProt Q92508/E2JF22 coiled-coil feature",
+   "confidence": "high",
    "color": "#d98032",
+   "declared_numbering": "mouse"
+  },
+  {
+   "id": "splice_1_1",
+   "name": "Piezo1.1 spliced segment",
+   "category": "lever",
+   "human": {
+    "start": 1388,
+    "end": 1411
+   },
+   "mouse": {
+    "start": 1382,
+    "end": 1405
+   },
+   "description": "The 24-residue segment removed in the Piezo1.1 splice isoform (PDB 6LQI). Identical in sequence between human and mouse, so the human deletion is 1388-1411.",
+   "source": "Geng et al. Neuron 2020, PDB 6LQI",
+   "confidence": "high",
+   "color": "#9d7bd8",
    "declared_numbering": "mouse"
   },
   {
@@ -295,29 +313,11 @@
     "start": 2093,
     "end": 2192
    },
-   "description": "Amphipathic intracellular domain wedged between the blade and the pore module. Transmits beam motion to the outer helix and hosts a cholesterol-interaction site (human P2113).",
-   "source": "UniProt Q92508 topology; Buyan et al. Biophys J 2020 (PMID 32949489)",
+   "description": "Amphipathic intracellular domain wedged between the blade and the pore module. Transmits beam motion to the outer helix. Its apex (human P2113/F2114) acts as a resistive brake on the inner helix; the same region also sits in a cholesterol/CRAC context.",
+   "source": "UniProt Q92508 topology; Li/Cox/Martinac Channels 2021; Buyan et al. Biophys J 2020 (PMID 32949489)",
    "confidence": "high",
    "color": "#4fc3c7",
    "rule": "cytoplasmic topological domain between TM36 and TM37"
-  },
-  {
-   "id": "latch",
-   "name": "Latch",
-   "category": "gate",
-   "human": {
-    "start": 2174,
-    "end": 2194
-   },
-   "mouse": {
-    "start": 2190,
-    "end": 2210
-   },
-   "description": "Short intracellular segment linking the anchor to the outer helix; implicated in coupling and in inactivation. Approximate.",
-   "source": "Geng et al. Neuron 2020 (PMID 32084332)",
-   "confidence": "low",
-   "color": "#9d7bd8",
-   "declared_numbering": "mouse"
   },
   {
    "id": "outer_helix",

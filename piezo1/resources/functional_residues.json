@@ -1,0 +1,461 @@
+{
+ "protein": "PIEZO1",
+ "numbering": "declared in human Q92508; mouse computed by alignment",
+ "note": "Every residue was checked against the actual Q92508 sequence at build time. 'conserved' compares the human and mouse amino acid at aligned positions.",
+ "groups": [
+  {
+   "id": "hydrophobic_gate",
+   "label": "Transmembrane hydrophobic gate",
+   "category": "pore",
+   "description": "The constriction in the inner-helix bundle that occludes the pore in the closed state.",
+   "source": "Yang et al. eLife 2025 (human numbering)",
+   "color": "#e8556d",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2447,
+     "human_aa": "I",
+     "mouse": 2473,
+     "mouse_aa": "I",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2450,
+     "human_aa": "V",
+     "mouse": 2476,
+     "mouse_aa": "V",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2454,
+     "human_aa": "F",
+     "mouse": 2480,
+     "mouse_aa": "F",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "pore_lining",
+   "label": "Pore-lining residues",
+   "category": "pore",
+   "description": "Inner-helix residues facing the conduction pathway. Human I2451 corresponds to mouse V2477 - not conserved.",
+   "source": "Botello-Smith et al. Nat Commun 2019 (converted from mouse)",
+   "color": "#c9455c",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2440,
+     "human_aa": "I",
+     "mouse": 2466,
+     "mouse_aa": "I",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2443,
+     "human_aa": "L",
+     "mouse": 2469,
+     "mouse_aa": "L",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2447,
+     "human_aa": "I",
+     "mouse": 2473,
+     "mouse_aa": "I",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2451,
+     "human_aa": "I",
+     "mouse": 2477,
+     "mouse_aa": "V",
+     "offset": 26,
+     "conserved": false,
+     "verified": true
+    },
+    {
+     "human": 2454,
+     "human_aa": "F",
+     "mouse": 2480,
+     "mouse_aa": "F",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "selectivity_acidic",
+   "label": "Acidic residues setting ion selectivity",
+   "category": "pore",
+   "description": "Glutamates lining the anchor (E2117) and the CTD vestibule and lateral fenestrations. Mutating them alters divalent permeation and unitary conductance.",
+   "source": "Coste et al. Nature 2015; Zhao et al. Nature 2016 (mouse E2133/E2495/E2496 -> human E2117/E2469/E2470)",
+   "color": "#ff8a3d",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2117,
+     "human_aa": "E",
+     "mouse": 2133,
+     "mouse_aa": "E",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2461,
+     "human_aa": "E",
+     "mouse": 2487,
+     "mouse_aa": "E",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2469,
+     "human_aa": "E",
+     "mouse": 2495,
+     "mouse_aa": "E",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2470,
+     "human_aa": "E",
+     "mouse": 2496,
+     "mouse_aa": "E",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "ctd_constriction",
+   "label": "Cytoplasmic vestibule constrictions",
+   "category": "pore",
+   "description": "Two constrictions in the C-terminal domain beneath the pore that ions must pass on the intracellular side.",
+   "source": "converted from mouse M2493/F2494 and P2536/E2537",
+   "color": "#d2691e",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2467,
+     "human_aa": "M",
+     "mouse": 2493,
+     "mouse_aa": "M",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2468,
+     "human_aa": "F",
+     "mouse": 2494,
+     "mouse_aa": "F",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2510,
+     "human_aa": "P",
+     "mouse": 2536,
+     "mouse_aa": "P",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2511,
+     "human_aa": "E",
+     "mouse": 2537,
+     "mouse_aa": "E",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "yoda1_pocket",
+   "label": "Yoda1 binding pocket",
+   "category": "ligand",
+   "description": "Pocket between blade repeats A and B where the agonist Yoda1 is proposed to act as a molecular wedge. Mapped by mutagenesis and MD, not by a ligand-bound structure. Note A1718 happens to carry the same number in both species by coincidence - do not generalise from it.",
+   "source": "Botello-Smith et al. Nat Commun 2019 (PMID 31582801)",
+   "color": "#ffd93d",
+   "evidence": "predicted",
+   "residues": [
+    {
+     "human": 1718,
+     "human_aa": "A",
+     "mouse": 1718,
+     "mouse_aa": "A",
+     "offset": 0,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2075,
+     "human_aa": "A",
+     "mouse": 2091,
+     "mouse_aa": "A",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2078,
+     "human_aa": "A",
+     "mouse": 2094,
+     "mouse_aa": "A",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "pip2_cluster",
+   "label": "Polybasic PIP2-binding cluster",
+   "category": "lipid",
+   "description": "Four lysines immediately before helix 37, at the inner-leaflet pore periphery. Deleting them abolishes inactivation without changing the pressure threshold. A DHS1 disease variant deletes K2166.",
+   "source": "Buyan et al. Biophys J 2020 (PMID 32949489)",
+   "color": "#5ec8ff",
+   "evidence": "simulation+mutagenesis",
+   "residues": [
+    {
+     "human": 2166,
+     "human_aa": "K",
+     "mouse": 2182,
+     "mouse_aa": "K",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2167,
+     "human_aa": "K",
+     "mouse": 2183,
+     "mouse_aa": "K",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2168,
+     "human_aa": "K",
+     "mouse": 2184,
+     "mouse_aa": "K",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2169,
+     "human_aa": "K",
+     "mouse": 2185,
+     "mouse_aa": "K",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "anchor_brake",
+   "label": "Anchor-domain apex brake",
+   "category": "lipid",
+   "description": "Apex of the anchor domain acting as a resistive brake on the inner helix; also sits in a cholesterol/CRAC context.",
+   "source": "Li/Cox/Martinac Channels 2021; Buyan et al. 2020",
+   "color": "#4fc3c7",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2113,
+     "human_aa": "P",
+     "mouse": 2129,
+     "mouse_aa": "P",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2114,
+     "human_aa": "F",
+     "mouse": 2130,
+     "mouse_aa": "F",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "lipid_anchor_arg",
+   "label": "Inner-leaflet arginine (R2456)",
+   "category": "disease",
+   "description": "Site of the archetypal gain-of-function xerocytosis variant R2456H, which markedly slows inactivation.",
+   "source": "Zarychanski et al. Blood 2012; Bae et al. PNAS 2013",
+   "color": "#ff5ec8",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2456,
+     "human_aa": "R",
+     "mouse": 2482,
+     "mouse_aa": "R",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "basic_cluster_2",
+   "label": "Basic cluster (blade, THU4)",
+   "category": "lipid",
+   "description": "Inner-leaflet basic patch contacting phosphoinositides in coarse-grained simulation.",
+   "source": "Buyan et al. Biophys J 2020",
+   "color": "#7fd4ff",
+   "evidence": "simulation",
+   "residues": [
+    {
+     "human": 623,
+     "human_aa": "R",
+     "mouse": 629,
+     "mouse_aa": "R",
+     "offset": 6,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 624,
+     "human_aa": "K",
+     "mouse": 630,
+     "mouse_aa": "K",
+     "offset": 6,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 627,
+     "human_aa": "K",
+     "mouse": 633,
+     "mouse_aa": "R",
+     "offset": 6,
+     "conserved": false,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "basic_cluster_3",
+   "label": "Basic cluster (blade, THU8)",
+   "category": "lipid",
+   "description": "Inner-leaflet basic patch contacting phosphoinositides in coarse-grained simulation.",
+   "source": "Buyan et al. Biophys J 2020",
+   "color": "#7fd4ff",
+   "evidence": "simulation",
+   "residues": [
+    {
+     "human": 1724,
+     "human_aa": "R",
+     "mouse": 1724,
+     "mouse_aa": "R",
+     "offset": 0,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 1727,
+     "human_aa": "K",
+     "mouse": 1727,
+     "mouse_aa": "K",
+     "offset": 0,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 1728,
+     "human_aa": "R",
+     "mouse": 1728,
+     "mouse_aa": "R",
+     "offset": 0,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "basic_cluster_4",
+   "label": "Basic cluster (THU8-THU9 linker)",
+   "category": "lipid",
+   "description": "Inner-leaflet basic patch contacting phosphoinositides in coarse-grained simulation.",
+   "source": "Buyan et al. Biophys J 2020",
+   "color": "#7fd4ff",
+   "evidence": "simulation",
+   "residues": [
+    {
+     "human": 1911,
+     "human_aa": "K",
+     "mouse": 1927,
+     "mouse_aa": "Q",
+     "offset": 16,
+     "conserved": false,
+     "verified": true
+    },
+    {
+     "human": 1912,
+     "human_aa": "R",
+     "mouse": 1928,
+     "mouse_aa": "E",
+     "offset": 16,
+     "conserved": false,
+     "verified": true
+    },
+    {
+     "human": 1915,
+     "human_aa": "R",
+     "mouse": 1931,
+     "mouse_aa": "K",
+     "offset": 16,
+     "conserved": false,
+     "verified": true
+    },
+    {
+     "human": 1919,
+     "human_aa": "R",
+     "mouse": 1935,
+     "mouse_aa": "R",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 1921,
+     "human_aa": "R",
+     "mouse": 1937,
+     "mouse_aa": "K",
+     "offset": 16,
+     "conserved": false,
+     "verified": true
+    }
+   ]
+  }
+ ]
+}

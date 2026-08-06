@@ -60,35 +60,43 @@ LITERATURE_DOMAINS = [
         "color": "#f2a541",
     },
     {
-        "id": "clasp",
-        "name": "Clasp",
+        "id": "coiled_coil",
+        "name": "Beam coiled coil",
         "category": "lever",
         "numbering": "mouse",
-        "start": 1366, "end": 1492,
+        "start": 1334, "end": 1365,
         "description": (
-            "Intracellular region following the beam that packs against the "
-            "blade; proposed to stabilise blade-beam coupling. Boundaries are "
-            "approximate and partly unresolved in cryo-EM."
+            "Coiled-coil segment at the distal end of the beam, annotated "
+            "independently by UniProt in both species."
         ),
-        "source": "Zhao et al. Nature 2018 (PMID 30089899)",
-        "confidence": "low",
+        "source": "UniProt Q92508/E2JF22 coiled-coil feature",
+        "confidence": "high",
         "color": "#d98032",
     },
     {
-        "id": "latch",
-        "name": "Latch",
-        "category": "gate",
+        "id": "splice_1_1",
+        "name": "Piezo1.1 spliced segment",
+        "category": "lever",
         "numbering": "mouse",
-        "start": 2190, "end": 2210,
+        "start": 1382, "end": 1405,
         "description": (
-            "Short intracellular segment linking the anchor to the outer helix; "
-            "implicated in coupling and in inactivation. Approximate."
+            "The 24-residue segment removed in the Piezo1.1 splice isoform "
+            "(PDB 6LQI). Identical in sequence between human and mouse, so the "
+            "human deletion is 1388-1411."
         ),
-        "source": "Geng et al. Neuron 2020 (PMID 32084332)",
-        "confidence": "low",
+        "source": "Geng et al. Neuron 2020, PDB 6LQI",
+        "confidence": "high",
         "color": "#9d7bd8",
     },
 ]
+
+# Terms deliberately NOT included, and why. Both appear in secondary sources
+# but neither survived verification against the primary literature:
+#   "clasp" — not an established PIEZO1 term; appears to be a conflation of the
+#             latch with Guo & MacKinnon's "cross-helices".
+#   "latch" — used inconsistently across papers with no agreed residue range.
+# Adding a domain with invented boundaries would be worse than omitting it,
+# because the viewer would colour residues with false confidence.
 
 # Elements derived from UniProt features by explicit rules.
 DERIVED_SPEC = {
@@ -98,10 +106,12 @@ DERIVED_SPEC = {
         "rule": "cytoplasmic topological domain between TM36 and TM37",
         "description": (
             "Amphipathic intracellular domain wedged between the blade and the "
-            "pore module. Transmits beam motion to the outer helix and hosts a "
-            "cholesterol-interaction site (human P2113)."
+            "pore module. Transmits beam motion to the outer helix. Its apex "
+            "(human P2113/F2114) acts as a resistive brake on the inner helix; "
+            "the same region also sits in a cholesterol/CRAC context."
         ),
-        "source": "UniProt Q92508 topology; Buyan et al. Biophys J 2020 (PMID 32949489)",
+        "source": ("UniProt Q92508 topology; Li/Cox/Martinac Channels 2021; "
+                   "Buyan et al. Biophys J 2020 (PMID 32949489)"),
         "confidence": "high",
         "color": "#4fc3c7",
     },
