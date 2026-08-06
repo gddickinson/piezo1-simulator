@@ -98,6 +98,63 @@ def _view_menu(win, bar) -> None:
             "Choose what the overlay shows: scale bar, animation clock, "
             "orientation axes and which measured values")
     menu.addSeparator()
+
+    halotag = menu.addMenu("&HaloTag fusion")
+    halotag.setToolTipsVisible(True)
+    _action(halotag, "Show modelled &tags", win.fusion.show, "",
+            checkable=True, checked=False,
+            tip="Draw a HaloTag at each of the three cytosolic C-termini.\n"
+                "THIS IS A MODEL: there is no structure of the fusion, so the\n"
+                "tag body is drawn as a sphere of its radius of gyration and\n"
+                "the linker as a straight seam.")
+    _action(halotag, "Show accessible &volume", win.fusion.set_envelope, "",
+            checkable=True, checked=False,
+            tip="The region the tag centre can occupy without clashing, as a\n"
+                "point cloud. Shown so a single sphere is not mistaken for a\n"
+                "determined position.")
+    _action(halotag, "Show &dyes", win.fusion.set_dyes, "",
+            checkable=True, checked=False,
+            tip="Draw a dye on each tag the labelling model says is occupied.")
+
+    menu.addSeparator()
+
+    _action(menu, "Show &multiple structures at once", win.set_multi_structure,
+            checkable=True, checked=win.multi_structure,
+            tip="Keep the current structure on screen when another is loaded, "
+                "drawn in its own colour in the same frame. Off by default: "
+                "two entries in the same frame sit on top of each other, and a "
+                "structure left behind reads as extra density. Analyses always "
+                "run on the primary structure, whatever else is drawn.")
+    _action(menu, "Remove e&xtra structures", win.clear_companions, "",
+            tip="Drop everything except the primary structure")
+
+    menu.addSeparator()
+
+    align = menu.addMenu("Structure &alignment")
+    align.setToolTipsVisible(True)
+    align_group = QActionGroup(align)
+    align_group.setExclusive(True)
+    for label, key, tip in (
+            ("As deposited", "deposited",
+             "Use the coordinate frame from the file. Different entries were "
+             "refined in unrelated frames, so they will not overlap."),
+            ("Canonical (three-fold axis on z)", "canonical",
+             "Put each structure in a frame defined by its own C3 symmetry: "
+             "axis vertical, cytosolic side down, centred on the origin. Works "
+             "for any trimer, including PIEZO2 and mouse entries."),
+            ("Superpose on the loaded structure", "reference",
+             "Least-squares fit onto the first structure loaded, over the "
+             "C-alphas they share. Maximises overlap, but needs a shared "
+             "residue numbering — falls back to canonical across species.")):
+        action = _action(align, label,
+                         lambda on, k=key: on and win.set_alignment_mode(k),
+                         checkable=True,
+                         checked=(win.alignment_mode == key), tip=tip)
+        align_group.addAction(action)
+
+    menu.addSeparator()
+
+    menu.addSeparator()
     _action(menu, "Reset &camera", win._reset_camera, "",
             "Reframe the model to fill the viewport")
     _action(menu, "&Clear highlight", lambda: win._highlight([], ""), "",
@@ -158,42 +215,6 @@ def _options_menu(win, bar) -> None:
                          lambda on, k=key: on and win._set_focus_mode(k),
                          checkable=True, checked=(mode == key), tip=tip)
         focus_group.addAction(action)
-
-    menu.addSeparator()
-
-    _action(menu, "Show &multiple structures at once", win.set_multi_structure,
-            checkable=True, checked=win.multi_structure,
-            tip="Keep the current structure on screen when another is loaded, "
-                "drawn in its own colour in the same frame. Off by default: "
-                "two entries in the same frame sit on top of each other, and a "
-                "structure left behind reads as extra density. Analyses always "
-                "run on the primary structure, whatever else is drawn.")
-    _action(menu, "Remove e&xtra structures", win.clear_companions, "",
-            tip="Drop everything except the primary structure")
-
-    menu.addSeparator()
-
-    align = menu.addMenu("Structure &alignment")
-    align.setToolTipsVisible(True)
-    align_group = QActionGroup(align)
-    align_group.setExclusive(True)
-    for label, key, tip in (
-            ("As deposited", "deposited",
-             "Use the coordinate frame from the file. Different entries were "
-             "refined in unrelated frames, so they will not overlap."),
-            ("Canonical (three-fold axis on z)", "canonical",
-             "Put each structure in a frame defined by its own C3 symmetry: "
-             "axis vertical, cytosolic side down, centred on the origin. Works "
-             "for any trimer, including PIEZO2 and mouse entries."),
-            ("Superpose on the loaded structure", "reference",
-             "Least-squares fit onto the first structure loaded, over the "
-             "C-alphas they share. Maximises overlap, but needs a shared "
-             "residue numbering — falls back to canonical across species.")):
-        action = _action(align, label,
-                         lambda on, k=key: on and win.set_alignment_mode(k),
-                         checkable=True,
-                         checked=(win.alignment_mode == key), tip=tip)
-        align_group.addAction(action)
 
     menu.addSeparator()
 

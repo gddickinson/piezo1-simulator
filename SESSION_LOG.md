@@ -4,6 +4,97 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 33 — ion permeation, and where continuum theory runs out
+
+### What was built
+`physics/permeation.py` turns the measured pore radius profile into a current:
+steady-state drift-diffusion per species, Scharfetter–Gummel discretised so it
+stays stable where drift dominates, with Hall access resistance in series at
+both mouths — for a pore this short the mouths are a real share of the total
+resistance, not a correction.
+
+### The Poisson half does not converge, and that is the finding
+Feeding the solved potential back through Poisson diverged immediately: −0.37 V,
+then −171 V, then −2×10¹⁶ V. The obvious diagnosis is a missing restoring term,
+so I added the one a proper Newton step needs, ∂ρ/∂φ = −F²/(RT)·Σz²c, which is
+negative and makes the operator negative-definite. It still did not converge —
+the update plateaued and the potential swung ±1.5 V at every damping I tried.
+
+The reason turned out to be physics rather than arithmetic. In 150 mM the Debye
+length is **5.7–8.1 Å**; PIEZO1's open bottleneck radius is **3.3 Å**. The
+double layers from opposite walls overlap completely, so the pore has no
+electroneutral core for a Gummel map to relax onto. That is not a solver defect
+to be worked around; it is the statement that a continuum treatment of this pore
+is at the edge of its validity.
+
+So the potential is solved in the **electroneutral limit** — current continuity
+with the local conductivity — which converges, and agrees with the independent
+closed-form series-resistance formula to **1.5%** (41.0 vs 40.4 pS). The Poisson
+machinery is kept and `debye_length()` is reported on every result, because the
+honest record is that it was attempted and why it was set aside.
+
+### Validation
+**41.0 pS for the open 11ZC against a published 25–30 pS** — high by about half.
+Closed structures give exactly zero.
+
+The roadmap asked specifically *which* mechanism blocks which, and getting that
+right needed a change: my first `_blocked_reason` returned on the first match,
+which made 8YEZ and 7WLU look identical when the whole point is that they are
+not. `blocking_mechanisms()` now returns every reason. 8YEZ is shut by **two**
+(0.95 Å bottleneck *and* a hydrophobic gate at wetting 0.82); 7WLU by **one**
+(0.98 Å, wetting 0.11 — no gate).
+
+### Why the agreement is not a prediction
+Sweeping the two unmeasured confinement parameters over plausible ranges —
+in-pore diffusivity 0.25–1.0 of bulk, ion radius 1.0–2.0 Å — moves the answer
+across **16–94 pS**, a 5.8× span straddling the measurement. The model can be
+made to agree by choosing values nobody has measured. Both are registered
+`unverified`, and a test pins the span so the point cannot be quietly forgotten.
+
+### Two numerical faults, both of which produced a number before an error
+The interior rows of the discretised system are built from `D·A/h` with `A` a
+few square angstroms, so they sit around 1e-18 while a Dirichlet row is 1.
+LAPACK called that singular. It is not singular, it is badly scaled, and since
+the interior rows are homogeneous, dividing each by its own largest coefficient
+is free. The Bernoulli function also overflowed at large argument, propagating
+inf into the matrix as nan; its asymptotes are now explicit. Both live in
+`_pnp_kernels.py` — pure linear algebra with no ions in it, testable alone.
+
+### Out of band: seeing the HaloTag fusion
+Asked mid-round how to view the tags, the honest answer was that you could not:
+Rounds 31 and 32 computed the fusion and the labelling but drew nothing, and the
+numbers were reachable only through the CLI. `ui/fusion_controller.py` now draws
+them under **View → HaloTag fusion** — tag bodies, linker seams in a colour the
+channel never uses, the accessible-volume cloud, and the bound dyes. Everything
+is styled so it reads as a model: sphere-of-gyration bodies rather than the
+fold, straight seams rather than a conformation, and the envelope shown
+precisely so a single sphere is not mistaken for a determined position.
+
+While doing it I found I had **misreported** where the Round 31/32 options live.
+I described them as *View*; they had in fact been added to *Options*. Moved to
+*View*, which is both where they belong and what the documentation says.
+
+### Notes
+- Three references added through the title gate: `coste2010piezo`,
+  `gnanasambandam2015`, `hall1975access`. The gate earned its keep again —
+  the Coste entry was first rejected because my `expect` word did not appear in
+  the resolved title, and a PMID lookup I tried resolved to an unrelated 2025
+  paper.
+- 12 parameters registered. Several tabulated diffusivities and Shannon radii
+  had to move from `physical` to `convention`: the audit is right that a
+  `physical` kind promises a citation, and a community-standard tabulated value
+  does not have one in this bibliography.
+- `report.py` and `permeation.py` both passed 500 lines and were split at real
+  seams — the newer analyses into `report_tags.py`, the linear algebra into
+  `_pnp_kernels.py`.
+- **Not done:** the particle animation driven by the computed current. The
+  physics is in place and the current is available to drive it.
+
+580 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 32 — HaloTag labelling: an import, and what it then says
 
 ### The criterion was "exactly", so that is what was tested

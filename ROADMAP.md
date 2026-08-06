@@ -1072,17 +1072,38 @@ BAPTA's **~0.2 µM** Kd.
       are both registered `unverified`; they are the assumptions this rests on.
 
 ### Round 33 — Calcium permeation
-- [ ] 1-D Poisson–Nernst–Planck along the conduction axis over the measured
-      `PoreProfile`, **gated by the Round 19 wetting verdict**: a dewetted pore
-      carries no current because the hydration shell an ion needs is absent.
-      All-atom MD stays a non-goal.
-- [ ] *Validate:* unitary conductance **25–30 pS** (Shi 2020; Vaisey &
-      MacKinnon 2026) for an open structure, ~0 for closed — and report *which*
-      mechanism blocks which, since 8YEZ is shut both sterically and by wetting
-      while 7WLU is shut only sterically.
+- [x] `physics/permeation.py`: steady-state drift-diffusion per species over the
+      measured `PoreProfile`, Scharfetter–Gummel discretised, with Hall access
+      resistance in series at both mouths. Gated by the Round 19 wetting
+      verdict. Reachable as `python -m piezo1.cli permeation 11ZC`.
+- [x] **The Poisson half does not converge, and the reason is physical.**
+      Direct Gummel diverged (−0.37 V → −171 V → −2×10¹⁶ V); a proper Newton
+      step with the screening derivative still would not converge. In 150 mM the
+      **Debye length is 5.7–8.1 Å against an open bottleneck radius of 3.3 Å**,
+      so the double layers overlap completely and the pore has no electroneutral
+      core to relax onto. The potential is therefore solved in the
+      **electroneutral limit** (current continuity), which converges and agrees
+      with the independent closed-form `series_conductance` to **1.5%**
+      (41.0 vs 40.4 pS). `debye_length()` is reported on every result.
+- [x] *Validate:* **41.0 pS** for the open 11ZC against a published **25–30 pS**
+      — high by about half. Closed structures give exactly 0.
+      **Which mechanism blocks which**, as asked: 8YEZ is shut by **2**
+      mechanisms (sterically, 0.95 Å bottleneck; *and* hydrophobic gate, wetting
+      0.82), 7WLU by **1** (sterically only, 0.98 Å, wetting 0.11).
+      `blocking_mechanisms()` returns every reason rather than the first,
+      because returning early collapsed exactly this distinction.
+- [x] **The agreement cannot be claimed as a prediction.** Sweeping the two
+      *unmeasured* confinement parameters over plausible ranges — in-pore
+      diffusivity 0.25–1.0 of bulk, ion radius 1.0–2.0 Å — moves the answer
+      across **16–94 pS**, a 5.8× span that straddles the measurement. The model
+      can be made to agree, but only by choosing values nobody has measured, so
+      that would be tuning. Both are registered `unverified`.
+      Calcium at 2 mM carries **<5%** of the current, consistent with PIEZO1's
+      weak selectivity.
 - [ ] Particle animation whose flux is **set by** the computed current, with the
       HUD stating what the frame rate is in real time. The morph clock's
-      discipline applies.
+      discipline applies. **Not done** — the physics is in place and the current
+      is available to drive it, but nothing is animated yet.
 
 ### Round 34 — Variant permeation
 - [ ] Apply to the four deposited variant structures (8ZU3, 8ZU8, 8YFC, 8YFG).
@@ -1204,3 +1225,16 @@ changes that.
 - Full C3 block-diagonalisation of the Hessian: benchmarked at only 1.76× on
   top of the sparse solve, not worth the complexity. Symmetry *labelling* gives
   the scientific payoff already.
+
+### Out of band — seeing the HaloTag fusion
+- [x] Rounds 31–32 computed the fusion and the labelling but drew nothing; the
+      tags were reachable only through the CLI. `ui/fusion_controller.py` now
+      draws them under **View → HaloTag fusion**: the three tag bodies, the
+      linker seams in a colour the channel never uses, the accessible-volume
+      cloud, and the dyes the labelling model says are bound. Everything is
+      drawn so as to read as a model — sphere-of-gyration bodies, straight
+      seams, and the envelope shown precisely so one sphere is not mistaken for
+      a determined position. Figure: `docs/img/halotag_fusion.png`.
+- [x] Corrected: the Round 31/32 display options were reported as living under
+      *View*; they had in fact been added to *Options*. Moved to *View*, which
+      is where they belong and where they were documented.

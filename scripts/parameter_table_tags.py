@@ -106,4 +106,78 @@ TAG_PARAMETERS = [
                      "integer dye counts into a predicted amplitude histogram; "
                      "it decides whether the 1/2/3-dye levels stay resolvable",
          description="Coefficient of variation of one dye's brightness."),
+
+    # ------------------------------------------------------- permeation ----
+    # A 1-D PNP model over the measured pore profile. The transport constants
+    # are bulk-water measurements; the two confinement corrections beneath them
+    # are not measured, and they are what the answer is most sensitive to.
+    dict(key="permeation.temperature", name="Temperature", value=310.0,
+         unit="K", minimum=270.0, maximum=330.0, kind="convention",
+         category="Permeation", citation="convention",
+         source_note="37 C, the condition PIEZO1 conductance is usually recorded at",
+         description="Absolute temperature entering the thermal voltage."),
+    dict(key="permeation.bath_concentration", name="Bath salt concentration",
+         value=0.15, unit="M", minimum=0.001, maximum=3.0, kind="convention",
+         category="Permeation", citation="gnanasambandam2015",
+         source_note="symmetric ~150 mM monovalent, the standard recording "
+                     "condition for the 25-30 pS figure",
+         description="Symmetric bath concentration of the permeant salt."),
+    dict(key="permeation.test_voltage", name="Test voltage", value=0.06,
+         unit="V", minimum=0.001, maximum=0.2, kind="method",
+         category="Permeation", citation="method_choice",
+         source_note="60 mV; small enough that the I-V is still linear, so the "
+                     "chord conductance equals the slope conductance",
+         description="Voltage at which the conductance is evaluated."),
+    dict(key="permeation.diffusion_cation", name="Cation bulk diffusivity",
+         value=1.96e-9, unit="m^2/s", minimum=1e-11, maximum=1e-8,
+         kind="convention", category="Permeation", citation="convention",
+         source_note="K+ in water at 25 C; the standard tabulated value",
+         description="Bulk diffusion coefficient of the permeant cation."),
+    dict(key="permeation.diffusion_anion", name="Anion bulk diffusivity",
+         value=2.03e-9, unit="m^2/s", minimum=1e-11, maximum=1e-8,
+         kind="convention", category="Permeation", citation="convention",
+         source_note="Cl- in water at 25 C; the standard tabulated value",
+         description="Bulk diffusion coefficient of the counter-anion."),
+    dict(key="permeation.diffusion_calcium", name="Calcium bulk diffusivity",
+         value=0.79e-9, unit="m^2/s", minimum=1e-11, maximum=1e-8,
+         kind="convention", category="Permeation", citation="convention",
+         source_note="Ca2+ in water at 25 C; slower than K+ because it is more "
+                     "strongly hydrated",
+         description="Bulk diffusion coefficient of calcium."),
+    dict(key="permeation.radius_cation", name="Cation crystal radius",
+         value=1.38, unit="A", minimum=0.3, maximum=4.0, kind="convention",
+         category="Permeation", citation="convention",
+         source_note="K+ Shannon radius. The crystal rather than hydrated "
+                     "radius, because an ion can shed water to cross a "
+                     "constriction - which is itself a modelling choice",
+         description="Radius subtracted from the pore when computing access."),
+    dict(key="permeation.radius_anion", name="Anion crystal radius", value=1.81,
+         unit="A", minimum=0.3, maximum=4.0, kind="convention",
+         category="Permeation", citation="convention",
+         source_note="Cl- Shannon radius", description="Anion crystal radius."),
+    dict(key="permeation.radius_calcium", name="Calcium crystal radius",
+         value=1.00, unit="A", minimum=0.3, maximum=4.0, kind="convention",
+         category="Permeation", citation="convention",
+         source_note="Ca2+ Shannon radius", description="Calcium crystal radius."),
+    dict(key="permeation.diffusion_scale", name="In-pore diffusivity scaling",
+         value=0.5, unit="fraction", minimum=0.01, maximum=1.0, kind="method",
+         category="Permeation", citation="unverified",
+         source_note="Ions move more slowly in a pore than in bulk water, and "
+                     "by how much is not measured for PIEZO1. Together with "
+                     "the ion radius this is what the computed conductance is "
+                     "most sensitive to, so it must be swept, not trusted.",
+         description="In-pore diffusivity as a fraction of the bulk value."),
+    dict(key="permeation.permittivity_pore", name="In-pore relative permittivity",
+         value=40.0, unit="", minimum=2.0, maximum=80.0, kind="method",
+         category="Permeation", citation="unverified",
+         source_note="water in a nanopore is less polarisable than in bulk "
+                     "(80); 40 is a common compromise. It only matters where "
+                     "there is fixed charge to screen.",
+         description="Relative permittivity used in the Poisson equation."),
+    dict(key="permeation.published_conductance", name="Published unitary conductance",
+         value=27.5, unit="pS", minimum=1.0, maximum=200.0, kind="empirical",
+         category="Permeation", citation="coste2010piezo",
+         source_note="25-30 pS for PIEZO1 with monovalent cations; the "
+                     "midpoint is the comparison target for the PNP model",
+         description="Measured single-channel conductance."),
 ]

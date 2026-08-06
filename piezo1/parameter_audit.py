@@ -43,6 +43,10 @@ EXEMPT_NAMES = {
     "seed": "random seed; results are reported with it fixed",
     "iterations": "iteration cap",
     "maxiter": "iteration cap",
+    "max_iterations": "iteration cap",
+    "relaxation": "damping on a fixed-point iteration; changes how fast it "
+                  "converges, not what it converges to",
+    "calcium": "an experimental condition set by the caller, not a parameter",
     "max_nodes": "solver node cap",
     "max_pairs": "sampling cap, reported when it truncates",
     "max_n": "search ceiling",
@@ -97,6 +101,13 @@ EXEMPT = {
     ("structure/frame.py", "Frame", "n_atoms_fitted"): "counter, initialised to zero",
     ("structure/fusion.py", "AccessibleVolume", "n_before_clash"):
         "counter, initialised to zero",
+    ("physics/permeation.py", None, "F_FARADAY"):
+        "SI-definitional since the 2019 redefinition; a unit conversion, not a "
+        "measured quantity that could be revised",
+    ("physics/permeation.py", None, "R_GAS"):
+        "SI-definitional since the 2019 redefinition",
+    ("physics/permeation.py", "PermeationResult", "access_ohm"): "computed field",
+    ("physics/permeation.py", "PermeationResult", "pore_ohm"): "computed field",
     ("analysis/labelling.py", "predicted_brightness", "per_dye_intensity"):
         "defines the brightness unit rather than measuring anything: the "
         "histogram is in units of one dye, so 1.0 IS the unit",
@@ -208,6 +219,7 @@ MAPPED = {
     ("analysis/pockets.py", "cluster_distance"): "pockets.cluster_distance",
     ("analysis/pockets.py", "lining_cutoff"): "pockets.lining_cutoff",
     ("analysis/report.py", "step"): "pore.step",
+    ("analysis/report_tags.py", "step"): "pore.step",
     ("analysis/report.py", "n_modes"): "anm.n_modes",
 }
 

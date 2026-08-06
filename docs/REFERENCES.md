@@ -9,7 +9,7 @@ Open-access full texts are downloaded to `ref/papers/` with
 git-ignored: the papers are other people's copyright, and the
 bibliography here is enough to retrieve them.
 
-**65 references.** 37 are open access.
+**68 references.** 39 are open access.
 
 ## Structure
 
@@ -155,8 +155,14 @@ bibliography here is enough to retrieve them.
 
 ## Other
 
+- **`hall1975access`** — Hall JE. *Access resistance of a small circular pore.* The Journal of general physiology 1975;66:531-532. [PMID 1181379](https://pubmed.ncbi.nlm.nih.gov/1181379/) · [doi:10.1085/jgp.66.4.531](https://doi.org/10.1085/jgp.66.4.531) · **OA**  
+  <sub>Used for: Access resistance of a circular pore mouth - the term that limits a short wide pore</sub>
 - **`los2008halotag`** — Los GV, Encell LP, McDougall MG, Hartzell DD, Karassina N, Zimprich C, Wood MG, Learish R, Ohana RF, Urh M, Simpson D, Mendez J, Zimmerman K, Otto P, Vidugiris G, Zhu J, Darzins A, Klaubert DH, Bulleit RF, Wood KV. *HaloTag: a novel protein labeling technology for cell imaging and protein analysis.* ACS chemical biology 2008;3:373-382. [PMID 18533659](https://pubmed.ncbi.nlm.nih.gov/18533659/) · [doi:10.1021/cb800025k](https://doi.org/10.1021/cb800025k)  
   <sub>Used for: HaloTag chemistry; source of the covalent on-rate and its irreversibility</sub>
+- **`coste2010piezo`** — Coste B, Mathur J, Schmidt M, Earley TJ, Ranade S, Petrus MJ, Dubin AE, Patapoutian A. *Piezo1 and Piezo2 are essential components of distinct mechanically activated cation channels.* Science (New York, N.Y.) 2010;330:55-60. [PMID 20813920](https://pubmed.ncbi.nlm.nih.gov/20813920/) · [doi:10.1126/science.1193270](https://doi.org/10.1126/science.1193270)  
+  <sub>Used for: The original PIEZO1 characterisation; single-channel conductance and cation non-selectivity</sub>
+- **`gnanasambandam2015`** — Gnanasambandam R, Bae C, Gottlieb PA, Sachs F. *Ionic Selectivity and Permeation Properties of Human PIEZO1 Channels.* PloS one 2015;10:e0125503. [PMID 25955826](https://pubmed.ncbi.nlm.nih.gov/25955826/) · [doi:10.1371/journal.pone.0125503](https://doi.org/10.1371/journal.pone.0125503) · **OA**  
+  <sub>Used for: PIEZO1 selectivity and permeation - the direct target of the PNP model</sub>
 - **`grimm2015jf`** — Grimm JB, English BP, Chen J, Slaughter JP, Zhang Z, Revyakin A, Patel R, Macklin JJ, Normanno D, Singer RH, Lionnet T, Lavis LD. *A general method to improve fluorophores for live-cell and single-molecule microscopy.* Nature methods 2015;12:244-50, 3 p following 250. [PMID 25599551](https://pubmed.ncbi.nlm.nih.gov/25599551/) · [doi:10.1038/nmeth.3256](https://doi.org/10.1038/nmeth.3256) · **OA**  
   <sub>Used for: Janelia Fluor dyes including JF646 - cell-permeable, so partition ~ 1</sub>
 - **`bertaccini2025piezo1`** — Bertaccini GA, Casanellas I, Evans EL, Nourse JL, Dickinson GD, Liu G, Seal S, Ly AT, Holt JR, Wijerathne TD, Yan S, Hui EE, Lacroix JJ, Panicker MM, Upadhyayula S, Parker I, Pathak MM. *Visualizing PIEZO1 localization and activity in hiPSC-derived single cells and organoids with HaloTag technology.* Nature communications 2025;16:5556. [PMID 40593468](https://pubmed.ncbi.nlm.nih.gov/40593468/) · [doi:10.1038/s41467-025-59150-1](https://doi.org/10.1038/s41467-025-59150-1) · **OA**  

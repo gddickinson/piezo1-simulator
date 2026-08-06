@@ -28,6 +28,7 @@ from .gl_widget import ViewportWidget
 from .menus import build_menus, make_settings
 from .alignment import AlignmentMixin
 from .companions import CompanionMixin
+from .fusion_controller import FusionController
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
 from .presentation import PresentationController
@@ -88,6 +89,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, AppearanceMixin,
         self.viewport.atom_picked.connect(self._on_pick)
 
         self._build_docks()
+        self.fusion = FusionController(self)
         self.session = SessionController(self)
         self.presentation = PresentationController(self)
         self._build_menu()
@@ -299,6 +301,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, AppearanceMixin,
         self.physics_panel.set_modes(None)
         self.physics.reset()
         self.analysis.reset()
+        self.fusion.clear()
 
         self.view = MolecularView(self.viewport.scene, st, name=rec.pdb)
         self.view.set_species(rec.numbering_species)

@@ -38,6 +38,23 @@ def flat_structure():
 
 
 @pytest.fixture(scope="session")
+def open_profile():
+    """Pore profile of 11ZC, the one downloaded entry with an open pore."""
+    path = STRUCTURE_DIR / "11ZC.cif"
+    if not path.exists():
+        pytest.skip("11ZC.cif not downloaded — run python -m piezo1.io.fetch")
+    from piezo1.structure.frame import apply_frame, canonical_transform
+    from piezo1.structure.pore import pore_profile
+    from piezo1.structure.protomers import protomer_blocks
+    from piezo1.structure.superpose import detect_c3_axis
+
+    st = Structure.from_file(path)
+    st = apply_frame(st, canonical_transform(st))
+    blocks, _ = protomer_blocks(st)
+    return pore_profile(st, detect_c3_axis(blocks), step=1.0)
+
+
+@pytest.fixture(scope="session")
 def qt_app():
     """A QApplication with the GL surface format already configured.
 

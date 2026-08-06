@@ -151,6 +151,19 @@ SEED = [
      'TITLE:"A general method to improve fluorophores for live-cell and single-molecule microscopy"',
      "Janelia Fluor dyes including JF646 - cell-permeable, so partition ~ 1",
      "dye"),
+    # --- ion permeation, Round 33 ------------------------------------------
+    ("coste2010piezo",
+     'TITLE:"Piezo1 and Piezo2 are essential components of distinct mechanically activated cation channels"',
+     "The original PIEZO1 characterisation; single-channel conductance and "
+     "cation non-selectivity", "piezo"),
+    ("gnanasambandam2015",
+     'TITLE:"Ionic Selectivity and Permeation Properties of Human PIEZO1 Channels"',
+     "PIEZO1 selectivity and permeation - the direct target of the PNP model",
+     "selectivity"),
+    ("hall1975access",
+     'TITLE:"Access resistance of a small circular pore"',
+     "Access resistance of a circular pore mouth - the term that limits a short "
+     "wide pore", "access resistance"),
     ("bertaccini2025piezo1",
      'TITLE:"Visualizing PIEZO1 Localization and Activity in hiPSC-Derived Single Cells and Organoids with HaloTag Technology"',
      "The tagged-PIEZO1 experiment this labelling model describes; three tags "

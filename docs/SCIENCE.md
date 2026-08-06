@@ -800,6 +800,45 @@ incubation. The two `UNVERIFIED` rows above are what this conclusion rests on.
 
 ![labelling](img/labelling.png)
 
+## 8f. Ion permeation through the measured pore
+
+A 1-D drift-diffusion model over the pore radius profile, gated by the Round 19
+wetting verdict. It is a continuum treatment of an atomic-scale pore, and that
+limitation is quantified below rather than asserted.
+
+| Quantity | Value | Basis |
+|---|---|---|
+| Published unitary conductance | 25–30 pS | Coste 2010; Shi 2020 |
+| Model, open structure (11ZC) | **41.0 pS** | this project |
+| Independent closed-form check | 40.4 pS | series resistance, no solver |
+| Range over unmeasured confinement parameters | **16–94 pS** | this project |
+| Calcium share of current at 2 mM | < 5% | this project |
+| Debye length, 150 mM | 5.7–8.1 Å | standard |
+| Open bottleneck radius | 3.3 Å | measured on 11ZC |
+
+**The Poisson half of PNP does not converge here, and the reason is physical.**
+The Debye length exceeds the pore radius, so the double layers from opposite
+walls overlap and the pore has no electroneutral core for a Gummel iteration to
+relax onto. The potential is solved in the electroneutral limit instead — current
+continuity — which converges and matches the independent closed form to 1.5%.
+Any continuum result for a pore this narrow should be read with that in mind.
+
+**Which mechanism shuts which structure.** The two ways of being closed are
+different questions, and the structures separate them:
+
+| Structure | Bottleneck | Wetting score | Blocked by |
+|---|---|---|---|
+| 11ZC (open) | 3.30 Å | 0.00 | nothing — conducts |
+| 8YEZ (curved) | 0.95 Å | 0.82 | **two** mechanisms: sterically *and* hydrophobic gate |
+| 7WLU (flattened) | 0.98 Å | 0.11 | **one**: sterically only |
+
+**The agreement is not a prediction.** The computed conductance is high by about
+half, and sweeping the two unmeasured confinement parameters — in-pore
+diffusivity and the ion radius used for steric exclusion — moves it from 16 to
+94 pS, straddling the measurement. The model can be made to agree by choosing
+values nobody has measured, which is tuning rather than prediction. Both are
+registered `unverified`.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

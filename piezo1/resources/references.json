@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 65,
+ "n_references": 68,
  "unresolved": [],
  "references": [
   {
@@ -276,6 +276,23 @@
    "section": "Membrane mechanics"
   },
   {
+   "key": "coste2010piezo",
+   "topic": "The original PIEZO1 characterisation; single-channel conductance and cation non-selectivity",
+   "title": "Piezo1 and Piezo2 are essential components of distinct mechanically activated cation channels",
+   "authors": "Coste B, Mathur J, Schmidt M, Earley TJ, Ranade S, Petrus MJ, Dubin AE, Patapoutian A.",
+   "journal": "Science (New York, N.Y.)",
+   "year": "2010",
+   "volume": "330",
+   "pages": "55-60",
+   "pmid": "20813920",
+   "pmcid": "PMC3062430",
+   "doi": "10.1126/science.1193270",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1126/science.1193270",
+   "section": "Other"
+  },
+  {
    "key": "coste2015",
    "topic": "Pore properties dictated by the C-terminal region",
    "title": "Piezo1 ion channel pore properties are dictated by C-terminal region",
@@ -429,6 +446,23 @@
    "section": "Structure"
   },
   {
+   "key": "gnanasambandam2015",
+   "topic": "PIEZO1 selectivity and permeation - the direct target of the PNP model",
+   "title": "Ionic Selectivity and Permeation Properties of Human PIEZO1 Channels",
+   "authors": "Gnanasambandam R, Bae C, Gottlieb PA, Sachs F.",
+   "journal": "PloS one",
+   "year": "2015",
+   "volume": "10",
+   "pages": "e0125503",
+   "pmid": "25955826",
+   "pmcid": "PMC4425559",
+   "doi": "10.1371/journal.pone.0125503",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1371/journal.pone.0125503",
+   "section": "Other"
+  },
+  {
    "key": "grimm2015jf",
    "topic": "Janelia Fluor dyes including JF646 - cell-permeable, so partition ~ 1",
    "title": "A general method to improve fluorophores for live-cell and single-molecule microscopy",
@@ -461,6 +495,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.7554/elife.33660",
    "section": "Structure"
+  },
+  {
+   "key": "hall1975access",
+   "topic": "Access resistance of a circular pore mouth - the term that limits a short wide pore",
+   "title": "Access resistance of a small circular pore",
+   "authors": "Hall JE.",
+   "journal": "The Journal of general physiology",
+   "year": "1975",
+   "volume": "66",
+   "pages": "531-532",
+   "pmid": "1181379",
+   "pmcid": "PMC2226214",
+   "doi": "10.1085/jgp.66.4.531",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1085/jgp.66.4.531",
+   "section": "Other"
   },
   {
    "key": "haselwandter2018",
