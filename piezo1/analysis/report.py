@@ -248,6 +248,36 @@ def analysis_pore(st: Structure, species: str, step: float = 1.5, **kw) -> dict:
             "note": prof.meta["note"]}
 
 
+def analysis_hydration(st: Structure, species: str, step: float = 1.0,
+                       **kw) -> dict:
+    """Hydrophobic-gating prediction (Rao et al. 2019) for this structure."""
+    from .hydration import load_grid, predict_wetting
+    from ..structure.pore import pore_profile
+    from ..structure.superpose import detect_c3_axis
+    blocks, _ = _protomer_blocks(st)
+    if blocks is None:
+        return {"error": "needs three well-resolved protomers"}
+    grid = load_grid()
+    if not grid.available:
+        return {"error": "CHAP grid not downloaded; run python -m piezo1.io.fetch"}
+    prof = pore_profile(st, detect_c3_axis(blocks), step=step)
+    pred = predict_wetting(st, prof, grid)
+    return {"score": pred.score,
+            "cutoff": pred.meta["cutoff"],
+            "bottleneck_radius_nm": pred.min_radius / 10.0,
+            "hydrophobic_gate": pred.hydrophobic_gate,
+            "sterically_occluded": pred.sterically_occluded,
+            "conductive": pred.conductive,
+            "verdict": pred.verdict,
+            "dewetted": [{"residue": p.residue, "name": p.name,
+                          "radius_nm": p.radius / 10.0,
+                          "hydrophobicity": p.hydrophobicity,
+                          "energy_kJ_per_mol": p.energy,
+                          "distance": p.distance}
+                         for p in pred.dewetted[:12]],
+            "citation": pred.meta["citation"]}
+
+
 def analysis_modes(st: Structure, species: str, n_modes: int = 20, **kw) -> dict:
     from ..physics.anm import ANM
     blocks, _ = _protomer_blocks(st)
@@ -292,6 +322,7 @@ def analysis_interactions(st: Structure, species: str, **kw) -> dict:
 ANALYSES = {
     "dome": analysis_dome,
     "pore": analysis_pore,
+    "hydration": analysis_hydration,
     "modes": analysis_modes,
     "pockets": analysis_pockets,
     "interactions": analysis_interactions,

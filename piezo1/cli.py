@@ -236,6 +236,7 @@ def build_parser() -> argparse.ArgumentParser:
     for name, help_text in (
             ("dome", "membrane dome geometry"),
             ("pore", "pore radius profile and bottleneck"),
+            ("hydration", "hydrophobic-gating prediction (Rao et al. 2019)"),
             ("modes", "elastic network normal modes with symmetry labels"),
             ("pockets", "alpha-sphere cavities and ligand contacts"),
             ("interactions", "hydrogen bonds, salt bridges, disulfides")):

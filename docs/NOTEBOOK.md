@@ -212,3 +212,24 @@ versions. A number without provenance is not a result.
 | 3JAC | Has poly-UNK regions with arbitrary numbering; dome fits are meaningless. |
 | 6LQI | Splice isoform missing 1382–1411 — a *sequence* outlier that dominates a PC. |
 | Units | Coordinates Å, dome geometry nm, energies k_BT, tension mN/m. |
+
+## Hydrophobic gating
+
+```python
+from piezo1.analysis.hydration import load_grid, predict_wetting
+from piezo1.structure.pore import pore_profile
+from piezo1.structure.superpose import detect_c3_axis
+
+prof = pore_profile(st, detect_c3_axis(blocks), step=1.0)
+pred = predict_wetting(st, prof, load_grid())
+pred.score            # 0.82 for closed 8YEZ; closed above 0.55
+pred.verdict          # 'non-conductive (sterically occluded + hydrophobic gate)'
+pred.dewetted[:3]     # the residues carrying the score, worst first
+```
+
+Needs `python -m piezo1.io.fetch` for the CHAP grid; without it `pred.available`
+is False and the score is NaN rather than an exception.
+
+`hydrophobic_gate` and `sterically_occluded` are **separate**. The heuristic
+asks whether water would dewet, not whether water fits — 7WLU has no hydrophobic
+gate but a 0.098 nm bottleneck, so it is shut for the other reason.

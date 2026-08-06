@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 56,
+ "n_references": 60,
  "unresolved": [],
  "references": [
   {
@@ -36,6 +36,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1182/blood-2013-02-482489",
    "section": "Genetics and disease"
+  },
+  {
+   "key": "aryal2015",
+   "topic": "Hydrophobic gating in ion channels - review",
+   "title": "Hydrophobic gating in ion channels",
+   "authors": "Aryal P, Sansom MS, Tucker SJ.",
+   "journal": "Journal of molecular biology",
+   "year": "2015",
+   "volume": "427",
+   "pages": "121-130",
+   "pmid": "25106689",
+   "pmcid": "PMC4817205",
+   "doi": "10.1016/j.jmb.2014.07.030",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/j.jmb.2014.07.030",
+   "section": "Methods"
   },
   {
    "key": "atilgan2001",
@@ -103,6 +120,23 @@
    "is_open_access": false,
    "has_pdf": false,
    "url": "https://doi.org/10.1021/cr900095e",
+   "section": "Methods"
+  },
+  {
+   "key": "beckstein2003",
+   "topic": "Liquid-vapour oscillations of water in hydrophobic nanopores",
+   "title": "Liquid-vapor oscillations of water in hydrophobic nanopores",
+   "authors": "Beckstein O, Sansom MS.",
+   "journal": "Proceedings of the National Academy of Sciences of the United States of America",
+   "year": "2003",
+   "volume": "100",
+   "pages": "7063-7068",
+   "pmid": "12740433",
+   "pmcid": "PMC165830",
+   "doi": "10.1073/pnas.1136844100",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1073/pnas.1136844100",
    "section": "Methods"
   },
   {
@@ -532,6 +566,23 @@
    "section": "Genetics and disease"
   },
   {
+   "key": "klesse2019chap",
+   "topic": "CHAP - pore annotation; source of the MIT-licensed grid",
+   "title": "CHAP: A Versatile Tool for the Structural and Functional Annotation of Ion Channel Pores",
+   "authors": "Klesse G, Rao S, Sansom MSP, Tucker SJ.",
+   "journal": "Journal of molecular biology",
+   "year": "2019",
+   "volume": "431",
+   "pages": "3353-3365",
+   "pmid": "31220459",
+   "pmcid": "PMC6699600",
+   "doi": "10.1016/j.jmb.2019.06.003",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/j.jmb.2019.06.003",
+   "section": "Methods"
+  },
+  {
    "key": "labesse1997",
    "topic": "P-SEA: secondary structure from CA geometry",
    "title": "P-SEA: a new efficient assignment of secondary structure from C alpha trace of proteins",
@@ -632,6 +683,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1038/ncomms9512",
    "section": "Lipids and pharmacology"
+  },
+  {
+   "key": "rao2019heuristic",
+   "topic": "Hydrophobic-gating heuristic: the (hydrophobicity, radius) landscape",
+   "title": "A heuristic derived from analysis of the ion channel structural proteome permits the rapid identification of hydrophobic gates",
+   "authors": "Rao S, Klesse G, Stansfeld PJ, Tucker SJ, Sansom MSP.",
+   "journal": "Proceedings of the National Academy of Sciences of the United States of America",
+   "year": "2019",
+   "volume": "116",
+   "pages": "13989-13995",
+   "pmid": "31235590",
+   "pmcid": "PMC6628796",
+   "doi": "10.1073/pnas.1902702116",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1073/pnas.1902702116",
+   "section": "Methods"
   },
   {
    "key": "ridone2020",

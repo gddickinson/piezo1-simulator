@@ -37,7 +37,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `cli.py` | Headless command line: `list`, `dome`, `pore`, `modes`, `pockets`, `interactions`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
+| `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
 | `config.py` | All filesystem paths, physical constants, runtime settings. Every module imports paths from here. | `PROJECT_ROOT`, `REF_DIR`, `STRUCTURE_DIR`, `RESOURCE_DIR`, `HUMAN_ACC`, `MOUSE_ACC`, `KT_ROOM`, `RenderSettings`, `AppSettings`, `SETTINGS`, `ensure_dirs()` | ✅ |
 
 ### `piezo1/io/` — data acquisition and parsing
@@ -45,7 +45,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | File | Purpose | Key names | Status |
 |---|---|---|---|
 | `cif_reader.py` | Fast mmCIF/PDB coordinate readers producing numpy arrays. Handles quoting, multi-line text fields and model selection. ~0.6 s for a 34k-atom trimer. | `read_cif_atoms()`, `read_pdb_atoms()`, `read_structure_file()`, `parse_cif_categories()` | ✅ |
-| `fetch.py` | Cached downloaders for RCSB mmCIF, AlphaFold DB, UniProt, PubChem. Idempotent. AlphaFold versions discovered from the API, never guessed. | `fetch_pdb()`, `fetch_alphafold()`, `fetch_uniprot()`, `fetch_ligand()`, `fetch_all()`, `DEFAULT_PDB_IDS` | ✅ |
+| `fetch.py` | Cached downloaders for RCSB mmCIF, AlphaFold DB, UniProt, PubChem. Idempotent. AlphaFold versions discovered from the API, never guessed. | `fetch_pdb()`, `fetch_alphafold()`, `fetch_uniprot()`, `fetch_ligand()`, `fetch_chap_grid()`, `fetch_all()`, `DEFAULT_PDB_IDS` | ✅ |
 | `session.py` | Session save/load. Stores what was being viewed — structure, style, camera, selection, analyses run — never coordinates or results. | `Session`, `save_session()`, `load_session()` | ✅ |
 | `registry.py` | Curated catalogue of 21 PIEZO structures: state, gating, resolved range, ligands, citation, and what each is recommended for. | `StructureRecord`, `Registry`, `load_registry()` | ✅ |
 
@@ -91,6 +91,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `ensemble.py` | Builds a cross-species, coverage-matched, protomer-corrected structure ensemble and runs PCA on it; compares principal components with elastic-network modes by overlap, subspace overlap and RWSIP. | `build_ensemble()`, `StructureEnsemble`, `PCAResult`, `rwsip()`, `subspace_overlap()`, `DEFAULT_EXCLUSIONS` | ✅ |
 | `allostery.py` | Perturbation response scanning, dynamic cross-correlation, correlation-weighted contact networks, shortest allosteric paths, via-point detour cost and path betweenness. | `perturbation_response()`, `PRSResult`, `cross_correlation()`, `build_network()`, `allosteric_path()`, `detour_cost()`, `path_betweenness()` | ✅ |
 | `conservation.py` | Fetches vertebrate PIEZO1 orthologs (one per species), computes reference-anchored per-residue conservation, finds constrained positions with no reported variant, and ranks them by additional per-residue evidence. | `fetch_orthologs()`, `conservation_profile()`, `ConservationProfile`, `constrained_positions()`, `rank_candidates()` | ✅ |
+| `hydration.py` | **Hydrophobic gating** (Rao et al. 2019). Kernel-smoothed pore hydrophobicity on the normalised Wimley–White scale joined to the radius profile, looked up against CHAP's MD-derived water free-energy grid (MIT, downloaded not committed). Σd > 0.55 ⟹ closed gate. Reports `hydrophobic_gate` and `sterically_occluded` **separately** — the heuristic answers "would water dewet here?", not "does water fit here?". | `predict_wetting()`, `WettingPrediction`, `LiningPoint`, `HydrationGrid`, `load_grid()`, `hydrophobicity_profile_chap()`, `pore_facing_residues()`, `WIMLEY_WHITE_NORMALISED` | ✅ |
 | `contacts.py` | Residue contact maps, interface detection, contact changes between states. | `contact_map()`, `interface_residues()` | 📋 |
 | `pockets.py` | Delaunay alpha-sphere pocket detection (fpocket construction, reimplemented in numpy) with a burial filter that stops surface percolation, Monte-Carlo union volumes, ray-cast buriedness, and resolved-ligand contact mapping. | `find_pockets()`, `Pocket`, `alpha_spheres()`, `AlphaSpheres`, `ligand_contact_residues()` | ✅ |
 | `validation.py` | Non-parametric statistics for the blind test: permutation test with the (r+1)/(n+1) convention, Cliff's delta with a bootstrap CI, and tie-averaged AUROC. Implemented directly so the conventions are visible and testable. | `permutation_test()`, `cliffs_delta()`, `bootstrap_cliffs_delta()`, `auroc()` | ✅ |
@@ -169,6 +170,7 @@ geometry at a fraction of the triangle count.
 | `test_sequence_and_resources.py` | Ten cross-species equivalences, non-constant offset, resource integrity. | ✅ |
 | `test_morph.py` | Endpoint preparation, the chord artefact and its removal, modal capture fraction, mismatched-mode-set rejection. | ✅ |
 | `test_pore.py` | Leash enforcement, closed-vs-open bottleneck, and agreement between detected constrictions and the curated gate/CTD residues. | ✅ |
+| `test_hydration.py` | The hydrophobic-gating heuristic. Grid axes and the recovered critical-radius contour against the published 0.2/0.4 nm; the closed/flat verdicts; and the control that decides the round — holding radii fixed and flattening the hydrophobicity scale collapses the closed call, proving it is not a radius threshold in disguise. Skips without the downloaded grid. | ✅ |
 | `test_kinetics.py` | Published rate values, microscopic reversibility, generator validity, half-activation against measured T50, Gillespie-vs-analytic agreement, and mutant direction. | ✅ |
 | `test_measure.py` | Geometry on analytic shapes, SASA of an isolated atom against 4πr², determinism, and the pore-helix tilt result. | ✅ |
 | `test_interactions.py` | The annotated disulfide, the R2456–E2117 inter-protomer salt bridge, cutoff enforcement, and the donor–donor exclusion. | ✅ |

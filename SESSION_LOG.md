@@ -988,3 +988,86 @@ quantitatively usable, and corrected, dome and footprint hold comparable excess
 areas with the dome slightly larger.
 
 Suite 254 → 272 passing; GUI smoke test clean.
+
+## Round 19 — hydrophobic gating, and what a heuristic is actually for (2026-08-06)
+
+Round 1 built the pore profiler and it worked: 8YEZ's bottleneck is 0.095 nm,
+11ZC's is 0.330 nm, and the profiler rediscovered the curated gate and CTD
+constrictions from coordinates alone. But radius is a weak predictor of
+conduction — Rao et al. put its AUROC at **0.59**, barely better than a coin —
+because a pore can be wide enough for a hydrated ion and still block when a
+hydrophobic neck expels liquid water. Their heuristic, combining radius with
+local hydrophobicity, reaches **0.91**. This round implements it.
+
+### Getting the boundary rather than redrawing it
+
+The paper gives the construction, the 1 RT = 2.6 kJ/mol contour and the
+Σd > 0.55 cutoff, but not the classification line itself — that lives in a
+figure. Digitising a figure by eye would have been precisely the kind of silent
+correctness bug Round 17 was about.
+
+It turned out not to be necessary. CHAP is **MIT licensed** and its repository
+ships `heuristic_grid.json`: the actual 100×100 water free-energy landscape over
+(hydrophobicity, radius), built from ~600 MD simulations. It also ships the
+exact normalised Wimley–White scale the landscape is indexed by, and the default
+kernel bandwidth (0.35 nm). So the published artefact is used directly, as a
+download rather than a commit, and analyses degrade to "unavailable" without it.
+
+An independent check that we read it correctly: our extracted 1 RT contour gives
+a critical radius rising from **0.10 nm** at the hydrophilic end to **0.43 nm**
+at the hydrophobic end, against the paper's prose "hydrophilic pores wet below
+0.2 nm; hydrophobic ones can hold a barrier out to ~0.4 nm". Nothing in our code
+was fitted to those numbers.
+
+### The bug that returned confident nonsense
+
+My first hydrophobicity profile averaged residues in a sphere around each probe
+centre. It ran, produced smooth plausible values, and gave 8YEZ a score of 0.45
+— just under the cutoff, so the closed structure was called **conductive**.
+
+The tell was the range. CHAP smooths **along the pore coordinate** over
+pore-facing residues, and the published grid spans −0.45 to +0.30. My 3-D
+neighbourhood was 1.85 nm wide, which pulls in the entire shell of residues
+surrounding the lumen, and the profile collapsed into a band from −0.12 to
++0.02. Every energy was then read out of the landscape at a coordinate the
+landscape was never built on. Nothing errored; the numbers merely meant nothing.
+
+Rewritten as a proper Nadaraya–Watson average along the axis, using side-chain
+centroids because it is the side chain that faces the lumen, the range opens to
+−0.635…+0.229 and 8YEZ scores 0.82 — non-conductive. There is now a test
+asserting the profile uses most of the grid's range, because "plausible but
+compressed" is what this failure looks like from the outside.
+
+### Right answer, right reason
+
+The roadmap asked for the right answer *for the right reason*, which is a
+demand for a control rather than an assertion. So: hold every radius fixed and
+replace the hydrophobicity scale with a uniform hydrophilic value. If the closed
+verdict were a radius threshold wearing a disguise, the score would not move.
+It goes from **0.82 to 0.00** — conductive. The verdict is chemistry.
+
+The sharpest single fact: 8YEZ's F2451 and V2454 sit at **0.325 nm** and are
+called dewetted; 11ZC's *bottleneck* sits at **0.330 nm** and is called wet.
+Same radius, opposite verdict. And the flagged set — F2451, V2454, R2467,
+F2468 — is the curated hydrophobic gate and cytoplasmic constrictions, which the
+heuristic never sees.
+
+### The limitation I would have missed by testing only what was asked
+
+The round specified two structures. Running five exposed something the two
+would not have: **7WLU and 8IXO have 0.098 nm bottlenecks — less than a water
+molecule's 0.15 nm radius — yet score 0.11 and 0.30, i.e. open.**
+
+That is not a bug in the heuristic; it is what the heuristic is *for*. It
+answers "would water dewet here?", not "does water fit here?". Rao et al. built
+it to find hydrophobic gates, which are by definition blockages *without* steric
+occlusion. A pore too narrow for water never poses the wetting question.
+
+Merging the two into one verdict would have hidden this, and would have made the
+heuristic look like a general conduction predictor it does not claim to be. So
+`WettingPrediction` exposes `hydrophobic_gate` and `sterically_occluded`
+separately and `conductive` requires neither. With both, all five states come
+out right: 8YEZ and 7WLT shut on both counts, 7WLU and 8IXO shut on sterics
+alone, 11ZC open.
+
+Suite 272 → 288 passing; GUI smoke test clean.

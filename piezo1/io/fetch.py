@@ -18,11 +18,22 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
-from ..config import (HUMAN_ACC, HUMAN_PIEZO2_ACC, LIGAND_DIR, MOUSE_ACC,
-                      SEQUENCE_DIR, STRUCTURE_DIR, ensure_dirs)
+from ..config import (DERIVED_DIR, HUMAN_ACC, HUMAN_PIEZO2_ACC, LIGAND_DIR,
+                      MOUSE_ACC, SEQUENCE_DIR, STRUCTURE_DIR, ensure_dirs)
 
 __all__ = ["fetch_pdb", "fetch_alphafold", "fetch_uniprot", "fetch_ligand",
-           "fetch_all", "DEFAULT_PDB_IDS", "DEFAULT_LIGANDS"]
+           "fetch_all", "fetch_chap_grid", "DEFAULT_PDB_IDS", "DEFAULT_LIGANDS",
+           "CHAP_GRID_URL", "CHAP_LICENCE"]
+
+#: The water free-energy landscape underlying the Rao et al. 2019 hydrophobic
+#: gating heuristic, as published in the CHAP repository. 100x100 grid over
+#: (normalised Wimley-White hydrophobicity, pore radius in nm) -> kJ/mol,
+#: derived from ~600 MD simulations of ~200 channel structures.
+CHAP_GRID_URL = ("https://raw.githubusercontent.com/channotation/chap/master/"
+                 "scripts/heuristic/heuristic_grid.json")
+#: CHAP is MIT licensed, which is why this project can use its published grid
+#: directly rather than reconstructing the boundary by eye from a figure.
+CHAP_LICENCE = "MIT (Klesse, Rao, Sansom & Tucker)"
 
 USER_AGENT = "piezo1-simulator/0.1 (research use)"
 TIMEOUT = 300
@@ -151,6 +162,17 @@ def fetch_ligand(name: str, cid: int, force: bool = False) -> list[FetchResult]:
 # Bulk
 # --------------------------------------------------------------------------
 
+def fetch_chap_grid(force: bool = False) -> FetchResult:
+    """Download the CHAP hydrophobic-gating free-energy grid.
+
+    Kept out of the repository like every other download; regenerable with
+    ``python -m piezo1.io.fetch``. Analyses degrade to "unavailable" without
+    it rather than failing.
+    """
+    return _download(CHAP_GRID_URL, DERIVED_DIR / "chap_heuristic_grid.json",
+                     force)
+
+
 def fetch_all(force: bool = False, structures: bool = True,
               sequences: bool = True, ligands: bool = True,
               alphafold: bool = True, pae: bool = False,
@@ -196,6 +218,11 @@ def fetch_all(force: bool = False, structures: bool = True,
             for r in fetch_ligand(name, cid, force):
                 note(f"{name} {r.path.stem[-2:]}", r)
                 results.append(r)
+
+    print("CHAP hydrophobic-gating grid")
+    r = fetch_chap_grid(force)
+    note("chap heuristic grid", r)
+    results.append(r)
 
     ok = sum(1 for r in results if r.ok)
     new = sum(1 for r in results if r.downloaded)

@@ -491,13 +491,49 @@ is a per-variant number and an honest test of it.
       Monge gauge, and a perturbation test that no nearby admissible shape has
       lower energy. Suite 254 → **272 passed**; GUI smoke test clean.
 
-### Round 19 — Pore hydration and wetting
-- [ ] Radius alone does not predict conduction: a wide but hydrophobic neck can
-      dewet and block. Combine the pore radius profile with the hydrophobicity
-      profile into a CHAP-style conduction prediction.
-- [ ] Check it calls closed 8YEZ non-conductive and flat 11ZC conductive for
-      the *right reason*, not just by bottleneck radius.
-- [ ] Tests; docs; commit.
+### Round 19 — Pore hydration and wetting ✅
+- [x] `piezo1/analysis/hydration.py` implements the **Rao et al. 2019** (PNAS
+      116:13989, PMID 31235590) hydrophobic-gating heuristic: kernel-smoothed
+      pore hydrophobicity on the normalised Wimley–White scale, joined to the
+      radius profile, looked up against their MD-derived water free-energy
+      landscape; residues above **1 RT = 2.6 kJ/mol** are flagged and the score
+      is the sum of shortest distances to that contour, **Σd > 0.55 ⟹ closed**.
+- [x] **We use the published landscape, not a redrawing of it.** The 100×100
+      grid ships in the CHAP repository under the **MIT licence**, so it is
+      downloaded (`python -m piezo1.io.fetch`) and used directly. Reading a
+      boundary off a figure would have been exactly the silent correctness bug
+      Round 17 was about. Reported AUROC for this heuristic is **0.91 against
+      0.59 for minimum radius alone** — the reason the round exists.
+- [x] **Independent check that we read the grid correctly:** our extracted
+      1 RT contour recovers the paper's stated critical radii — **0.10 nm** at
+      the hydrophilic end rising to **0.43 nm** at the hydrophobic end, against
+      their "hydrophilic pores wet below 0.2 nm, hydrophobic ones can hold a
+      barrier out to ~0.4 nm".
+- [x] **The result asked for: 8YEZ Σd = 0.82 → non-conductive; 11ZC Σd = 0.00
+      → conductive.** Both correct.
+- [x] **And for the right reason, demonstrated by control rather than
+      asserted.** Holding every radius fixed and replacing the hydrophobicity
+      scale with a uniform hydrophilic value collapses 8YEZ from 0.82 to
+      **0.00 (conductive)**. The verdict is chemistry, not a radius threshold
+      in disguise. Concretely: 8YEZ's F2451/V2454 sit at **0.325 nm** and are
+      called dewetted, while 11ZC's bottleneck at **0.330 nm** is called wet —
+      the same radius, opposite verdict.
+- [x] **The heuristic rediscovers the curated gate.** Seeing only coordinates
+      and a hydrophobicity scale, it flags F2451 and V2454 (curated hydrophobic
+      gate / pore-lining) and R2467, F2468 (curated cytoplasmic constrictions).
+- [x] **A limitation found by testing beyond the two structures asked for, and
+      reported rather than hidden.** 7WLU and 8IXO have 0.098 nm bottlenecks —
+      far too narrow for water — but hydrophilic linings, so their Σd is small
+      and the Rao score *alone* calls them open. The heuristic answers "would
+      water dewet here?", not "does water fit here?". `WettingPrediction`
+      therefore exposes `hydrophobic_gate` and `sterically_occluded`
+      separately, and `conductive` requires neither. With both, all five states
+      come out right: 8YEZ and 7WLT non-conductive on both counts, 7WLU and
+      8IXO non-conductive on sterics, 11ZC conductive.
+- [x] Reachable from the CLI as `piezo1 hydration <PDB>` and through the
+      `ANALYSES` registry; 16 tests (`tests/test_hydration.py`), which skip
+      rather than fail when the grid is not downloaded. Suite 272 →
+      **288 passed**; GUI smoke test clean.
 
 ### Round 20 — Statistical rigour for the blind test
 - [ ] Before Round 7 reports anything: permutation test for the GoF/LoF

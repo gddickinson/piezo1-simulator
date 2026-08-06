@@ -361,6 +361,51 @@ mutual validation of the profiler and the annotation.
 Note that HOLE cannot be used here: it has no Apple-Silicon build, and
 MDAnalysis's `hole2` wrapper is an empty stub as of 2.10.
 
+### Radius is not conduction: hydrophobic gating
+
+A pore can be wide enough for a hydrated ion and still block, because a
+hydrophobic neck expels liquid water. Rao et al. 2019 (PNAS 116:13989)
+quantified this over ~200 channel structures and ~600 MD simulations and report
+that **minimum radius alone predicts the conductive state at AUROC 0.59**,
+against **0.91** for radius combined with local hydrophobicity. Their result is
+a free-energy landscape over (hydrophobicity, radius); residues above
+1 RT = 2.6 kJ/mol are flagged and the sum of their shortest distances to that
+contour, Σd, calls a channel closed above 0.55.
+
+We use their published landscape directly — CHAP ships it under the MIT licence
+— rather than redrawing the boundary from a figure. As a check that we index it
+correctly, the extracted 1 RT contour gives a critical radius rising from
+**0.10 nm** at the hydrophilic end to **0.43 nm** at the hydrophobic end,
+reproducing the paper's "hydrophilic pores wet below 0.2 nm, hydrophobic ones
+can hold a barrier out to ~0.4 nm". Hydrophobicity is on the normalised
+Wimley–White scale CHAP uses, kernel-smoothed along the pore axis with their
+default 0.35 nm bandwidth; using a different scale would index the landscape
+with the wrong coordinate.
+
+| Structure | State | Bottleneck (nm) | Σd | Verdict |
+|---|---|---|---|---|
+| 8YEZ | closed, human | 0.095 | **0.82** | non-conductive (steric + hydrophobic) |
+| 7WLT | curved, mouse | 0.073 | **1.38** | non-conductive (steric + hydrophobic) |
+| 7WLU | flattened | 0.098 | 0.11 | non-conductive (steric only) |
+| 8IXO | intermediate | 0.098 | 0.30 | non-conductive (steric only) |
+| 11ZC | flat | 0.330 | **0.00** | conductive |
+
+**That the closed call is chemistry and not narrowness is shown by control, not
+asserted.** Holding every radius fixed and replacing the hydrophobicity scale
+with a uniform hydrophilic value takes 8YEZ from Σd = 0.82 to **0.00**. The
+sharpest single comparison: 8YEZ's F2451 and V2454 sit at **0.325 nm** and are
+called dewetted, while 11ZC's bottleneck at **0.330 nm** is called wet. The
+flagged residues — F2451, V2454, R2467, F2468 — are the curated hydrophobic
+gate and cytoplasmic constrictions, which the heuristic never sees.
+
+**A limitation, stated because it changes how the number should be used.** The
+heuristic answers "would water dewet here?", not "does water fit here?". 7WLU
+and 8IXO have 0.098 nm bottlenecks — narrower than a water molecule's 0.15 nm —
+yet hydrophilic linings, so Σd alone calls them open. That is correct behaviour
+for a hydrophobic-gate detector, since a hydrophobic gate is by definition a
+blockage *without* steric occlusion. Steric and hydrophobic closure are
+therefore reported as separate properties, and conduction requires neither.
+
 ## 4c. Force transmission from blade to gate
 
 PIEZO1's blades are up to 100 Å from the gate they open, so the mechanistic
