@@ -13,22 +13,24 @@ import time
 import numpy as np
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QKeySequence
-from PyQt6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
-                             QMessageBox, QStatusBar)
+from PyQt6.QtWidgets import (QApplication, QLabel, QMainWindow, QMessageBox,
+                             QStatusBar)
 
-from ..config import SETTINGS, STRUCTURE_DIR
+from ..config import SETTINGS
 from ..core.annotations import load_annotations
 from ..core.structure import Structure
 from ..io.registry import load_registry
 from ..render.representations import ColorBy, MolecularView, Style
+from ..structure.frame import ALIGNMENT_MODES
 from .analysis_controller import AnalysisController
 from .docks import DockManager, DockSpec
 from .gl_widget import ViewportWidget
 from .menus import build_menus, make_settings
+from .alignment import AlignmentMixin
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
 from .presentation import PresentationController
-from .model_utils import modelled_residues, protomer_blocks
+from ..structure.protomers import modelled_residues, protomer_blocks
 from .morph_controller import MorphController
 from .physics_controller import PhysicsController
 from .session_controller import SessionController
@@ -45,7 +47,9 @@ from .panels.structure_panel import StructurePanel
 __all__ = ["MainWindow"]
 
 
-class MainWindow(AppearanceMixin, PreferencesMixin, QMainWindow):
+
+class MainWindow(AlignmentMixin, AppearanceMixin, PreferencesMixin,
+                 QMainWindow):
     """Top-level window."""
 
     def __init__(self) -> None:
@@ -62,6 +66,15 @@ class MainWindow(AppearanceMixin, PreferencesMixin, QMainWindow):
         self.view: MolecularView | None = None
         self.record = None
         self.modes = None
+        # How freshly loaded structures are framed, and what they are framed
+        # against. The reference is the first structure aligned this session, so
+        # everything after it lands in the same place.
+        self.alignment_mode = self.settings.value(
+            "options/alignment_mode", "canonical", type=str)
+        if self.alignment_mode not in ALIGNMENT_MODES:
+            self.alignment_mode = "canonical"
+        self._alignment_reference: Structure | None = None
+        self._alignment_species: str | None = None
         self._mode_blocks: list[np.ndarray] = []
         self._mode_residues: np.ndarray = np.array([], dtype=np.int64)
         self.selected_residues: list[int] = []
@@ -260,6 +273,8 @@ class MainWindow(AppearanceMixin, PreferencesMixin, QMainWindow):
             QMessageBox.warning(self, "Load failed", f"{rec.path}\n\n{exc}")
             return
 
+        st, frame = self._standardise(st, rec)
+
         if self.view is not None:
             self.view.clear()
         self.record = rec
@@ -296,42 +311,11 @@ class MainWindow(AppearanceMixin, PreferencesMixin, QMainWindow):
         self._set_status(
             f"{rec.pdb}: {st.n_atoms:,} atoms, {st.n_residues:,} residues, "
             f"{len(self._mode_blocks)} protomers · loaded in "
-            f"{time.time() - t0:.2f} s · {rec.numbering_species} numbering")
+            f"{time.time() - t0:.2f} s · {rec.numbering_species} numbering"
+            + (f" · {frame.summary()}" if not frame.is_identity else ""))
         self.viewport.update()
 
-    def _open_file(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Open structure", str(STRUCTURE_DIR),
-            "Structures (*.cif *.pdb *.cif.gz *.pdb.gz)")
-        if not path:
-            return
-        st = Structure.from_file(path)
-        if self.view is not None:
-            self.view.clear()
-        self.structure = st
-        self.view = MolecularView(self.viewport.scene, st, name=st.name)
-        self.view.rebuild()
-        self.viewport.set_pick_source(st.xyz)
-        self.structure_panel.set_entities(self.view.entity_map())
-        self._set_status(f"{rec.pdb}: {self.view.entity_map().summary()}")
-        self.presentation.refresh()
-        self.overlay_panel.set_choices(self.registry.entries, exclude=rec.pdb)
-        if self._sequence_window is not None:
-            self._sequence_window.set_structure(st, rec.numbering_species)
-        self._mode_blocks, self._mode_residues = protomer_blocks(st)
-        self._reset_camera()
-        self._set_status(f"{st.name}: {st.n_atoms:,} atoms")
-
-    # -------------------------------------------------------------- styling
-
-    def _reset_camera(self) -> None:
-        if self.viewport.scene is None or self.structure is None:
-            return
-        cam = self.viewport.scene.camera
-        cam.orbit(0.0, -0.42)          # look down the three-fold axis a little
-        cam.frame(self.structure.xyz)
-        self.viewport.update()
-
+    # ------------------------------------------------------------- alignment
     # ------------------------------------------------------------ highlight
 
     def _highlight(self, residues, label: str) -> None:

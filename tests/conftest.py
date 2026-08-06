@@ -37,6 +37,24 @@ def flat_structure():
     return Structure.from_file(_require("7WLU"))
 
 
+@pytest.fixture(scope="session")
+def structure_by_id():
+    """Load any catalogued entry by id, or ``None`` when it is not downloaded.
+
+    Returns ``None`` rather than skipping, so a test needing two structures can
+    decide for itself whether a missing one is fatal.
+    """
+    cache: dict[str, object] = {}
+
+    def load(pdb: str):
+        if pdb not in cache:
+            path = STRUCTURE_DIR / f"{pdb}.cif"
+            cache[pdb] = Structure.from_file(path) if path.exists() else None
+        return cache[pdb]
+
+    return load
+
+
 def protomer_blocks(st, n=3):
     """Equal-length, identically ordered C-alpha blocks per protomer."""
     import numpy as np

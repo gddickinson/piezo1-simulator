@@ -149,8 +149,21 @@ class Camera:
 
     # ----------------------------------------------------------- navigation
 
+    def set_orientation(self, dx: float = 0.0, dy: float = 0.0,
+                        speed: float = 4.0) -> None:
+        """Set the orientation absolutely, as if orbiting from square-on.
+
+        :meth:`orbit` composes with the current rotation, which is right for a
+        mouse drag and wrong for anything that means "put the camera *here*".
+        Using it to restore a standard view instead accumulates: every call adds
+        another turn, so the same structure loaded twice comes back at a
+        different angle each time.
+        """
+        self.rotation = np.array([1.0, 0.0, 0.0, 0.0])
+        self.orbit(dx, dy, speed=speed)
+
     def orbit(self, dx: float, dy: float, speed: float = 4.0) -> None:
-        """Rotate by a normalised drag in screen space."""
+        """Rotate by a normalised drag in screen space — relative, not absolute."""
         if dx == 0.0 and dy == 0.0:
             return
         # Rotate about camera-space axes so dragging always feels the same.

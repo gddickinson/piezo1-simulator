@@ -94,6 +94,18 @@ EXEMPT_NAMES = {
 
 #: Specific (module, owner, name) triples exempt for reasons of their own.
 EXEMPT = {
+    ("structure/frame.py", "Frame", "n_atoms_fitted"): "counter, initialised to zero",
+    ("structure/frame.py", None, "CTERM_FRACTION"):
+        "which slice of residues counts as the cytosolic end when orienting a "
+        "structure. A criterion for reading topology off a model, not a "
+        "measured quantity — there is no experiment that returns it and no "
+        "paper to cite. Its value is justified in the module against all 20 "
+        "downloaded entries and pinned by "
+        "test_frame.test_no_downloaded_structure_loads_upside_down.",
+    ("structure/protomers.py", None, "MIN_CA_PER_PROTOMER"):
+        "how many C-alphas a chain needs before it counts as a protomer rather "
+        "than a bound peptide. A parsing threshold for deposited files, not a "
+        "property of PIEZO1; covered by test_entities.",
     ("physics/kinetics.py", "GatingModel", "conductance_pS"):
         "registered as kinetics.conductance_pS; the field mirrors it",
     ("analysis/measure.py", "SASAResult", "probe"):

@@ -30,7 +30,7 @@ from piezo1.analysis.uncertainty import (bootstrap,  # noqa: E402
                                          parameter_range, sensitivity)
 from piezo1.config import DERIVED_DIR, STRUCTURE_DIR  # noqa: E402
 from piezo1.core import Structure  # noqa: E402
-from piezo1.ui.model_utils import protomer_blocks  # noqa: E402
+from piezo1.structure.protomers import protomer_blocks  # noqa: E402
 
 
 def _shared_blocks(structure, residues):

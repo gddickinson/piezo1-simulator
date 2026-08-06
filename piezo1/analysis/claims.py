@@ -96,7 +96,7 @@ def _structure(pdb: str):
 
 
 def _blocks(structure):
-    from ..ui.model_utils import protomer_blocks
+    from ..structure.protomers import protomer_blocks
     return protomer_blocks(structure)
 
 
@@ -237,7 +237,7 @@ def _within_position_variance() -> float:
     from ..core.annotations import load_annotations
     from ..core.sequence import human_sequence, human_to_mouse, mouse_to_human
     from ..structure.superpose import kabsch, match_protomers
-    from ..ui.model_utils import protomer_blocks
+    from ..structure.protomers import protomer_blocks
 
     curved, flat = _structure("7WLT"), _structure("7WLU")
     _cb, cr = protomer_blocks(curved)

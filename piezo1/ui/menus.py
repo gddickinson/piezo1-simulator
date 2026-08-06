@@ -161,6 +161,30 @@ def _options_menu(win, bar) -> None:
 
     menu.addSeparator()
 
+    align = menu.addMenu("Structure &alignment")
+    align.setToolTipsVisible(True)
+    align_group = QActionGroup(align)
+    align_group.setExclusive(True)
+    for label, key, tip in (
+            ("As deposited", "deposited",
+             "Use the coordinate frame from the file. Different entries were "
+             "refined in unrelated frames, so they will not overlap."),
+            ("Canonical (three-fold axis on z)", "canonical",
+             "Put each structure in a frame defined by its own C3 symmetry: "
+             "axis vertical, cytosolic side down, centred on the origin. Works "
+             "for any trimer, including PIEZO2 and mouse entries."),
+            ("Superpose on the loaded structure", "reference",
+             "Least-squares fit onto the first structure loaded, over the "
+             "C-alphas they share. Maximises overlap, but needs a shared "
+             "residue numbering — falls back to canonical across species.")):
+        action = _action(align, label,
+                         lambda on, k=key: on and win.set_alignment_mode(k),
+                         checkable=True,
+                         checked=(win.alignment_mode == key), tip=tip)
+        align_group.addAction(action)
+
+    menu.addSeparator()
+
     spin = menu.addMenu("&Spin speed")
     spin.setToolTipsVisible(True)
     group = QActionGroup(spin)

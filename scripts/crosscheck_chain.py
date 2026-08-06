@@ -22,7 +22,7 @@ from piezo1.core import Structure
 from piezo1.config import STRUCTURE_DIR
 from piezo1.structure.geometry import measure_dome
 from piezo1.structure.superpose import detect_c3_axis, match_protomers, kabsch
-from piezo1.ui.model_utils import protomer_blocks
+from piezo1.structure.protomers import protomer_blocks
 from piezo1.physics.anm import ANM
 from piezo1.physics.kinetics import GatingModel
 from piezo1.analysis.crosscheck import (dome_curvature_by_parabola,

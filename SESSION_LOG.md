@@ -4,6 +4,97 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Structure framing — two faults behind one complaint
+
+### What was reported
+Reloading 8YEZ after visiting another entry "looked different", and different
+structures loaded in orientations that did not overlap.
+
+### Fault 1 — the camera drifted on every load
+`_reset_camera` called `Camera.orbit(0.0, -0.42)`. `orbit` **composes** with the
+current rotation, which is right for a mouse drag and wrong for restoring a
+standard view. Every structure load therefore added another 0.42 rad of pitch,
+so the same entry came back at a different angle on each visit. Added
+`Camera.set_orientation`, which sets the rotation absolutely, and used it for the
+reset. `test_orbit_accumulates_but_set_orientation_does_not` pins both halves —
+including a guard that fails if `orbit` ever stops accumulating, so the test
+cannot silently stop testing anything.
+
+### Fault 2 — deposited frames are unrelated
+Nothing about a PDB frame is canonical. Measured across the 20 downloaded
+entries, pairs sit **29–147 Å** apart before any alignment. New
+`piezo1/structure/frame.py` offers three modes, exposed under *View → Structure
+alignment*: `deposited` (unchanged), `canonical` (the structure's own C3 axis on
++z, cytosolic side at −z, centred) and `reference` (least-squares onto the first
+structure loaded).
+
+**Result.** Canonical framing takes those pairs to 0.9–25 Å, in every case
+within about an angstrom of what an unconstrained least-squares superposition
+achieves — 19.77 vs 19.70 Å for 7WLU on 7WLT, 0.91 vs 0.91 Å for 8ZU8 on 8YEZ.
+The residual is real conformational difference, not framing. The one large
+value, 6KG7 at 57.8 Å, is PIEZO2 rather than PIEZO1 and its free superposition
+is no better at 55.4 Å.
+
+### Three things that had to be got right, each found by measuring
+
+**The z sign straddled the cap.** The rule "the top 10% of residues by number is
+the cytosolic end" is wrong: PIEZO's extracellular cap runs to ~2457 of 2547, so
+the top tenth mixes cap and CTD and its mean z depends on which is better
+resolved. 7WLU and 11ZC loaded **upside down** while reporting a perfect C3 fit
+— the failure was silent, which is the dangerous kind. Checked 0.02 / 0.05 /
+0.10 / 0.20 against the last 15 residues over all 20 entries: the first two
+agree everywhere, 0.10 fails on two, 0.20 on nineteen. `CTERM_FRACTION = 0.02`,
+and the rule now *measures where the C-terminus lands* rather than predicting it.
+
+**Chain labels can run either way round the ring.** 8YFG and 8ZU3 both present
+chains A, B, D, but numbered in opposite rotational senses. Taking the labels at
+face value costs 60 Å of apparent RMSD against 8YEZ — a bookkeeping error that
+reads as a conformational change. All six protomer permutations collapse into
+two classes of three (cyclic 72.88 Å, reversed 12.45 Å, identical within each),
+so `PERMUTATIONS` holds one representative of each and the search is complete.
+
+**Residue number alone is not a correspondence.** A residue number occurs once
+*per protomer*, so `dict(zip(res_seq, xyz))` silently keeps whichever chain was
+read last and discards two thirds of the atoms — and if the two structures order
+their chains differently, the survivors are not equivalent. Correspondence is now
+built on protomer blocks over the shared residue basis.
+
+### Why the roll is solved for, not chosen from three
+C3 symmetry leaves the roll about z free, so it can only be pinned against a
+reference. The starting rule (protomer 0's centroid on +x) is coverage
+dependent: 7WLU resolves from residue 576 and 7WLT from 784, and the extra blade
+density swings the azimuth by 47.7° — not a multiple of 120°, so no symmetry-
+equivalent choice undoes it. Given a reference, the roll is now the closed-form
+one-parameter Procrustes optimum. This is a constrained fit and is documented as
+one: the axis and the z sign still come from the molecule, only the genuinely
+free degree of freedom is set by the reference.
+
+### Consequences elsewhere
+- The load path now hands **transformed** coordinates to the physics, so
+  `test_measured_geometry_is_unchanged_by_reframing` pins that curvature, depth
+  and areas are invariant (they agree to 2e-8 relative). `pore_profile` shifts by
+  ≤0.22 Å because it samples on a fixed step whose origin moves with the frame —
+  discretisation, not error.
+- `ui/model_utils.py` moved to `structure/protomers.py`. `structure/frame.py`
+  needed it, and importing from `ui` would have pointed the dependency arrow
+  backwards; `analysis/claims.py` was **already** reaching into `ui` for it,
+  which quietly made a headless analysis depend on PyQt. `ui/model_utils.py`
+  remains as a re-export shim.
+- `_open_file` referenced an undefined `rec` on four lines — a guaranteed
+  `NameError` for anyone opening a file outside the catalogue. It also skipped
+  the per-structure resets (modes, measurements, overlay) that `load_structure`
+  does, so stale state carried over. Fixed both.
+- `main_window.py` reached 574 lines; the framing, file-open and camera-reset
+  code moved to `ui/alignment.py` (`AlignmentMixin`).
+- `CTERM_FRACTION` and `MIN_CA_PER_PROTOMER` added to the audit's `EXEMPT` with
+  reasons: both are criteria for reading a deposited file, not measured
+  quantities with a literature source.
+
+534 tests pass; `parameter_audit` clean; `screenshot_app.py --structure 8YEZ`
+completes and now reports the frame in the status line.
+
+---
+
 ## Session 1 — 2026-08-05
 
 ### Goal

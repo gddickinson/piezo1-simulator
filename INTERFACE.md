@@ -69,6 +69,8 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | File | Purpose | Key names | Status |
 |---|---|---|---|
 | `superpose.py` | Kabsch superposition, RMSD, C3 axis recovery, and **protomer correspondence matching** — deposited chain labels are not a reliable guide to rotational order. | `kabsch()`, `superpose()`, `rmsd()`, `SymmetryAxis`, `detect_c3_axis()`, `match_protomers()`, `ProtomerMatch`, `align_axis_to_z()`, `rotation_matrix()` | ✅ |
+| `frame.py` | **Standardised framing.** Puts any trimer in a frame defined by its own C3 symmetry — axis on +z, cytosolic side at −z, centred — or superposes it on a reference. Deposited entries sit 29–147 Å apart; canonical framing brings them to within ~1 Å of the least-squares optimum. Searches both protomer correspondence classes, because deposited chains can run round the ring either way. | `Frame`, `canonical_transform()`, `reference_transform()`, `apply_frame()`, `standardise()`, `ALIGNMENT_MODES`, `PERMUTATIONS`, `CTERM_FRACTION` | ✅ |
+| `protomers.py` | Which chains are protomers and which residues all three share. Moved here from `ui/model_utils.py`, which had `analysis` importing from `ui`. | `protomer_blocks()`, `modelled_residues()`, `well_resolved_chains()`, `MIN_CA_PER_PROTOMER` | ✅ |
 | `geometry.py` | **Membrane-dome measurement.** Sphere fitting, radial height profile, dome depth / area / excess area. Reproduces published dome curvature. | `fit_sphere()`, `SphereFit`, `radial_profile()`, `RadialProfile`, `DomeGeometry`, `measure_dome()` | ✅ |
 | `hybrid.py` | Assembles the full-length model: experimental core + AlphaFold distal blade, with the seam recorded and renderable. | `build_hybrid_model()`, `HybridModel` | 📋 |
 | `morph.py` | Conformational interpolation between endpoints: linear, distance-restrained, and elastic-network-subspace methods, each reporting its own bond-geometry error. | `morph()`, `MorphTrajectory`, `prepare_endpoints()`, `restrained_morph()`, `modal_morph()` | ✅ |
@@ -143,7 +145,8 @@ geometry at a fraction of the triangle count.
 | `preferences.py` | Remembered settings and their menu handlers: layout memory, status hints, spin speed, and **what a selection does to the camera** (leave still / centre / centre and zoom). | `PreferencesMixin` | ✅ |
 | `help_content.py` | The in-application guide as data: seven topics, the shortcut table, and the document index. Includes the null result and the corrected footprint number. | `TOPICS`, `DOC_LINKS`, `SHORTCUTS` | ✅ |
 | `help_dialog.py` | Non-modal help window — feature guide, shortcuts, and links that open the shipped documents. | `HelpDialog`, `open_document()` | ✅ |
-| `model_utils.py` | Which residues are resolved in all three protomers, and the equal-length C-alpha blocks built from them. | `protomer_blocks()`, `modelled_residues()`, `well_resolved_chains()` | ✅ |
+| `alignment.py` | Where the model sits: standardised framing of each load, opening a file outside the catalogue, and the camera reset. | `AlignmentMixin` | ✅ |
+| `model_utils.py` | Backwards-compatible re-export of `structure.protomers`. | `protomer_blocks()`, `modelled_residues()`, `well_resolved_chains()` | ✅ |
 | `hud.py` | Overlay drawn over the viewport: scale bar in round Angstrom/nm units, animation clock, orientation gnomon, and measured readouts. QPainter on a sibling widget, never inside `paintGL`. | `HudOverlay`, `HudSettings`, `nice_scale_length()` | ✅ |
 | `presentation.py` | Full-screen mode that restores each panel's *previous* visibility, and the dialog choosing which readouts appear. | `PresentationController`, `DisplayOptionsDialog`, `READOUTS` | ✅ |
 | `overlay_controller.py` | Superposes a second structure onto the loaded one. Searches protomer correspondence rather than trusting chain labels — 7WLU onto 7WLT is 12.3 Å matched against 90.7 Å by label — and refuses cross-species pairs whose residue numbers do not correspond. | `OverlayController`, `OverlayWorker`, `OverlayResult` | ✅ |
@@ -204,6 +207,7 @@ geometry at a fraction of the triangle count.
 |---|---|---|
 | `conftest.py` | Fixtures; skips rather than fails when data is not downloaded. | ✅ |
 | `test_cif_reader.py` | Tokenizer whitespace/quoting, column alignment, residue indexing, selections. | ✅ |
+| `test_frame.py` | Camera reset idempotence (the drift that made one structure look different on each visit), the C-terminus-at-negative-z rule over **every** downloaded entry, idempotence, the measured overlap gain against the least-squares optimum, reversed protomer labelling on 8YFG, cross-species refusal, and invariance of the dome measurement under reframing. | ✅ |
 | `test_geometry.py` | Sphere fitting on synthetic spheres and caps; dome curvature regression against the published 10.2 nm; curved vs flat separation. | ✅ |
 | `test_superpose.py` | Kabsch round-trip, reflection exclusion, C3 exactness, reversed-handedness detection. | ✅ |
 | `test_anm.py` | Hessian symmetry, zero modes, disconnected networks, symmetry characters, and the gating-overlap result. | ✅ |
