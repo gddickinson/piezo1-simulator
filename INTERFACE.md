@@ -79,6 +79,8 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
+| `measure.py` | Distance/angle/dihedral, radius of gyration, principal axes, helix axis, tilt and crossing angles, Shrake–Rupley SASA, buried interface area, and the pore hydrophobicity profile. | `distance()`, `angle()`, `dihedral()`, `sasa()`, `buried_area()`, `helix_axis()`, `tilt_angle()`, `hydrophobicity_profile()` | ✅ |
+| `interactions.py` | Hydrogen bonds, salt bridges, hydrophobic contacts, π-stacking, cation–π and disulfides, with published geometric criteria; cross-selection mode for interfaces; state-to-state comparison. | `detect_interactions()`, `Interaction`, `InteractionSet`, `compare_interactions()`, `CUTOFFS` | ✅ |
 | `variants.py` | Maps variants onto structure, reports domain context, contacts lost/gained, predicted mode perturbation. | `map_variants()`, `VariantImpact` | 📋 |
 | `contacts.py` | Residue contact maps, interface detection, contact changes between states. | `contact_map()`, `interface_residues()` | 📋 |
 | `pockets.py` | Grid-based pocket detection for ligand sites (zero external dependencies). | `find_pockets()`, `Pocket` | 📋 |
@@ -153,6 +155,8 @@ geometry at a fraction of the triangle count.
 | `test_morph.py` | Endpoint preparation, the chord artefact and its removal, modal capture fraction, mismatched-mode-set rejection. | ✅ |
 | `test_pore.py` | Leash enforcement, closed-vs-open bottleneck, and agreement between detected constrictions and the curated gate/CTD residues. | ✅ |
 | `test_kinetics.py` | Published rate values, microscopic reversibility, generator validity, half-activation against measured T50, Gillespie-vs-analytic agreement, and mutant direction. | ✅ |
+| `test_measure.py` | Geometry on analytic shapes, SASA of an isolated atom against 4πr², determinism, and the pore-helix tilt result. | ✅ |
+| `test_interactions.py` | The annotated disulfide, the R2456–E2117 inter-protomer salt bridge, cutoff enforcement, and the donor–donor exclusion. | ✅ |
 
 ## `docs/`
 

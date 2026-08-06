@@ -136,6 +136,80 @@ measured P50 and inactivation kinetics.** Each round closes one link.
 
 ---
 
+## Block C — measurement tools  *(added on request, 2026-08-05)*
+
+### Round 11 — Geometric measurement toolkit  ✅
+- [x] `analysis/measure.py`: distance, angle, dihedral between picked atoms or
+      residue centroids; radius of gyration; end-to-end and domain–domain
+      distances; helix tilt and crossing angles; per-residue RMSF from a mode
+      set or trajectory; principal-axis and inertia tensor.
+- [x] Solvent-accessible surface area (Shrake–Rupley) per atom, residue and
+      domain; buried surface area at interfaces.
+- [x] Pore hydrophobicity profile alongside the radius profile — CHAP's key
+      insight is that radius alone does not predict conduction; a wide but
+      hydrophobic constriction can still dewet and block.
+- [x] Tests; docs; commit.
+- **Result:** independently reproduced two structural facts. TM38, the
+  pore-lining helix, is the least tilted of the pore-proximal helices at
+  **6.9°** from the three-fold axis. Note the claim had to be narrowed: blade
+  helices out at 50–60 Å radius are *also* near-vertical (TM30 is 3.1°), so
+  "least tilted overall" is false and "least tilted of the pore module" is what
+  the data supports.
+
+### Round 12 — Interaction detection  ✅
+- [x] `analysis/interactions.py`: hydrogen bonds, salt bridges, hydrophobic
+      contacts, π-stacking, cation–π and disulfides, with explicit published
+      geometric criteria rather than a single distance cutoff.
+- [x] Protein–ligand interaction profiling for the resolved lipids
+      (L9Q, PLX, P5S, PEE, D12) and any docked compound.
+- [x] Interaction *changes* between two states — which contacts break when the
+      dome flattens is exactly the mechanotransduction question.
+- [x] Tests; docs; commit.
+- **Result:** the UniProt-annotated C2411–C2415 disulfide is recovered in
+  all three protomers at 2.04 Å, from coordinates alone. And a finding that
+  matters for the destination: **R2456 forms an inter-protomer salt bridge with
+  E2117** — the selectivity glutamate — at 3.66–3.91 Å in all three protomers.
+  R2456H is the archetypal gain-of-function variant, so this is a concrete
+  structural route from mutation to phenotype.
+- **Two criteria had to be corrected.** PLIP's 4.1 Å hydrogen-bond cutoff is
+  only valid *with* hydrogens and an angle check; applied to heavy atoms alone
+  it gave 8005 "bonds" per trimer. Tightened to the conventional 3.5 Å. And
+  N···N pairs were being admitted, which is donor–donor and impossible; now
+  excluded except for histidine, whose ring nitrogens may be unprotonated.
+
+### Round 13 — Measurement in the GUI
+- [ ] Click-to-measure tool: pick two atoms for a distance, three for an angle,
+      four for a dihedral; persistent labelled measurements in the 3D view.
+- [ ] Measurement panel listing everything measured, with copy-to-clipboard
+      and CSV export.
+- [ ] Tests; docs; commit.
+
+---
+
+## Block D — animation  *(added on request, 2026-08-05)*
+
+### Round 14 — Animation engine
+- [ ] `render/animation.py`: a timeline that interpolates camera, coordinates,
+      colours and visibility; frame-accurate offscreen capture.
+- [ ] GIF and MP4 export (imageio/ffmpeg), with a legibility-first default:
+      slow ease-in-out, a held first and last frame, and an on-frame caption
+      stating what is being shown.
+- [ ] Tests; docs; commit.
+
+### Round 15 — The animation library
+- [ ] Normal-mode animations, per mode, with porcupine displacement arrows.
+- [ ] The gating morph, with the dome profile and pore radius plotted live
+      alongside the structure.
+- [ ] Tension-driven gating: tension ramp → dome flattening → pore opening →
+      simulated current trace, all in one synchronised animation.
+- [ ] Ligand and lipid interaction animations: the Yoda1 pocket, the PIP2
+      lysine cluster, and the pore lipid that contacts R2456.
+- [ ] Variant comparison animations: wild type against a gain-of-function
+      mutant, side by side on the same clock.
+- [ ] Tests; docs; commit.
+
+---
+
 ## Standing per-round checklist
 
 1. Run the full test suite; fix anything red before adding features.
