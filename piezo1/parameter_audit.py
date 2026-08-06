@@ -106,6 +106,8 @@ EXEMPT = {
         "measured quantity that could be revised",
     ("physics/permeation.py", None, "R_GAS"):
         "SI-definitional since the 2019 redefinition",
+    ("analysis/variant_structures.py", "VariantStructure", "n_protein_atoms"):
+        "counter, initialised to zero",
     ("physics/permeation.py", "PermeationResult", "access_ohm"): "computed field",
     ("physics/permeation.py", "PermeationResult", "pore_ohm"): "computed field",
     ("analysis/labelling.py", "predicted_brightness", "per_dye_intensity"):
@@ -220,6 +222,7 @@ MAPPED = {
     ("analysis/pockets.py", "lining_cutoff"): "pockets.lining_cutoff",
     ("analysis/report.py", "step"): "pore.step",
     ("analysis/report_tags.py", "step"): "pore.step",
+    ("analysis/variant_structures.py", "step"): "pore.step",
     ("analysis/report.py", "n_modes"): "anm.n_modes",
 }
 

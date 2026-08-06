@@ -28,6 +28,7 @@ from .gl_widget import ViewportWidget
 from .menus import build_menus, make_settings
 from .alignment import AlignmentMixin
 from .companions import CompanionMixin
+from .tabular_analyses import TabularAnalysisMixin
 from .fusion_controller import FusionController
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
@@ -50,8 +51,8 @@ __all__ = ["MainWindow"]
 
 
 
-class MainWindow(AlignmentMixin, CompanionMixin, AppearanceMixin,
-                 PreferencesMixin, QMainWindow):
+class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
+                 AppearanceMixin, PreferencesMixin, QMainWindow):
     """Top-level window."""
 
     def __init__(self) -> None:

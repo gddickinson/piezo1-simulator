@@ -4,6 +4,79 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 34 — the comparison that was not available, and a GUI audit
+
+### What the round wanted, and why it could not happen
+Compare permeation across the four deposited variant structures and read a
+direction of change against the measured phenotype. Three things stopped it, and
+each is measured rather than asserted:
+
+**Every deposited human PIEZO1 structure is closed.** Bottleneck radii 0.67–0.93
+Å against a 1.38 Å cation, so every conductance is exactly zero. A *difference*
+in conductance between them does not exist to be measured.
+
+**Three of the four variant entries do not contain their variant.** A1988 is
+unmodelled in both entries named for A1988V; E756 is unmodelled in the E756del
+entry. Only 8YFG (R2456H) shows its mutation — histidine there, arginine in
+every other entry, which is the control that makes it meaningful.
+
+**Three of the entries share one model.** 8ZU3, 8YFC and 9VMX have byte-identical
+protein coordinates: 31,839 atoms, the same hash, 0.000 Å RMSD.
+
+That last one needed ruling out before it could be reported. Far the likeliest
+explanation was our own fetch cache writing one file under three names, which
+would have made it a fact about this project rather than about the PDB. The
+files have different sizes, different md5s, and each identifies itself with its
+own `data_` block and its own title, so the identity is in the depositions. A
+test pins that check alongside the finding, because the finding is worthless
+without it.
+
+### What follows
+Four deposited variant entries → one resolves its own mutation → one informative,
+against 68 curated variants. And all four are gain-of-function: there is no
+deposited loss-of-function structure at all, so this route cannot discriminate
+direction even in principle. Round 22 found too few phenotyped variants; this
+finds too few structures. Both ends are data-limited.
+
+The null is pinned by tests written to **fail if the situation improves** — if a
+human structure ever conducts, or a second variant becomes informative, the
+suite says so rather than letting a stale limitation stand.
+
+### Out of band: is everything reachable from the GUI?
+Asked to check, and the answer was no. `permeation` and `interactions` were in
+the shared `ANALYSES` registry and wired into the CLI but absent from every
+menu — computable, and invisible to anyone not using a terminal. The pattern is
+easy to fall into: an analysis with no picture to draw has no obvious home in a
+3-D viewer.
+
+`ui/result_dialog.py` renders any registry result as formatted text, and
+`ui/tabular_analyses.py` adds the menu entries. Deliberately generic over the
+result dict: a bespoke panel per analysis would look better and would be one
+more thing to drift from the function it displays. Each entry carries the caveat
+its numbers need *above* them rather than in a docstring.
+
+The guide had stopped at Round 30 and therefore misdescribed the application —
+nothing on the tags, the labelling, the ion current, the canonical framing or
+multiple structures. Two topics added, including what those models cannot do.
+
+Three tests keep it from decaying: every registry analysis must have a GUI entry
+point, every menu action must carry a tooltip, and the guide must mention both
+what was added and its limits. The last one caught the hand-wrapped-HTML trap
+this project has hit before — a phrase split across a line break fails a naive
+substring test for reasons unrelated to content, so the assertion normalises
+whitespace.
+
+### Notes
+- The audit exemption list grew by two: a zero-initialised counter and a pore
+  step already mapped elsewhere. Both mechanical.
+- No new parameters: this round measured structures rather than introducing
+  physics.
+
+592 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 33 — ion permeation, and where continuum theory runs out
 
 ### What was built

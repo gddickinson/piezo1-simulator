@@ -177,6 +177,29 @@ def _analysis_menu(win, bar) -> None:
     _action(menu, "Coupling to the &gate (PRS)", win.analysis.compute_allostery,
             "", "Perturbation response scanning. Needs normal modes first.")
     menu.addSeparator()
+    _action(menu, "&Ion permeation…", win.show_permeation, "",
+            "1-D drift-diffusion through the measured pore, gated by the\n"
+            "wetting verdict. Gives the unitary conductance and, when the pore\n"
+            "is shut, EVERY mechanism shutting it. The in-pore diffusivity and\n"
+            "ion radius are unmeasured, so the answer spans 16-94 pS across\n"
+            "their plausible ranges against a published 25-30 pS.")
+    _action(menu, "&Interactions…", win.show_interactions, "",
+            "Hydrogen bonds, salt bridges, hydrophobic contacts, pi-stacking,\n"
+            "cation-pi and disulfides, using published geometric criteria.")
+    _action(menu, "&Variant structures…", win.show_variant_structures, "",
+            "What the deposited variant structures can actually support.\n"
+            "A null result: every deposited human PIEZO1 structure is closed,\n"
+            "only one of four variant entries resolves its own mutation, and\n"
+            "three of them share one set of coordinates.")
+    menu.addSeparator()
+    _action(menu, "HaloTag &labelling…", win.show_labelling, "",
+            "Per-site and whole-channel labelling over time, and the\n"
+            "1:2:3-dye mixture. Kinetics imported from halotag_binding_sim.")
+    _action(menu, "HaloTag &geometry…", win.show_fusion_numbers, "",
+            "Where a C-terminal HaloTag would sit: accessible volume, distance\n"
+            "to the pore exit and clearance. Draw it with View > HaloTag fusion.")
+
+    menu.addSeparator()
     _action(menu, "&Sequences…", win._show_sequences, "Ctrl+Shift+S",
             "Browse the protein and coding sequences, select onto the model, "
             "and compare sequences with alignment options")

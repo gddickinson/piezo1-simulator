@@ -1106,11 +1106,43 @@ BAPTA's **~0.2 µM** Kd.
       is available to drive it, but nothing is animated yet.
 
 ### Round 34 — Variant permeation
-- [ ] Apply to the four deposited variant structures (8ZU3, 8ZU8, 8YFC, 8YFG).
-- [ ] *Validate:* direction of change against the measured phenotype where one
-      is published, and **state the coverage honestly** — four structures
-      against sixty-eight curated variants is the same data limit Round 22 hit
-      from the other side.
+- [x] `analysis/variant_structures.py` runs the same pore / wetting / permeation
+      pipeline over every deposited human entry, so a difference between them
+      cannot come from a difference in treatment. Reachable as
+      **Analysis → Variant structures…**
+- [x] *Validate:* **the intended comparison is not available, and that is the
+      result.** Three measured facts, each pinned by a test:
+      1. **Every deposited human PIEZO1 structure is closed.** Bottlenecks
+         0.67–0.93 Å against a 1.38 Å cation. All conductances are exactly 0,
+         so a *difference* in conductance cannot be measured.
+      2. **Three of the four variant entries do not contain their variant.**
+         A1988 is unmodelled in both entries named for A1988V (8ZU8, 8YFC) and
+         E756 is unmodelled in 9VMX. Only **8YFG (R2456H)** shows its mutation —
+         HIS there, ARG in every other entry.
+      3. **8ZU3, 8YFC and 9VMX share one model.** Byte-identical protein
+         coordinates (31,839 atoms, same hash, 0.000 Å RMSD) across three
+         separate depositions with different titles and different file
+         checksums — verified not to be a download artefact.
+- [x] **Coverage, stated plainly.** 4 deposited variant entries → **1** resolves
+      its own mutation → **1** informative, against **68** curated variants (39
+      with a direction). And all four are **gain-of-function**: there is *no*
+      deposited loss-of-function structure, so this route cannot discriminate
+      direction even in principle. The same data limit as Round 22, from the
+      structural side.
+
+### Out of band — everything computable reachable from the GUI
+- [x] Audited on request. `permeation` and `interactions` were in the shared
+      `ANALYSES` registry and wired into the CLI but absent from every menu —
+      invisible to a GUI user. `ui/result_dialog.py` and
+      `ui/tabular_analyses.py` add **Analysis → Ion permeation / Interactions /
+      Variant structures / HaloTag labelling / HaloTag geometry**, each with a
+      tooltip and a caveat shown above the numbers.
+- [x] Two help topics added — *HaloTag and ion current*, *Framing and multiple
+      structures* — since the guide had stopped at Round 30 and therefore
+      misdescribed the application.
+- [x] Three tests keep it from decaying: every registry analysis must have a GUI
+      entry point, every menu action must carry a tooltip, and the guide must
+      still mention what the recent rounds added **and** what they cannot do.
 
 ### Round 35 — The calcium nanodomain at the tag
 - [ ] Buffered-diffusion Green's function
@@ -1238,3 +1270,59 @@ changes that.
 - [x] Corrected: the Round 31/32 display options were reported as living under
       *View*; they had in fact been added to *Options*. Moved to *View*, which
       is where they belong and where they were documented.
+
+
+---
+
+## Block J — review after Rounds 31–35
+
+Written after five rounds of tag, labelling, permeation and variant work. What
+those rounds actually established, and what it implies for the destination.
+
+**The structural route to direction is empirically blocked, not just unproven.**
+Round 22 found there were not enough phenotyped variants; Round 34 found there
+are not enough *structures* — one informative variant structure, all
+gain-of-function, every entry closed. Both ends of the comparison are
+data-limited, and no amount of method work moves either.
+
+**Three headline numbers now carry an explicit "this is tuning, not prediction"
+label**: the fusion distance (robust to its assumption, so trustworthy), the
+labelling curve (imported and exact), and the conductance (spans 16–94 pS across
+unmeasured parameters, so not an independent prediction). Keeping those three
+distinguishable from one another is worth more than improving any of them.
+
+### Round 36 — Where the model *can* be tested
+- [ ] The one comparison Round 34 leaves open: **8YFG (R2456H) against 8YEZ
+      (wild type)**, both human, both closed, mutation resolved in one. Report
+      bottleneck, wetting score and blocking mechanisms as a *paired* structural
+      comparison, and state plainly that n = 1 supports no inference.
+- [ ] *Validate:* whether the R2456H structure differs from wild type by more
+      than the wild-type entries differ among themselves — the only control that
+      makes a single pair interpretable.
+
+### Round 37 — A predictor that could survive its own data limit
+- [ ] Round 26 raised within-position variance from 4.9% to 52.5%. Ask the
+      question that follows: given 39 directioned variants, what effect size is
+      now detectable, and does the substitution-aware predictor reach it?
+- [ ] *Validate:* against `design.minimum_detectable_effect`, and **do not run
+      the comparison** unless the pre-registration protocol is followed first.
+
+### Round 38 — The LoF gap, addressed rather than lamented
+- [ ] Loss-of-function variants are absent from the structures but present in
+      the curated set. Test whether they are also structurally distinguishable
+      *in the wild type* — do LoF positions differ from GoF positions in burial,
+      conservation, or coupling to the gate?
+- [ ] *Validate:* this is a position-level question, so it is vulnerable to the
+      exact confound Round 7 died of. Pre-register, and report the
+      between-position variance share alongside any result.
+
+### Round 39 — Provenance of the whole chain
+- [ ] One command that walks a claim from the figure back to the file, the
+      parameter set and the commit. `verify_claims` checks numbers; this checks
+      that the *path* to each number is reconstructible.
+
+### Round 40 — What a user should not be able to do
+- [ ] Audit the UI for ways to produce a confident wrong number: analyses run on
+      a cross-species overlay, a modified registry left unmarked, a companion
+      structure mistaken for the primary. Round 33's menu audit found real gaps;
+      this is the same exercise pointed at correctness rather than reachability.

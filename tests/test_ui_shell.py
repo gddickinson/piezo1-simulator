@@ -10,6 +10,8 @@ rather than tests.
 import os
 
 import numpy as np
+import re
+
 import pytest
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -212,3 +214,76 @@ def test_controls_carry_tooltips(qapp):
     structure = StructurePanel()
     assert structure.structure_combo.toolTip()
     assert structure.ligand_check.toolTip()
+
+
+# --------------------------------------------------------------------------
+# Everything computable must be reachable from the GUI, and explained there
+# --------------------------------------------------------------------------
+
+def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
+    """A function only the command line can run is invisible to most users.
+
+    `permeation` and `interactions` were exactly that until Round 34: present in
+    the shared ANALYSES registry, wired into the CLI, and absent from every
+    menu. This checks the window exposes a way to run each one.
+    """
+    from piezo1.analysis.report import ANALYSES
+    from piezo1.ui.main_window import MainWindow
+
+    # Analyses drawn on the model rather than tabulated, and where they live.
+    drawn = {"dome": "physics.measure_dome", "pore": "analysis.compute_pore",
+             "hydration": "analysis.compute_pore", "modes": "physics.compute_modes",
+             "pockets": "analysis.compute_pockets"}
+    tabular = {"permeation": "show_permeation", "interactions": "show_interactions",
+               "labelling": "show_labelling", "fusion": "show_fusion_numbers"}
+
+    for name in ANALYSES:
+        assert name in drawn or name in tabular, (
+            f"{name!r} is in the ANALYSES registry but has no GUI entry point; "
+            f"add one or record why it is command-line only")
+
+    for attribute in tabular.values():
+        assert callable(getattr(MainWindow, attribute, None)), attribute
+
+
+def test_every_menu_action_has_a_tooltip(qapp):
+    """A menu entry whose meaning is not stated is a menu entry nobody uses."""
+    from piezo1.ui.main_window import MainWindow
+
+    window = MainWindow()
+    try:
+        missing = []
+
+        def walk(menu):
+            for action in menu.actions():
+                if action.isSeparator():
+                    continue
+                if action.menu() is not None:
+                    walk(action.menu())
+                elif (not action.toolTip()
+                      or action.toolTip() == action.text().replace("&", "")):
+                    missing.append(action.text())
+
+        for action in window.menuBar().actions():
+            if action.menu() is not None:
+                walk(action.menu())
+        assert not missing, f"menu actions without a tooltip: {missing}"
+    finally:
+        window.close()
+
+
+def test_the_guide_covers_what_the_recent_rounds_added(qapp):
+    """Help that stops at Round 30 is help that misdescribes the application."""
+    from piezo1.ui.help_content import TOPICS
+
+    # Whitespace-normalised: the guide is hand-wrapped HTML, so a phrase can
+    # sit across a line break and a naive substring test then silently passes
+    # or silently fails for a reason that has nothing to do with the content.
+    text = re.sub(r"\s+", " ", " ".join(body for _t, body in TOPICS)).lower()
+    for phrase in ("halotag", "accessible volume", "permeation", "pore mouths",
+                   "canonical", "multiple structures", "unreactive tags"):
+        assert phrase in text, f"the guide never mentions {phrase!r}"
+
+    # And it must keep saying what the model cannot do.
+    assert "16-94 ps" in text.replace("\u2013", "-")
+    assert "no deposited loss-of-function structure" in text

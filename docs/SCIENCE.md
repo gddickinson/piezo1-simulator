@@ -839,6 +839,37 @@ diffusivity and the ion radius used for steric exclusion — moves it from 16 to
 values nobody has measured, which is tuning rather than prediction. Both are
 registered `unverified`.
 
+## 8g. What the deposited variant structures can support
+
+Round 34 set out to compare ion permeation across the four deposited PIEZO1
+variant structures and read a direction of change against the measured
+phenotype. It could not be done, for three measured reasons.
+
+| Entry | Named for | Direction | Resolves its own mutation? | Bottleneck | Conducts? |
+|---|---|---|---|---|---|
+| 8YEZ | wild type | — | — | 0.93 Å | no |
+| 8ZU3 | wild type + MDFIC | — | — | 0.67 Å | no |
+| 8ZU8 | A1988V | GoF | **no** — A1988 unmodelled | 0.86 Å | no |
+| 8YFC | A1988V + MDFIC | GoF | **no** — A1988 unmodelled | 0.67 Å | no |
+| 8YFG | R2456H + MDFIC | GoF | **yes** — HIS, vs ARG elsewhere | 0.81 Å | no |
+| 9VMX | E756del + MDFIC | GoF | **no** — E756 unmodelled | 0.67 Å | no |
+
+1. **Every deposited human structure is closed.** All conductances are exactly
+   zero, so no *difference* in conductance exists to compare.
+2. **Three of the four variant entries do not contain their variant.**
+3. **8ZU3, 8YFC and 9VMX share one model** — byte-identical protein coordinates
+   (31,839 atoms, 0.000 Å RMSD) across three separate depositions with different
+   titles and different file checksums. Verified not to be a download artefact.
+
+**Coverage.** Four deposited variant entries → one resolves its own mutation →
+one is informative, against 68 curated variants (39 with a direction). All four
+are gain-of-function: there is **no deposited loss-of-function structure**, so
+this route cannot discriminate direction even in principle.
+
+This is the same data limit the Round 7 and Round 22 blind tests met from the
+other side. There, not enough phenotyped variants; here, not enough structures.
+Both ends of the comparison are limited by data rather than by method.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:
