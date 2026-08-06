@@ -597,3 +597,58 @@ complement — they lack the mechanism, which is exactly what this supplies.
 `docs/VALIDATION.md` §8 records what a fair next test would look like, written
 now so that whatever is tried next is a stated new hypothesis rather than a
 retrofit.
+
+---
+
+## Round 8 — pockets and ligands (2026-08-06)
+
+Delaunay alpha spheres, the fpocket construction, reimplemented in numpy. Every
+tetrahedron of the Delaunay triangulation has an empty circumsphere; its radius
+says whether it sits in packed interior, in bulk solvent, or in a cavity of
+small-molecule size.
+
+**Two annotated sites recovered from geometry alone:** the transmembrane
+hydrophobic gate (2/3 residues) and the anchor-domain apex brake (2/2). Neither
+the detector nor the annotation knows about the other.
+
+### The percolation trap
+
+The first run produced a top "pocket" of **408 000 Å³ with 601 lining
+residues** — which is the outside of the protein. On a large open structure a
+radius filter alone is not enough: PIEZO1 is a curved propeller with enormous
+grooves between its blades, and single-linkage clustering happily percolates
+the whole exterior into one object.
+
+Requiring each alpha sphere to have at least 30 atoms within 8 Å discards the
+surface spheres and stops the merge; the largest pocket becomes 6 691 Å³ with
+63 residues. **The parameters were chosen on pocket-size plausibility — a
+druggable cavity is hundreds to a couple of thousand cubic Ångström — and
+fixed before any site recovery was checked.** Tuning them until Yoda1 appeared
+would have made the recovery meaningless.
+
+### The Yoda1 result, and why the negative is the interesting part
+
+The detector does *not* recover the Yoda1 site as an enclosed cavity: at most
+one of its three residues, in either the human apo structure or the mouse
+lipid-bound one. Allowing surface grooves recovers two.
+
+Rather than report that as a failure, it is worth asking what it means, and
+three independent facts line up. Yoda1 is proposed to act as a **molecular
+wedge from the lipid phase**, which is a description of an interfacial site
+rather than a pocket. A **PLX lipid occupies part of the site** in 7WLT — the
+contact mapping here confirms it touches A2091. And the site has never been
+seen in a co-structure: every PIEZO entry in the PDB contains only lipids, so
+the mapping rests on mutagenesis and docking, which is exactly why this
+project's annotation labels its evidence as *predicted*.
+
+So the honest statement is that the Yoda1 site is interfacial, not enclosed,
+and a cavity detector is the wrong instrument for it. That is a more useful
+sentence than either "not recovered" or a tuned-up "recovered".
+
+### Also fixed
+
+`np.linalg.solve` in numpy 2 treats a 2-D right-hand side as a single matrix
+rather than a batch of vectors, so the batched circumsphere solve needed an
+explicit trailing axis. And the pocket tests originally took 137 s because each
+one recomputed the pockets; module-scoped fixtures and a smaller Monte-Carlo
+sample bring that to 16 s.

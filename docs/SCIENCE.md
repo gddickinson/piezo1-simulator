@@ -437,6 +437,31 @@ acts through the membrane rather than at a stereospecific protein site.
 
 ---
 
+## 7b. Cavities found from geometry alone
+
+Delaunay alpha spheres (the fpocket construction) find cavities without any
+knowledge of the annotation. Two annotated sites fall out unprompted: the
+**transmembrane hydrophobic gate** (2 of 3 residues) and the **anchor-domain
+apex brake** (2 of 2).
+
+**The Yoda1 site does not — and that is informative.** Searching for enclosed
+cavities recovers at most one of its three mutagenesis-mapped residues;
+allowing surface grooves recovers two. The site is **interfacial rather than
+enclosed**, which fits three independent facts: Yoda1 is proposed to act as a
+molecular wedge from the lipid phase; a PLX lipid occupies part of the site in
+PDB 7WLT; and the site has never been observed in a co-structure at all — every
+PIEZO entry in the PDB contains only lipids, so the mapping rests on
+mutagenesis and docking.
+
+**A methodological trap worth recording.** On a large, open protein a radius
+filter alone is not enough. PIEZO1 is a curved propeller with enormous solvent
+grooves between its blades, and single-linkage clustering percolated the entire
+exterior into one object: 408 000 Å³ with 601 lining residues. Requiring each
+alpha sphere to have at least 30 atoms within 8 Å discards the surface spheres
+and brings the largest pocket to 6 691 Å³ with 63 residues. The filter
+parameters were fixed on pocket-size plausibility before any site recovery was
+checked.
+
 ## 8. Variants and disease
 
 68 curated variants ship with the application: 22 gain-of-function, 17

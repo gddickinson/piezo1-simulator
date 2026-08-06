@@ -201,12 +201,27 @@ measured P50 and inactivation kinetics.** Each round closes one link.
 - [x] `docs/VALIDATION.md` written in the pre-registered order, with the null
       result stated first.
 
-### Round 8 — Pockets and ligands
-- [ ] `analysis/pockets.py`: Delaunay alpha-sphere pocket detection.
-- [ ] Validate by recovering the Yoda1 pocket de novo and checking it against
+### Round 8 — Pockets and ligands  ✅
+- [x] `analysis/pockets.py`: Delaunay alpha-sphere pocket detection.
+- [x] Validate by recovering the Yoda1 pocket de novo and checking it against
       the mutagenesis-mapped residues (human A1718/A2075/A2078).
-- [ ] Map resolved lipid densities (L9Q, PLX, P5S, PEE, D12) to contact residues.
-- [ ] Tests; docs; commit.
+- [x] Map resolved lipid densities (L9Q, PLX, P5S, PEE, D12) to contact residues.
+- [x] Tests; docs; commit.
+- **Recovered de novo:** the transmembrane hydrophobic gate (2/3 residues) and
+  the anchor-domain apex brake (2/2), from geometry alone.
+- **The Yoda1 site is an interfacial groove, not an enclosed cavity.** Searching
+  for enclosed cavities finds at most 1 of its 3 residues; allowing surface
+  grooves finds 2. That is consistent with Yoda1 acting as a wedge from the
+  lipid phase, with a PLX lipid occupying part of the site in 7WLT, and with
+  this project's own annotation labelling the site's evidence as *predicted* —
+  it has never been seen in a co-structure. Reported as a nuanced negative
+  rather than forced into a positive.
+- **A percolation trap, fixed.** With a radius filter alone, single-linkage
+  merged PIEZO1's whole exterior into one "pocket" of **408 000 Å³ with 601
+  lining residues** — the protein's outside surface. A per-sphere burial filter
+  (≥30 atoms within 8 Å) plus a tighter r_max brings the largest pocket to
+  6 691 Å³ / 63 residues. Parameters were chosen on pocket-size plausibility,
+  **before** checking any site recovery, to avoid tuning to the answer.
 
 ### Round 9 — Conservation and constraint
 - [ ] `analysis/conservation.py`: fetch orthologs, align, per-residue
