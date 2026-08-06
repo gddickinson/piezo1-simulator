@@ -319,3 +319,77 @@ footprint solver (1-D radial validates to 3.8e-3 against the exact K_0 in
 the probe sphere escapes to R = 6188 A); and the hybrid full-length model,
 noting that AlphaFold **cannot** place residues 1-570 relative to the core
 (PAE 25-29 A against a 31.75 A maximum), so PIEZO2 6KG7 is the better guide.
+
+---
+
+## Session 2 — 2026-08-05/06 — rounds, references, measurement, animation
+
+Set up a ROADMAP.md organised into rounds, and a recurring 20-minute loop that
+works the next unchecked one.
+
+### Rounds completed
+
+**Round 1 — pore geometry.** Closed human 8YEZ has a 0.76 Å bottleneck and is
+non-conductive; flat 11ZC has 3.25 Å and is conductive. The profiler
+rediscovered all three curated constrictions from coordinates alone: the V2450
+hydrophobic gate (3.0 Å) and the CTD constrictions at M2467 (1.2 Å) and P2510
+(1.4 Å). *The leash is a correctness requirement, not a convenience* — the
+clearance function has no interior maximum, and an untethered probe escapes to
+R ≈ 6188 Å, which is a true maximum and a useless answer.
+
+**Round 2 — gating kinetics.** Young et al. 2023 four-state tension model.
+Emergent half-activation **2.71 mN/m** against a measured cell-attached T50 of
+**2.7 ± 0.1 mN/m**. Detailed balance exact to 1e-16, because C→I₁ is fixed by
+microscopic reversibility rather than fitted.
+
+**Rounds 11–12 — measurement and interactions.** The C2411–C2415 disulfide is
+recovered in all three protomers at 2.04 Å. TM38 is the least tilted
+pore-proximal helix at 6.9°. And **R2456 salt-bridges to E2117 of the
+neighbouring protomer** in all three copies — the archetypal gain-of-function
+residue pairing with the selectivity glutamate, a concrete structural route
+from mutation to phenotype.
+
+**Rounds 14–15 — animation.** Seven animations, offscreen-rendered.
+
+### Errors caught, and what they teach
+
+**Mutant calibration was inverted.** Presets originally solved for the rate that
+reproduced an *absolute* measured inactivation τ. But Young's parameterisation
+gives a wild-type τ of 35–80 ms while Bae's whole-cell measurement gives 8.6 ms
+— different preparations. Calibrating R2456H to 22.2 ms therefore made it
+*faster* than the model's own wild type, exactly inverting the phenotype of the
+best-known gain-of-function variant. Fold changes transfer between
+preparations; absolute time constants do not.
+
+**Six citations were confidently wrong.** PMIDs entered from memory resolved
+cleanly to unrelated papers — a Piezo1 structure citation came back as a
+bone-marrow transplantation study, another as stem-cell reprogramming. Europe
+PMC returns whatever the identifier points at. Every seed entry now carries an
+`expect` keyword checked against the resolved title, and anything failing is
+reported rather than written out. 51/51 now verify.
+
+**Interaction criteria were too loose.** PLIP's 4.1 Å hydrogen-bond cutoff is
+only valid *with* hydrogens and an angle test; on heavy atoms alone it produced
+8005 "bonds" per trimer including donor–donor N···N pairs. Tightened to 3.5 Å
+with N···N excluded except for histidine.
+
+**A test claim was stronger than the data.** "TM38 is the least tilted helix"
+is false — blade helices 50–60 Å out are also near-vertical. Narrowed to "least
+tilted of the pore module", which is what the coordinates support.
+
+The pattern across all four: the failure mode is never a crash, it is a
+confident wrong number. Every one was caught by checking the output against
+something independent rather than by the code raising an error.
+
+### Bibliography
+
+51 references resolved from Europe PMC into a committed JSON plus a generated
+`docs/REFERENCES.md`, each recording what the project uses it *for*. 29
+open-access full texts downloaded to `ref/papers/` (git-ignored — other
+people's copyright, and the bibliography suffices to retrieve them).
+
+### Operational note
+
+The 20-minute cron cadence is shorter than a round actually takes, so
+invocations stack up. Harmless — each fire simply picks up the next unchecked
+item — but worth knowing when reading the history.
