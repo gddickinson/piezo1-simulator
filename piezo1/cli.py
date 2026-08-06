@@ -242,7 +242,8 @@ def build_parser() -> argparse.ArgumentParser:
             ("interactions", "hydrogen bonds, salt bridges, disulfides"),
             ("fusion", "where a C-terminal HaloTag would sit (a model)"),
             ("labelling", "HaloTag labelling kinetics on the three sites"),
-            ("permeation", "ion current through the pore (1-D PNP)")):
+            ("permeation", "ion current through the pore (1-D PNP)"),
+            ("nanodomain", "calcium at the HaloTag when the channel opens")):
         p = sub.add_parser(name, help=help_text, parents=[common])
         p.add_argument("structure")
         p.add_argument("--species", choices=["human", "mouse"])

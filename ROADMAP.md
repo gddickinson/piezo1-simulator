@@ -1145,20 +1145,40 @@ BAPTA's **~0.2 µM** Kd.
       still mention what the recent rounds added **and** what they cannot do.
 
 ### Round 35 — The calcium nanodomain at the tag
-- [ ] Buffered-diffusion Green's function
-      `[Ca](r) = i_Ca/(4πFD r)·exp(−r/λ)`, `λ = √(D/(k_on^B[B]))` — the same
-      screened form as the membrane footprint already implemented, needing
-      exactly the two numbers Rounds 31 and 33 produce.
-- [ ] **The prediction to test:** at 4–6 nm the nanodomain is ~200 µM against
-      BAPTA's ~0.2 µM Kd, so a JF646-BAPTA HaloTag should be **saturated
-      whenever its own channel opens** — reporting opening as a binary event
-      rather than graded calcium. If so, published puncta brightness reflects
-      how many tags are labelled and how often the channel opens, not local
-      calcium amplitude.
-- [ ] *Validate:* sensitivity sweep over tag distance (2–20 nm), Ca²⁺ fraction
-      and cytosolic buffering — **intervals, not a point estimate**, since the
-      tag distance is modelled rather than measured — plus an explicit statement
-      of what would falsify the prediction.
+- [x] `physics/nanodomain.py` implements the screened Green's function, taking
+      exactly the two numbers Rounds 31 and 33 produce: unitary current
+      **2.46 pA** (11ZC) and tag distance **3.95 nm** (8YEZ). Screening length
+      **λ = 148 nm**, so at the tag the exponential is ≈1 and the answer is set
+      by geometry, not by buffering. Reachable as **Analysis → Calcium
+      nanodomain…** and `python -m piezo1.cli nanodomain 8YEZ`.
+- [x] **The prediction holds.** **113.8 µM at 3.95 nm** — half the ~200 µM the
+      roadmap expected, because Round 31 moved the tag closer than the 4–6 nm
+      assumed, but the same order and far above the sensor's 0.2 µM Kd either
+      way. Occupancy **99.82%**: the sensor is **saturated whenever its own
+      channel opens**. So published puncta brightness reports *how many tags are
+      labelled and how often the channel opens*, not calcium amplitude —
+      which, joined to Round 32's result that a saturating protocol labels all
+      three tags, means brightness heterogeneity points at **unreactive tags and
+      open probability**, not at sub-saturating dye or graded calcium.
+- [x] *Validate:* an **80-combination** sweep over tag distance (2–20 nm),
+      calcium fraction (0.5–20%) and buffering (10 µM–10 mM). **78 of 80 stay
+      saturated.** The two exceptions need 20 nm *and* 0.5% calcium *and*
+      ≥1 mM buffer simultaneously. Across Round 31's full envelope
+      (1.74–7.89 nm) the range is 55.6–263 µM, occupancy 99.64–99.92%; across
+      Round 33's conductance range (16–94 pS), 99.55–99.92%.
+- [x] **What would falsify it**, as numbers: the tag would have to sit at
+      **373 nm** (≈100× further), or calcium carry **4.4×10⁻⁵** of the current
+      (≈1000× less), or free buffer reach **0.14 M** (≈1400× physiological).
+- [x] Found on the way: `resting_occupancy` — 100 nM resting calcium against a
+      0.2 µM Kd already holds the sensor **33%** occupied, so its dynamic range
+      is 33–100%, not 0–100%. Any occupancy target below that floor is
+      unreachable at any distance, and the solver now says so.
+- [x] **A silent frame bug, caught and pinned.** The report entry detected the
+      C3 axis on the *unframed* structure and applied it to the *framed* one, so
+      the pore was measured along a line that misses the pore. It reported the
+      **closed** 8YEZ as carrying **32 pA** and making a 1.5 mM nanodomain —
+      every number finite and plausible. Fixed, with a test asserting a closed
+      structure never reports its own current.
 
 ---
 
@@ -1326,3 +1346,63 @@ distinguishable from one another is worth more than improving any of them.
       a cross-species overlay, a modified registry left unmarked, a companion
       structure mistaken for the primary. Round 33's menu audit found real gaps;
       this is the same exercise pointed at correctness rather than reachability.
+
+
+---
+
+## Block K — external resources not yet used  *(added on request)*
+
+An audit of what this project pulls from the internet against what exists. It
+fetches RCSB, AlphaFold DB, UniProt, PubChem, Europe PMC, ClinVar, Ensembl
+orthologs and the CHAP grid. What follows is what it does **not**, ordered by
+what would most move the destination — predicting direction from structure.
+
+**The binding constraint is still data, and two of these attack it directly.**
+
+### Round 41 — gnomAD, for the missing loss-of-function direction
+- [ ] Round 34 established there is no deposited loss-of-function *structure*,
+      and Round 22 that there are too few phenotyped *variants*. gnomAD v4 has
+      ~800k exomes: pLoF variants, constraint scores (LOEUF, pLI, mis_z) and
+      per-residue missense depletion. It cannot give a *measured* direction, but
+      **regional constraint** is a phenotype-adjacent signal that exists for
+      every residue rather than for 39.
+- [ ] *Validate:* does missense depletion in gnomAD separate the curated GoF
+      from LoF positions? Pre-register first — this is the same position-level
+      confound Round 7 died of.
+
+### Round 42 — MD trajectories other people have already run
+- [ ] Two sources make this cheap. **MemProtMD** (Oxford) hosts coarse-grained
+      and atomistic simulations of membrane proteins including PIEZO1, with
+      lipid-contact occupancies already computed. **GPCRmd/MDDB** and Zenodo
+      carry deposited PIEZO trajectories from published papers.
+- [ ] *Validate:* compare their lipid-contact occupancies against this
+      project's curated PIP2 cluster and the pockets found geometrically. An
+      independent method agreeing is worth more than a better version of ours.
+
+### Round 43 — the ligands that have no structure
+- [ ] `ligands.json` is still 📋 and the registry contains **no** Yoda1-, Jedi-,
+      Dooku1- or GsMTx4-bound entry, because none has been deposited. What does
+      exist: **ChEMBL / PubChem BioAssay** dose-response data, **BindingDB**
+      affinities, and the published mutagenesis that defines the Yoda1 pocket.
+- [ ] Build `ligands.json` from those with provenance, and state plainly that
+      every binding site in it is **inferred from mutagenesis and geometry, not
+      from a bound structure**.
+
+### Round 44 — predicted structures beyond AlphaFold2
+- [ ] The project already fetches AlphaFold DB. **AlphaFold3 / Boltz-2 / Chai-1**
+      predict complexes and ligands, and the **AlphaFold Protein Structure
+      Database** now carries PAE matrices this project does not read. PAE is the
+      honest way to say which inter-domain distances the prediction actually
+      constrains — directly relevant to the unresolved distal blade.
+- [ ] *Validate:* does PAE-weighted confidence agree with where the hybrid model
+      seam had to be placed?
+
+### Round 45 — the electrophysiology that is already published as data
+- [ ] **IonChannelGenealogy**, **Channelpedia** and the supplementary tables of
+      the PIEZO1 mutagenesis literature carry T50, τ_inact and conductance per
+      mutant. Round 22 needed 104 variants for a medium effect and had 46.
+      Harvesting published supplementary tables is the only route to that
+      number that does not require new experiments.
+- [ ] *Validate:* every harvested value must pass the same wild-type-residue
+      gate the curated set already uses, and carry its PMID and its recording
+      conditions — a T50 from a different preparation is not comparable.

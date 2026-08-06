@@ -870,6 +870,51 @@ This is the same data limit the Round 7 and Round 22 blind tests met from the
 other side. There, not enough phenotyped variants; here, not enough structures.
 Both ends of the comparison are limited by data rather than by method.
 
+## 8h. The calcium nanodomain at the tag
+
+An open channel is a point source of calcium; diffusion carries it away and
+buffers absorb it. The steady state is reached in microseconds, far faster than
+a channel stays open, so the static solution applies:
+
+    [Ca](r) = i_Ca / (4π F D r) · exp(−r/λ),    λ = √(D / (k_on^B [B]))
+
+The 4π rather than 8π is where a factor of two hides: the ion flux is i/(zF)
+with z = 2, and a channel in a membrane releases into a half-space, so the two
+twos cancel.
+
+| Quantity | Value | Basis |
+|---|---|---|
+| Unitary current | 2.46 pA | Round 33, open-like 11ZC |
+| Calcium share of that current | 5% | **UNVERIFIED** — swept |
+| Tag distance | 3.95 nm (envelope 1.74–7.89) | Round 31, modelled |
+| Screening length λ | 148 nm | from D and buffering |
+| **Calcium at the tag** | **113.8 µM** | this project |
+| Sensor Kd (BAPTA) | 0.2 µM | Tsien 1980 |
+| **Sensor occupancy** | **99.82% — saturated** | this project |
+| Occupancy from resting Ca alone | 33% | 100 nM against 0.2 µM |
+
+**λ = 148 nm is much larger than the tag distance**, so the exponential is
+essentially 1 there: the answer is set by geometry, not by buffering.
+
+**The prediction.** A BAPTA-based sensor on the tag is saturated whenever its
+own channel opens, so it reports opening as a **binary event**. Puncta
+brightness therefore reflects how many tags are labelled and how often the
+channel opens — not local calcium amplitude. Joined with §8e, where a saturating
+labelling protocol puts a dye on all three tags, brightness heterogeneity points
+at **unreactive tags and open probability**, not at sub-saturating dye or graded
+calcium.
+
+**How hard it is to break.** An 80-combination sweep over tag distance
+(2–20 nm), calcium fraction (0.5–20%) and buffering (10 µM–10 mM) leaves 78
+saturated; the two exceptions require all three extremes at once. Falsifying it
+would need the tag at 373 nm (~100× further), or calcium carrying 4.4×10⁻⁵ of
+the current (~1000× less), or 0.14 M free buffer (~1400× physiological).
+
+**Caveat.** Every deposited human structure is closed (§8g), so the current is
+taken from the one open-like entry and the tag distance is modelled rather than
+measured. The linearised buffer also errs *low* near the source, which for a
+saturation argument is the safe direction.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

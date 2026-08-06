@@ -235,7 +235,8 @@ def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
              "hydration": "analysis.compute_pore", "modes": "physics.compute_modes",
              "pockets": "analysis.compute_pockets"}
     tabular = {"permeation": "show_permeation", "interactions": "show_interactions",
-               "labelling": "show_labelling", "fusion": "show_fusion_numbers"}
+               "labelling": "show_labelling", "fusion": "show_fusion_numbers",
+               "nanodomain": "show_nanodomain"}
 
     for name in ANALYSES:
         assert name in drawn or name in tabular, (

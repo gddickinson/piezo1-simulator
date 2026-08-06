@@ -39,7 +39,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 
 | File | Purpose | Key names | Status |
 |---|---|---|---|
-| `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `fusion`, `labelling`, `permeation`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
+| `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `fusion`, `labelling`, `permeation`, `nanodomain`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
 | `parameters.py` | **The single source of truth for every number a calculation uses.** Loaded from `resources/parameters.json`; each value carries a unit, bounds, a kind and a citation. Overrides are tracked, not silent — reports flag them and the claims verifier refuses to run against them. | `Parameter`, `ParameterRegistry`, `PARAMETERS`, `value()`, `set_value()`, `reset()`, `overrides()`, `resolve()` | ✅ |
 | `tour.py` | The guided tour as **data plus live measurements**, Qt-free. Eleven steps from trimer to the two null results; every number computed when the step runs, every published comparison read from the parameter registry. | `TourStep`, `TOUR`, `step_by_key()` | ✅ |
 | `parameter_audit.py` | Scans `physics/`, `structure/` and `analysis/` for numeric literals that are neither registered nor exempt **with a stated reason**. The mechanism that keeps the rule from decaying into an aspiration. | `audit()`, `Finding`, `EXEMPT`, `EXEMPT_NAMES`, `MAPPED` | ✅ |
@@ -88,6 +88,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `elastica.py` | **Nonlinear** axisymmetric Helfrich: arc-length Euler–elastica with exact principal curvatures, no small-slope expansion. Solved as a BVP in `(r, z, ψ, M, η)` with the conserved axial force imposed and its drift used as a free error estimate. At PIEZO1's 63° contact slope the linear theory overestimates footprint energy 3.65× and area 3.48×. | `solve_elastica()`, `ElasticaSolution`, `compare_with_linear()`, `LinearComparison`, `shape_equations()`, `axial_force()` | ✅ |
 | `permeation.py` | **1-D ion permeation** over the measured pore: per-species drift-diffusion, Scharfetter–Gummel discretised, Hall access resistance, gated by the Round 19 wetting verdict. The potential is solved in the electroneutral limit because the Debye length (5.7–8.1 Å) exceeds the pore radius (3.3 Å); `series_conductance()` is the independent closed-form check. Reports **every** blocking mechanism, not the first. | `IonSpecies`, `PermeationResult`, `solve_pnp()`, `series_conductance()`, `blocking_mechanisms()`, `debye_length()`, `access_resistance()`, `default_species()` | ✅ |
 | `_pnp_kernels.py` | The two numerical kernels the solver needed: a Bernoulli function that survives its asymptotes, and a row-scaled Dirichlet solve for a system whose rows span 10¹⁸. | `_bernoulli()`, `_solve_with_dirichlet()` | ✅ |
+| `nanodomain.py` | **Calcium nanodomain at the tag.** Screened buffered-diffusion Green's function taking the unitary current and tag distance the earlier rounds produce. Predicts 113.8 µM at 3.95 nm against a 0.2 µM sensor Kd — saturated whenever the channel opens — with an 80-combination sweep and quantitative falsifiers. | `Nanodomain`, `calcium_at()`, `screening_length()`, `saturation()`, `distance_for_occupancy()`, `sweep()` | ✅ |
 | `kinetics.py` | Four-state tension-dependent Markov gating (Young et al. 2023): rate matrix with enforced microscopic reversibility, steady state, step/ramp protocols, Gillespie single-channel simulation, and fold-change-calibrated mutant presets. | `GatingModel`, `GatingResult`, `MUTANT_PRESETS`, `STATE_NAMES` | ✅ |
 
 ### `piezo1/analysis/` — interpretation
@@ -183,7 +184,7 @@ geometry at a fraction of the triangle count.
 | `numbering_human_mouse.json` | Cached human↔mouse alignment map. | ✅ |
 | `ligands.json` | Yoda1, Yoda2, Jedi1/2, Dooku1, GsMTx4 and lipids with chemistry and binding-site residues. | 📋 |
 | `structures.json` | Registry of 21 structures with state, resolution, coverage, ligands, citation. | ✅ |
-| `parameters.json` | **95 parameters** in 18 categories — every number the calculations use, with unit, bounds, kind and citation. 31 cite a paper; 30 are method choices, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
+| `parameters.json` | **101 parameters** in 19 categories — every number the calculations use, with unit, bounds, kind and citation. 31 cite a paper; 30 are method choices, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
 
 ---
 
@@ -226,6 +227,7 @@ geometry at a fraction of the triangle count.
 | `test_labelling.py` | The import criterion — zero difference from the source project on every quantity and identical sampled populations — plus the mathematics checked independently (exposure by quadrature, occupancy by its moments), that a channel never loses a dye, and the measured result that a dye mixture needs unreactive tags rather than a shorter incubation. | ✅ |
 | `test_permeation.py` | The solver against things it does not share code with: an analytic cylinder, the closed-form series formula, and the published 25–30 pS. Pins both numerical faults (the badly scaled system, the diverging Gummel loop), the Debye-overlap diagnostic that justifies the electroneutral limit, that every blocking mechanism is reported, and that the answer is dominated by two unmeasured parameters. | ✅ |
 | `test_variant_structures.py` | Round 34's null, pinned so it cannot decay: that no deposited human structure conducts, that only 8YFG resolves its own mutation, that three entries share byte-identical coordinates — **and that the three files are genuinely different downloads**, which is the far likelier explanation and had to be excluded. | ✅ |
+| `test_nanodomain.py` | The Green's function against analytic limits, the prediction and — the part that makes it non-trivial — that the sweep is wide enough to have broken it. Pins the occupancy floor from resting calcium, and the silent frame bug that reported a closed structure as carrying 32 pA. | ✅ |
 | `test_geometry.py` | Sphere fitting on synthetic spheres and caps; dome curvature regression against the published 10.2 nm; curved vs flat separation. | ✅ |
 | `test_superpose.py` | Kabsch round-trip, reflection exclusion, C3 exactness, reversed-handedness detection. | ✅ |
 | `test_anm.py` | Hessian symmetry, zero modes, disconnected networks, symmetry characters, and the gating-overlap result. | ✅ |
@@ -276,7 +278,7 @@ geometry at a fraction of the triangle count.
 | `NOTEBOOK.md` | The documented headless API, with a "things that will bite you" table. | ✅ |
 | `VALIDATION.md` | The Round 7 result: a null result, reported in the pre-registered order with a post-hoc diagnostic of why, and a Round 20 power section (§6b) bounding what the null is entitled to claim. | ✅ |
 | `NEGATIVE_RESULT_PROTOCOL.md` | Standing policy, written before the Round 22 test it governs: what must exist before a test runs, power requirements, multiplicity control, cross-validation of fitted combinations, and the rule that a recorded result is superseded rather than revised. | ✅ |
-| `REFERENCES.md` | Generated bibliography, 68 verified references. | ✅ |
+| `REFERENCES.md` | Generated bibliography, 72 verified references. | ✅ |
 | `img/` | Generated figures (`make_figures.py`, `screenshot_app.py`). | ✅ |
 | `HALOTAG_CALCIUM_PLAN.md` | Design review of `halotag_binding_sim` and the plan to combine it: HaloTag fusion geometry, labelling on the trimer, 1-D PNP calcium permeation gated by the wetting verdict, and the calcium nanodomain at the tag. Feasibility checked, nothing implemented. | 📋 |
 | `ARCHITECTURE.md` | Why the code is shaped this way; the rendering approach in detail. | 📋 |

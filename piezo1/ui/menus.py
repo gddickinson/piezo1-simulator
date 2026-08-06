@@ -195,6 +195,12 @@ def _analysis_menu(win, bar) -> None:
     _action(menu, "HaloTag &labelling…", win.show_labelling, "",
             "Per-site and whole-channel labelling over time, and the\n"
             "1:2:3-dye mixture. Kinetics imported from halotag_binding_sim.")
+    _action(menu, "Calcium &nanodomain…", win.show_nanodomain, "",
+            "Free calcium where the tag sits when this channel opens, from the\n"
+            "buffered-diffusion Green's function. Predicts ~114 uM at 4 nm\n"
+            "against a 0.2 uM sensor Kd, so a BAPTA sensor is SATURATED\n"
+            "whenever its own channel opens — meaning puncta brightness\n"
+            "reports labelling and open probability, not calcium amplitude.")
     _action(menu, "HaloTag &geometry…", win.show_fusion_numbers, "",
             "Where a C-terminal HaloTag would sit: accessible volume, distance\n"
             "to the pore exit and clearance. Draw it with View > HaloTag fusion.")

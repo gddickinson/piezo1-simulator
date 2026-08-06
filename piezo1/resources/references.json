@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 68,
+ "n_references": 72,
  "unresolved": [],
  "references": [
   {
@@ -19,6 +19,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1038/ncomms2899",
    "section": "Genetics and disease"
+  },
+  {
+   "key": "allbritton1992",
+   "topic": "Cytosolic calcium diffusion coefficient and buffering range",
+   "title": "Range of messenger action of calcium ion and inositol 1,4,5-trisphosphate",
+   "authors": "Allbritton NL, Meyer T, Stryer L.",
+   "journal": "Science (New York, N.Y.)",
+   "year": "1992",
+   "volume": "258",
+   "pages": "1812-1815",
+   "pmid": "1465619",
+   "pmcid": null,
+   "doi": "10.1126/science.1465619",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1126/science.1465619",
+   "section": "Other"
   },
   {
    "key": "andolfo2013",
@@ -770,6 +787,23 @@
    "section": "Genetics and disease"
   },
   {
+   "key": "naraghi1997",
+   "topic": "Linearised buffered diffusion; the screening length and its validity",
+   "title": "Linearized buffered Ca2+ diffusion in microdomains and its implications for calculation of [Ca2+] at the mouth of a calcium channel",
+   "authors": "Naraghi M, Neher E.",
+   "journal": "The Journal of neuroscience : the official journal of the Society for Neuroscience",
+   "year": "1997",
+   "volume": "17",
+   "pages": "6961-6973",
+   "pmid": "9278532",
+   "pmcid": "PMC6573285",
+   "doi": "10.1523/jneurosci.17-18-06961.1997",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1523/jneurosci.17-18-06961.1997",
+   "section": "Other"
+  },
+  {
    "key": "poole2014",
    "topic": "STOML3 tunes the displacement threshold",
    "title": "Tuning Piezo ion channels to detect molecular-scale movements relevant for fine touch",
@@ -974,6 +1008,23 @@
    "section": "Methods"
   },
   {
+   "key": "stern1992",
+   "topic": "The steady-state buffered-diffusion Green's function this model uses",
+   "title": "Buffering of calcium in the vicinity of a channel pore",
+   "authors": "Stern MD.",
+   "journal": "Cell calcium",
+   "year": "1992",
+   "volume": "13",
+   "pages": "183-192",
+   "pmid": "1315621",
+   "pmcid": null,
+   "doi": "10.1016/0143-4160(92)90046-u",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/0143-4160(92)90046-u",
+   "section": "Other"
+  },
+  {
    "key": "syeda2015",
    "topic": "Yoda1",
    "title": "Chemical activation of the mechanotransduction channel Piezo1",
@@ -989,6 +1040,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.7554/elife.07369",
    "section": "Lipids and pharmacology"
+  },
+  {
+   "key": "tsien1980bapta",
+   "topic": "BAPTA - the chelator scaffold of the JF646-BAPTA sensor, and its Kd",
+   "title": "New calcium indicators and buffers with high selectivity against magnesium and protons: design, synthesis, and properties of prototype structures",
+   "authors": "Tsien RY.",
+   "journal": "Biochemistry",
+   "year": "1980",
+   "volume": "19",
+   "pages": "2396-2404",
+   "pmid": "6770893",
+   "pmcid": null,
+   "doi": "10.1021/bi00552a018",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1021/bi00552a018",
+   "section": "Other"
   },
   {
    "key": "vaisey2026",

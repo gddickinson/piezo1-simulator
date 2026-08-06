@@ -180,4 +180,45 @@ TAG_PARAMETERS = [
          source_note="25-30 pS for PIEZO1 with monovalent cations; the "
                      "midpoint is the comparison target for the PNP model",
          description="Measured single-channel conductance."),
+
+    # ------------------------------------------------- calcium nanodomain ----
+    dict(key="nanodomain.d_calcium", name="Cytosolic calcium diffusivity",
+         value=2.2e-10, unit="m^2/s", minimum=1e-12, maximum=1e-8,
+         kind="empirical", category="Calcium nanodomain",
+         citation="allbritton1992",
+         source_note="220 um^2/s in cytosol - roughly a third of the value in "
+                     "water, because cytosolic buffers and obstacles retard it",
+         description="Effective diffusion coefficient of free Ca2+ in cytosol."),
+    dict(key="nanodomain.buffer_kon", name="Buffer association rate", value=1e8,
+         unit="1/(M s)", minimum=1e5, maximum=1e10, kind="empirical",
+         category="Calcium nanodomain", citation="naraghi1997",
+         source_note="a fast mobile endogenous buffer; with the concentration "
+                     "below this sets the screening length",
+         description="On-rate of the dominant cytosolic calcium buffer."),
+    dict(key="nanodomain.buffer_concentration", name="Free buffer concentration",
+         value=1e-4, unit="M", minimum=1e-7, maximum=1e-1, kind="empirical",
+         category="Calcium nanodomain", citation="naraghi1997",
+         source_note="~100 uM free mobile buffer, a typical cytosolic value. "
+                     "Only the product k_on*[B] matters, through lambda.",
+         description="Concentration of free calcium buffer in the cytosol."),
+    dict(key="nanodomain.sensor_kd", name="Calcium sensor dissociation constant",
+         value=2e-7, unit="M", minimum=1e-9, maximum=1e-3, kind="empirical",
+         category="Calcium nanodomain", citation="tsien1980bapta",
+         source_note="~0.2 uM for a BAPTA-based indicator; the threshold the "
+                     "nanodomain is compared against",
+         description="Kd of the BAPTA-based calcium sensor on the tag."),
+    dict(key="nanodomain.calcium_current_fraction",
+         name="Calcium share of the unitary current", value=0.05, unit="fraction",
+         minimum=0.0, maximum=1.0, kind="method",
+         category="Calcium nanodomain", citation="unverified",
+         source_note="PIEZO1 is weakly cation-selective; the PNP model gives "
+                     "under 5% at 2 mM Ca2+. Not measured for this channel, and "
+                     "it scales the nanodomain linearly, so it is swept.",
+         description="Fraction of the single-channel current carried by Ca2+."),
+    dict(key="nanodomain.resting_calcium", name="Resting cytosolic calcium",
+         value=1e-7, unit="M", minimum=1e-9, maximum=1e-5, kind="convention",
+         category="Calcium nanodomain", citation="convention",
+         source_note="~100 nM, the standard resting cytosolic level; the "
+                     "baseline the nanodomain sits on top of",
+         description="Bulk resting free calcium concentration."),
 ]

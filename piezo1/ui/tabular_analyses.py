@@ -34,6 +34,11 @@ CAVEATS = {
         "fusion; the tag body is a sphere of its radius of gyration and the "
         "linker length is unverified."),
     "interactions": "",
+    "nanodomain": (
+        "The tag distance is MODELLED, not measured, and the calcium share of "
+        "the current is unverified. Every deposited human structure is closed, "
+        "so the current is borrowed from the open-like 11ZC and labelled as "
+        "such."),
     "variant_structures": (
         "A null result, reported rather than worked around: every deposited "
         "human PIEZO1 structure is closed, so no difference in conductance can "
@@ -84,6 +89,10 @@ class TabularAnalysisMixin:
 
     def show_fusion_numbers(self) -> None:
         self._run_registry_analysis("fusion", "HaloTag fusion geometry")
+
+    def show_nanodomain(self) -> None:
+        self._run_registry_analysis(
+            "nanodomain", "Calcium nanodomain at the HaloTag")
 
     def show_variant_structures(self) -> None:
         """What the deposited variant structures can actually support."""

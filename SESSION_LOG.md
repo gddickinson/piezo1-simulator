@@ -4,6 +4,79 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 35 — the calcium nanodomain, and a prediction that held
+
+### The result
+Unusually for this project, the round's prediction survived. The screened
+Green's function, fed the two numbers Rounds 31 and 33 already produce, gives
+**113.8 µM at the tag** against a **0.2 µM** sensor Kd — **99.82% occupancy**.
+A BAPTA-based sensor on a C-terminal HaloTag is therefore saturated whenever its
+own channel opens, and reports opening as a binary event.
+
+The roadmap expected ~200 µM at 4–6 nm. The measured value is half that, because
+Round 31 moved the tag to 3.95 nm rather than the 4–6 nm assumed when the
+prediction was written. Same order, and far above the Kd either way, so the
+conclusion the number existed to support is unchanged — which is worth saying
+explicitly rather than quietly reporting a different figure.
+
+λ comes out at **148 nm**, far larger than the tag distance, so the exponential
+is essentially 1 where it matters: this nanodomain is set by geometry, not by
+buffering. That is worth knowing because it means the two buffer parameters —
+which are not separately identifiable anyway, only their product enters — barely
+influence the answer.
+
+### Making the claim falsifiable rather than merely robust
+A prediction that survives every parameter in its own model is only interesting
+if the range swept could have broken it, so the sweep spans 80 combinations of
+tag distance, calcium fraction and buffering, and a test asserts that **at least
+one combination desaturates the sensor**. Two do — and each needs 20 nm *and*
+0.5% calcium *and* ≥1 mM buffer simultaneously.
+
+The falsifiers are stated as numbers someone could go and measure: the tag would
+have to sit at 373 nm, or calcium carry 4.4e-5 of the current, or free buffer
+reach 0.14 M. All are two to three orders of magnitude from reality.
+
+### Two things found on the way
+**The sensor has a floor.** Resting calcium at 100 nM against a 0.2 µM Kd
+already holds it 33% occupied, so its dynamic range is 33–100%, not 0–100%.
+Asking for an occupancy below that floor has no answer at any distance, and the
+solver now returns infinity rather than its search bound. This surfaced as two
+test failures that looked like numerical noise and were not.
+
+**A silent frame bug.** The report entry detected the C3 axis on the *unframed*
+structure and applied it to the *framed* one. The axis and the coordinates were
+then in different frames, so the pore was measured along a line that misses the
+pore — and the **closed** 8YEZ came back carrying **32 pA** and making a 1.5 mM
+nanodomain. Every number downstream stayed finite and plausible; the only tell
+was that a closed structure was conducting. Caught by comparing the CLI output
+against the standalone calculation, fixed, and pinned by a test asserting a
+closed structure never reports its own current.
+
+That is the second time in three rounds that mixing framed and unframed
+coordinates has produced a confident wrong answer. Both times the symptom was a
+plausible number rather than an error.
+
+### What it joins up with
+Round 32 found that a saturating labelling protocol puts a dye on all three
+tags, so a 1:2:3 brightness mixture cannot come from a short incubation. Round 35
+finds the sensor saturated whenever the channel opens, so brightness cannot
+track calcium amplitude either. Together they say published puncta-brightness
+heterogeneity points at **unreactive tags and open probability** — two things
+that are measurable — rather than at dye kinetics or graded calcium.
+
+### Notes
+- Four references added through the title gate: `stern1992`, `naraghi1997`,
+  `allbritton1992`, `tsien1980bapta`. 72 resolve.
+- 6 parameters registered; the calcium share of the current is `unverified` and
+  is the one the answer scales linearly with, so it is swept rather than trusted.
+- The GUI-reachability test written last round earned its keep immediately: it
+  failed the moment `nanodomain` entered the registry without a menu entry.
+
+607 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 34 — the comparison that was not available, and a GUI audit
 
 ### What the round wanted, and why it could not happen

@@ -164,6 +164,22 @@ SEED = [
      'TITLE:"Access resistance of a small circular pore"',
      "Access resistance of a circular pore mouth - the term that limits a short "
      "wide pore", "access resistance"),
+    # --- calcium nanodomain, Round 35 ---------------------------------------
+    ("stern1992",
+     'TITLE:"Buffering of calcium in the vicinity of a channel pore"',
+     "The steady-state buffered-diffusion Green's function this model uses",
+     "calcium"),
+    ("naraghi1997",
+     'TITLE:"Linearized buffered Ca2+ diffusion in microdomains and its implications for calculation of [Ca2+] at the mouth of a calcium channel"',
+     "Linearised buffered diffusion; the screening length and its validity",
+     "calcium"),
+    ("allbritton1992",
+     'TITLE:"Range of messenger action of calcium ion and inositol 1,4,5-trisphosphate"',
+     "Cytosolic calcium diffusion coefficient and buffering range", "calcium"),
+    ("tsien1980bapta",
+     'TITLE:"New calcium indicators and buffers with high selectivity against magnesium and protons: design, synthesis, and properties of prototype structures"',
+     "BAPTA - the chelator scaffold of the JF646-BAPTA sensor, and its Kd",
+     "calcium"),
     ("bertaccini2025piezo1",
      'TITLE:"Visualizing PIEZO1 Localization and Activity in hiPSC-Derived Single Cells and Organoids with HaloTag Technology"',
      "The tagged-PIEZO1 experiment this labelling model describes; three tags "

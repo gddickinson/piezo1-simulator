@@ -9,7 +9,7 @@ Open-access full texts are downloaded to `ref/papers/` with
 git-ignored: the papers are other people's copyright, and the
 bibliography here is enough to retrieve them.
 
-**68 references.** 39 are open access.
+**72 references.** 39 are open access.
 
 ## Structure
 
@@ -157,6 +157,14 @@ bibliography here is enough to retrieve them.
 
 - **`hall1975access`** — Hall JE. *Access resistance of a small circular pore.* The Journal of general physiology 1975;66:531-532. [PMID 1181379](https://pubmed.ncbi.nlm.nih.gov/1181379/) · [doi:10.1085/jgp.66.4.531](https://doi.org/10.1085/jgp.66.4.531) · **OA**  
   <sub>Used for: Access resistance of a circular pore mouth - the term that limits a short wide pore</sub>
+- **`tsien1980bapta`** — Tsien RY. *New calcium indicators and buffers with high selectivity against magnesium and protons: design, synthesis, and properties of prototype structures.* Biochemistry 1980;19:2396-2404. [PMID 6770893](https://pubmed.ncbi.nlm.nih.gov/6770893/) · [doi:10.1021/bi00552a018](https://doi.org/10.1021/bi00552a018)  
+  <sub>Used for: BAPTA - the chelator scaffold of the JF646-BAPTA sensor, and its Kd</sub>
+- **`allbritton1992`** — Allbritton NL, Meyer T, Stryer L. *Range of messenger action of calcium ion and inositol 1,4,5-trisphosphate.* Science (New York, N.Y.) 1992;258:1812-1815. [PMID 1465619](https://pubmed.ncbi.nlm.nih.gov/1465619/) · [doi:10.1126/science.1465619](https://doi.org/10.1126/science.1465619)  
+  <sub>Used for: Cytosolic calcium diffusion coefficient and buffering range</sub>
+- **`stern1992`** — Stern MD. *Buffering of calcium in the vicinity of a channel pore.* Cell calcium 1992;13:183-192. [PMID 1315621](https://pubmed.ncbi.nlm.nih.gov/1315621/) · [doi:10.1016/0143-4160(92)90046-u](https://doi.org/10.1016/0143-4160(92)90046-u)  
+  <sub>Used for: The steady-state buffered-diffusion Green's function this model uses</sub>
+- **`naraghi1997`** — Naraghi M, Neher E. *Linearized buffered Ca2+ diffusion in microdomains and its implications for calculation of [Ca2+] at the mouth of a calcium channel.* The Journal of neuroscience : the official journal of the Society for Neuroscience 1997;17:6961-6973. [PMID 9278532](https://pubmed.ncbi.nlm.nih.gov/9278532/) · [doi:10.1523/jneurosci.17-18-06961.1997](https://doi.org/10.1523/jneurosci.17-18-06961.1997)  
+  <sub>Used for: Linearised buffered diffusion; the screening length and its validity</sub>
 - **`los2008halotag`** — Los GV, Encell LP, McDougall MG, Hartzell DD, Karassina N, Zimprich C, Wood MG, Learish R, Ohana RF, Urh M, Simpson D, Mendez J, Zimmerman K, Otto P, Vidugiris G, Zhu J, Darzins A, Klaubert DH, Bulleit RF, Wood KV. *HaloTag: a novel protein labeling technology for cell imaging and protein analysis.* ACS chemical biology 2008;3:373-382. [PMID 18533659](https://pubmed.ncbi.nlm.nih.gov/18533659/) · [doi:10.1021/cb800025k](https://doi.org/10.1021/cb800025k)  
   <sub>Used for: HaloTag chemistry; source of the covalent on-rate and its irreversibility</sub>
 - **`coste2010piezo`** — Coste B, Mathur J, Schmidt M, Earley TJ, Ranade S, Petrus MJ, Dubin AE, Patapoutian A. *Piezo1 and Piezo2 are essential components of distinct mechanically activated cation channels.* Science (New York, N.Y.) 2010;330:55-60. [PMID 20813920](https://pubmed.ncbi.nlm.nih.gov/20813920/) · [doi:10.1126/science.1193270](https://doi.org/10.1126/science.1193270)  

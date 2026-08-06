@@ -13,7 +13,8 @@ from ..core.structure import Structure
 from ..parameters import PARAMETERS
 from .report import _protomer_blocks
 
-__all__ = ["analysis_fusion", "analysis_labelling", "analysis_permeation"]
+__all__ = ["analysis_fusion", "analysis_labelling", "analysis_permeation",
+           "analysis_nanodomain"]
 
 
 def analysis_fusion(st: Structure, species: str, **kw) -> dict:
@@ -155,3 +156,89 @@ def analysis_permeation(st: Structure, species: str, step: float = 1.0,
                    "diffusivity and ion radius are unmeasured and the result "
                    "spans 16-94 pS across their plausible ranges")
     return out
+
+
+def analysis_nanodomain(st: Structure, species: str, step: float = 1.0,
+                        **kw) -> dict:
+    """Calcium at the tag when this channel is open, and whether a sensor saturates.
+
+    Needs the two numbers earlier rounds produce: the unitary current from the
+    pore, and the tag distance from the fusion model. A closed structure carries
+    no current, so the nanodomain is reported for the **open** reference entry
+    with the tag geometry taken from the loaded structure — and says so.
+    """
+    from ..physics.nanodomain import Nanodomain, screening_length, sweep
+    from ..physics.permeation import solve_pnp
+    from ..structure.frame import apply_frame, canonical_transform
+    from ..structure.fusion import build_fusion, load_halotag
+    from ..structure.pore import pore_profile
+    from ..structure.superpose import detect_c3_axis
+    from .hydration import load_grid, predict_wetting
+
+    grid = load_grid()
+    framed = apply_frame(st, canonical_transform(st))
+    # The axis must come from the SAME frame as the coordinates it is used with.
+    # Detecting it on the unframed structure and applying it to the framed one
+    # measured the pore along a line that misses the pore, and reported the
+    # closed 8YEZ as carrying 32 pA.
+    blocks, _ = _protomer_blocks(framed)
+    if blocks is None:
+        return {"error": "needs three well-resolved protomers"}
+    profile = pore_profile(framed, detect_c3_axis(blocks), step=step)
+    wetting = predict_wetting(framed, profile, grid) if grid.available else None
+    result = solve_pnp(profile, wetting)
+
+    current, source = abs(result.current), st.name
+    if current == 0.0:
+        # Every deposited human structure is closed (Round 34), so a nanodomain
+        # for the loaded entry would be exactly zero and uninformative. Borrow
+        # the current from the one open-like entry and label it.
+        from ..io.registry import load_registry
+        record = load_registry().get("11ZC")
+        if record is None or not record.available:
+            return {"error": "this structure is closed and 11ZC is not "
+                             "downloaded to supply an open-state current"}
+        open_st = Structure.from_file(record.path)
+        open_framed = apply_frame(open_st, canonical_transform(open_st))
+        open_blocks, _ = _protomer_blocks(open_framed)
+        open_profile = pore_profile(open_framed, detect_c3_axis(open_blocks),
+                                    step=step)
+        open_wetting = (predict_wetting(open_framed, open_profile, grid)
+                        if grid.available else None)
+        current = abs(solve_pnp(open_profile, open_wetting).current)
+        source = "11ZC (open-like)"
+
+    try:
+        model = build_fusion(framed, load_halotag())
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        return {"error": f"tag geometry unavailable: {exc}"}
+
+    reach = model.volume.distances_from(model.pore_exit) / 10.0
+    fraction = PARAMETERS.value("nanodomain.calcium_current_fraction")
+    nano = Nanodomain(current_A=current, calcium_fraction=fraction,
+                      distance_m=float(model.pore_exit_distances()[0]) * 1e-9,
+                      envelope_m=(float(reach.min()) * 1e-9,
+                                  float(reach.max()) * 1e-9))
+    far_c, near_c, far_occ, near_occ = nano.envelope_range()
+    rows = sweep(current)
+    return {
+        "current_source": source,
+        "unitary_current_pA": current * 1e12,
+        "calcium_fraction": fraction,
+        "tag_distance_nm": nano.distance_m * 1e9,
+        "screening_length_nm": screening_length() * 1e9,
+        "calcium_uM": nano.concentration_M * 1e6,
+        "sensor_occupancy": nano.occupancy,
+        "resting_occupancy": nano.resting_occupancy,
+        "saturated": nano.saturated,
+        "across_envelope": {
+            "calcium_uM": [far_c * 1e6, near_c * 1e6],
+            "occupancy": [far_occ, near_occ]},
+        "falsifiers": nano.falsifiers(),
+        "sweep_combinations": len(rows),
+        "sweep_not_saturated": sum(1 for r in rows if r["occupancy"] < 0.9),
+        "note": ("The sensor is saturated whenever its own channel opens, so "
+                 "puncta brightness reports labelling stoichiometry and open "
+                 "probability rather than calcium amplitude. Tag distance is "
+                 "modelled, not measured."),
+    }
