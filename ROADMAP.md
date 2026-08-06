@@ -4,7 +4,7 @@ Planned work, organised into ~20-minute rounds. Each round: implement, test,
 fix, update docs, commit. Items are marked `[ ]` planned, `[~]` in progress,
 `[x]` done. New improvements are appended after every fifth round.
 
-**Status:** Round 2 of 5 (block A)
+**Status:** Round 3 of 5 (block A)
 
 ---
 
@@ -45,16 +45,25 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   coordinates alone, with no knowledge of the annotation.
 - [ ] *Deferred to a later round:* expose the pore profile in the GUI.
 
-### Round 2 — Gating kinetics
-- [ ] `physics/kinetics.py`: the Young et al. 2023 PNAS four-state model
+### Round 2 — Gating kinetics  ✅
+- [x] `physics/kinetics.py`: the Young et al. 2023 PNAS four-state model
       (C ⇌ O ⇌ I₁ ⇌ I₂), parameterised directly in tension.
       σ₅₀ = 1.4 mN/m, b = 0.8 mN/m, k₁ = 5.1·exp(σ/b), k₃ = 34.6·exp(−σ/b),
       k₋₃ by microscopic reversibility.
-- [ ] Deterministic solution (matrix exponential) and stochastic single-channel
+- [x] Deterministic solution (matrix exponential) and stochastic single-channel
       simulation (Gillespie).
-- [ ] Simulated macroscopic current traces and pressure–response curves.
-- [ ] Validate: recover the published P50 and inactivation time course.
-- [ ] Tests; docs; commit.
+- [x] Simulated macroscopic current traces and pressure–response curves.
+- [x] Validate: recover the published P50 and inactivation time course.
+- [x] Tests; docs; commit.
+- **Result:** emergent half-activation **2.71 mN/m** against a measured
+  cell-attached T50 of **2.7 ± 0.1 mN/m** (Lewis & Grandl 2015). Detailed
+  balance exact to 1e-16. Mutants calibrated by *fold change*, reproducing
+  R2456H at 2.58x wild-type τ.
+- **Bug caught:** calibrating mutants to an *absolute* τ measured in a different
+  preparation (Bae's 8.6 ms whole-cell) against a model whose own wild-type τ is
+  35–80 ms made R2456H come out **faster** than wild type — the opposite of the
+  biology. Fold changes transfer between preparations; absolute time constants
+  do not. Now pinned by a test.
 
 ### Round 3 — Membrane mechanics
 - [ ] `physics/membrane.py`: Monge-gauge Helfrich solver for the membrane

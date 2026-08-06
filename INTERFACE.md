@@ -73,7 +73,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `modes.py` | Further mode analysis beyond `ModeSet.overlap` / `.cumulative_overlap` / `.msf` / `.collectivity`, which already live on the mode set. | `hinge_sites()`, `project()` | 📋 |
 | `membrane.py` | Monge-gauge Helfrich solver for the membrane footprint around the dome. | `MembraneFootprint`, `solve_shape()`, `footprint_energy()` | 📋 |
 | `dome.py` | Dome-model energetics: ΔE = −T·ΔA, tension–area coupling, state free energies. | `DomeModel`, `gating_energy()` | 📋 |
-| `kinetics.py` | Tension-dependent Markov gating model; stochastic and deterministic solutions; simulated patch-clamp traces. | `GatingModel`, `simulate_trace()`, `open_probability()` | 📋 |
+| `kinetics.py` | Four-state tension-dependent Markov gating (Young et al. 2023): rate matrix with enforced microscopic reversibility, steady state, step/ramp protocols, Gillespie single-channel simulation, and fold-change-calibrated mutant presets. | `GatingModel`, `GatingResult`, `MUTANT_PRESETS`, `STATE_NAMES` | ✅ |
 
 ### `piezo1/analysis/` — interpretation
 
@@ -152,6 +152,7 @@ geometry at a fraction of the triangle count.
 | `test_sequence_and_resources.py` | Ten cross-species equivalences, non-constant offset, resource integrity. | ✅ |
 | `test_morph.py` | Endpoint preparation, the chord artefact and its removal, modal capture fraction, mismatched-mode-set rejection. | ✅ |
 | `test_pore.py` | Leash enforcement, closed-vs-open bottleneck, and agreement between detected constrictions and the curated gate/CTD residues. | ✅ |
+| `test_kinetics.py` | Published rate values, microscopic reversibility, generator validity, half-activation against measured T50, Gillespie-vs-analytic agreement, and mutant direction. | ✅ |
 
 ## `docs/`
 
