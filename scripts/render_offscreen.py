@@ -27,6 +27,45 @@ from piezo1.render.representations import ColorBy, MolecularView, Style  # noqa:
 from piezo1.render.scene import Scene  # noqa: E402
 
 
+def _orient_to_symmetry_axis(camera, st, edge_on: bool = True) -> None:
+    """Point the camera relative to the molecular three-fold axis.
+
+    ``edge_on`` gives the dome *profile* — the axis vertical on screen and the
+    camera looking across it, which is the view that actually shows how curved
+    the membrane region is. Otherwise the camera looks straight down the axis.
+    """
+    from piezo1.render.camera import quat_from_axis_angle, quat_multiply
+    from piezo1.structure.superpose import detect_c3_axis
+
+    chains = []
+    for ch in st.chains:
+        m = st.mask_ca() & (st.chain == ch)
+        if m.sum() > 300:
+            chains.append((st.xyz[m], st.res_seq[m]))
+    if len(chains) < 3:
+        return
+    common = set(chains[0][1].tolist())
+    for _, seq in chains[1:]:
+        common &= set(seq.tolist())
+    common_arr = np.array(sorted(common))
+    blocks = [xyz[np.searchsorted(seq, common_arr)].astype(np.float64)
+              for xyz, seq in chains[:3]]
+    axis = detect_c3_axis(blocks).direction
+
+    # Build the rotation that carries the molecular axis onto screen-up (+y),
+    # then express it as the camera quaternion.
+    target = np.array([0.0, 1.0, 0.0]) if edge_on else np.array([0.0, 0.0, 1.0])
+    v = np.cross(axis, target)
+    s = np.linalg.norm(v)
+    if s < 1e-8:
+        return
+    angle = np.arctan2(s, float(np.dot(axis, target)))
+    camera.rotation = quat_multiply(
+        quat_from_axis_angle(v / s, angle),
+        np.array([1.0, 0.0, 0.0, 0.0]),
+    )
+
+
 def render(structure_id: str, out: Path, style: str, color: str,
            size: tuple[int, int], view: str, species: str,
            samples: int = 4) -> Path:
@@ -56,7 +95,9 @@ def render(structure_id: str, out: Path, style: str, color: str,
     scene.resize(w, h)
     # Orient first, then frame: the tight-fit calculation depends on which way
     # the molecule is facing.
-    if view == "side":
+    if view in ("profile", "axial"):
+        _orient_to_symmetry_axis(scene.camera, st, edge_on=(view == "profile"))
+    elif view == "side":
         scene.camera.orbit(0.0, 0.25)
     elif view == "top":
         scene.camera.orbit(0.0, -0.42)
@@ -102,7 +143,7 @@ def main() -> int:
     ap.add_argument("--color", default="domain",
                     choices=[c.value for c in ColorBy])
     ap.add_argument("--species", default="human", choices=["human", "mouse"])
-    ap.add_argument("--view", default="side", choices=["front", "side", "top"])
+    ap.add_argument("--view", default="side", choices=["front", "side", "top", "profile", "axial"])
     ap.add_argument("--size", nargs=2, type=int, default=[1400, 1000])
     ap.add_argument("-o", "--out", type=Path, default=None)
     args = ap.parse_args()

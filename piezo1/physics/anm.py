@@ -237,17 +237,38 @@ class ANM:
                                      d0=self.d0)
         return self
 
-    def calc_modes(self, n_modes: int = 20, zero_modes: int = 6,
+    def n_components(self) -> int:
+        """Number of disconnected pieces in the contact network.
+
+        This is not a curiosity. Each disconnected piece contributes its own
+        six rigid-body modes, so a model containing a detached fragment — an
+        isolated peptide, a stray ligand chain, a blade tip separated by a long
+        unmodelled loop — yields 6 x N near-zero eigenvalues. Discarding only
+        six then leaves rigid-body motions masquerading as the lowest
+        functional modes, which is a silent and thoroughly misleading failure.
+        """
+        from scipy.sparse.csgraph import connected_components
+        tree = cKDTree(self.coords)
+        adj = tree.sparse_distance_matrix(tree, self.cutoff, output_type="coo_matrix")
+        n, _ = connected_components(adj, directed=False)
+        return int(n)
+
+    def calc_modes(self, n_modes: int = 20, zero_modes: int | None = None,
                    shift: float = -1e-6, tol: float = 0.0) -> ModeSet:
         """Lowest non-trivial modes by shift-invert Lanczos.
 
-        The first six eigenvalues are the rigid-body translations and rotations
-        and are discarded. ``shift`` sits just below zero so shift-invert
-        converges onto the low end of the spectrum.
+        The rigid-body eigenvalues are discarded. ``zero_modes`` defaults to
+        ``6 * n_components``, which is the correct count for a network that may
+        not be fully connected; pass an explicit value to override.
+        ``shift`` sits just below zero so shift-invert converges onto the low
+        end of the spectrum.
         """
         if self.hessian is None:
             self.build()
         assert self.hessian is not None
+        n_comp = self.n_components()
+        if zero_modes is None:
+            zero_modes = 6 * n_comp
         k = n_modes + zero_modes
         n = 3 * self.n_sites
         if k >= n - 1:
@@ -267,6 +288,7 @@ class ANM:
         return ModeSet(eigenvalues=vals, vectors=vectors, n_sites=self.n_sites,
                        meta={"cutoff": self.cutoff, "spring": self.spring,
                              "gamma": self.gamma, "d0": self.d0,
+                             "n_components": n_comp,
                              "zero_modes_dropped": zero_modes,
                              "rigid_body_eigenvalues": np.sort(
                                  spla.eigsh(self.hessian, k=zero_modes,
