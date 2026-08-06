@@ -14,7 +14,7 @@ PY := $(CONDA_RUN) python
 
 .DEFAULT_GOAL := help
 .PHONY: help env lock fetch resources test lint gui reproduce verify quick \
-        figures validate clean-derived sizes
+        figures validate clean-derived sizes params audit
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -32,6 +32,7 @@ fetch:  ## Download structures, sequences, ligands and the CHAP grid
 	$(PY) -m piezo1.io.fetch
 
 resources:  ## Rebuild the curated annotation resources
+	$(PY) scripts/build_parameters.py
 	$(PY) scripts/build_uniprot_annotations.py
 	$(PY) scripts/build_domains.py
 	$(PY) scripts/build_functional_residues.py
@@ -43,6 +44,12 @@ test:  ## Run the test suite
 
 lint:  ## Static checks
 	$(CONDA_RUN) ruff check piezo1 scripts tests
+
+params:  ## Rebuild the parameter registry and check every citation resolves
+	$(PY) scripts/build_parameters.py
+
+audit:  ## Fail if any number in the science modules is unregistered
+	$(PY) -m piezo1.parameter_audit
 
 sizes:  ## Fail if any file exceeds the project's 500-line limit
 	@find piezo1 scripts tests -name '*.py' -exec wc -l {} + \

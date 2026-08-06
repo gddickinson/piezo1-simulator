@@ -175,6 +175,10 @@ def _options_menu(win, bar) -> None:
         group.addAction(action)
 
     menu.addSeparator()
+    _action(menu, "&Parameters…", win._show_parameters, "Ctrl+P",
+            "Every number the calculations use, with its default, its unit "
+            "and the paper it came from. Editable.")
+    menu.addSeparator()
     _action(menu, "&Restore default options", win._reset_options, "",
             "Forget every remembered setting and layout")
 

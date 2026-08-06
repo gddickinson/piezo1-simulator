@@ -29,6 +29,7 @@ import numpy as np
 
 from ..config import SEQUENCE_DIR
 from ..core.sequence import align_global, human_sequence
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["Ortholog", "OrthologSet", "ConservationProfile", "fetch_orthologs",
            "load_orthologs", "conservation_profile", "constrained_positions",
@@ -228,7 +229,7 @@ def conservation_profile(orthologs: OrthologSet,
 # --------------------------------------------------------------------------
 
 def constrained_positions(profile: ConservationProfile, annotations,
-                          conservation_threshold: float = 0.9,
+                          conservation_threshold: float | None = None,
                           min_coverage: float = 0.7,
                           resolved: set[int] | None = None) -> list[dict]:
     """Highly conserved positions with **no reported variant**.
@@ -240,6 +241,7 @@ def constrained_positions(profile: ConservationProfile, annotations,
     ``resolved`` optionally restricts to residues present in a structure, since
     an untestable prediction is not much use.
     """
+    conservation_threshold = _P.value("conservation.constrained_threshold") if conservation_threshold is None else conservation_threshold
     known = {v.residue for v in annotations.variants if v.residue is not None}
     out = []
     for res, cons, cov in zip(profile.residues, profile.conservation,

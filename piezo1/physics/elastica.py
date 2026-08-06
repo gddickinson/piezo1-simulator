@@ -54,6 +54,7 @@ from scipy.special import k0, k1
 
 from .membrane import (MembraneParameters, analytic_energy, decay_length,
                        solve_footprint)
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["ElasticaSolution", "solve_elastica", "LinearComparison",
            "compare_with_linear", "shape_equations", "axial_force",
@@ -62,7 +63,7 @@ __all__ = ["ElasticaSolution", "solve_elastica", "LinearComparison",
 #: Contact slope of the measured 7WLT dome where it meets the bilayer, from
 #: ``DomeModel.footprint``'s spherical-cap geometry. 63 degrees. Recorded here
 #: because it is the number that makes the linear theory inapplicable.
-PIEZO1_CONTACT_SLOPE = 2.0
+PIEZO1_CONTACT_SLOPE = _P.value("membrane.piezo1_contact_slope")
 
 
 def shape_equations(s, y, kappa: float, tension: float) -> np.ndarray:

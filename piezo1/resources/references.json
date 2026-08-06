@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 60,
+ "n_references": 62,
  "unresolved": [],
  "references": [
   {
@@ -600,6 +600,23 @@
    "section": "Methods"
   },
   {
+   "key": "leguilloux2009",
+   "topic": "fpocket: alpha-sphere pocket detection - source of the 3.0-5.5 A radii",
+   "title": "Fpocket: an open source platform for ligand pocket detection",
+   "authors": "Le Guilloux V, Schmidtke P, Tuffery P.",
+   "journal": "BMC bioinformatics",
+   "year": "2009",
+   "volume": "10",
+   "pages": "168",
+   "pmid": "19486540",
+   "pmcid": "PMC2700099",
+   "doi": "10.1186/1471-2105-10-168",
+   "is_open_access": true,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1186/1471-2105-10-168",
+   "section": "Methods"
+  },
+  {
    "key": "lewis2015",
    "topic": "Tension sensitivity; T50 2.7 and 4.7 mN/m",
    "title": "Mechanical sensitivity of Piezo1 ion channels can be tuned by cellular membrane tension",
@@ -802,6 +819,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1016/j.celrep.2020.108225",
    "section": "Lipids and pharmacology"
+  },
+  {
+   "key": "shrake1973",
+   "topic": "Shrake-Rupley numerical SASA; source of the 1.4 A water probe",
+   "title": "Environment and exposure to solvent of protein atoms. Lysozyme and insulin",
+   "authors": "Shrake A, Rupley JA.",
+   "journal": "Journal of molecular biology",
+   "year": "1973",
+   "volume": "79",
+   "pages": "351-371",
+   "pmid": "4760134",
+   "pmcid": null,
+   "doi": "10.1016/0022-2836(73)90011-9",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/0022-2836(73)90011-9",
+   "section": "Methods"
   },
   {
    "key": "smart1996hole",

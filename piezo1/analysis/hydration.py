@@ -44,6 +44,7 @@ import numpy as np
 
 from ..config import DERIVED_DIR
 from ..core.structure import Structure
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["WIMLEY_WHITE_NORMALISED", "HydrationGrid", "load_grid",
            "hydrophobicity_profile_chap", "predict_wetting",
@@ -61,14 +62,14 @@ RAO_CITATION = ("Rao S, Klesse G, Stansfeld PJ, Tucker SJ, Sansom MSP. A "
                 "gates. PNAS 2019;116:13989-13995. PMID 31235590.")
 
 #: 1 RT at room temperature, in kJ/mol. The contour CHAP draws.
-ENERGY_THRESHOLD_KJ = 2.6
+ENERGY_THRESHOLD_KJ = _P.value("hydration.energy_threshold")
 #: Sum-of-distances above which Rao et al. call a structure closed.
-CLOSED_SCORE_CUTOFF = 0.55
+CLOSED_SCORE_CUTOFF = _P.value("hydration.closed_cutoff")
 #: CHAP's default hydrophobicity kernel bandwidth, nm.
-KERNEL_BANDWIDTH_NM = 0.35
+KERNEL_BANDWIDTH_NM = _P.value("hydration.kernel_bandwidth")
 #: Radius of a water molecule, nm (Rao et al. 2019). Below this a pore is shut
 #: for steric reasons and the wetting question does not arise.
-WATER_RADIUS_NM = 0.15
+WATER_RADIUS_NM = _P.value("hydration.water_radius")
 
 #: Wimley–White whole-residue hydrophobicity, normalised to [-1, 1].
 #: Transcribed from CHAP's ``share/data/hydrophobicity/wimley_white_1996.json``

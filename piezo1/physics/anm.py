@@ -29,6 +29,7 @@ import numpy as np
 import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 from scipy.spatial import cKDTree
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["ANM", "ModeSet", "build_hessian", "SPRING_MODELS"]
 
@@ -43,7 +44,7 @@ def _gamma_uniform(dist: np.ndarray, gamma: float, **_: float) -> np.ndarray:
 
 
 def _gamma_inverse_square(dist: np.ndarray, gamma: float,
-                          d0: float = 7.5, **_: float) -> np.ndarray:
+                          d0: float = field(default_factory=lambda: _P.value("anm.d0")), **_: float) -> np.ndarray:
     """Parameter-free ANM weighting, gamma * (d0/d)^2 (Yang et al. 2009).
 
     Distant contacts are softened, which suppresses the spurious stiffening
@@ -218,8 +219,8 @@ class ANM:
     """Anisotropic network model over a set of C-alpha coordinates."""
 
     coords: np.ndarray
-    cutoff: float = 15.0
-    gamma: float = 1.0
+    cutoff: float = field(default_factory=lambda: _P.value("anm.cutoff"))
+    gamma: float = field(default_factory=lambda: _P.value("anm.gamma"))
     spring: str = "inverse_square"
     d0: float = 7.5
     hessian: sp.csr_matrix | None = field(default=None, repr=False)

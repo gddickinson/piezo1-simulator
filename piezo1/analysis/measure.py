@@ -20,6 +20,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from ..core.structure import Structure
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["distance", "angle", "dihedral", "radius_of_gyration",
            "inertia_tensor", "principal_axes", "helix_axis", "tilt_angle",
@@ -343,7 +344,7 @@ def buried_area(structure: Structure, mask_a: np.ndarray, mask_b: np.ndarray,
 # --------------------------------------------------------------------------
 
 def hydrophobicity_profile(structure: Structure, profile,
-                           radius: float = 8.0) -> np.ndarray:
+                           radius: float | None = None) -> np.ndarray:
     """Mean hydropathy of residues lining the pore at each slice.
 
     Takes a :class:`piezo1.structure.pore.PoreProfile` and returns the
@@ -354,6 +355,7 @@ def hydrophobicity_profile(structure: Structure, profile,
     strongly hydrophobic neck can dewet and remain non-conductive. Reading the
     two profiles together is the point.
     """
+    radius = _P.value("measure.hydrophobicity_radius") if radius is None else radius
     prot = structure.mask_protein() & ~structure.hetero
     xyz = structure.xyz[prot].astype(np.float64)
     names = structure.res_name[prot]

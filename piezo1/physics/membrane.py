@@ -38,6 +38,7 @@ import scipy.sparse.linalg as spla
 from scipy.special import k0, k1
 
 from ..config import KT_ROOM
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["MembraneParameters", "FootprintSolution", "decay_length",
            "analytic_profile", "analytic_energy", "solve_footprint",
@@ -69,8 +70,8 @@ class MembraneParameters:
     membrane, not a resting one.
     """
 
-    kappa: float = 20.0                  # bending modulus, k_BT
-    tension: float = 0.1                 # k_BT/nm^2
+    kappa: float = field(default_factory=lambda: _P.value("membrane.kappa"))
+    tension: float = field(default_factory=lambda: _P.value("membrane.tension"))
     label: str = "Haselwandter & MacKinnon 2018"
 
     @classmethod
@@ -157,7 +158,8 @@ class FootprintSolution:
     #: Slope above which the linearised Monge gauge stops being trustworthy.
     #: The expansion drops terms of order |grad h|^2 relative to 1, so at a
     #: slope of 0.5 the neglected terms are already ~25%.
-    SMALL_SLOPE_LIMIT: float = 0.5
+    SMALL_SLOPE_LIMIT: float = field(
+        default_factory=lambda: _P.value("membrane.small_slope_limit"))
 
     @property
     def max_slope(self) -> float:

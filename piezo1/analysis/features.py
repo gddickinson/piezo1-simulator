@@ -29,6 +29,7 @@ import numpy as np
 
 from ..core.annotations import Annotations, load_annotations
 from ..core.structure import Structure
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["ResidueFeatures", "build_feature_table", "MAX_ASA", "FEATURE_NOTES"]
 
@@ -156,13 +157,14 @@ def build_feature_table(structure: Structure,
                         blade_range: tuple[int, int] = (570, 1302),
                         include_conservation: bool = True,
                         include_sasa: bool = True,
-                        sasa_points: int = 64) -> ResidueFeatures:
+                        sasa_points: float | None = None) -> ResidueFeatures:
     """Compute every per-residue feature for one structure.
 
     Everything is averaged over the three protomers, because a homotrimer has
     three chemically identical copies of each residue and reporting one would
     make the answer depend on which chain the file happened to list first.
     """
+    sasa_points = _P.value("sasa.n_points_fast") if sasa_points is None else sasa_points
     from .allostery import (build_network, cross_correlation,
                             path_betweenness, perturbation_response)
     from ..physics.anm import ANM

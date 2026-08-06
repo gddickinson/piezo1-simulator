@@ -133,3 +133,52 @@ class PreferencesMixin:
         self._sequence_window.show()
         self._sequence_window.raise_()
         self._sequence_window.activateWindow()
+
+    def _show_parameters(self) -> None:
+        """Open the parameter registry editor."""
+        from ..parameters import PARAMETERS
+        from .parameters_dialog import ParametersDialog
+
+        dialog = ParametersDialog(self._reference_lookup(), self)
+        dialog.changed.connect(self._on_parameters_changed)
+        dialog.exec()
+        self._on_parameters_changed()
+        del PARAMETERS
+
+    @staticmethod
+    def _reference_lookup() -> dict:
+        """Citation key -> formatted reference, for the parameter tooltips."""
+        import json
+
+        from ..config import RESOURCE_DIR
+        path = RESOURCE_DIR / "references.json"
+        if not path.exists():
+            return {}
+        out = {}
+        for entry in json.loads(path.read_text())["references"]:
+            bits = [entry.get("authors", ""), entry.get("title", ""),
+                    entry.get("journal", ""), str(entry.get("year", ""))]
+            out[entry["key"]] = " ".join(b for b in bits if b)
+            if entry.get("pmid"):
+                out[entry["key"]] += f" PMID {entry['pmid']}"
+        return out
+
+    def _on_parameters_changed(self) -> None:
+        """Make a non-default parameter set visible wherever a number appears.
+
+        Silent overrides are the failure this whole mechanism exists to
+        prevent, so the status bar says so persistently rather than once.
+        """
+        from ..parameters import PARAMETERS
+        if PARAMETERS.modified:
+            self._set_status("⚠ " + PARAMETERS.override_summary())
+            self.hint_label.setText(
+                f"⚠ {len(PARAMETERS.overrides())} non-default parameter(s)")
+            self.hint_label.setStyleSheet("color:#f2a65a;")
+            self.hint_label.setVisible(True)
+        else:
+            self._set_status("parameters at their documented defaults")
+            self.hint_label.setText(
+                "drag rotate · shift+drag pan · wheel zoom · R reset · "
+                "space spin · click to identify")
+            self.hint_label.setStyleSheet("color:#6f7684;")

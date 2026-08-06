@@ -89,6 +89,37 @@ variants use human.* The offset is **not** a constant. Never hard-code a
 conversion — always go through `piezo1.core.sequence`. Any residue number in
 code, data or UI must state its numbering system.
 
+**Every number is a registered parameter. This is not optional.**
+
+Any number a calculation depends on lives in the registry, not in a literal.
+A constant written into a function default is invisible: it cannot be listed,
+shown to a user, or traced to a paper — and several numbers this project has
+had to correct were invisible in exactly that way.
+
+- Declare it in `scripts/build_parameters.py` with a **unit**, **bounds**, a
+  **kind** (`physical` / `empirical` / `method` / `convention`), a
+  **description**, and a **citation**. Rebuild with
+  `python scripts/build_parameters.py`.
+- The citation must be a key that exists in `references.json`. If there is no
+  paper, use one of the sentinels (`method_choice`, `measured_here`, `derived`,
+  `convention`, `unverified`) — each of which **obliges you to say why** in
+  `source_note`. The build refuses to write the resource otherwise.
+- Consume it as `_P.value("key")` — via `field(default_factory=...)` for a
+  dataclass field, or a `None` default resolved in the body for a function
+  argument. Resolve at **call time**, so an override takes effect on the next
+  call rather than at import.
+- `python -m piezo1.parameter_audit` must stay clean. It scans `physics/`,
+  `structure/` and `analysis/` and fails on any numeric literal that is neither
+  registered nor listed in `EXEMPT`/`EXEMPT_NAMES` **with a stated reason**.
+  Tolerances, seeds, iteration caps and zero-initialised fields are legitimately
+  exempt; a physical quantity never is. `tests/test_parameters.py` enforces this
+  on every run.
+- Anything that records a result must record the parameter set with it.
+  Reports carry a banner when a parameter is non-default, and
+  `verify_claims` **refuses to run** against a modified registry — the
+  documented numbers were produced at the defaults, and comparing against
+  anything else would report drift the user caused.
+
 **Code style.**
 - Files stay under 500 lines. If one is heading past that, split it first.
 - Structure-of-arrays with numpy, not per-atom Python objects. A PIEZO1 trimer

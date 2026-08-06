@@ -24,6 +24,7 @@ import numpy as np
 from .. import __version__
 from ..core.structure import Structure
 from ..io.registry import load_registry
+from ..parameters import PARAMETERS
 
 __all__ = ["Provenance", "AnalysisReport", "collect_provenance",
            "build_report", "ANALYSES"]
@@ -51,6 +52,11 @@ class Provenance:
     libraries: dict[str, str] = field(default_factory=dict)
     structure: dict = field(default_factory=dict)
     parameters: dict = field(default_factory=dict)
+    #: Registry parameters differing from their documented defaults. Empty is
+    #: the normal case and means every number below came from the published
+    #: parameter set; non-empty means it did not, and the report says so at the
+    #: top rather than leaving the reader to assume.
+    parameter_overrides: dict = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
 
     def as_dict(self) -> dict:
@@ -59,6 +65,7 @@ class Provenance:
             "timestamp": self.timestamp, "python": self.python,
             "platform": self.platform, "libraries": self.libraries,
             "structure": self.structure, "parameters": self.parameters,
+            "parameter_overrides": self.parameter_overrides,
             "warnings": self.warnings,
         }
 
@@ -72,7 +79,14 @@ def collect_provenance(structure: Structure | None = None,
         platform=f"{platform.system()} {platform.machine()}",
         libraries=_library_versions(),
         parameters=dict(parameters or {}),
+        parameter_overrides=PARAMETERS.overrides(),
     )
+    if prov.parameter_overrides:
+        prov.warnings.append(
+            "Computed with non-default parameters — "
+            + PARAMETERS.override_summary()
+            + ". These numbers are NOT comparable with the values in "
+              "docs/SCIENCE.md, which were produced at the documented defaults.")
     if structure is not None:
         record = load_registry().get(structure.name)
         prov.structure = {
@@ -116,6 +130,15 @@ class AnalysisReport:
     def to_markdown(self, path: str | Path | None = None) -> str:
         p = self.provenance
         lines = [f"# {self.title}", ""]
+        if p.parameter_overrides:
+            # At the top rather than buried in the provenance footer: a reader
+            # who skims must not take these numbers for the documented ones.
+            lines += ["> **⚠ Non-default parameters.** "
+                      + "; ".join(f"`{k}` = {v:g} (default "
+                                  f"{PARAMETERS.default(k):g})"
+                                  for k, v in sorted(p.parameter_overrides.items()))
+                      + ". These results are not comparable with the values in "
+                        "`docs/SCIENCE.md`.", ""]
         if p.structure:
             s = p.structure
             lines += [f"**{s.get('name')}** — {s.get('species', '?')}, "
@@ -136,6 +159,10 @@ class AnalysisReport:
         if p.parameters:
             lines.append("- parameters: " +
                          ", ".join(f"{k}={v}" for k, v in p.parameters.items()))
+        lines.append("- parameter registry: " +
+                     ("all at documented defaults"
+                      if not p.parameter_overrides
+                      else PARAMETERS.override_summary()))
         for w in p.warnings:
             lines.append(f"- ⚠ {w}")
         text = "\n".join(lines) + "\n"

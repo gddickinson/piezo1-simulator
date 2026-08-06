@@ -43,6 +43,7 @@ from dataclasses import dataclass, field, replace
 
 import numpy as np
 from scipy.linalg import expm, null_space
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["GatingModel", "GatingResult", "STATE_NAMES", "MUTANT_PRESETS"]
 
@@ -105,19 +106,29 @@ class GatingResult:
 class GatingModel:
     """Four-state tension-dependent PIEZO1 gating model (Young et al. 2023)."""
 
-    sigma_50: float = 1.4        # mN/m
-    b: float = 0.8               # mN/m, slope factor
-    k1_0: float = 5.1            # s^-1, C -> O prefactor
-    km1_0: float = 5.0           # s^-1, O -> C prefactor
-    k2: float = 8.0              # s^-1, O -> I1
-    km2: float = 0.4             # s^-1, I1 -> O
-    k3_0: float = 34.6           # s^-1, I1 -> C prefactor
-    k4: float = 4.0              # s^-1, O -> I2
-    km4: float = 0.6             # s^-1, I2 -> O
+    sigma_50: float = field(
+        default_factory=lambda: _P.value("kinetics.sigma_50"))        # mN/m
+    b: float = field(
+        default_factory=lambda: _P.value("kinetics.b"))               # mN/m, slope factor
+    k1_0: float = field(
+        default_factory=lambda: _P.value("kinetics.k1_0"))            # s^-1, C -> O prefactor
+    km1_0: float = field(
+        default_factory=lambda: _P.value("kinetics.km1_0"))           # s^-1, O -> C prefactor
+    k2: float = field(
+        default_factory=lambda: _P.value("kinetics.k2"))              # s^-1, O -> I1
+    km2: float = field(
+        default_factory=lambda: _P.value("kinetics.km2"))             # s^-1, I1 -> O
+    k3_0: float = field(
+        default_factory=lambda: _P.value("kinetics.k3_0"))           # s^-1, I1 -> C prefactor
+    k4: float = field(
+        default_factory=lambda: _P.value("kinetics.k4"))              # s^-1, O -> I2
+    km4: float = field(
+        default_factory=lambda: _P.value("kinetics.km4"))             # s^-1, I2 -> O
     #: Alternative topology in which I2 sits downstream of I1 rather than O.
     i2_downstream_of_i1: bool = False
     #: Single-channel conductance (pS) and holding potential (mV).
-    conductance_pS: float = 30.0
+    conductance_pS: float = field(
+        default_factory=lambda: _P.value("kinetics.conductance_pS"))
     holding_mV: float = -80.0
     label: str = "wild type"
     provenance: str = ("Young, Sindoni, Lewis, Zauscher & Grandl 2023, PNAS — "
@@ -401,7 +412,7 @@ class GatingModel:
 #:
 #: None of these is a structural prediction — each is a rate tuned to match an
 #: observation, and every display of them says so.
-WT_TAU_MS = 8.6          # Bae et al. PNAS 2013, whole cell at -80 mV
+WT_TAU_MS = _P.value("kinetics.wt_tau_ms")          # Bae et al. PNAS 2013, whole cell at -80 mV
 MUTANT_PRESETS = {
     "R2456H": {
         "tau_ratio": 22.2 / 8.6, "classification": "GoF",

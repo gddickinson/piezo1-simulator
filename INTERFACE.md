@@ -40,6 +40,8 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | File | Purpose | Key names | Status |
 |---|---|---|---|
 | `cli.py` | Headless command line: `list`, `dome`, `pore`, `hydration`, `modes`, `pockets`, `interactions`, `variants`, `conservation`, `report`, `batch`. | `main()`, `build_parser()` | ✅ |
+| `parameters.py` | **The single source of truth for every number a calculation uses.** Loaded from `resources/parameters.json`; each value carries a unit, bounds, a kind and a citation. Overrides are tracked, not silent — reports flag them and the claims verifier refuses to run against them. | `Parameter`, `ParameterRegistry`, `PARAMETERS`, `value()`, `set_value()`, `reset()`, `overrides()`, `resolve()` | ✅ |
+| `parameter_audit.py` | Scans `physics/`, `structure/` and `analysis/` for numeric literals that are neither registered nor exempt **with a stated reason**. The mechanism that keeps the rule from decaying into an aspiration. | `audit()`, `Finding`, `EXEMPT`, `EXEMPT_NAMES`, `MAPPED` | ✅ |
 | `config.py` | All filesystem paths, physical constants, runtime settings. Every module imports paths from here. | `PROJECT_ROOT`, `REF_DIR`, `STRUCTURE_DIR`, `RESOURCE_DIR`, `HUMAN_ACC`, `MOUSE_ACC`, `KT_ROOM`, `RenderSettings`, `AppSettings`, `SETTINGS`, `ensure_dirs()` | ✅ |
 
 ### `piezo1/io/` — data acquisition and parsing
@@ -128,6 +130,7 @@ geometry at a fraction of the triangle count.
 | `app.py` | Launcher: `--geometry WxH`, `--structure`, `--maximised`, and the Qt event loop. | `main()` | ✅ |
 | `docks.py` | Every panel as a movable, floatable, closable dock in any area; captures the shipped layout at startup so **Reset layout** always has somewhere to return to, and persists geometry through `QSettings` with a clamp so a layout saved on a large monitor cannot reopen off-screen. | `DockManager`, `DockSpec` | ✅ |
 | `menus.py` | File, View, Analysis, Options and Help menus, with tooltips carrying what each analysis computes. | `build_menus()`, `make_settings()` | ✅ |
+| `parameters_dialog.py` | The parameter editor (Options → Parameters, Ctrl+P): every registered number with its default, unit and citation, the full reference on the tooltip. Overridden rows are marked amber. | `ParametersDialog` | ✅ |
 | `preferences.py` | Remembered settings and their menu handlers: layout memory, status hints, spin speed, and **what a selection does to the camera** (leave still / centre / centre and zoom). | `PreferencesMixin` | ✅ |
 | `help_content.py` | The in-application guide as data: seven topics, the shortcut table, and the document index. Includes the null result and the corrected footprint number. | `TOPICS`, `DOC_LINKS`, `SHORTCUTS` | ✅ |
 | `help_dialog.py` | Non-modal help window — feature guide, shortcuts, and links that open the shipped documents. | `HelpDialog`, `open_document()` | ✅ |
@@ -157,6 +160,7 @@ geometry at a fraction of the triangle count.
 | `numbering_human_mouse.json` | Cached human↔mouse alignment map. | ✅ |
 | `ligands.json` | Yoda1, Yoda2, Jedi1/2, Dooku1, GsMTx4 and lipids with chemistry and binding-site residues. | 📋 |
 | `structures.json` | Registry of 21 structures with state, resolution, coverage, ligands, citation. | ✅ |
+| `parameters.json` | **61 parameters** in 12 categories — every number the calculations use, with unit, bounds, kind and citation. 31 cite a paper; 30 are method choices, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
 
 ---
 
@@ -170,6 +174,7 @@ geometry at a fraction of the triangle count.
 | `build_functional_residues.py` | Authors `functional_residues.json`, verifying each residue against the sequence. | ✅ |
 | `build_variants.py` | Promotes researched variants into `variants.json` behind a validation gate. | ✅ |
 | `build_structure_registry.py` | Authors `structures.json`. | ✅ |
+| `build_parameters.py` | Authors `parameters.json`. Refuses to write unless every citation resolves in `references.json` or declares itself a method choice **and says why**. | ✅ |
 | `reproduce.py` | One-command reproduction: fetch, rebuild resources, test, re-run both validations, regenerate figures, then **verify every documented number**. `--verify`, `--quick`, `--skip`, `--only`. | ✅ |
 | `render_offscreen.py` | Headless render to PNG; also a renderer regression check. | ✅ |
 | `make_figures.py` | All README/doc figures, on shared scale and orientation. | ✅ |
@@ -201,6 +206,7 @@ geometry at a fraction of the triangle count.
 | `test_ensemble.py` | Shared-basis construction, paralogue exclusion, reversed-protomer detection, PC1-as-gating-coordinate, and A-mode dominance against a random control. | ✅ |
 | `test_features.py` | Column completeness and documentation, distance/response falloff, the symmetric-PRS finding, and a guard forbidding any two columns from being the same quantity. | ✅ |
 | `test_measurement_set.py` | Pick accumulation, double-click rejection, kind switching, CSV export, and the disulfide measured on real coordinates. | ✅ |
+| `test_parameters.py` | The registry and its enforcement: every citation resolving, defaults inside their own bounds, overrides tracked and clamped, claims refusing to run against a modified registry, reports flagging it — and the audit, including a test that it would catch a newly invented constant. | ✅ |
 | `test_reproducibility.py` | The claims registry — that tolerances are tight enough to mean something, that recorded results are frozen, that drift is actually detected, and that missing data reports as skipped rather than drift. Plus packaging: GUI deps optional, entry points resolving, downloads not shipped. | ✅ |
 | `test_workflow.py` | Session round-trip and format guards, provenance capture, report failure handling, and the argparse flag-position trap. | ✅ |
 | `test_ui_shell.py` | Docks, menus, layout reset, window sizing, focus-mode and the help content — including a guard that the guide still states the null result. | ✅ |

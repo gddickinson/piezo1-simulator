@@ -1530,3 +1530,77 @@ rather than *drifted*. Both would have passed vacuously if the registry simply
 returned success.
 
 Suite 376 → 390 passing.
+
+## Parameter registry — every number gets a citation (2026-08-06)
+
+An audit of `physics/`, `structure/` and `analysis/` found **203 numeric
+literals**. Some were physical constants from named papers; some were
+convergence tolerances; and from the outside there was no way to tell which was
+which. That is the problem: a constant written into a function default is
+invisible. You cannot list them, show them to a user, or trace one to a paper.
+
+This project has already had to correct several numbers that were invisible in
+exactly that way — the footprint area wrong by 3.5×, the Bessel ratio by 2.5×,
+the biharmonic decay length by a factor of three.
+
+### What was built
+
+`piezo1/resources/parameters.json` holds **61 parameters** across 12
+categories, each with a unit, bounds, a kind (physical / empirical / method /
+convention), a description and a citation. It is authored by
+`scripts/build_parameters.py`, in the same shape as `build_variants.py`:
+authored content, validated on the way out, committed as a resource. Keeping it
+as data means the whole parameter set can be read and diffed without opening a
+module.
+
+**The gate is the point.** A citation must resolve to a key in
+`references.json`, or be one of five sentinels — `method_choice`,
+`measured_here`, `derived`, `convention`, `unverified` — each of which *obliges
+the entry to say why* in `source_note`. The build refuses to write otherwise. It
+caught eight entries where I had left the note blank, and I filled them in
+rather than weakening the gate. Two references had to be added first (fpocket
+and Shrake–Rupley); the reference builder's own `expect` gate then rejected my
+first attempt at Shrake–Rupley because I picked a word that is not in the title.
+
+31 of the 61 cite a published paper. The other 30 are method choices, and saying
+so explicitly is more honest than dressing them up.
+
+### Overrides are tracked, not silent
+
+Modules resolve through the registry **at call time**, so a change takes effect
+on the next call. That makes the values genuinely editable — and immediately
+raises the real problem: a number computed with a changed parameter is not the
+number in `docs/SCIENCE.md`, and nothing would have said so.
+
+So three things enforce it:
+
+- `verify_claims` **refuses to run** against a modified registry. Every
+  documented number was produced at the defaults; recomputing with a changed
+  value would report drift the *user* caused, and the obvious reading of that
+  report is that the code is broken.
+- Reports carry a warning banner **at the top**, not in the provenance footer,
+  and `Provenance` gained a `parameter_overrides` field.
+- The GUI keeps a persistent amber indicator in the status bar.
+
+### The audit is what makes it a rule
+
+A convention nobody checks decays at the first hurry. `piezo1/parameter_audit.py`
+scans the three scientific packages and fails on any numeric literal that is
+neither registered nor listed in `EXEMPT` **with a stated reason**. It started
+at 18 unaccounted; 11 were registered-but-unmigrated and 7 were genuinely
+unregistered — those became new parameters rather than new exemptions.
+
+The exemption categories matter as much as the registrations. A convergence
+tolerance, an iteration cap, a random seed and a zero-initialised dataclass
+field are implementation details, and pretending otherwise would bury the real
+parameters in noise. What the audit insists on is that the exemption is a
+decision someone made and wrote down.
+
+There is a test that invents a module containing `binding_energy = 7.25` and
+requires the audit to catch it — a detector that has never detected is
+decoration.
+
+`make audit` and `make params` are build steps, and both run inside
+`make reproduce`. The rule is written into `CLAUDE.md`. Suite 390 → 408 passing,
+and all 17 documented numbers still reproduce, which is the check that the
+migration changed nothing scientific.

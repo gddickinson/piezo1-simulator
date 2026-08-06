@@ -49,6 +49,10 @@ def run(label: str, command: list[str], optional: bool = False) -> bool:
 STEPS = [
     ("fetch", "Download structures, sequences, ligands and the CHAP grid",
      [sys.executable, "-m", "piezo1.io.fetch"], False),
+    ("parameters", "Rebuild the parameter registry (checks every citation)",
+     [sys.executable, "scripts/build_parameters.py"], False),
+    ("audit", "Check no number in the science modules is unregistered",
+     [sys.executable, "-m", "piezo1.parameter_audit"], False),
     ("resources", "Rebuild the curated annotation resources",
      [sys.executable, "scripts/build_uniprot_annotations.py"], True),
     ("domains", "Rebuild domain definitions",

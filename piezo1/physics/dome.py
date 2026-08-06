@@ -39,6 +39,7 @@ import numpy as np
 
 from .membrane import (MembraneParameters, kt_per_nm2_to_mnm,
                        mnm_to_kt_per_nm2, solve_footprint)
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["DomeModel", "DomeGeometrySummary", "gating_energy",
            "open_probability", "half_activation_tension",
@@ -132,8 +133,10 @@ class DomeModel:
     are the ones that reproduce measured tension-response curves.
     """
 
-    delta_area: float = 8.0              # nm^2, area change on gating
-    delta_g0: float = 9.7                # k_BT, intrinsic closed-state bias
+    delta_area: float = field(
+        default_factory=lambda: _P.value("dome.delta_area"))              # nm^2, area change on gating
+    delta_g0: float = field(
+        default_factory=lambda: _P.value("dome.delta_g0"))                # k_BT, intrinsic closed-state bias
     geometry: DomeGeometrySummary | None = None
     membrane: MembraneParameters = field(default_factory=MembraneParameters)
     label: str = "Cox et al. 2016 functional parameters"

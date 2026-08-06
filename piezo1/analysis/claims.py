@@ -57,12 +57,21 @@ class ClaimResult:
     value: float | None
     seconds: float
     error: str = ""
+    #: Parameter overrides in force when this was computed. Non-empty means the
+    #: number did not come from the documented parameter set and must not be
+    #: compared with the documentation as though it had.
+    parameters: dict = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
         if self.error or self.value is None:
             return False
         return abs(self.value - self.claim.expected) <= self.claim.tolerance
+
+    @property
+    def comparable(self) -> bool:
+        """False when overrides mean this cannot be read as reproduction."""
+        return not self.parameters
 
     def line(self) -> str:
         if self.error:
@@ -309,8 +318,27 @@ def claims_by_cost(max_cost: str = "slow") -> list[Claim]:
 
 
 def verify_claims(claims: list[Claim] | None = None,
-                  verbose: bool = True) -> list[ClaimResult]:
-    """Recompute each claim and compare with what the documentation says."""
+                  verbose: bool = True,
+                  allow_overrides: bool = False) -> list[ClaimResult]:
+    """Recompute each claim and compare with what the documentation says.
+
+    **Refuses to run against overridden parameters.** Every documented number
+    was produced with the registry at its defaults, so recomputing with a
+    changed value would report drift that the user caused — and the obvious
+    reading of that report would be that the code is broken. Pass
+    ``allow_overrides=True`` to compare deliberately, in which case every
+    result is annotated with the parameter set that produced it.
+    """
+    from ..parameters import PARAMETERS
+
+    changed = PARAMETERS.overrides()
+    if changed and not allow_overrides:
+        raise RuntimeError(
+            "cannot verify documented numbers against modified parameters — "
+            + PARAMETERS.override_summary()
+            + ". Reset them (piezo1.parameters.reset()) or pass "
+              "allow_overrides=True to compare on purpose.")
+
     results = []
     for claim in (claims if claims is not None else CLAIMS):
         start = time.time()
@@ -319,7 +347,8 @@ def verify_claims(claims: list[Claim] | None = None,
             error = ""
         except Exception as exc:
             value, error = None, f"{type(exc).__name__}: {exc}"
-        result = ClaimResult(claim, value, time.time() - start, error)
+        result = ClaimResult(claim, value, time.time() - start, error,
+                             parameters=dict(changed))
         results.append(result)
         if verbose:
             print(result.line(), flush=True)

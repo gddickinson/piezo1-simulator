@@ -9,7 +9,7 @@ Open-access full texts are downloaded to `ref/papers/` with
 git-ignored: the papers are other people's copyright, and the
 bibliography here is enough to retrieve them.
 
-**60 references.** 34 are open access.
+**62 references.** 35 are open access.
 
 ## Structure
 
@@ -116,6 +116,8 @@ bibliography here is enough to retrieve them.
 
 ## Methods
 
+- **`shrake1973`** — Shrake A, Rupley JA. *Environment and exposure to solvent of protein atoms. Lysozyme and insulin.* Journal of molecular biology 1973;79:351-371. [PMID 4760134](https://pubmed.ncbi.nlm.nih.gov/4760134/) · [doi:10.1016/0022-2836(73)90011-9](https://doi.org/10.1016/0022-2836(73)90011-9)  
+  <sub>Used for: Shrake-Rupley numerical SASA; source of the 1.4 A water probe</sub>
 - **`kabsch1976`** — Kabsch W. *A solution for the best rotation to relate two sets of vectors.* Acta Crystallographica Section A 1976;32:922-923. [doi:10.1107/S0567739476001873](https://doi.org/10.1107/S0567739476001873)  
   <sub>Used for: Optimal rotation superposition</sub>
 - **`smart1996hole`** — Smart OS, Neduvelil JG, Wang X, Wallace BA, Sansom MS. *HOLE: a program for the analysis of the pore dimensions of ion channel structural models.* Journal of molecular graphics 1996;14:354-60, 376. [PMID 9195488](https://pubmed.ncbi.nlm.nih.gov/9195488/) · [doi:10.1016/s0263-7855(97)00009-x](https://doi.org/10.1016/s0263-7855(97)00009-x)  
@@ -128,6 +130,8 @@ bibliography here is enough to retrieve them.
   <sub>Used for: Liquid-vapour oscillations of water in hydrophobic nanopores</sub>
 - **`schymkowitz2005foldx`** — Schymkowitz J, Borg J, Stricher F, Nys R, Rousseau F, Serrano L. *The FoldX web server: an online force field.* Nucleic acids research 2005;33:W382-8. [PMID 15980494](https://pubmed.ncbi.nlm.nih.gov/15980494/) · [doi:10.1093/nar/gki387](https://doi.org/10.1093/nar/gki387) · **OA**  
   <sub>Used for: FoldX force field - source of the precomputed ddG</sub>
+- **`leguilloux2009`** — Le Guilloux V, Schmidtke P, Tuffery P. *Fpocket: an open source platform for ligand pocket detection.* BMC bioinformatics 2009;10:168. [PMID 19486540](https://pubmed.ncbi.nlm.nih.gov/19486540/) · [doi:10.1186/1471-2105-10-168](https://doi.org/10.1186/1471-2105-10-168) · **OA**  
+  <sub>Used for: fpocket: alpha-sphere pocket detection - source of the 3.0-5.5 A radii</sub>
 - **`bahar2010`** — Bahar I, Lezon TR, Bakan A, Shrivastava IH. *Normal mode analysis of biomolecular structures: functional mechanisms of membrane proteins.* Chemical reviews 2010;110:1463-1497. [PMID 19785456](https://pubmed.ncbi.nlm.nih.gov/19785456/) · [doi:10.1021/cr900095e](https://doi.org/10.1021/cr900095e)  
   <sub>Used for: Normal mode analysis of membrane proteins - review</sub>
 - **`aryal2015`** — Aryal P, Sansom MS, Tucker SJ. *Hydrophobic gating in ion channels.* Journal of molecular biology 2015;427:121-130. [PMID 25106689](https://pubmed.ncbi.nlm.nih.gov/25106689/) · [doi:10.1016/j.jmb.2014.07.030](https://doi.org/10.1016/j.jmb.2014.07.030)  

@@ -29,6 +29,7 @@ import numpy as np
 from scipy.spatial import Delaunay, cKDTree
 
 from ..core.structure import Structure
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["AlphaSpheres", "Pocket", "find_pockets", "alpha_spheres",
            "ligand_contact_residues"]
@@ -191,13 +192,15 @@ def _monte_carlo_volume(centers: np.ndarray, radii: np.ndarray,
 
 
 def _buriedness(center: np.ndarray, coords: np.ndarray, tree: cKDTree,
-                n_rays: int = 42, reach: float = 14.0,
-                clearance: float = 2.6) -> float:
+                n_rays: int = 42, reach: float | None = None,
+                clearance: float | None = None) -> float:
     """Fraction of directions from a point that run into protein.
 
     A cavity buried in the core scores near 1; a dimple on the surface scores
     low. Rays are sampled on a golden spiral so the result is deterministic.
     """
+    clearance = _P.value("pockets.buriedness_clearance") if clearance is None else clearance
+    reach = _P.value("pockets.buriedness_reach") if reach is None else reach
     i = np.arange(n_rays) + 0.5
     phi = np.arccos(1.0 - 2.0 * i / n_rays)
     theta = np.pi * (1.0 + 5.0 ** 0.5) * i
@@ -213,10 +216,10 @@ def _buriedness(center: np.ndarray, coords: np.ndarray, tree: cKDTree,
 
 
 def find_pockets(structure: Structure, r_min: float = 3.0, r_max: float = 5.5,
-                 cluster_distance: float = 2.0, min_spheres: int = 20,
+                 cluster_distance: float | None = None, min_spheres: int = 20,
                  min_neighbours: int = 30,
                  protein_only: bool = True, max_pockets: int = 30,
-                 lining_cutoff: float = 5.0) -> list[Pocket]:
+                 lining_cutoff: float | None = None) -> list[Pocket]:
     """Detect and rank cavities.
 
     Ligands are excluded by default: a bound lipid fills the very cavity we are
@@ -224,6 +227,8 @@ def find_pockets(structure: Structure, r_min: float = 3.0, r_max: float = 5.5,
     here — PIEZO1's structures contain resolved lipids sitting in exactly the
     pockets of interest.
     """
+    lining_cutoff = _P.value("pockets.lining_cutoff") if lining_cutoff is None else lining_cutoff
+    cluster_distance = _P.value("pockets.cluster_distance") if cluster_distance is None else cluster_distance
     mask = np.ones(structure.n_atoms, dtype=bool)
     if protein_only:
         mask &= structure.mask_protein() & ~structure.hetero
