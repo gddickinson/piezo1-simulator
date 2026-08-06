@@ -82,6 +82,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `measure.py` | Distance/angle/dihedral, radius of gyration, principal axes, helix axis, tilt and crossing angles, Shrake–Rupley SASA, buried interface area, and the pore hydrophobicity profile. | `distance()`, `angle()`, `dihedral()`, `sasa()`, `buried_area()`, `helix_axis()`, `tilt_angle()`, `hydrophobicity_profile()` | ✅ |
 | `interactions.py` | Hydrogen bonds, salt bridges, hydrophobic contacts, π-stacking, cation–π and disulfides, with published geometric criteria; cross-selection mode for interfaces; state-to-state comparison. | `detect_interactions()`, `Interaction`, `InteractionSet`, `compare_interactions()`, `CUTOFFS` | ✅ |
 | `variants.py` | Maps variants onto structure, reports domain context, contacts lost/gained, predicted mode perturbation. | `map_variants()`, `VariantImpact` | 📋 |
+| `ensemble.py` | Builds a cross-species, coverage-matched, protomer-corrected structure ensemble and runs PCA on it; compares principal components with elastic-network modes by overlap, subspace overlap and RWSIP. | `build_ensemble()`, `StructureEnsemble`, `PCAResult`, `rwsip()`, `subspace_overlap()`, `DEFAULT_EXCLUSIONS` | ✅ |
 | `contacts.py` | Residue contact maps, interface detection, contact changes between states. | `contact_map()`, `interface_residues()` | 📋 |
 | `pockets.py` | Grid-based pocket detection for ligand sites (zero external dependencies). | `find_pockets()`, `Pocket` | 📋 |
 | `docking.py` | Optional AutoDock Vina integration; degrades gracefully when absent. | `dock()`, `available()` | 📋 |
@@ -161,6 +162,7 @@ geometry at a fraction of the triangle count.
 | `test_measure.py` | Geometry on analytic shapes, SASA of an isolated atom against 4πr², determinism, and the pore-helix tilt result. | ✅ |
 | `test_interactions.py` | The annotated disulfide, the R2456–E2117 inter-protomer salt bridge, cutoff enforcement, and the donor–donor exclusion. | ✅ |
 | `test_membrane.py` | Unit conversion, the κ/γ/λ triple, exact-vs-numerical profile and energy, second-order convergence, small-slope validity, and Cox's T₅₀ round trip. | ✅ |
+| `test_ensemble.py` | Shared-basis construction, paralogue exclusion, reversed-protomer detection, PC1-as-gating-coordinate, and A-mode dominance against a random control. | ✅ |
 
 ## `docs/`
 

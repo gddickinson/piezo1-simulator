@@ -436,3 +436,48 @@ because the trend and scale are still informative, but
 quantitative and that a nonlinear Helfrich or Euler–elastica treatment is what
 the problem actually needs. Reporting a number with a caveat is better than
 either silently reporting it or refusing to compute it.
+
+---
+
+## Round 4 — experimental conformational space (2026-08-06)
+
+PCA over the deposited structures, compared with the elastic-network modes.
+This is the strongest validation the project has produced.
+
+**PC1 = 90.0% of variance, and it is the gating coordinate.** The PCA sees only
+coordinates — no state labels — yet PC1 orders every structure correctly:
+seven curved entries negative, the 8IXO intermediate at +334, flattened 7WLU at
++678, flat 11ZC at +1045. It overlaps **0.804** with ANM mode 6, cumulative
+0.960 over 30 modes, RWSIP 0.555 against a random control of 0.001.
+
+And the top three principal components all match **A**-symmetric modes, even
+though E modes outnumber A two to one in the mode set. The symmetry selection
+rule — only C3-symmetric modes can couple to isotropic tension — now shows up
+in the deposited structural record, not merely in one pairwise transition.
+
+### Four traps, all of which return a number rather than an error
+
+1. **Species.** Human entries are numbered by Q92508 and mouse by E2JF22, with
+   a non-constant offset. Everything converts to human numbering first.
+2. **Coverage.** All 20 usable PIEZO1 entries share only 325 residues, because
+   a couple of poorly-ordered structures drag the intersection down. Entries
+   are dropped worst-first with the cost recorded.
+3. **Protomer correspondence.** Four entries label their protomers in reversed
+   rotational order. A test now asserts that at least one is detected — if that
+   ever returns none, matching has silently broken.
+4. **Paralogues.** 6KG7 is *PIEZO2*. Putting a 40%-identity paralogue into an
+   ensemble meant to describe one protein's motion would be a category error,
+   so it is excluded by default.
+
+### The exclusion that changed the answer
+
+6LQI is the Piezo1.1 splice isoform, missing residues 1382–1405. What sets it
+apart from the rest is a **sequence** difference, not a conformational one, but
+PCA cannot tell those apart — it sees only coordinate variance. Included, it
+dominates an entire component by itself and splits the gating coordinate across
+PC1 (58%) and PC2 (36%). Excluded, PC1 is a single clean 90%.
+
+The general lesson: an ensemble method will happily report the largest axis of
+variation without caring whether that variation is the biology you were asking
+about. Deciding what belongs in the ensemble is part of the analysis, not a
+preliminary to it, and every exclusion here carries its reason in the code.

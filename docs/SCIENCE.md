@@ -254,6 +254,33 @@ high by the standards of the ENM literature. The complete absence of E-mode
 overlap is a strong internal consistency check: the observed transition is
 C3-symmetric, and the analysis recovers that without being told.
 
+### The experimental ensemble agrees
+
+The single-transition test above uses one pair of structures. A stronger test
+asks whether the elastic network predicts the direction the *whole deposited
+record* varies in. Principal component analysis over 10 mouse PIEZO1
+structures, placed on a shared 1091-residue basis in human numbering:
+
+| | |
+|---|---|
+| Variance in PC1 | **90.0%** |
+| PC1 overlap with ANM mode 6 (symmetry A) | **0.804** |
+| Cumulative overlap over 30 modes | **0.960** |
+| RWSIP, 8 components vs 8 modes | **0.555** |
+| Random-vector control | 0.001 |
+
+PC1 orders the structures by gating state without ever being told what those
+states are — seven curved entries negative, the intermediate at +334,
+flattened at +678, flat at +1045. And the top three principal components all
+match **A**-symmetric modes, even though E modes outnumber them two to one.
+
+Two exclusions were necessary and both are instructive. **6KG7 is PIEZO2**, a
+40%-identity paralogue; it is a different protein and does not belong in this
+ensemble. **6LQI is the Piezo1.1 splice isoform** missing residues 1382–1405,
+so what distinguishes it is sequence, not conformation — included, it dominates
+a component on its own and splits the gating coordinate across PC1 (58%) and
+PC2 (36%).
+
 ### A trap this exposed
 
 Deposited chain labels do **not** reliably indicate rotational order around the

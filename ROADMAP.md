@@ -4,7 +4,7 @@ Planned work, organised into ~20-minute rounds. Each round: implement, test,
 fix, update docs, commit. Items are marked `[ ]` planned, `[~]` in progress,
 `[x]` done. New improvements are appended after every fifth round.
 
-**Status:** Round 4 of 5 (block A)
+**Status:** Round 5 of 5 (block A)
 
 ---
 
@@ -94,14 +94,36 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   small-slope regime the linearised Monge gauge assumes. The solution reports
   this rather than presenting the numbers as quantitative.
 
-### Round 4 — Experimental conformational space
-- [ ] `analysis/ensemble.py`: superpose all structures onto a common residue
+### Round 4 — Experimental conformational space  ✅
+- [x] `analysis/ensemble.py`: superpose all structures onto a common residue
       basis and run PCA. The principal components are the conformational space
       the experiments actually sampled.
-- [ ] Compare ensemble PCs with ANM modes — a strong, independent validation of
+- [x] Compare ensemble PCs with ANM modes — a strong, independent validation of
       the elastic network, and a map of which motions are real.
-- [ ] Handle the protomer-correspondence and coverage traps across 21 entries.
-- [ ] Tests; docs; commit.
+- [x] Handle the protomer-correspondence and coverage traps across 21 entries.
+- [x] Tests; docs; commit.
+- **Result — the strongest validation so far.** PCA over 10 mouse PIEZO1
+  structures on a shared 1091-residue basis gives **PC1 = 90.0% of variance**,
+  and PC1 orders every structure by gating state with no labels supplied:
+  seven curved entries all negative, the 8IXO intermediate at +334, flattened
+  7WLU at +678, flat 11ZC at +1045. The dominant axis of experimental
+  variation *is* the gating transition.
+- **PC1 overlaps 0.804 with ANM mode 6**, cumulative 0.960 over 30 modes, and
+  all of the top three PCs match **A**-symmetric modes despite E modes
+  outnumbering A two to one. RWSIP 0.555 against a random-vector control of
+  0.001. The symmetry selection rule now shows up in the deposited structures,
+  not just in one pairwise transition.
+- **Four traps handled, each of which silently returns a number rather than
+  erroring:** cross-species numbering (mouse converted to human, offsets not
+  constant); coverage (all 20 entries share only 325 residues, so poor-coverage
+  entries are dropped and reported); protomer correspondence (four entries are
+  labelled in reversed rotational order); and paralogues — **6KG7 is PIEZO2**
+  and is excluded by default.
+- **6LQI excluded as well**, and this mattered: it is the Piezo1.1 splice
+  isoform missing residues 1382–1405, so its difference from the rest is a
+  *sequence* difference, not a conformational one. Included, it dominates a
+  whole component on its own and splits the gating coordinate across PC1 (58%)
+  and PC2 (36%); excluded, PC1 is a single clean 90%.
 
 ### Round 5 — Allostery and force transmission
 - [ ] `analysis/allostery.py`: Perturbation Response Scanning — apply unit
