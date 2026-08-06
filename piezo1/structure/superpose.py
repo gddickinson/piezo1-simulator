@@ -13,7 +13,7 @@ import numpy as np
 
 __all__ = [
     "kabsch", "superpose", "rmsd", "SymmetryAxis", "detect_c3_axis",
-    "rotation_matrix", "align_axis_to_z",
+    "rotation_matrix", "align_axis_to_z", "match_protomers", "ProtomerMatch",
 ]
 
 
@@ -139,6 +139,50 @@ def detect_c3_axis(chain_coords: list[np.ndarray]) -> SymmetryAxis:
     # Orient +axis away from the centroid of the intracellular-most atoms so
     # that the sign convention is stable; callers may flip it explicitly.
     return SymmetryAxis(point=point, direction=axis, order=3, rmsd=err, angle_deg=angle)
+
+
+@dataclass
+class ProtomerMatch:
+    """How the protomers of one trimer correspond to those of another."""
+
+    order: tuple[int, ...]        # index into the mobile set for each target slot
+    rmsd: float                   # trimer RMSD under this correspondence
+    all_rmsd: dict                # every correspondence tried, for diagnostics
+    handedness_flipped: bool      # True if the cyclic order had to be reversed
+
+
+def match_protomers(mobile_blocks: list[np.ndarray],
+                    target_blocks: list[np.ndarray]) -> ProtomerMatch:
+    """Find which protomer of ``mobile`` corresponds to which of ``target``.
+
+    Deposited chain labels are **not** a reliable guide: two structures of the
+    same C3 trimer can label their chains in opposite rotational order around
+    the symmetry axis. Superposing them by label then produces a nonsensical
+    RMSD (we saw 71 A between PDB 7WLT and 7WLU, versus 19.7 A once the
+    correspondence was fixed), and any difference vector derived from it is
+    meaningless.
+
+    Only the three cyclic rotations and the three reversed ones are chemically
+    sensible, so all six are tried and the best is returned.
+    """
+    if len(mobile_blocks) != 3 or len(target_blocks) != 3:
+        raise ValueError("match_protomers expects two sets of three protomers")
+    if {len(b) for b in mobile_blocks + target_blocks} != {len(target_blocks[0])}:
+        raise ValueError("all protomer blocks must have the same site count")
+
+    target = np.vstack(target_blocks)
+    candidates = [(0, 1, 2), (1, 2, 0), (2, 0, 1),      # same handedness
+                  (0, 2, 1), (2, 1, 0), (1, 0, 2)]      # reversed
+    scores: dict[tuple[int, ...], float] = {}
+    for perm in candidates:
+        mobile = np.vstack([mobile_blocks[i] for i in perm])
+        _, err = superpose(mobile, target)
+        scores[perm] = err
+
+    best = min(scores, key=scores.get)  # type: ignore[arg-type]
+    return ProtomerMatch(order=best, rmsd=scores[best],
+                         all_rmsd={k: round(v, 3) for k, v in scores.items()},
+                         handedness_flipped=best in candidates[3:])
 
 
 def align_axis_to_z(axis: SymmetryAxis, flip: bool = False) -> tuple[np.ndarray, np.ndarray]:
