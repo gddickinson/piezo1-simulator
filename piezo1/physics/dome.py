@@ -180,8 +180,67 @@ class DomeModel:
         return solve_footprint(a, contact_slope, self.membrane, n=n)
 
     def footprint_area(self, **kw) -> float:
-        """Excess area stored in the surrounding membrane, nm²."""
+        """Excess area stored in the surrounding membrane, nm² (linear theory).
+
+        **Not quantitative for PIEZO1.** The measured dome meets the bilayer at
+        about 63°, where the small-slope expansion behind this number breaks
+        down; it overestimates by ~3.5×. Use :meth:`footprint_area_nonlinear`.
+        Kept because it is what the closed-form Bessel solution gives and the
+        comparison between the two is itself informative.
+        """
         return self.footprint(**kw).excess_area()
+
+    def contact_slope(self) -> float:
+        """Slope where the dome meets the flat bilayer, from the cap geometry."""
+        if self.geometry is None:
+            raise ValueError("no geometry attached; measure a dome first")
+        g = self.geometry
+        a = np.sqrt(max(g.projected_area, 0.0) / np.pi)
+        r = g.radius_of_curvature
+        return float(a / np.sqrt(max(r * r - a * a, 1e-9)))
+
+    def footprint_nonlinear(self, contact_slope: float | None = None,
+                            n: int = 600):
+        """Solve the footprint without the small-slope approximation.
+
+        This is the quantitative version: an arc-length Euler–elastica solve
+        with exact principal curvatures. See :mod:`piezo1.physics.elastica`.
+        """
+        from .elastica import solve_elastica
+        if self.geometry is None:
+            raise ValueError("no geometry attached; measure a dome first")
+        a = np.sqrt(max(self.geometry.projected_area, 0.0) / np.pi)
+        slope = self.contact_slope() if contact_slope is None else contact_slope
+        return solve_elastica(a, slope, self.membrane, n=n)
+
+    def footprint_area_nonlinear(self, **kw) -> float:
+        """Excess area stored in the surrounding membrane, nm², exactly."""
+        return self.footprint_nonlinear(**kw).excess_area
+
+    def compare_footprint_theories(self) -> dict:
+        """Linear vs nonlinear footprint for this dome, side by side.
+
+        Reports the correction factor, which for PIEZO1's geometry is large
+        enough to change a qualitative conclusion, not merely a digit.
+        """
+        from .elastica import compare_with_linear
+        if self.geometry is None:
+            raise ValueError("no geometry attached; measure a dome first")
+        a = np.sqrt(max(self.geometry.projected_area, 0.0) / np.pi)
+        c = compare_with_linear(a, self.contact_slope(), self.membrane)
+        return {
+            "inclusion_radius_nm": a,
+            "contact_slope": c.slope,
+            "contact_angle_deg": c.contact_angle_deg,
+            "linear_energy_kT": c.linear_energy,
+            "nonlinear_energy_kT": c.nonlinear_energy,
+            "linear_excess_area_nm2": c.linear_excess_area,
+            "nonlinear_excess_area_nm2": c.nonlinear_excess_area,
+            "linear_overestimate_energy": 1.0 / c.energy_ratio,
+            "linear_overestimate_area": 1.0 / c.area_ratio,
+            "dome_excess_area_nm2": self.geometry.excess_area,
+            "axial_force_residual": c.force_residual,
+        }
 
     # -------------------------------------------------------------- report
 

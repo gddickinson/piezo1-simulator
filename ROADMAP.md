@@ -80,9 +80,16 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   K₀ solution and recovers λ = **13.998 nm** from its own profile.
   Cox et al.'s ΔG₀ = 9.7 k_BT and ΔA = 8 nm² reproduce **T₅₀ = 4.99 mN/m**
   against their measured 5.1 ± 0.2 mN/m.
-- **The footprint does dominate**, as Haselwandter & MacKinnon argued: around
+- ~~**The footprint does dominate**, as Haselwandter & MacKinnon argued: around
   the measured 7WLT dome it stores **622 nm² of excess area against the dome's
-  256 nm²** — 243% on top.
+  256 nm²** — 243% on top.~~
+  **⚠ OVERTURNED BY ROUND 18.** The 622 nm² is linear-theory output at a 63°
+  contact slope, where the theory does not apply; the nonlinear value is
+  **179 nm²**, i.e. **0.70× the dome, not 2.4×**. The comparison was also not
+  like for like — the dome's 256 nm² is an exact area, the footprint's was
+  linearised. Left visible rather than edited away, because the caveat *was*
+  recorded at the time and the lesson is that a caveat is not a substitute for
+  doing the calculation.
 - **Two things had to be fixed, and one flagged.** Building the biharmonic
   operator as `L @ L` squares the Laplacian's condition number: it converged to
   a 47 nm decay length where the answer is 14 nm, with a 59% energy error that
@@ -443,14 +450,46 @@ is a per-variant number and an honest test of it.
       recorded; re-testing against the 68 labels requires Round 22's new
       pre-registration to be written *first*.
 
-### Round 18 — Nonlinear membrane mechanics
-- [ ] Round 3 flagged that PIEZO1's contact slope of ~2.0 (63°) is far outside
-      the small-slope regime the Monge gauge assumes. Implement an axisymmetric
-      **Euler–elastica / full-curvature** solve so the footprint energies
-      become quantitative rather than indicative.
-- [ ] Validate the nonlinear solver against the linear one in the small-slope
-      limit, where they must agree.
-- [ ] Tests; docs; commit.
+### Round 18 — Nonlinear membrane mechanics ✅
+- [x] Implemented `piezo1/physics/elastica.py`: an axisymmetric **Euler–elastica**
+      solve in arc-length parametrisation, with exact principal curvatures
+      `c₁ = ψ̇`, `c₂ = sin ψ / r` and no small-slope expansion anywhere. The
+      Euler–Lagrange equations reduce to a first-order system in
+      `(r, z, ψ, M, η)` solved as a BVP, with slope continuation as a safety
+      net because a BVP that fails from a bad guess returns a *plausible wrong
+      shape* rather than an error.
+- [x] **Free accuracy diagnostic.** The Lagrangian has no explicit `s`
+      dependence, so its Hamiltonian is conserved and equals the axial force —
+      zero for an inclusion nobody pulls on. Imposed as a boundary condition,
+      its drift along the solution then measures integration error directly:
+      **|H|max ≈ 7e-11**.
+- [x] **Small-slope validation, the roadmap's own criterion: they agree.**
+      Relative discrepancy over slope² converges to a constant **0.746**, so
+      the error is exactly the O(|∇h|²) the Monge expansion discards rather
+      than merely something that shrinks. At slope 0.02 the energies differ by
+      0.02%; at 0.05, by 0.2%.
+- [x] **The measured result, and it disagrees with our own Round 3 number.**
+      At the 7WLT geometry (inclusion radius 8.69 nm, contact slope 1.99 = 63°):
+      footprint energy **92.2 → 25.3 k_BT** and excess area **622 → 179 nm²**.
+      The linearised values are **3.65× and 3.48× too large**.
+- [x] **A conclusion reverses.** Round 3 compared the dome's *exact* 256 nm²
+      against the footprint's *linearised* 622 nm² and reported the footprint
+      holding "2.4× as much deformable area as the dome". Measured
+      consistently the footprint holds **0.70× the dome** — less, not more.
+      `docs/SCIENCE.md` now states this and separates it from Haselwandter &
+      MacKinnon's actual claim, which is about tension *sensitivity* (area
+      released between states) and which absolute stored area never tested.
+- [x] Robustness: invariant to domain truncation 8λ→40λ (6 s.f.), grid,
+      tolerance and continuation path; correction factor 3.46–3.67× across
+      κ = 20–25 k_BT and γ = 0.42–3.0 mN/m, so not a parameter artefact.
+- [x] `DomeModel` gained `contact_slope()`, `footprint_nonlinear()`,
+      `footprint_area_nonlinear()` and `compare_footprint_theories()`;
+      `footprint_area()` now documents that it is not quantitative here.
+- [x] 18 tests (`tests/test_elastica.py`). The load-bearing ones do **not**
+      reuse the hand-derived shape equations: agreement with linear theory,
+      axial-force conservation, re-evaluation of the exact functional in the
+      Monge gauge, and a perturbation test that no nearby admissible shape has
+      lower energy. Suite 254 → **272 passed**; GUI smoke test clean.
 
 ### Round 19 — Pore hydration and wetting
 - [ ] Radius alone does not predict conduction: a wide but hydrophobic neck can

@@ -893,3 +893,98 @@ Touching the 68 labels again requires the new pre-registration to be written
 first — that is the whole point of pre-registering, and the temptation to
 "just peek" at 51 fresh AlphaMissense scores is exactly what the discipline is
 for. Suite 243 → 254 passing, all of the new tests offline from cache.
+
+## Round 18 — the nonlinear footprint, and a Round 3 result overturned (2026-08-06)
+
+Round 3 built the linearised Helfrich footprint solver, got it right against the
+exact Bessel solution, and then *flagged* that PIEZO1's contact slope of ~2.0
+(63°) is far outside the regime where that theory holds. Having flagged it, it
+quoted the numbers anyway: 622 nm² of footprint excess area against the dome's
+256 nm², "about 2.4× as much deformable area as the dome". This round did the
+calculation the caveat was standing in for, and the caveat was not strong
+enough. The linear number is **3.5× too large**, and the conclusion reverses.
+
+### The formulation
+
+The Monge gauge writes the surface as a height field h(r) and expands in |∇h|.
+There is no fixing that at 63°; the terms it drops are larger than the ones it
+keeps. So parametrise the meridian by arc length instead, with ψ(s) the tangent
+angle, which makes the principal curvatures exact with no expansion at all:
+c₁ = ψ̇ and c₂ = sin ψ / r. Minimising the Helfrich energy subject to ṙ = cos ψ
+with a multiplier η gives a first-order system in (r, z, ψ, M, η), solved as a
+boundary-value problem.
+
+The nice part is free. The Lagrangian has no explicit s dependence, so its
+Hamiltonian is conserved, and that Hamiltonian *is* the axial force transmitted
+through the membrane — zero for an inclusion nobody is pulling on. Imposing
+H = 0 as a boundary condition and then measuring how far H drifts along the
+solved profile gives an error estimate that costs nothing and depends on
+nothing I derived. It runs at 7e-11.
+
+### Checking a derivation I did by hand
+
+A BVP solver will converge happily onto the wrong equations. So the checks that
+count are the ones that do not reuse the derivation:
+
+1. **Small-slope agreement.** The roadmap's own criterion. The relative
+   discrepancy divided by slope² converges to a constant, 0.746 — not merely
+   shrinking, but shrinking at exactly the order the Monge expansion discards.
+2. **The exact functional in another gauge.** Re-evaluate the energy of the
+   solved shape in Monge form with the unexpanded expressions
+   (dA = √(1+h'²)·2πr·dr, c₁+c₂ = h''/(1+h'²)^{3/2} + h'/(r√(1+h'²))). Agrees
+   to 1.3e-3, which is finite-difference noise.
+3. **No nearby shape is cheaper.** Perturb the profile with bumps that respect
+   both boundary conditions; the energy may only rise.
+
+Check 2 is where I nearly went wrong in an instructive way. My first version of
+it minimised the exact functional from scratch, starting from a linear guess,
+and it *disagreed with the solver by 142%* at slope 2. That looks like a
+refutation. It was not: the minimiser returned a **higher** energy than the BVP,
+and a minimiser that has not converged always errs high. Starting it from the
+BVP solution, it could not improve on it in 151 iterations. The independent
+check was the weaker instrument, and the tell was the sign of the disagreement.
+
+### The result
+
+At the measured 7WLT geometry (inclusion radius 8.69 nm, contact slope 1.99):
+
+| | linear | nonlinear |
+|---|---|---|
+| footprint energy | 92.2 k_BT | **25.3 k_BT** |
+| footprint excess area | 622 nm² | **179 nm²** |
+
+Invariant to domain truncation from 8λ to 40λ at six significant figures, to
+grid, to solver tolerance and to whether the slope is walked up by continuation
+or hit directly. The correction factor is 3.46–3.67× across κ = 20–25 k_BT and
+γ = 0.42–3.0 mN/m, so it is not an artefact of one parameter choice.
+
+### What was actually wrong with Round 3
+
+Two things, and the second is the one worth remembering.
+
+The first is the obvious one: linear theory used outside its range.
+
+The second is that the comparison was never like for like. The dome's 256 nm² is
+an **exact** area difference, measured from the fitted spherical cap. The
+footprint's 622 nm² was **linearised**. Putting them in a ratio compares a
+quantity to an approximation of a different quantity. Measured consistently the
+footprint holds 179 nm², which is **0.70× the dome — less than the dome, not
+2.4× more**.
+
+I have left the Round 3 entry in ROADMAP.md struck through rather than edited
+away, with a pointer to this round. The caveat was recorded honestly at the
+time; the lesson is that recording a caveat is not a substitute for doing the
+calculation, and deleting the evidence of that would remove the lesson.
+
+### What this does *not* say
+
+It does not refute Haselwandter & MacKinnon. Their argument concerns the
+footprint's contribution to tension *sensitivity* — the area released between
+closed and open states — and absolute stored area was never a test of it. Round
+3's error was rhetorical as much as numerical: it presented our absolute-area
+ratio as "the quantitative form of" their claim, which it is not. The defensible
+statement is narrower: at PIEZO1's contact slope the linearised footprint is not
+quantitatively usable, and corrected, dome and footprint hold comparable excess
+areas with the dome slightly larger.
+
+Suite 254 → 272 passing; GUI smoke test clean.

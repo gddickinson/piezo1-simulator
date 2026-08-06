@@ -122,7 +122,21 @@ sol.energy, sol.excess_area(), sol.validity_note()
 ```
 
 Check `validity_note()`. PIEZO1's real contact slope is ~2.0, far outside the
-small-slope regime the linear theory assumes.
+small-slope regime the linear theory assumes — at which point you want the
+nonlinear solver instead:
+
+```python
+from piezo1.physics.elastica import solve_elastica, compare_with_linear
+nl = solve_elastica(r0=8.69, slope=1.99, params=p)
+nl.energy, nl.excess_area, nl.force_residual   # 25.6 kT, 177 nm^2, ~7e-11
+
+c = compare_with_linear(r0=8.69, slope=1.99, params=p)
+print(c.summary())          # linear is 3.64x too large at this slope
+```
+
+`force_residual` is the drift of the conserved axial force along the solution.
+It is an error estimate that costs nothing — if it is not ~0, do not trust the
+energy.
 
 ## Ensemble PCA
 

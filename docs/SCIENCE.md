@@ -153,18 +153,56 @@ Note the direction of that Bessel ratio — inverting it gives an answer 2.5×
 too large at the r₀/λ where PIEZO1 sits.
 
 Our solver reproduces this to second order and recovers λ = 13.998 nm from its
-own output against an input of 14.0 nm. Applied to the measured 7WLT dome it
-stores **622 nm² of excess area against the dome's own 256 nm²**, i.e. the
-surrounding membrane holds about 2.4× as much deformable area as the dome —
-the quantitative form of Haselwandter & MacKinnon's claim that the footprint,
-not the dome, dominates tension sensitivity.
+own output against an input of 14.0 nm.
 
-**Validity caveat, stated because it matters.** PIEZO1's dome meets the bilayer
-at a contact slope near 2.0, about 63°. The small-slope expansion behind the
-Monge gauge drops terms of order |∇h|², so at that slope the neglected terms
-are larger than the ones kept. The solver returns numbers and flags them as
-indicative of scale and trend only; quantitative work needs a full nonlinear
-Helfrich or Euler–elastica treatment.
+**But it must not be applied to PIEZO1 at face value.** The dome meets the
+bilayer at a contact slope near 2.0, about 63°. The Monge expansion drops terms
+of order |∇h|², so at that slope the neglected terms are *larger than the ones
+kept*. Round 3 nonetheless quoted the linear output — 622 nm² of footprint
+excess area against the dome's own 256 nm², "about 2.4× as much deformable area
+as the dome" — with a caveat attached. Round 18 solved the nonlinear problem
+and found the caveat was not strong enough: **that number was wrong by 3.5×,
+and the conclusion drawn from it reverses.**
+
+### The footprint without the small-slope approximation
+
+Parametrising the meridian by arc length ``s``, with ``ψ`` the tangent angle,
+gives the principal curvatures exactly — ``c₁ = ψ̇``, ``c₂ = sin ψ / r`` — with
+no expansion anywhere. Minimising the Helfrich energy subject to ``ṙ = cos ψ``
+yields a first-order system in ``(r, z, ψ, M, η)`` solved as a boundary-value
+problem (`piezo1/physics/elastica.py`). Because the Lagrangian has no explicit
+``s`` dependence its Hamiltonian is conserved and equals the axial force, which
+is zero for an inclusion nobody is pulling on; imposing that and then measuring
+its drift gives a free error estimate, ~1e-11 in practice.
+
+At the measured 7WLT geometry (inclusion radius 8.69 nm, contact slope 1.99):
+
+| Quantity | Linear (Monge) | Nonlinear (elastica) | Linear error |
+|---|---|---|---|
+| Footprint energy | 92.2 k_BT | **25.3 k_BT** | 3.65× too large |
+| Footprint excess area | 622 nm² | **179 nm²** | 3.48× too large |
+
+The two theories agree where they should: the relative discrepancy divided by
+slope² converges to a constant (0.746), confirming the error is exactly the
+O(|∇h|²) the expansion discards, and at a slope of 0.05 the two energies differ
+by 0.2%. The correction factor is stable across the published parameter range
+(κ = 20–25 k_BT, γ = 0.42–3.0 mN/m gives 3.46–3.67×) and invariant to domain
+truncation from 8λ to 40λ, grid and solver tolerance.
+
+**The conclusion that changes.** Round 3's comparison was not like for like: the
+dome's 256 nm² is an *exact* area difference measured from the fitted cap, while
+the footprint's 622 nm² was *linearised*. Measured consistently, the footprint
+holds **179 nm², i.e. 0.70× the dome's excess area — less than the dome, not
+2.4× more**. The claim that the surrounding membrane holds most of the
+deformable area is therefore not supported by our own calculation.
+
+This does *not* refute Haselwandter & MacKinnon. Their argument is about the
+footprint's contribution to tension *sensitivity* — the area released between
+closed and open states — and absolute stored area was never the right proxy for
+it. Round 3's error was to present one as the quantitative form of the other.
+What can be said from our numbers is narrower and firmer: at PIEZO1's contact
+slope the linearised footprint is not quantitatively usable, and the corrected
+areas of dome and footprint are comparable, with the dome slightly larger.
 
 ### An unresolved discrepancy, stated plainly
 
