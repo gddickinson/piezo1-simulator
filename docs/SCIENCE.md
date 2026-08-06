@@ -587,6 +587,26 @@ position, while the substitution enters only through one scalar spring
 multiplier. Four variants at R2456 spanning both phenotypes all receive
 "softening", the largest belonging to the loss-of-function one.
 
+**The cause, and a partial repair (Round 26).** The diagnosis above is
+algebraic rather than statistical. The original model scaled every contact of
+the mutated residue by a single number, so ΔΔG = (s − 1)·Q(position) — a
+rank-one product in which the substitution is only a multiplicative scalar.
+Four substitutions at one position could therefore differ solely by a factor.
+
+Scaling each contact *individually*, by properties of the new residue and of the
+partner it touches — packing, charge at charged partners, hydrogen-bond
+complementarity, proline stiffening of sequence-local contacts, glycine
+softening — breaks that separability. Measured on the six multiply-substituted
+curated positions, the within-position share of the variance rises from **4.9%
+to 52.5%**. Across all 35 substituted positions it is 2.4% against 0.8%, the
+lower figure simply reflecting that 29 of them carry one substitution and can
+contribute no within-variance at all.
+
+This says the score can now *distinguish* substitutions at a position. It does
+**not** say the distinctions point the right way: that is a hypothesis test, it
+has not been run, and under `docs/NEGATIVE_RESULT_PROTOCOL.md` it requires a new
+pre-registration first.
+
 The honest summary: this elastic network is a good model of the *machine* and a
 poor instrument for the *substitution*. It answers "which residues are
 mechanically coupled to the gate" well — Round 5 identified the anchor as the

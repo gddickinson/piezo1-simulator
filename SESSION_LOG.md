@@ -1784,3 +1784,78 @@ modelling difference between depositions rather than a biological one, and the
 smoke test now records it instead of failing on it.
 
 Suite 431 → 445 passing.
+
+## Round 26 — the substitution finally enters the mechanics (2026-08-06)
+
+Round 7's blind test failed and its diagnostic was precise: 99.8% of the
+mechanical ΔΔG's variance was between position, not between substitutions. Two
+rounds since have worked around that by adding other predictors. This one
+attacks the cause.
+
+### The cause was algebra, not statistics
+
+The old model scaled **every contact of the mutated residue by one number**. So
+
+    ΔΔG = (s − 1) · Q(position)
+
+which is a rank-one product: the substitution enters only as a multiplicative
+scalar, and the positional factor Q — contact count times local strain — varies
+enormously between positions and not at all within one. Four substitutions at
+R2456 could therefore differ only by a factor and had to rank every position
+identically.
+
+Seeing that written out matters, because it says no amount of refining `s` could
+ever have helped. A better volume term, a substitution matrix, a fitted
+sensitivity — all of them are still a scalar. The separability itself had to go.
+
+### The repair
+
+Scale each contact individually, by properties of the new residue *and of the
+partner it touches*:
+
+- **packing** — as before, but weighted by how close the contact is;
+- **charge** — felt only at contacts with charged partners, so losing R2456's
+  salt bridge softens the contact to an aspartate and not the one to a leucine;
+- **hydrogen bonding** — donor against acceptor, both ways;
+- **proline** — stiffens sequence-local contacts specifically, because that is
+  where a backbone restraint is felt;
+- **glycine** — softens whatever the side chain was mediating, since there is no
+  longer a side chain.
+
+Different substitutions now perturb *different subsets* of contacts. Measured
+directly rather than assumed: the per-contact patterns for R2456H/K/P/C
+correlate 0.62–0.98, where under the old model they were 1.00 by construction.
+
+An elastic network is a mechanical model, and its springs are an effective
+stiffness standing in for packing, hydrogen bonds and ion pairs together.
+Letting that stiffness depend on charge is a statement about what the springs
+represent, not a claim to have added electrostatics, and the module says so
+rather than dressing it up.
+
+### The criterion, and reporting both numbers
+
+The success criterion was fixed in the roadmap before the work: within-position
+variance above 20%, measured on the multiply-substituted positions. **It is met:
+4.9% → 52.5%.**
+
+Across *all* 35 substituted positions the figure is 2.4%, up from 0.8%. Both are
+reported because the difference is instructive rather than embarrassing: 29 of
+those positions carry a single substitution and contribute exactly zero
+within-variance by construction, so including them pushes the statistic down for
+arithmetic reasons that say nothing about the model. The criterion named the
+multiply-substituted subset for exactly this reason.
+
+### What this does not license
+
+**No phenotype comparison was run.** The criterion was about variance
+decomposition; whether the new distinctions point in the *right* direction is a
+different question, it has not been asked, and asking it needs a new
+pre-registration under `NEGATIVE_RESULT_PROTOCOL.md` §7. The temptation to
+"just check" now that the model can tell substitutions apart is precisely what
+that document exists to resist.
+
+Round 7's recorded result is untouched: its script passes no sequence, so the
+model falls back to the uniform scale, and there is a test asserting the two
+agree to 1e-12.
+
+Suite 445 → 462 passing; 18 documented numbers reproduce.

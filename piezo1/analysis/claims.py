@@ -224,6 +224,80 @@ def _wetting_score(pdb: str) -> float:
     return float(predict_wetting(st, profile, grid).score)
 
 
+def _within_position_variance() -> float:
+    """Fraction of the mechanical ddG variance that is *within* position.
+
+    The Round 26 criterion, measured on the multiply-substituted positions.
+    Round 7's model gave 0.049 here; the per-contact model must exceed 0.20.
+    """
+    import collections
+
+    from .substitution import variance_decomposition
+    from .variant_impact import VariantImpactModel
+    from ..core.annotations import load_annotations
+    from ..core.sequence import human_sequence, human_to_mouse, mouse_to_human
+    from ..structure.superpose import kabsch, match_protomers
+    from ..ui.model_utils import protomer_blocks
+
+    curved, flat = _structure("7WLT"), _structure("7WLU")
+    _cb, cr = protomer_blocks(curved)
+    _fb, fr = protomer_blocks(flat)
+    common = np.array(sorted(set(cr.tolist()) & set(fr.tolist())))
+
+    def resample(st):
+        out = []
+        for chain in st.chains:
+            mask = st.mask_ca() & (st.chain == chain)
+            if mask.sum() < 300:
+                continue
+            index = {int(r): i for i, r in enumerate(st.res_seq[mask])}
+            xyz = st.xyz[mask]
+            if all(r in index for r in common):
+                out.append(np.array([xyz[index[r]] for r in common], float))
+        return out[:3]
+
+    cb, fb = resample(curved), resample(flat)
+    fb = [fb[i] for i in match_protomers(cb, fb).order]
+    rotation, translation, centroid = kabsch(np.vstack(fb), np.vstack(cb))
+    displacement = (((np.vstack(fb) - centroid) @ rotation.T + translation)
+                    - np.vstack(cb))
+
+    reference = human_sequence()
+    sequence = {}
+    for residue in common:
+        human = mouse_to_human(int(residue))
+        if human and 1 <= human <= len(reference):
+            sequence[int(residue)] = reference[human - 1]
+
+    by_position = collections.defaultdict(list)
+    for variant in load_annotations("human").variants:
+        if not (variant.residue and variant.wt_aa and variant.mut_aa):
+            continue
+        if len(variant.wt_aa) != 1 or len(variant.mut_aa) != 1:
+            continue
+        if not variant.mut_aa.isalpha():
+            continue
+        if variant.label not in {v.label for v in by_position[variant.residue]}:
+            by_position[variant.residue].append(variant)
+    multi = {k: v for k, v in by_position.items() if len(v) > 1}
+
+    model = VariantImpactModel(coords=np.vstack(cb),
+                               residues=np.tile(common, 3),
+                               gating_vector=displacement, sequence=sequence)
+    positions, values = [], []
+    for human_residue, variants in multi.items():
+        mouse_residue = human_to_mouse(human_residue)
+        if mouse_residue is None:
+            continue
+        for variant in variants:
+            prediction = model.predict(mouse_residue, variant.wt_aa,
+                                       variant.mut_aa)
+            if prediction.modelled and np.isfinite(prediction.ddg_gating):
+                positions.append(human_residue)
+                values.append(prediction.ddg_gating)
+    return variance_decomposition(positions, values).within_fraction
+
+
 def _cds_identity() -> float:
     from ..core.sequences import compare_sequences, load_named_sequences
     seqs = {s.key: s for s in load_named_sequences()}
@@ -284,6 +358,11 @@ CLAIMS: list[Claim] = [
     Claim("hydration.score_11zc", "Rao 2019 wetting score, flat 11ZC",
           0.00, 0.01, "", "docs/SCIENCE.md",
           lambda: _wetting_score("11ZC"), "medium"),
+    Claim("substitution.within_position_variance",
+          "Within-position share of the mechanical ddG variance",
+          0.525, 0.03, "fraction", "docs/SCIENCE.md",
+          _within_position_variance, "medium",
+          published="Round 26 criterion: must exceed 0.20"),
     Claim("sequence.cds_identity",
           "Human CDS translation against UniProt Q92508",
           1.0, 1e-9, "fraction", "SESSION_LOG.md", _cds_identity, "fast"),

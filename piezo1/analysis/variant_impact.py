@@ -130,6 +130,11 @@ class VariantImpactModel:
     d0: float = 7.5
     gamma: float = 1.0
     sensitivity: float = 1.0
+    #: Residue number -> one-letter code. Required for the substitution-aware
+    #: perturbation: a per-contact scale needs to know what each partner IS,
+    #: and without it the model falls back to the old scalar behaviour.
+    sequence: dict = field(default_factory=dict)
+    substitution_aware: bool = True
     meta: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -161,7 +166,7 @@ class VariantImpactModel:
         from ..physics.anm import SPRING_MODELS
         return SPRING_MODELS[self.spring](dist, self.gamma, d0=self.d0)
 
-    def quadratic_form_at(self, site: int, scale: float) -> float:
+    def quadratic_form_at(self, site: int, scale) -> float:
         """``½ dᵀ(H_mut − H_wt) d`` for scaling one residue's springs.
 
         For an anisotropic network, each contact ``(i, j)`` contributes
@@ -183,9 +188,36 @@ class VariantImpactModel:
         k = self._spring(dist[good])
         rel = self.gating_vector[neighbours][good] - self.gating_vector[site]
         projection = np.einsum("ij,ij->i", rel, unit)
-        return float(0.5 * (scale - 1.0) * np.sum(k * projection ** 2))
+        # `scale` may be one number or one per contact. The array form is what
+        # breaks the rank-one separability that made the old score blind to
+        # which substitution occurred.
+        factors = np.asarray(scale, dtype=float)
+        if factors.ndim:
+            factors = factors[good]
+        return float(0.5 * np.sum((factors - 1.0) * k * projection ** 2))
 
     # ------------------------------------------------------------- scoring
+
+    def _partner_context(self, site: int):
+        """Partner residue letters, distances and sequence separations."""
+        neighbours = self._contacts_of(site)
+        if len(neighbours) == 0:
+            return [], np.zeros(0), np.zeros(0)
+        delta = self.coords[neighbours] - self.coords[site]
+        distances = np.linalg.norm(delta, axis=1)
+        here = int(self.residues[site])
+        partner_numbers = self.residues[neighbours]
+        letters = [self.sequence.get(int(r), "X") for r in partner_numbers]
+        separation = partner_numbers.astype(float) - here
+        return letters, distances, separation
+
+    def contact_scales_at(self, site: int, wt_aa: str, mut_aa: str):
+        """Per-contact spring scales for a substitution at one site."""
+        from .substitution import contact_scales
+        letters, distances, separation = self._partner_context(site)
+        if len(distances) == 0:
+            return np.ones(0)
+        return contact_scales(wt_aa, mut_aa, letters, distances, separation)
 
     def sites_for(self, residue: int) -> np.ndarray:
         return np.flatnonzero(self.residues == residue)
@@ -207,12 +239,20 @@ class VariantImpactModel:
                 residue=residue, wt_aa=wt_aa, mut_aa=mut_aa, modelled=False,
                 note="residue not resolved in this structure")
 
+        per_contact = (self.substitution_aware and self.sequence
+                       and wt_aa and mut_aa and spring_scale is None)
         if spring_scale is None:
             spring_scale = (spring_scale_from_volume(wt_aa, mut_aa,
                                                      self.sensitivity)
                             if wt_aa and mut_aa else 1.0)
 
-        ddg = sum(self.quadratic_form_at(int(s), spring_scale) for s in sites)
+        if per_contact:
+            ddg = sum(self.quadratic_form_at(
+                int(s), self.contact_scales_at(int(s), wt_aa, mut_aa))
+                for s in sites)
+        else:
+            ddg = sum(self.quadratic_form_at(int(s), spring_scale)
+                      for s in sites)
         n_contacts = int(sum(len(self._contacts_of(int(s))) for s in sites))
         strain = float(np.linalg.norm(self.gating_vector[sites], axis=1).mean())
 
@@ -224,7 +264,9 @@ class VariantImpactModel:
             residue=residue, wt_aa=wt_aa, mut_aa=mut_aa,
             ddg_gating=float(ddg), ddg_normalised=float(ddg / denom),
             spring_scale=float(spring_scale), n_contacts=n_contacts,
-            local_strain=strain)
+            local_strain=strain,
+            note=("per-contact perturbation" if per_contact
+                  else "uniform spring scale"))
 
     def predict_all(self, variants, annotations=None) -> list[VariantPrediction]:
         """Score an iterable of :class:`piezo1.core.annotations.Variant`."""

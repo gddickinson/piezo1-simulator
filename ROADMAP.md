@@ -804,16 +804,41 @@ The through-line: every round that looked hard at a previously reported number
 found the number was reported with more confidence than it had earned. That is
 the failure mode to keep hunting.
 
-### Round 26 — Substitution-aware mechanics
-- [ ] The Round 7 diagnostic said the mechanical ΔΔG reports *position*, not
-      *substitution* (99.8% between-position variance). Fix the cause rather
-      than adding predictors around it: perturb the network by charge change,
-      hydrogen-bonding capacity and proline backbone disruption, not volume
-      alone, so that four substitutions at R2456 can differ.
-- [ ] Success criterion fixed now: **within-position variance must exceed 20%**
-      of total, measured on the four R2456 substitutions and the other
-      multiply-substituted positions. If it does not, the approach has failed
-      and that is the reported result.
+### Round 26 — Substitution-aware mechanics ✅
+- [x] **The cause was algebraic, not statistical.** The old model scaled every
+      contact of a residue by *one number*, so ΔΔG = (s−1)·Q(position) — a
+      rank-one product in which the substitution enters only as a multiplicative
+      scalar. Four substitutions at R2456 could then differ solely by a factor
+      and had to rank every position identically. No refinement of `s` could
+      have fixed that; the separability itself had to go.
+- [x] `piezo1/analysis/substitution.py` scales **each contact individually**, by
+      properties of the new residue *and the partner it touches*: packing,
+      charge (felt only at charged partners), hydrogen-bond complementarity,
+      proline stiffening restricted to sequence-local contacts, and glycine
+      softening. Different substitutions now perturb different *subsets* of
+      contacts. Measured directly: the per-contact patterns for R2456H/K/P/C
+      correlate 0.62–0.98 where they were 1.00 by construction.
+- [x] **The pre-registered criterion is met.** On the multiply-substituted
+      positions — six of them, including all four R2456 substitutions, as the
+      criterion specified — within-position variance goes from **4.9% to
+      52.5%** against a threshold of 20%.
+- [x] **Reported honestly alongside it:** across *all* 35 substituted positions
+      the figure is 2.4%, up from 0.8%. That is not a contradiction — 29 of
+      those positions carry a single substitution and contribute exactly zero
+      within-variance by construction, so including them drives the statistic
+      down for reasons that have nothing to do with the model.
+- [x] **Round 7's frozen result is untouched.** Its script passes no sequence,
+      so the model keeps the uniform scale; there is a test asserting the two
+      agree to 1e-12, and all 18 documented numbers still reproduce.
+- [x] **No phenotype comparison was run.** This is method development against a
+      variance criterion, not a hypothesis test. Whether the new distinctions
+      point in the *right* direction is untested and needs a new
+      pre-registration under `docs/NEGATIVE_RESULT_PROTOCOL.md` §7.
+- [x] Eight new registered parameters for the weights, each with bounds and a
+      stated basis. 17 tests (`tests/test_substitution.py`), including that a
+      spring may weaken but never invert — a negative spring makes the Hessian
+      indefinite and the quadratic form stops being an energy. Suite 445 →
+      **462 passed**.
 
 ### Round 27 — Expand the phenotyped variant set
 - [ ] Round 20 is unambiguous: 42 variants for a large effect, 98 for a medium

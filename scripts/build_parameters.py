@@ -339,6 +339,63 @@ P = [
          source_note="distance from an alpha sphere within which a residue is "
                      "called lining", description="Pocket lining distance."),
 
+    # ------------------------------------------ substitution perturbation --
+    dict(key="substitution.contact_length", name="Side-chain reach", value=6.0,
+         unit="A", minimum=2.0, maximum=15.0, kind="method",
+         category="Substitution model", citation="method_choice",
+         source_note="a C-alpha network places contacts at C-alpha separation, "
+                     "but a side-chain change is felt by what the side chain "
+                     "touches; roughly an extended side-chain length",
+         description="Distance over which a contact feels a side-chain change."),
+    dict(key="substitution.weight_volume", name="Packing weight", value=1.0,
+         unit="", minimum=0.0, maximum=5.0, kind="method",
+         category="Substitution model", citation="method_choice",
+         source_note="the original volume term, kept at unit weight so the new "
+                     "terms are additions rather than a reweighting",
+         description="How strongly a volume change scales a contact."),
+    dict(key="substitution.weight_charge", name="Charge weight", value=0.6,
+         unit="", minimum=0.0, maximum=5.0, kind="method",
+         category="Substitution model", citation="method_choice",
+         source_note="an ENM spring is an effective stiffness standing in for "
+                     "packing, hydrogen bonds and ion pairs together; losing a "
+                     "salt bridge is a large fraction of a contact's stiffness",
+         description="How strongly a charge change scales a contact to a "
+                     "charged partner."),
+    dict(key="substitution.weight_hbond", name="Hydrogen-bond weight",
+         value=0.3, unit="", minimum=0.0, maximum=5.0, kind="method",
+         category="Substitution model", citation="method_choice",
+         source_note="weaker than the charge term because a hydrogen bond "
+                     "contributes less to an effective stiffness than an ion "
+                     "pair at the same separation",
+         description="How strongly a change in donor/acceptor capacity scales "
+                     "a contact."),
+    dict(key="substitution.weight_proline", name="Proline backbone weight",
+         value=0.5, unit="", minimum=-2.0, maximum=5.0, kind="method",
+         category="Substitution model", citation="method_choice",
+         source_note="proline restrains phi and removes a backbone donor, "
+                     "stiffening sequence-local contacts specifically",
+         description="Stiffening applied to sequence-local contacts when "
+                     "proline is introduced."),
+    dict(key="substitution.proline_span", name="Proline effect span", value=4,
+         unit="residues", minimum=1, maximum=20, kind="method",
+         category="Substitution model", citation="method_choice",
+         source_note="one turn of helix either side, the range over which a "
+                     "backbone restraint is felt",
+         description="Sequence separation within which proline stiffens."),
+    dict(key="substitution.weight_glycine", name="Glycine weight", value=-0.4,
+         unit="", minimum=-5.0, maximum=2.0, kind="method",
+         category="Substitution model", citation="method_choice",
+         source_note="negative: removing the side chain leaves nothing to "
+                     "mediate the contact, so it softens",
+         description="Softening applied when glycine is introduced."),
+    dict(key="substitution.min_scale", name="Minimum spring scale", value=0.05,
+         unit="", minimum=0.001, maximum=1.0, kind="method",
+         category="Substitution model", citation="method_choice",
+         source_note="a spring may weaken but never invert, or the quadratic "
+                     "form stops being an energy and the Hessian stops being "
+                     "positive semi-definite",
+         description="Floor on the per-contact spring scale."),
+
     # -------------------------------------------------------- statistics --
     dict(key="stats.alpha", name="Significance level", value=0.05, unit="",
          minimum=0.001, maximum=0.2, kind="convention", category="Statistics",
