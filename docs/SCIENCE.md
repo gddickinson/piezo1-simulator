@@ -1081,6 +1081,39 @@ arrangement is unconstrained wherever the cut is made, so the distal blade shoul
 be placed using the experimental C3 symmetry and dome geometry rather than the
 prediction's relative placement.
 
+## 8n. Can more phenotyped variants be harvested from the literature?
+
+Round 36 needed roughly 130 directional variants and had 34. New experiments are
+not available, so the open-access corpus is the remaining route. Measured over
+the 38 JATS full texts the project downloads:
+
+| Stage | n |
+|---|---|
+| raw substitution matches, 15 papers | 86 |
+| pass the wild-type gate | 66 |
+| mappable to human numbering | 66 |
+| **not already in the curated 68** | **35** |
+| carry an extractable measurement | **2** |
+
+**The gate removes 23%** — cDNA changes are written in the same shape as protein
+substitutions (C7366T), and would otherwise enter as variants.
+
+**40 of 66 are mouse-numbered** against 18 human, confirming that most functional
+literature uses mouse while most disease variants use human.
+
+**The bottleneck is not the gate.** Of 35 fresh candidates, 33 appear only in
+prose; across all 38 papers the *tables* contain four substitution strings, two
+of them cDNA. The numbers this project needs live in sentences and in
+non-open-access supplements.
+
+**The existing curation is better than assumed**: 31 of 66 gated candidates are
+already in the curated 68, which bounds what any harvest of this corpus could
+have added.
+
+No direction is assigned automatically. Reading "slowed inactivation" out of
+prose and calling it gain-of-function would put unreviewed labels into the set
+the blind tests depend on.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

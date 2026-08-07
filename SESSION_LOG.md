@@ -4,6 +4,71 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 45 — the last route to more data, costed
+
+### The premise, and what it was worth
+"Harvesting published supplementary tables is the only route to that number that
+does not require new experiments." Round 36 needed ~130 directional variants and
+had 34, so this was the highest-value round remaining.
+
+It yields **2**, and neither carries a direction.
+
+### The funnel
+86 raw substitution matches across 15 open-access papers → **66** pass the
+wild-type gate → 66 mappable to human → **35** not already curated → **2** carry
+an extractable measurement.
+
+Three things in that chain are worth stating separately.
+
+**The gate removes 23%.** cDNA changes are written in exactly the shape of
+protein substitutions — C7366T looks like a cysteine-to-threonine at 7366 — and
+without the wild-type check they would enter a curated resource as variants. The
+regex is deliberately left loose and the gate does the work, because tightening
+the pattern would drop real variants while still admitting these.
+
+**40 of 66 are mouse-numbered**, against 18 human. That is the project's standing
+trap made quantitative: a harvest that assumed one numbering would mis-assign the
+majority. Conversion goes through the alignment, and a test asserts the offsets
+are *not* all equal — otherwise the harvest could pass while accidentally relying
+on a constant shift.
+
+**31 of 66 are already curated.** The hand curation was more thorough than I
+expected, and that number bounds what any harvest of this corpus could ever have
+added. It is the most encouraging thing in the round.
+
+### Why it fails, which is not where I expected
+Not the gate. Of the 35 fresh candidates, **33 appear only in prose**. Across all
+38 downloaded papers the *tables* contain four substitution strings, two of them
+cDNA. The measurements this project needs are in sentences and in
+non-open-access supplements — the round's premise about "supplementary tables"
+does not describe the corpus that is actually reachable.
+
+### The line I did not cross
+`Candidate` has no direction field, and a test enforces its absence. It would
+have been easy to regex "slowed inactivation" or "increased current" out of the
+context sentence and emit a GoF/LoF label — and that would have put unreviewed
+labels into the set four pre-registered blind tests depend on. The harvest
+produces candidates *for* curation; it does not curate.
+
+What it does produce is a bounded, reviewable list: 35 substitutions with their
+sentence and their source. Round 57 proposes working through them by hand, which
+is now a task with a known denominator rather than an open-ended search.
+
+### Block M
+Five rounds, five answers about data rather than method. The destination is now
+measurably out of reach with the available data, and every route has been tried
+and costed — which is itself a result. What the project should not do next is a
+fifth predictor on 34 variants.
+
+Two habits from these rounds are worth keeping: every negative result was
+measured against a **control**, and each was implemented as a **check that will
+change by itself** when the world does.
+
+702 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 44 — reading the confidence we had already downloaded
 
 ### What was ignored

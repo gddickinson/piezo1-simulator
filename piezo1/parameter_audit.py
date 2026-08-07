@@ -116,6 +116,11 @@ EXEMPT = {
         "property of PIEZO1; frozen at 25 by "
         "docs/PREREGISTRATION_ROUND41.md and tested at 10 and 50 as "
         "pre-registered secondaries so no result can rest on the choice.",
+    ("analysis/harvest.py", "HarvestReport", "n_papers"):
+        "counter, initialised to zero",
+    ("analysis/harvest.py", "_sentence_around", "width"):
+        "how much of the surrounding sentence to keep for a human to read; "
+        "presentation only, and it cannot change which candidates are found",
     ("analysis/prediction_confidence.py", None, "n_residues"):
         "length of human PIEZO1, a fact about the sequence rather than a "
         "parameter; the same 2521 core.sequence carries",

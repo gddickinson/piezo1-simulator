@@ -1604,14 +1604,38 @@ what would most move the destination — predicting direction from structure.
       own confidence readout to be worth trusting.
 
 ### Round 45 — the electrophysiology that is already published as data
-- [ ] **IonChannelGenealogy**, **Channelpedia** and the supplementary tables of
-      the PIEZO1 mutagenesis literature carry T50, τ_inact and conductance per
-      mutant. Round 22 needed 104 variants for a medium effect and had 46.
-      Harvesting published supplementary tables is the only route to that
-      number that does not require new experiments.
-- [ ] *Validate:* every harvested value must pass the same wild-type-residue
-      gate the curated set already uses, and carry its PMID and its recording
-      conditions — a T50 from a different preparation is not comparable.
+- [x] `analysis/harvest.py` scans the 38 open-access JATS full texts the project
+      already downloads, extracts candidate substitutions with the sentence they
+      appeared in, gates them on the wild-type residue, and resolves which
+      numbering system each is in.
+- [x] *Validate:* **the gate is not a formality — 23% of raw hits fail it.**
+      The funnel, measured:
+
+      | stage | n | lost |
+      |---|---|---|
+      | raw regex hits, 15 papers | 86 | |
+      | pass the wild-type gate | 66 | −20 (cDNA changes written like protein ones) |
+      | mappable to human numbering | 66 | −0 |
+      | not already in the curated 68 | 35 | **−31 already held** |
+      | carry an extractable measurement | **2** | −33 prose only |
+
+- [x] **The premise does not hold.** Round 36 needed ~130 directional variants
+      and had 34. This harvest adds **2**, and **neither carries a direction**.
+      The bottleneck is not the gate: the numbers live in *prose* and in
+      non-open-access supplements, not in the machine-readable tables the round
+      assumed. Across all 38 papers the tables contained **four** substitution
+      strings, two of them cDNA.
+- [x] **The existing curation is better than assumed** — 31 of 66 gated
+      candidates are already in the curated 68. That bounds what any harvest of
+      this corpus could ever have added.
+- [x] **40 of 66 are mouse-numbered**, against 18 human. Conversion goes through
+      the alignment in `core.sequence`, and a test asserts the offsets are *not*
+      constant, so the harvest genuinely exercises the numbering map rather than
+      accidentally passing on a fixed shift.
+- [x] **No direction is ever assigned.** `Candidate` has no direction field, and
+      a test enforces its absence. Reading "slowed inactivation" out of prose
+      and calling it gain-of-function would put unreviewed labels into the set
+      the blind tests depend on — the one thing that must stay hand-checked.
 
 
 ---
@@ -1672,3 +1696,60 @@ before pointing it at the unknown. That should be a standing rule, not a habit.
       nothing depends on, that no round cites, and that no test pins to a
       result — and delete them. A smaller project that is entirely load-bearing
       is easier to trust than a large one that is mostly scaffolding.
+
+
+---
+
+## Block M — review after Rounds 41–45
+
+**Five rounds, five answers about data rather than method.** Round 41 (gnomAD:
+an unconstrained gene, fourth null), 42 (deposited MD: 1 of 21 structures), 43
+(modulators: no bound structure exists for any of them), 44 (AlphaFold: no
+long-range constraint anywhere), 45 (literature harvest: 2 usable candidates
+against ~96 needed).
+
+**The destination is now measurably out of reach with the available data, and
+every route has been tried and costed.** That is a result. What the project
+should not do is a fifth predictor on 34 variants.
+
+**Two things these rounds did well and should be kept.** Every negative result
+was measured with a *control* — a probe that finds known-present entries, a seam
+penalty planted in a synthetic matrix, a negative-control endpoint pre-registered
+before the test. And each was implemented as a **check that will change by
+itself**: if MemProtMD ingests a PIEZO structure, if a Yoda1-bound entry is
+deposited, if the corpus gains a supplementary table, the tests fail and the
+conclusion is revisited without anyone remembering to.
+
+### Round 56 — Say the conclusion once, at the top
+- [ ] The four nulls, the data limits and the model-error result are spread
+      across `SCIENCE.md`, four `VALIDATION_*.md` files and the roadmap. Write a
+      single page — `docs/CONCLUSION.md` — that states what this project set out
+      to do, what it established, and what it could not, with the numbers.
+- [ ] Link it from `README.md` and the in-application help, so it is the first
+      thing a reader meets rather than the last thing they assemble.
+
+### Round 57 — Hand-curate the 35 fresh candidates
+- [ ] Round 45 found 35 substitutions not in the curated set, each with its
+      sentence and source. Curating them by hand is a bounded task with a known
+      denominator, and it is the only remaining route that adds *measured*
+      directions.
+- [ ] *Validate:* how many of the 35 have a direction recoverable by a human
+      from the sentence alone? That number decides whether a fifth test is ever
+      possible.
+
+### Round 58 — Retire the predictor, keep the coupling map
+- [ ] Round 39 recorded that the score has a legitimate use — finding
+      mechanically coupled positions — and an illegitimate one. Make that
+      structural: rename the variant-impact output so it cannot be read as a
+      direction prediction, and keep the coupling analysis.
+
+### Round 59 — The tour and the README should end where the science does
+- [ ] Both still present the project as pursuing the central claim. It has been
+      tested four times. Rewrite the closing steps and the README summary to
+      match Round 56's page.
+
+### Round 60 — A reproducibility run from an empty clone
+- [ ] `make reproduce` has never been run from a genuinely empty state in CI.
+      Do it: fresh clone, `create_env.sh`, `python -m piezo1.io.fetch`, full
+      suite, every figure, `verify_claims`. Anything that only works because of
+      a stale cache is a reproducibility bug and this is how it surfaces.
