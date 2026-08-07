@@ -4,6 +4,77 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 38 — the error the intervals never contained
+
+### What the round is for
+Round 29 attached three kinds of spread to the headline numbers and stated on
+each that **model error is not captured**. Bootstrapping a sphere fit says how
+well a sphere is determined; it cannot say whether a sphere was the right shape.
+This estimates that missing term where a second defensible model exists.
+
+`ModelError` is deliberately a separate type from `Sensitivity`. Changing a
+spring exponent is a knob within one model; changing a sphere into a spheroid is
+a different claim about the object, and letting a "sensitivity range" stand in
+for "we do not know the shape" would be the wrong kind of tidy.
+
+### The headline: the dome interval is too narrow by six times
+A sphere fitted to the transmembrane surface gives **9.454 nm** with a geometric
+rmse of 6.180 Å. An oblate spheroid gives flattening **+0.431** and an apex
+curvature of **14.991 nm** with rmse **5.243 Å** — it fits *better*, as it must
+with an extra parameter, and the surface is plainly not spherical.
+
+Those two radii differ by **5.54 nm (59%)**. The bootstrap interval on the
+sphere is **0.92 nm**. So model error is **6.0×** sampling error, and the
+interval this project has been quoting measures how well a sphere is determined
+rather than whether a sphere was right.
+
+The published 10.2 nm is itself a sphere-based number, so the sphere stays the
+right comparator for the literature. What changes is the honest width.
+
+### The fitter was wrong, and would have been reported as science
+The first `fit_spheroid` alternated between the centre and the semi-axes with a
+hand-rolled gradient step. On the dome it produced an apex curvature of 18.4 nm
+and an "89% model error" — a number I nearly wrote down.
+
+Testing it on a *known* spheroid first is what stopped that. Given a full
+surface with true (a, c) = (100, 60) it returned (163, 98) and put the centre
+89 Å away. Both axes inflated by the same 1.63×, which is the signature of a
+drifting centre rather than a shape error — the ratio was right, so any check on
+shape alone would have passed it.
+
+Replaced with the exact linear solution: in the axis frame the implicit
+quadric is linear in six coefficients, the null vector of the design matrix
+gives them up to scale, and completing the square recovers centre and axes with
+no iteration. It now recovers known spheroids to **0.01 Å**.
+
+The lesson is the ordering. An alternative model is an instrument, and an
+instrument has to be calibrated on something with a known answer before it is
+pointed at the thing you do not know. This is the second time in two rounds that
+the alternative route turned out to be the faulty one.
+
+### Two smaller results
+**Springs, 5.2%.** Cumulative gating overlap is 0.890 / 0.912 / 0.937 across the
+three published spring models. All find the transition; the elastic network is
+far less model-sensitive than the dome geometry.
+
+**Pore, exactly zero — with a mechanism.** Apollonius and a uniform probe agree
+*exactly* at 1.70 Å, because 7WLT's bottleneck lining is carbon and 1.70 Å is
+carbon's radius. Moving the probe off 1.70 shifts the answer by precisely the
+offset (0.300 Å at both 1.40 and 2.00), which proves the check is live rather
+than silently returning one number. So the per-atom refinement buys nothing at a
+carbon-lined constriction — a real null, with a reason.
+
+### What is claimed
+Every result says "**lower bound**" on its face. Two models disagreeing bounds
+model error from below. Two agreeing does not bound it from above, because both
+may be wrong in the same direction — and for a dome fitted only over a cap, that
+is a live possibility rather than a formality.
+
+640 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 37 — cross-checking four methods, and being wrong about why one disagreed
 
 ### What was built

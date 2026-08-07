@@ -110,6 +110,11 @@ EXEMPT = {
         "counter, initialised to zero",
     ("physics/permeation.py", "PermeationResult", "access_ohm"): "computed field",
     ("physics/permeation.py", "PermeationResult", "pore_ohm"): "computed field",
+    ("analysis/model_error.py", "pore_convention_error", "uniform_radius"):
+        "the radius the *alternative* convention gives every atom. It defines "
+        "that convention rather than describing PIEZO1, and the whole point of "
+        "the check is that the answer depends on it — which is measured and "
+        "reported, not fixed to one value.",
     ("analysis/crosscheck_methods.py", "conservation_by_kmer_anchoring", "k"):
         "seed length for the DP-free anchoring used only as a cross-check. It "
         "is a property of the alternative instrument, not of PIEZO1, and the "
@@ -197,6 +202,9 @@ MAPPED = {
     ("analysis/variant_impact.py", "d0"): "anm.d0",
     ("analysis/variant_impact.py", "gamma"): "anm.gamma",
     ("structure/pore.py", "step"): "pore.step",
+    ("analysis/model_error.py", "n_modes"): "anm.n_modes",
+    ("analysis/model_error.py", "cutoff"): "anm.cutoff",
+    ("analysis/model_error.py", "step"): "pore.step",
     ("analysis/crosscheck_methods.py", "leash"): "pore.leash",
     ("analysis/crosscheck_methods.py", "search"): "pore.search",
     ("analysis/crosscheck_methods.py", "probe"): "sasa.probe_radius",

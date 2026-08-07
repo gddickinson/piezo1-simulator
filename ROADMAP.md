@@ -1280,12 +1280,37 @@ changes that.
       a plausible story in place.
 
 ### Round 38 — Systematic error, not just statistical
-- [ ] Round 29 attached intervals but stated plainly that none captures model
-      error. Estimate it where possible: fit the dome with a spheroid as well as
-      a sphere, run the ANM with two spring models, measure the pore with two
-      probe conventions.
-- [ ] Report the model spread beside the sampling interval, and say which
-      dominates.
+- [x] `analysis/model_error.py` adds a fourth kind of spread, deliberately a
+      separate type from `Sensitivity`: changing a spring exponent is a knob,
+      changing a sphere into a spheroid is a different claim about the object.
+      Run with `python scripts/model_error.py`.
+- [x] **Dome — model error dominates 6×, and this is the round's headline.**
+      A sphere gives **9.454 nm** (geometric rmse 6.180 Å); an oblate spheroid
+      fits *better* — 5.243 Å, as it must with one more parameter — with
+      flattening **+0.431** and apex curvature **14.991 nm**. Model spread
+      **5.54 nm (58.6%)** against a bootstrap interval of **0.92 nm**:
+      **6.0×**. The published confidence interval measures how well a sphere is
+      determined, not whether a sphere is the right shape.
+- [x] **Elastic network — 5.2%.** Cumulative gating overlap is 0.890 (uniform),
+      0.912 (inverse_square, what the project reports) and 0.937
+      (inverse_sixth). All three find the transition; the network is far less
+      model-sensitive than the dome geometry.
+- [x] **Pore — a null with a mechanism.** Apollonius and a uniform probe agree
+      **exactly** at 1.70 Å because 7WLT's bottleneck lining is carbon; off that
+      radius the gap is precisely the offset (0.300 Å at both 1.40 and 2.00 Å).
+      So this is not a fixed systematic error but a restatement of the probe
+      radius, and the per-atom refinement buys nothing at a carbon-lined
+      constriction. Proven live rather than silently returning one number.
+- [x] **The spheroid fitter was wrong first, and would have been reported as
+      science.** Version one alternated centre and semi-axes with a hand-rolled
+      gradient step: on a *known* spheroid it returned a = 163 for a true 100
+      and c = 98 for a true 60, both inflated by the same 1.63× — the signature
+      of a drifting centre. Replaced with the exact linear solution (null vector
+      of the implicit quadric design matrix), which recovers known shapes to
+      **0.01 Å**. Caught only by testing the fitter on knowns before using it.
+- [x] Every result carries "this is a **lower bound**" — two models disagreeing
+      bounds model error from below; two agreeing does not bound it from above,
+      since both may be wrong the same way.
 
 ### Round 39 — The GUI reaches the variant pipeline
 - [ ] The variant work is the project's central claim and is still CLI-only.

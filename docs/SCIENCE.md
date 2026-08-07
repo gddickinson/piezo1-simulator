@@ -931,6 +931,36 @@ taken from the one open-like entry and the tag distance is modelled rather than
 measured. The linearised buffer also errs *low* near the source, which for a
 saturation argument is the safe direction.
 
+## 8i. Model error, and why the intervals are too narrow
+
+Round 29 attached intervals to the headline numbers and said on each that model
+error is not among them. Round 38 estimated it where a second defensible model
+exists.
+
+| Quantity | Model A | Model B | Model spread | Sampling interval | Dominant |
+|---|---|---|---|---|---|
+| Dome radius of curvature | sphere **9.45 nm** | oblate spheroid, apex **14.99 nm** | **5.54 nm (59%)** | 0.92 nm | **model, 6×** |
+| Gating overlap | inverse_square 0.912 | uniform 0.890 / inverse_sixth 0.937 | 0.047 (5.2%) | — | modest |
+| Pore bottleneck | Apollonius 0.731 Å | uniform 1.7 Å probe 0.731 Å | **0.000 Å** | — | neither |
+
+**The dome is the important one.** The spheroid fits *better* than the sphere
+(geometric rmse 5.24 Å against 6.18 Å, as it must with an extra parameter) and
+has flattening +0.431 — the transmembrane surface is not spherical. The two
+shapes give radii of curvature differing by 59%, six times the bootstrap
+interval. So the ±0.9 nm quoted on 9.7 nm measures how well a sphere is
+determined, **not whether a sphere was the right shape**. The published
+comparison (10.2 nm, Haselwandter & MacKinnon) is itself a sphere-based
+quantity, so the sphere remains the right comparator for the literature — but
+the interval on it understates the real uncertainty.
+
+**The pore result is a null with a mechanism.** The two conventions agree
+exactly at a 1.70 Å probe because 7WLT's bottleneck lining is carbon; away from
+1.70 the gap is exactly the offset. Per-atom radii buy nothing at a carbon-lined
+constriction.
+
+Every figure here is a **lower bound**: two models disagreeing bounds model
+error from below, two agreeing does not bound it from above.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:
