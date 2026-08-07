@@ -37,6 +37,8 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
+from ..parameters import PARAMETERS as _P
+
 from ..core.structure import Structure
 
 __all__ = ["VariantStructure", "StructureSurvey", "survey_variant_structures",
@@ -192,13 +194,15 @@ def _direction(label: str | None) -> str | None:
 
 
 def survey_variant_structures(entries: dict | None = None,
-                              step: float = 1.0) -> StructureSurvey:
+                              step: float | None = None) -> StructureSurvey:
     """Measure every deposited variant entry and report what it can support.
 
     Runs the same pore, wetting and permeation pipeline the wild type gets, so
     that a difference between structures cannot come from a difference in
     treatment.
     """
+    if step is None:
+        step = _P.value("pore.step")
     from ..physics.permeation import solve_pnp
     from ..structure.frame import apply_frame, canonical_transform
     from ..structure.pore import pore_profile

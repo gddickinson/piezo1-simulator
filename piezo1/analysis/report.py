@@ -21,6 +21,8 @@ from pathlib import Path
 
 import numpy as np
 
+from ..parameters import PARAMETERS as _P
+
 from .. import __version__
 from ..core.structure import Structure
 from ..io.registry import load_registry
@@ -258,7 +260,10 @@ def analysis_dome(st: Structure, species: str, **kw) -> dict:
                          "(Haselwandter & MacKinnon 2018)"}
 
 
-def analysis_pore(st: Structure, species: str, step: float = 1.5, **kw) -> dict:
+def analysis_pore(st: Structure, species: str, step: float | None = None,
+                  **kw) -> dict:
+    if step is None:
+        step = _P.value("pore.step")
     from ..structure.pore import pore_profile
     from ..structure.superpose import detect_c3_axis
     blocks, _ = _protomer_blocks(st)
@@ -275,9 +280,11 @@ def analysis_pore(st: Structure, species: str, step: float = 1.5, **kw) -> dict:
             "note": prof.meta["note"]}
 
 
-def analysis_hydration(st: Structure, species: str, step: float = 1.0,
+def analysis_hydration(st: Structure, species: str, step: float | None = None,
                        **kw) -> dict:
     """Hydrophobic-gating prediction (Rao et al. 2019) for this structure."""
+    if step is None:
+        step = _P.value("pore.step")
     from .hydration import load_grid, predict_wetting
     from ..structure.pore import pore_profile
     from ..structure.superpose import detect_c3_axis

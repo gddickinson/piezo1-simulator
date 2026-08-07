@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from ..parameters import PARAMETERS as _P
+
 from ..core.structure import Structure
 from ..parameters import PARAMETERS
 from .report import _protomer_blocks
@@ -113,9 +115,11 @@ def analysis_labelling(st: Structure, species: str, **kw) -> dict:
     return out
 
 
-def analysis_permeation(st: Structure, species: str, step: float = 1.0,
+def analysis_permeation(st: Structure, species: str, step: float | None = None,
                         **kw) -> dict:
     """Ion current through the pore, gated by the wetting verdict."""
+    if step is None:
+        step = _P.value("pore.step")
     from ..physics.permeation import (default_species, series_conductance,
                                       solve_pnp)
     from ..structure.pore import pore_profile
@@ -159,7 +163,7 @@ def analysis_permeation(st: Structure, species: str, step: float = 1.0,
     return out
 
 
-def analysis_nanodomain(st: Structure, species: str, step: float = 1.0,
+def analysis_nanodomain(st: Structure, species: str, step: float | None = None,
                         **kw) -> dict:
     """Calcium at the tag when this channel is open, and whether a sensor saturates.
 
@@ -168,6 +172,8 @@ def analysis_nanodomain(st: Structure, species: str, step: float = 1.0,
     no current, so the nanodomain is reported for the **open** reference entry
     with the tag geometry taken from the loaded structure — and says so.
     """
+    if step is None:
+        step = _P.value("pore.step")
     from ..physics.nanodomain import Nanodomain, screening_length, sweep
     from ..physics.permeation import solve_pnp
     from ..structure.frame import apply_frame, canonical_transform

@@ -608,6 +608,35 @@ all**, and only R2456 appears in its own structure (8YFG).
 
 ---
 
+## 8a-bis. A provenance defect found by checking the chain rather than the numbers
+
+Every number in this project carries a registered parameter with a unit, bounds
+and a citation, and `verify_claims` confirms the documented values still come
+out of the code. Round 49 asked the question underneath — whether the *path* to
+each number is reconstructible — and found that **26 of the 101 registered
+parameters were read by no code at all**.
+
+Such a parameter is not merely unused. It appears in the parameters dialog with
+its citation, an override on it is recorded as an override, reports carry the
+non-default banner because of it, and `verify_claims` refuses to run against it
+— while the quantity it claims to control does not move. That is worse than an
+unregistered constant, which is at least honestly invisible.
+
+The demonstration was `pore.step`: the registry advertised 1.0 Å, a user could
+set 0.25 Å, the override was tracked, and the 8YEZ pore bottleneck stayed at
+0.951756 Å to every digit. The parameter audit passes such a case by design —
+it verifies a literal is *declared* to correspond to a registered parameter,
+and a declaration is not a wire.
+
+All five `pore.*` parameters are now wired end to end; overriding `pore.step`
+moves the bottleneck to 0.7649 Å and the default is unchanged. `analysis_pore`
+had been sampling at 1.5 Å while the registry advertised 1.0 Å, and now uses the
+registered value. The remaining 21 are recorded in ROADMAP.md as Round 49b and
+guarded by a ratcheting test, because a count that can only fall is the only
+kind of promise worth making here.
+
+---
+
 ## 8b. What the mechanical model cannot do
 
 **Five pre-registered tests, five nulls.** Round 7 (elastic-network ΔΔG,

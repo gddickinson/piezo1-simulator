@@ -1511,9 +1511,45 @@ distinguishable from one another is worth more than improving any of them.
       the spread across endpoints is noise, exactly as in Round 41.
 
 ### Round 49 — Provenance of the whole chain
-- [ ] One command that walks a claim from the figure back to the file, the
+- [x] One command that walks a claim from the figure back to the file, the
       parameter set and the commit. `verify_claims` checks numbers; this checks
       that the *path* to each number is reconstructible.
+      **`make provenance` / `python -m piezo1.analysis.provenance_chain`.** Five
+      links per claim — document, code, parameters, data, commit — with the
+      parameter and data links **measured while the claim runs** rather than
+      declared. **It found two real defects on its first two runs.**
+- [x] *Defect 1, in the checker itself:* it reported Round 22's δ as missing
+      from `VALIDATION_ROUND22.md`. The document writes `−0.211` with U+2212
+      MINUS SIGN, and the pattern only matched the ASCII hyphen. Fixed, and
+      pinned — along with a guard that an en-dash range (`2.7–4.7 mN/m`) is
+      *not* read as a negative.
+- [x] *Defect 2, the real one:* **26 of 101 registered parameters were read by
+      no code at all.** They appear in the parameters dialog with a unit and a
+      citation, an override on them is recorded, reports carry the non-default
+      banner, and `verify_claims` refuses to run — while the number does not
+      move. Proved on `pore.step`: overriding 1.0 → 0.25 left the 8YEZ
+      bottleneck bit-identical at 0.951756 Å. This is strictly worse than an
+      unregistered literal, which is at least honestly invisible, and the
+      parameter audit cannot see it — the audit checks a literal is *declared*
+      to correspond to a parameter, and **a declaration is not a wire**.
+- [x] *Fixed here:* all five `pore.*` parameters, end to end — the callee
+      resolves at call time and the six callers that passed literals no longer
+      do. Overriding `pore.step` now moves the bottleneck (0.9518 → 0.7649 Å)
+      and the default is unchanged to every digit. `analysis_pore` had been
+      using `step=1.5` while the registry advertised 1.0; it now uses the
+      registered value. Unwired count 26 → 21, ratcheted by a test.
+
+### Round 49b — The other twenty-one dead parameters
+- [ ] Wire the remaining 21, in the same way and with the same proof: override
+      it, show the number moves, show the default is unchanged. They are
+      `allostery.*` (2), `anm.n_modes/n_protomers/symmetry_tolerance`,
+      `conservation.*` (2), `geometry.*` (3), `hydration.max_radius`,
+      `interactions.min_sequence_separation`, `pockets.*` (5), `sasa.*` (2),
+      `stats.*` (2).
+- [ ] *Validate:* `test_provenance_chain.test_the_unwired_count_does_not_grow`
+      is a ratchet — tighten its bound with each batch. Some may be better
+      *deleted* than wired: a parameter no calculation needs should not be in
+      the registry claiming a citation.
 
 ### Round 50 — What a user should not be able to do
 - [ ] Audit the UI for ways to produce a confident wrong number: analyses run on

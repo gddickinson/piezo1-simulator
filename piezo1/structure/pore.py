@@ -25,6 +25,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from ..core.structure import Structure
+from ..parameters import PARAMETERS as _P
 from .superpose import SymmetryAxis
 
 __all__ = ["PoreProfile", "pore_profile", "PoreSlice"]
@@ -67,13 +68,18 @@ class PoreProfile:
     def bottleneck_lining(self) -> tuple[int, ...]:
         return self.slices[self.bottleneck_index].lining if self.slices else ()
 
-    def constrictions(self, threshold: float = 3.0,
+    def constrictions(self, threshold: float | None = None,
                       min_separation: float = 5.0) -> list[PoreSlice]:
         """Local minima narrower than ``threshold`` Å, i.e. candidate gates.
+
+        ``threshold`` resolves from the registry at call time when not given,
+        so an override takes effect on the next call rather than at import.
 
         3.0 Å is the conventional cut: a sphere of that radius is roughly a
         hydrated ion, so anything narrower is a barrier to permeation.
         """
+        if threshold is None:
+            threshold = _P.value("pore.constriction_threshold")
         out: list[PoreSlice] = []
         r = self.radius
         for i in range(1, len(r) - 1):
@@ -85,12 +91,15 @@ class PoreProfile:
                 out.append(self.slices[i])
         return out
 
-    def is_conductive(self, ion_radius: float = 1.6) -> bool:
+    def is_conductive(self, ion_radius: float | None = None) -> bool:
         """Whether a dehydrated cation could pass the narrowest point.
 
         1.6 Å is roughly the Pauling radius of a hydrated-then-partly-stripped
         Na+/K+; this is a coarse indicator, not a permeation calculation.
+        Resolved at call time, so an override applies to the next call.
         """
+        if ion_radius is None:
+            ion_radius = _P.value("pore.ion_radius")
         return self.bottleneck_radius >= ion_radius
 
     def summary(self) -> str:
@@ -175,8 +184,8 @@ def _optimise_slice(z: float, axis_point: np.ndarray, e1: np.ndarray,
 
 def pore_profile(structure: Structure, axis: SymmetryAxis,
                  z_min: float | None = None, z_max: float | None = None,
-                 step: float = 1.0, leash: float = 8.0,
-                 search: float = 18.0, protein_only: bool = True,
+                 step: float | None = None, leash: float | None = None,
+                 search: float | None = None, protein_only: bool = True,
                  ) -> PoreProfile:
     """Compute the pore-radius profile of a channel about its symmetry axis.
 
@@ -198,6 +207,15 @@ def pore_profile(structure: Structure, axis: SymmetryAxis,
         Maximum distance of the probe centre from the axis. See the module
         docstring — without this the answer is meaningless.
     """
+    # Resolved here rather than in the signature, so an override takes effect
+    # on the next call instead of being frozen at import.
+    if step is None:
+        step = _P.value("pore.step")
+    if leash is None:
+        leash = _P.value("pore.leash")
+    if search is None:
+        search = _P.value("pore.search")
+
     mask = structure.mask_protein() if protein_only else np.ones(
         structure.n_atoms, dtype=bool)
     if protein_only:

@@ -4,6 +4,68 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 49 — checking the path instead of the number, and what it found
+
+**The distinction the round rests on.** `verify_claims` recomputes a documented
+number and compares. That catches drift in the *value* and is silent about
+everything else: which structure file was read, which registered parameters were
+consumed, which commit produced the document. A number can be perfectly correct
+and completely untraceable. `make provenance` walks the five links — document,
+code, parameters, data, commit — and reports where each breaks.
+
+**The parameter and data links are measured, not declared.** `record_sources`
+wraps the single registry read path and the two file doors for the duration of
+one claim, so what comes back is what the computation *actually touched*. That
+is the whole reason the round found anything: a static reading of the source
+would have agreed with the declarations.
+
+**The checker's first run found a bug in the checker.** It reported Round 22's
+δ = −0.2105 as missing from `VALIDATION_ROUND22.md`. It is written there — as
+`−0.211` with U+2212 MINUS SIGN, where the pattern matched only the ASCII
+hyphen, so the document's negative numbers parsed as positive. I had written in
+the docstring that this check "cannot fail when it should pass"; that was wrong
+and is now corrected in the docstring rather than quietly patched. The fix
+deliberately does *not* treat an en-dash as a minus, because the science
+documents use it for ranges like "2.7–4.7 mN/m", and a test pins both.
+
+**Then the real finding: 26 of 101 registered parameters were read by no code.**
+Not unused — *inert while advertised*. Such a parameter appears in the dialog
+with a unit and a citation, an override on it is recorded, reports carry the
+non-default banner, and `verify_claims` refuses to run against it, while the
+number it claims to control does not move. That is strictly worse than an
+unregistered literal, which is at least honestly invisible.
+
+**Proved rather than inferred.** Setting `pore.step` from 1.0 to 0.25 left the
+8YEZ bottleneck at 0.951756 Å — bit-identical. The parameter audit passes this
+by construction: `MAPPED` records that a literal *corresponds to* a registered
+parameter, and a correspondence is not a wire. The audit was doing exactly what
+it was written to do; it was never asked whether the connection existed.
+
+**Fixing it needed both ends.** Wiring `pore_profile` to resolve at call time
+was not enough — the number still would not move, because three callers passed
+`step=1.0` explicitly and six more had their own literal defaults. A parameter
+is only wired when the callee resolves it *and* no caller overrides it with a
+constant. That is why the fix touched six modules for five parameters.
+
+**One inconsistency surfaced on the way.** `analysis_pore` sampled at 1.5 Å
+while the registry advertised `pore.step = 1.0`. Two different numbers for one
+named quantity, in a project whose stated aim is that every number has one
+traceable source. It now uses the registered value.
+
+**Scope, and why the rest are deferred honestly.** The other 21 are recorded as
+Round 49b with the same proof obligation — override it, show the number moves,
+show the default is unchanged — and held by a ratcheting test that fails if the
+count grows. Some are probably better *deleted* than wired: a parameter no
+calculation needs should not sit in the registry claiming a citation.
+
+**A limitation pinned rather than hidden.** Most loaders here memoise, so only
+the first call reads anything. Running the whole registry gave
+`hydration.score_11zc` zero parameters; running it alone gave four. An empty
+`data_files` therefore means "read nothing during this call", not "depends on
+nothing" — documented in the module and pinned by a test, because a silently
+order-dependent provenance report is worse than none.
+
+
 ## Round 48 — the LoF gap, and the ceiling measured rather than argued
 
 **Why this was worth running at all after Round 47.** Round 47 had just

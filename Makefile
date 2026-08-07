@@ -70,6 +70,9 @@ validate:  ## Re-run both pre-registered variant tests
 verify:  ## Check that every documented number still comes out of the code
 	$(PY) scripts/reproduce.py --verify
 
+provenance:  ## Walk each documented number back to its file, parameters and commit
+	$(PY) -m piezo1.analysis.provenance_chain
+
 quick:  ## Fetch, test and verify, skipping the slow steps
 	$(PY) scripts/reproduce.py --quick
 

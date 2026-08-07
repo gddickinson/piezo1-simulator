@@ -39,6 +39,8 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
+from ..parameters import PARAMETERS as _P
+
 __all__ = ["ModelError", "SpheroidFit", "fit_spheroid", "dome_model_error",
            "spring_model_error", "pore_convention_error",
            "compare_with_sampling"]
@@ -241,7 +243,7 @@ def spring_model_error(blocks: list, displacement: np.ndarray,
 # Pore: whose radius does the probe use?
 # --------------------------------------------------------------------------
 
-def pore_convention_error(structure, axis, step: float = 1.0,
+def pore_convention_error(structure, axis, step: float | None = None,
                           uniform_radius: float = 1.7) -> ModelError:
     """Bottleneck radius under the Apollonius and uniform-probe conventions.
 
@@ -251,6 +253,8 @@ def pore_convention_error(structure, axis, step: float = 1.0,
     different things, and the difference is a systematic error in whichever
     number is quoted.
     """
+    if step is None:
+        step = _P.value("pore.step")
     from ..structure.pore import pore_profile
 
     apollonius = pore_profile(structure, axis, step=step)

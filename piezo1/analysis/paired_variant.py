@@ -139,7 +139,7 @@ def measure(pdb: str) -> StructuralMetrics | None:
     raw = Structure.from_file(record.path)
     framed = apply_frame(raw, canonical_transform(raw))
     blocks, _ = protomer_blocks(framed)
-    profile = pore_profile(framed, detect_c3_axis(blocks), step=1.0)
+    profile = pore_profile(framed, detect_c3_axis(blocks))
 
     grid = load_grid()
     if not grid.available:

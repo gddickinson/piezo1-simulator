@@ -207,7 +207,7 @@ def _pore_bottleneck(pdb: str) -> float:
     from ..structure.superpose import detect_c3_axis
     st = _structure(pdb)
     blocks, _ = _blocks(st)
-    return float(pore_profile(st, detect_c3_axis(blocks), step=1.0)
+    return float(pore_profile(st, detect_c3_axis(blocks))
                  .bottleneck_radius)
 
 
@@ -220,7 +220,7 @@ def _wetting_score(pdb: str) -> float:
         raise FileNotFoundError("CHAP grid not downloaded")
     st = _structure(pdb)
     blocks, _ = _blocks(st)
-    profile = pore_profile(st, detect_c3_axis(blocks), step=1.0)
+    profile = pore_profile(st, detect_c3_axis(blocks))
     return float(predict_wetting(st, profile, grid).score)
 
 
