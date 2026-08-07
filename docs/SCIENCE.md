@@ -998,6 +998,29 @@ turns it from caution into a quantified necessity.
 
 ![Young 2023 reproduction](img/young2023_response.png)
 
+## 8k. Whether published simulations can check our lipid sites
+
+They cannot, and the measurement is worth recording because the assumption that
+they could is natural.
+
+| Source | PIEZO coverage | Usable |
+|---|---|---|
+| MemProtMD | **1 of 21** catalogued entries (3JAC only) | no |
+| Zenodo | PIEZO1 records exist, but microscopy and PDFs | no |
+| GPCRmd | none — PIEZO1 is not a GPCR | no |
+
+Measured with a control: 2RH1 and 1M0L return 200 on the same probe, so the
+absence is about PIEZO rather than about the request.
+
+**And the single available entry cannot address lipid contacts.** 3JAC resolves
+918 of 2,547 residues (36%). Of the 15 curated lipid-associated residues it
+resolves **4** — the polybasic PIP2 cluster in full, and **none** of the three
+blade basic clusters. A simulation of a model that omits the lipid-binding
+residues cannot report their occupancies however good the simulation is.
+
+So this project's geometrically-found lipid sites remain unchecked against an
+independent method, and the reason is data availability rather than method.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

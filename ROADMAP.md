@@ -1517,13 +1517,29 @@ what would most move the destination — predicting direction from structure.
       missense constraint model fits expected counts and would separate them.
 
 ### Round 42 — MD trajectories other people have already run
-- [ ] Two sources make this cheap. **MemProtMD** (Oxford) hosts coarse-grained
-      and atomistic simulations of membrane proteins including PIEZO1, with
-      lipid-contact occupancies already computed. **GPCRmd/MDDB** and Zenodo
-      carry deposited PIEZO trajectories from published papers.
-- [ ] *Validate:* compare their lipid-contact occupancies against this
-      project's curated PIP2 cluster and the pockets found geometrically. An
-      independent method agreeing is worth more than a better version of ours.
+- [x] **The premise was wrong, and that is the result.** "Two sources make this
+      cheap" does not survive contact with the data. `analysis/external_md.py`
+      implements the *check* rather than the comparison, so the conclusion is
+      reproducible and will change by itself when the situation does.
+- [x] **MemProtMD holds 1 of 21** catalogued PIEZO entries — only **3JAC**, the
+      2015 structure. Absent are 7WLT, 7WLU, 6B3R and 8YEZ, i.e. every structure
+      this project actually uses. Measured with a **working control**: 2RH1 and
+      1M0L return 200 on the same probe, so the absence is about PIEZO and not
+      about the request.
+- [x] **The one entry cannot answer the question.** 3JAC resolves 918 of 2,547
+      residues (36%), and of the 15 curated lipid-associated residues it
+      resolves **4** — the PIP2 cluster in full and **none** of the three blade
+      basic clusters. A simulation of a model that omits the lipid-binding
+      residues cannot report their lipid contacts.
+- [x] The other two named sources do not help either: Zenodo's PIEZO1 records
+      are microscopy TIFFs and PDFs rather than trajectories, and GPCRmd is
+      GPCR-specific — PIEZO1 is not a GPCR.
+- [x] Also recorded: MemProtMD's analysis is **browsable but not fetchable**.
+      The site is a single-page app and no public API endpoint could be found;
+      ten candidate paths returned 404 against working page URLs.
+- [x] A test asserts that an **offline run returns "not checked" rather than an
+      empty coverage** — otherwise a network failure would silently manufacture
+      exactly this round's conclusion.
 
 ### Round 43 — the ligands that have no structure
 - [ ] `ligands.json` is still 📋 and the registry contains **no** Yoda1-, Jedi-,

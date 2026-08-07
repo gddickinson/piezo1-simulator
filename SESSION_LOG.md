@@ -4,6 +4,66 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 42 — the premise was wrong, and that is the result
+
+### What the round assumed
+"Two sources make this cheap." The idea was sound: comparing our geometrically
+found lipid sites against occupancies from simulations other people have already
+run would be an independent check, and an independent method agreeing is worth
+more than a better version of ours.
+
+The data is not there.
+
+### What was measured
+**MemProtMD holds 1 of 21** catalogued PIEZO entries — only 3JAC, the 2015
+structure. Absent are 7WLT, 7WLU, 6B3R and 8YEZ: every structure this project
+actually uses.
+
+That absence is only evidence because the probe has a **control**. 2RH1 and
+1M0L return 200 on the identical request, so "PIEZO is not there" is
+distinguishable from "the URL is wrong". This project has been caught by that
+class of error more than once — a PMID resolving to an unrelated paper, a frame
+mismatch reporting a closed channel as conducting — and an absence without a
+control is not a finding.
+
+**And the one entry cannot answer the question.** 3JAC resolves 918 of 2,547
+residues (36%), and of the 15 curated lipid-associated residues it resolves 4:
+the PIP2 cluster in full, and none of the three blade basic clusters. A
+simulation of a model that omits the lipid-binding residues cannot report their
+contacts.
+
+Zenodo's PIEZO1 records turned out to be microscopy TIFFs and PDFs rather than
+trajectories. GPCRmd is GPCR-specific and PIEZO1 is not a GPCR.
+
+### Where I stopped
+MemProtMD's site is a single-page app and its analysis is browsable but not
+fetchable: ten candidate API paths returned 404 against page URLs that return
+200. I stopped guessing endpoints at that point rather than continuing, because
+the coverage result already answered the round — the API being inaccessible is a
+second obstacle behind a first one that is decisive on its own.
+
+### What was built instead
+`analysis/external_md.py` implements the **check**, not the comparison. The
+conclusion is therefore reproducible, and it will change by itself: if MemProtMD
+ever ingests a modern PIEZO structure the coverage function says so and the test
+guarding this null fails.
+
+One test exists specifically for the way this round could have fooled itself: an
+offline run must return "not checked", never an empty coverage that reads as a
+measured absence. A network failure would otherwise manufacture exactly the
+conclusion the round reached.
+
+### The pattern
+This is the fourth round in a row where the answer was about data rather than
+method — Round 34 (one informative variant structure), Round 36 (34 variants
+against the 130 needed), Round 41 (an unconstrained gene), and now this. The
+project's models are not the limiting factor and have not been for some time.
+
+674 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 41 — the fourth null, and the clause that caught it
 
 ### The gene-level answer arrived before the test
