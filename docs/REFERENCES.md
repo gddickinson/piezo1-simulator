@@ -9,7 +9,7 @@ Open-access full texts are downloaded to `ref/papers/` with
 git-ignored: the papers are other people's copyright, and the
 bibliography here is enough to retrieve them.
 
-**72 references.** 39 are open access.
+**73 references.** 39 are open access.
 
 ## Structure
 
@@ -173,6 +173,8 @@ bibliography here is enough to retrieve them.
   <sub>Used for: PIEZO1 selectivity and permeation - the direct target of the PNP model</sub>
 - **`grimm2015jf`** — Grimm JB, English BP, Chen J, Slaughter JP, Zhang Z, Revyakin A, Patel R, Macklin JJ, Normanno D, Singer RH, Lionnet T, Lavis LD. *A general method to improve fluorophores for live-cell and single-molecule microscopy.* Nature methods 2015;12:244-50, 3 p following 250. [PMID 25599551](https://pubmed.ncbi.nlm.nih.gov/25599551/) · [doi:10.1038/nmeth.3256](https://doi.org/10.1038/nmeth.3256) · **OA**  
   <sub>Used for: Janelia Fluor dyes including JF646 - cell-permeable, so partition ~ 1</sub>
+- **`chen2024gnomad`** — Chen S, Francioli LC, Goodrich JK, Collins RL, Kanai M, Wang Q, Alföldi J, Watts NA, Vittal C, Gauthier LD, Poterba T, Wilson MW, Tarasova Y, Phu W, Grant R, Yohannes MT, Koenig Z, Farjoun Y, Banks E, Donnelly S, Gabriel S, Gupta N, Ferriera S, Tolonen C, Novod S, Bergelson L, Roazen D, Ruano-Rubio V, Covarrubias M, Llanwarne C, Petrillo N, Wade G, Jeandet T, Munshi R, Tibbetts K, Genome Aggregation Database Consortium, O'Donnell-Luria A, Solomonson M, Seed C, Martin AR, Talkowski ME, Rehm HL, Daly MJ, Tiao G, Neale BM, MacArthur DG, Karczewski KJ. *A genomic mutational constraint map using variation in 76,156 human genomes.* Nature 2024;625:92-100. [PMID 38057664](https://pubmed.ncbi.nlm.nih.gov/38057664/) · [doi:10.1038/s41586-023-06045-0](https://doi.org/10.1038/s41586-023-06045-0)  
+  <sub>Used for: gnomAD constraint: LOEUF, pLI and missense z-scores</sub>
 - **`bertaccini2025piezo1`** — Bertaccini GA, Casanellas I, Evans EL, Nourse JL, Dickinson GD, Liu G, Seal S, Ly AT, Holt JR, Wijerathne TD, Yan S, Hui EE, Lacroix JJ, Panicker MM, Upadhyayula S, Parker I, Pathak MM. *Visualizing PIEZO1 localization and activity in hiPSC-derived single cells and organoids with HaloTag technology.* Nature communications 2025;16:5556. [PMID 40593468](https://pubmed.ncbi.nlm.nih.gov/40593468/) · [doi:10.1038/s41467-025-59150-1](https://doi.org/10.1038/s41467-025-59150-1) · **OA**  
   <sub>Used for: The tagged-PIEZO1 experiment this labelling model describes; three tags per channel and the multi-level brightness histogram</sub>
 

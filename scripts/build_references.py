@@ -164,6 +164,10 @@ SEED = [
      'TITLE:"Access resistance of a small circular pore"',
      "Access resistance of a circular pore mouth - the term that limits a short "
      "wide pore", "access resistance"),
+    # --- population constraint, Round 41 ------------------------------------
+    ("chen2024gnomad",
+     'TITLE:"A genomic mutational constraint map using variation in 76,156 human genomes"',
+     "gnomAD constraint: LOEUF, pLI and missense z-scores", "constraint"),
     # --- calcium nanodomain, Round 35 ---------------------------------------
     ("stern1992",
      'TITLE:"Buffering of calcium in the vicinity of a channel pore"',
