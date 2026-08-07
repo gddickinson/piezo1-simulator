@@ -112,11 +112,11 @@ def test_prediction_sign_convention(toy):
     model, _, _ = toy
     bigger = model.predict(40, "G", "W")
     smaller = model.predict(40, "W", "G")
-    assert bigger.ddg_gating > 0 and bigger.direction == "stiffening"
-    assert smaller.ddg_gating < 0 and smaller.direction == "softening"
+    assert bigger.gating_cost_change > 0 and bigger.sign == "stiffening"
+    assert smaller.gating_cost_change < 0 and smaller.sign == "softening"
     same = model.predict(40, "A", "A")
-    assert same.ddg_gating == pytest.approx(0.0, abs=1e-15)
-    assert same.direction == "neutral"
+    assert same.gating_cost_change == pytest.approx(0.0, abs=1e-15)
+    assert same.sign == "neutral"
 
 
 # --------------------------------------------------------------------------
@@ -140,7 +140,7 @@ def test_all_protomer_copies_are_mutated():
     assert len(model.sites_for(10)) == 3
     trimer = model.predict(10, "A", "W")
     single = model.quadratic_form_at(10, trimer.spring_scale)
-    assert trimer.ddg_gating == pytest.approx(
+    assert trimer.gating_cost_change == pytest.approx(
         single + model.quadratic_form_at(10 + per, trimer.spring_scale)
         + model.quadratic_form_at(10 + 2 * per, trimer.spring_scale), rel=1e-12)
 
@@ -149,7 +149,7 @@ def test_unresolved_residue_is_reported_not_guessed(toy):
     model, _, _ = toy
     p = model.predict(99999, "A", "V")
     assert p.modelled is False
-    assert p.ddg_gating == 0.0
+    assert p.gating_cost_change == 0.0
     assert "not resolved" in p.note
 
 
@@ -168,7 +168,7 @@ def test_gating_vector_is_normalised(toy):
 def test_normalised_score_separates_mild_from_rigid(toy):
     """A residue that barely moves cannot score high however drastic the swap.
 
-    ddg_normalised divides that out, so "mechanically mild mutation" and
+    cost_change_normalised divides that out, so "mechanically mild mutation" and
     "position in a rigid region" are distinguishable rather than conflated.
     """
     model, coords, d = toy
@@ -177,7 +177,7 @@ def test_normalised_score_separates_mild_from_rigid(toy):
     rigid = int(np.argmin(amplitudes))
     a = model.predict(mobile, "G", "W")
     b = model.predict(rigid, "G", "W")
-    assert abs(a.ddg_gating) > abs(b.ddg_gating)
+    assert abs(a.gating_cost_change) > abs(b.gating_cost_change)
     assert a.local_strain > b.local_strain
 
 

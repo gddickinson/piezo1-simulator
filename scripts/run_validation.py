@@ -72,7 +72,7 @@ def apply_inclusion(rows):
     return kept, counts
 
 
-def primary_test(kept, field: str = "ddg_gating") -> dict:
+def primary_test(kept, field: str = "gating_cost_change") -> dict:
     gof = np.array([r["pred"].__dict__[field] for r in kept
                     if r["variant"].classification == "GoF"])
     lof = np.array([r["pred"].__dict__[field] for r in kept
@@ -115,8 +115,8 @@ def main() -> int:
         print("\nToo few variants survive inclusion for the test to mean anything.")
         return 1
 
-    primary = primary_test(kept, "ddg_gating")
-    secondary_norm = primary_test(kept, "ddg_normalised")
+    primary = primary_test(kept, "gating_cost_change")
+    secondary_norm = primary_test(kept, "cost_change_normalised")
 
     print(f"\nGoF n={primary['n_gof']}  mean ddG {primary['mean_gof']:+.3e}")
     print(f"LoF n={primary['n_lof']}  mean ddG {primary['mean_lof']:+.3e}")
@@ -128,7 +128,7 @@ def main() -> int:
     print(f"   AUROC {primary['auroc']:.3f}")
     print(f"\n   DECISION: {decision(primary)}")
 
-    print(f"\nSECONDARY (ddg_normalised): p = "
+    print(f"\nSECONDARY (cost_change_normalised): p = "
           f"{secondary_norm['permutation']['p_value']:.4f}, "
           f"delta {secondary_norm['effect']['delta']:+.3f}, "
           f"AUROC {secondary_norm['auroc']:.3f}")
@@ -147,7 +147,7 @@ def main() -> int:
     for r in r2456:
         p = r["pred"]
         print(f"\nR2456 case: {r['variant'].label} ({r['variant'].classification}) "
-              f"ddG {p.ddg_gating:+.3e} -> predicted {p.direction}")
+              f"gating cost {p.gating_cost_change:+.3e} -> {p.sign}")
 
     out = {"counts": counts, "primary": primary, "secondary_normalised": secondary_norm,
            "decision": decision(primary),
@@ -156,13 +156,16 @@ def main() -> int:
            "n_structures": len(ens), "n_residues": int(len(ens.residues)),
            "r2456": [{"label": r["variant"].label,
                       "classification": r["variant"].classification,
-                      "ddg": r["pred"].ddg_gating,
-                      "direction": r["pred"].direction} for r in r2456],
+                      # Stored keys unchanged: this regenerates the FROZEN
+                      # Round 7 record, and renaming them would mean the file
+                      # no longer reproduces the recorded result.
+                      "ddg": r["pred"].gating_cost_change,
+                      "direction": r["pred"].sign} for r in r2456],
            "per_variant": [{"label": r["variant"].label,
                             "classification": r["variant"].classification,
                             "domain": r["pred"].domain,
-                            "ddg": r["pred"].ddg_gating,
-                            "ddg_normalised": r["pred"].ddg_normalised}
+                            "ddg": r["pred"].gating_cost_change,
+                            "ddg_normalised": r["pred"].cost_change_normalised}
                            for r in kept]}
     dest = Path("data/derived/validation_round7.json")
     dest.parent.mkdir(parents=True, exist_ok=True)

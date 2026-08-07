@@ -215,9 +215,9 @@ def _score(make, aware, subset):
         for variant in variants:
             prediction = model.predict(mouse_residue, variant.wt_aa,
                                        variant.mut_aa)
-            if prediction.modelled and np.isfinite(prediction.ddg_gating):
+            if prediction.modelled and np.isfinite(prediction.gating_cost_change):
                 positions.append(human_residue)
-                values.append(prediction.ddg_gating)
+                values.append(prediction.gating_cost_change)
     return np.array(positions), np.array(values)
 
 
@@ -285,5 +285,5 @@ def test_falling_back_without_a_sequence_reproduces_the_old_behaviour(
     residue = human_to_mouse(2456)
     a = without.predict(residue, "R", "H")
     b = gating_model(False).predict(residue, "R", "H")
-    assert a.ddg_gating == pytest.approx(b.ddg_gating, rel=1e-12)
+    assert a.gating_cost_change == pytest.approx(b.gating_cost_change, rel=1e-12)
     assert "uniform" in a.note

@@ -2079,10 +2079,40 @@ conclusion is revisited without anyone remembering to.
       the gate can fail.
 
 ### Round 58 — Retire the predictor, keep the coupling map
-- [ ] Round 39 recorded that the score has a legitimate use — finding
+- [x] Round 39 recorded that the score has a legitimate use — finding
       mechanically coupled positions — and an illegitimate one. Make that
       structural: rename the variant-impact output so it cannot be read as a
       direction prediction, and keep the coupling analysis.
+      **The illegitimate reading was written into the API.** The output was a
+      class called `VariantPrediction` carrying a `direction` property whose
+      docstring read *"stiffening (LoF-like) or softening (GoF-like)"* — the
+      exact claim five pre-registered tests failed to support.
+
+      | Was | Is |
+      |---|---|
+      | `VariantPrediction` | `CouplingScore` |
+      | `ddg_gating` | `gating_cost_change` |
+      | `ddg_normalised` | `cost_change_normalised` |
+      | `.direction` → "LoF-like"/"GoF-like" | `.sign` → stiffening/softening, with no gain/loss mapping |
+
+      No alias is kept: an alias is how the reading comes back. `ddG` also went
+      because it implies a thermodynamic free energy of folding, which this is
+      not. The coupling map — `prs_gate_response`, `prs_coupling`,
+      `dcc_to_gate`, `betweenness` — is untouched, and a test asserts the score
+      still computes.
+- [x] *A correction to Round 50's hazard register, found by doing this.* The
+      entry `prediction_read_as_validated` described a user selecting a variant
+      and *seeing a mechanical ΔΔG*. Measured: **no GUI or CLI path computes the
+      score at all** — it is reachable only from a notebook or the validation
+      scripts. The registered scenario could not happen as written. Corrected to
+      state the real, narrower exposure rather than deleted, because a notebook
+      user still reaches it.
+- [x] *The frozen record still round-trips.* `scripts/run_validation.py`
+      regenerates the frozen Round 7 result, whose JSON uses the keys `ddg` and
+      `ddg_normalised`. The **attributes** were renamed and the **stored keys**
+      were not, or the file would no longer reproduce the record it exists for.
+      A test pins both halves: the stored keys stay, and no attribute read uses
+      an old name.
 
 ### Round 59 — The tour and the README should end where the science does
 - [ ] Both still present the project as pursuing the central claim. It has been

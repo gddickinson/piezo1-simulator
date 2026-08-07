@@ -179,11 +179,11 @@ EXEMPT = {
     ("analysis/validation.py", "EffectSize", "n_bootstrap"): "records what was used",
     ("analysis/conservation.py", "ConservationProfile", "n_orthologs"):
         "counter filled in after the alignment; zero means nothing was fetched",
-    ("analysis/variant_impact.py", "VariantPrediction", "ddg_gating"): "computed field",
-    ("analysis/variant_impact.py", "VariantPrediction", "ddg_normalised"): "computed field",
-    ("analysis/variant_impact.py", "VariantPrediction", "spring_scale"): "computed field",
-    ("analysis/variant_impact.py", "VariantPrediction", "n_contacts"): "computed field",
-    ("analysis/variant_impact.py", "VariantPrediction", "local_strain"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "gating_cost_change"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "cost_change_normalised"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "spring_scale"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "n_contacts"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "local_strain"): "computed field",
     ("analysis/hydration.py", "LiningPoint", "distance"): "computed field",
     ("analysis/hydration.py", None, "HYDROPHOBICITY_FALLBACK"):
         "CHAP's fallback for residues outside the scale; a definition, not a measurement",

@@ -292,9 +292,9 @@ def _within_position_variance() -> float:
         for variant in variants:
             prediction = model.predict(mouse_residue, variant.wt_aa,
                                        variant.mut_aa)
-            if prediction.modelled and np.isfinite(prediction.ddg_gating):
+            if prediction.modelled and np.isfinite(prediction.gating_cost_change):
                 positions.append(human_residue)
-                values.append(prediction.ddg_gating)
+                values.append(prediction.gating_cost_change)
     return variance_decomposition(positions, values).within_fraction
 
 

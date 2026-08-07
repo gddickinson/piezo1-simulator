@@ -37,7 +37,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from scipy.spatial import cKDTree
 
-__all__ = ["RESIDUE_VOLUME", "VariantPrediction", "VariantImpactModel",
+__all__ = ["RESIDUE_VOLUME", "CouplingScore", "VariantImpactModel",
            "spring_scale_from_volume"]
 
 #: Side-chain volumes in Å3 (Zamyatnin 1972), by one-letter code.
@@ -71,14 +71,27 @@ def spring_scale_from_volume(wt_aa: str, mut_aa: str,
 
 
 @dataclass
-class VariantPrediction:
-    """Everything the model says about one variant."""
+class CouplingScore:
+    """How much a substitution changes the elastic cost of the gating motion.
+
+    **This is not a prediction of gain or loss of function**, and the name says
+    so because for four rounds it did not. The class was called
+    ``CouplingScore`` and carried a ``direction`` property returning
+    "stiffening (LoF-like)" or "softening (GoF-like)" — a reading that five
+    pre-registered tests have failed to support, and that Rounds 47 and 54
+    showed cannot be supported by any data this project could obtain.
+
+    What the number legitimately says: this position is mechanically coupled to
+    the gating motion by this much, and this substitution perturbs that
+    coupling by this much. That is a statement about *where a residue sits in
+    the mechanics*, which is useful and is a different claim.
+    """
 
     residue: int
     wt_aa: str | None
     mut_aa: str | None
-    ddg_gating: float = 0.0            # arbitrary ENM energy units
-    ddg_normalised: float = 0.0        # per unit of local strain, see below
+    gating_cost_change: float = 0.0    # arbitrary ENM energy units
+    cost_change_normalised: float = 0.0   # per unit of local strain, see below
     spring_scale: float = 1.0
     n_contacts: int = 0
     local_strain: float = 0.0          # |d| at the mutated residue
@@ -90,15 +103,23 @@ class VariantPrediction:
     note: str = ""
 
     @property
-    def direction(self) -> str:
-        """Predicted direction: stiffening (LoF-like) or softening (GoF-like)."""
-        if not np.isfinite(self.ddg_gating) or self.ddg_gating == 0.0:
+    def sign(self) -> str:
+        """Whether the substitution stiffens or softens the gating motion.
+
+        Deliberately **not** called ``direction``, and deliberately not mapped
+        onto gain or loss of function. Stiffening the elastic network is not
+        the same as impairing the channel: R2456H, R2456K and R2456P are
+        gain-of-function and R2456C is loss, and this model gives all four
+        nearly the same number.
+        """
+        if not np.isfinite(self.gating_cost_change) or self.gating_cost_change == 0.0:
             return "neutral"
-        return "stiffening" if self.ddg_gating > 0 else "softening"
+        return "stiffening" if self.gating_cost_change > 0 else "softening"
 
     def as_dict(self) -> dict:
         return {k: getattr(self, k) for k in
-                ("residue", "wt_aa", "mut_aa", "ddg_gating", "ddg_normalised",
+                ("residue", "wt_aa", "mut_aa", "gating_cost_change",
+                 "cost_change_normalised",
                  "spring_scale", "n_contacts", "local_strain",
                  "prs_gate_response", "betweenness", "dcc_to_gate", "domain",
                  "modelled", "note")}
@@ -224,7 +245,7 @@ class VariantImpactModel:
 
     def predict(self, residue: int, wt_aa: str | None = None,
                 mut_aa: str | None = None,
-                spring_scale: float | None = None) -> VariantPrediction:
+                spring_scale: float | None = None) -> CouplingScore:
         """Score one variant.
 
         The mutation is applied at *every* protomer, because a homotrimer
@@ -235,7 +256,7 @@ class VariantImpactModel:
         """
         sites = self.sites_for(residue)
         if len(sites) == 0:
-            return VariantPrediction(
+            return CouplingScore(
                 residue=residue, wt_aa=wt_aa, mut_aa=mut_aa, modelled=False,
                 note="residue not resolved in this structure")
 
@@ -260,15 +281,15 @@ class VariantImpactModel:
         # drastic the substitution. Normalising by the local strain separates
         # "this mutation is mechanically mild" from "this position barely moves".
         denom = max(strain ** 2 * max(n_contacts, 1), 1e-30)
-        return VariantPrediction(
+        return CouplingScore(
             residue=residue, wt_aa=wt_aa, mut_aa=mut_aa,
-            ddg_gating=float(ddg), ddg_normalised=float(ddg / denom),
+            gating_cost_change=float(ddg), cost_change_normalised=float(ddg / denom),
             spring_scale=float(spring_scale), n_contacts=n_contacts,
             local_strain=strain,
             note=("per-contact perturbation" if per_contact
                   else "uniform spring scale"))
 
-    def predict_all(self, variants, annotations=None) -> list[VariantPrediction]:
+    def predict_all(self, variants, annotations=None) -> list[CouplingScore]:
         """Score an iterable of :class:`piezo1.core.annotations.Variant`."""
         out = []
         for v in variants:
@@ -288,10 +309,10 @@ class VariantImpactModel:
 
     # -------------------------------------------------------- extra features
 
-    def attach_network_features(self, predictions: list[VariantPrediction],
+    def attach_network_features(self, predictions: list[CouplingScore],
                                 prs=None, betweenness: dict | None = None,
                                 dcc: np.ndarray | None = None,
-                                gate_sites=None) -> list[VariantPrediction]:
+                                gate_sites=None) -> list[CouplingScore]:
         """Add the allostery-derived features from Round 5, where available."""
         gate_response = None
         if prs is not None and gate_sites is not None:

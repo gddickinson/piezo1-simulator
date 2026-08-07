@@ -139,14 +139,21 @@ HAZARDS: tuple = (
 
     Hazard(
         key="prediction_read_as_validated",
-        scenario="Select a variant, see a mechanical ΔΔG, and take it as a "
-                 "prediction of gain versus loss of function.",
+        scenario="Read the mechanical coupling score as a prediction of gain "
+                 "versus loss of function. Round 58 measured that no GUI or "
+                 "CLI path computes it at all — it is reachable only from a "
+                 "notebook or the validation scripts — so the exposure is "
+                 "narrower than this register first claimed.",
         wrong="The project's central claim, treated as established when five "
-              "pre-registered tests have failed to support it.",
-        guard="prediction_record supplies the headline and caveats to the GUI, "
-              "the CLI and the tests from one frozen record.",
+              "pre-registered tests have failed to support it and two "
+              "independent routes show it cannot be settled.",
+        guard="The output is named for what it measures: CouplingScore with a "
+              "gating_cost_change field and a `sign` property. It was called "
+              "VariantPrediction with a `direction` property returning "
+              "'LoF-like'/'GoF-like' until Round 58. prediction_record still "
+              "supplies the caveats wherever a variant is shown.",
         status="guarded",
-        where="analysis/prediction_record.py"),
+        where="analysis/variant_impact.py, analysis/prediction_record.py"),
 
     Hazard(
         key="closed_state_interactions_read_as_general",

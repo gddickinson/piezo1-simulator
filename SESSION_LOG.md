@@ -4,6 +4,52 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 58 — the illegitimate reading was written into the API
+
+**What I expected to find, and what was actually there.** Round 39 recorded
+that the mechanical score has a legitimate use — locating mechanically coupled
+positions — and an illegitimate one. I expected to be renaming something
+mildly suggestive. The output was a class called `VariantPrediction` carrying a
+property called `direction`, whose docstring read *"Predicted direction:
+stiffening (LoF-like) or softening (GoF-like)"*. The claim five pre-registered
+tests failed to support was not merely implied by the naming; it was the
+docstring of a public property.
+
+**So the rename is the deliverable, not cosmetics.** `CouplingScore` with a
+`gating_cost_change` field and a `sign` property that says explicitly it is not
+a gain/loss mapping, and names R2456 — where H, K and P are gain-of-function, C
+is loss, and this model gives all four nearly the same number — as the
+demonstration. `ddG` went too: it implies a thermodynamic free energy of
+folding, which this quantity is not.
+
+**No alias.** The tempting move is `VariantPrediction = CouplingScore` for
+compatibility. An alias is exactly how the old reading comes back, and a test
+asserts the old name resolves nowhere.
+
+**A correction to my own Round 50 register.** The hazard
+`prediction_read_as_validated` described a user selecting a variant and *seeing
+a mechanical ΔΔG*. Checking where the score is actually computed: nowhere in
+the GUI, nowhere in the CLI. It is reachable only from a notebook or the
+validation scripts. The registered scenario could not happen as written — I had
+written down a plausible hazard rather than a measured one, which is the same
+failure as the Round 50 review's forty positions. Corrected to the real,
+narrower exposure rather than deleted, because a notebook user does still reach
+it.
+
+**The frozen record needed the opposite treatment.** `run_validation.py`
+regenerates the frozen Round 7 result, whose JSON carries the keys `ddg` and
+`ddg_normalised`. The attributes had to be renamed; the stored keys had to not
+be, or the script would stop reproducing the record it exists for. Both halves
+are pinned: the stored keys stay, and no attribute read uses an old name. It is
+a small thing, but renaming through a codebase is exactly where a frozen record
+gets quietly rewritten.
+
+**What is kept.** The coupling map — PRS gate response, PRS coupling, dynamic
+cross-correlation to the gate, betweenness — is untouched and is the part with
+a defensible use. A test asserts the score still computes, because a retirement
+that broke the calculation would be a deletion wearing a rename.
+
+
 ## Round 57 — reading all 35 by hand, and what that was worth
 
 **The round asked a precise question and it has a precise answer: five.** Round

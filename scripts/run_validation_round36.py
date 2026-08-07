@@ -114,7 +114,7 @@ def collect() -> tuple[list[dict], dict]:
             dropped["no_mouse_equivalent"] += 1
             continue
         prediction = aware.predict(mouse, entry.wt_aa, entry.mut_aa)
-        if not prediction.modelled or not np.isfinite(prediction.ddg_gating):
+        if not prediction.modelled or not np.isfinite(prediction.gating_cost_change):
             dropped["not_modelled"] += 1
             continue
         control = plain.predict(mouse, entry.wt_aa, entry.mut_aa)
@@ -128,8 +128,8 @@ def collect() -> tuple[list[dict], dict]:
             "classification": entry.classification,
             "evidence": entry.evidence,
             "measured": entry.label in measured,
-            "mechanical": float(prediction.ddg_gating),
-            "mechanical_volume_only": float(control.ddg_gating),
+            "mechanical": float(prediction.gating_cost_change),
+            "mechanical_volume_only": float(control.gating_cost_change),
             "foldx_ddg": getattr(external, "foldx_ddg", None),
             "alphamissense": getattr(external, "alphamissense", None),
             "eve": getattr(external, "eve", None),
