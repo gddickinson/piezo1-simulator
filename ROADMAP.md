@@ -2449,22 +2449,45 @@ predictor.
 ## Block O — say what was established, and make it reusable (Rounds 66–70)
 
 ### Round 66 — The conclusion document
-- [ ] `docs/CONCLUSION.md`: what the project set out to do, what it established,
-      what it could not, with the numbers and the figures Round 53 built. Block
-      M §56 proposed this before Rounds 47 and 54 existed; it can now state the
-      *unprovability* result rather than a list of nulls.
-- [ ] *Validate:* every number in it must come from the claims registry or the
-      validation record, and a test must assert that — this project has twice
-      shipped prose that went stale.
+- [x] `docs/CONCLUSION.md` — **delivered by Round 56**, which reached this
+      first. Verified rather than assumed: the page exists, states *"cannot be
+      settled with data that could exist"* rather than listing nulls, carries
+      both Round 53 figures, and gives 134 against 59.
+- [x] *Validate:* every number traceable, enforced. `test_conclusion.py` extracts
+      every number and requires it to come from `CLAIMS`, `ALL_PREREGISTERED`,
+      `HEADLINE` or an allowlist whose entries each state a reason — and is
+      itself calibrated, so an invented number fails.
 
 ### Round 67 — What the negative result is worth to someone else
-- [ ] The reusable output is not the predictor; it is the machinery that showed
-      the predictor could not be validated: pre-registration discipline,
-      `feasibility`, `data_routes`, `published_interval`, `calibration`. Write
-      the short methods note that would let another structural-biology project
-      apply the same test to its own central claim.
-- [ ] *Validate:* it must be honest that this pipeline's main output was five
-      nulls, and say why that is the point rather than a disclaimer.
+- [x] Write the short methods note that would let another structural-biology
+      project apply the same test to its own central claim.
+      **`docs/METHODS_NOTE.md`**, organised around **what each mechanism
+      caught** rather than what it is for — because a safeguard nobody has
+      watched fire is a claim, not a method. Eight sections: pre-register with a
+      multi-clause rule; a negative control in every test; cost the design
+      before running another; **calibrate every checking instrument**; make
+      provenance measured rather than declared; guard the prose; record a
+      decision *not* to test; and what it cost against what it bought.
+- [x] *Validate:* honest that the main output was five nulls, and why that is
+      the point. **It opens on the failure** — a test asserts "failed" appears
+      in the first 900 characters, that the count comes from
+      `ALL_PREREGISTERED`, and that phrases like "validated predictor" appear
+      nowhere. The argument is that a pipeline which only ever confirmed things
+      would say nothing about whether its safeguards work: every mechanism in
+      the note is there because it caught something, **nine times an instrument
+      built to check the pipeline was itself the thing at fault**.
+- [x] *Guarded like the conclusion.* A test resolves every module the note
+      cites and imports it, and checks the figures it quotes still match
+      `CLAIMS` and `paired_positions_required` — so a note that drifts from the
+      code fails rather than misleading the one reader most likely to act on it.
+      Linked from `CONCLUSION.md` §7.
+
+### Round 68 — superseded by Round 63
+- [x] Block O proposed deciding the engineered variants; **Round 63 did it**
+      before this block was reached. Recorded here rather than left unchecked:
+      a conductance or selectivity change may not stand for a direction, on the
+      project's own dissociation evidence, and admitting the five admissible
+      ones adds zero discriminating positions.
 
 ### Round 68 — The engineered variants, decided
 - [ ] Round 54 left 15 measured functional effects marked `blocked` on a

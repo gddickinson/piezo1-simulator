@@ -143,11 +143,22 @@ the predictor could not be validated, and most of it is not PIEZO1-specific:
 
 ---
 
-## 7. Where to go next
+## 7. If you want to apply this to your own project
 
-`ROADMAP.md` Block N asks the questions this document leaves open, and Block O
-proposes writing the methods note that would let another structural-biology
-project apply the same discipline to its own central claim.
+The apparatus in §5 is written up as a short methods note —
+[`docs/METHODS_NOTE.md`](METHODS_NOTE.md) — aimed at someone building a
+structural-biology tool around a prediction they believe in. It is organised
+around what each mechanism *caught*, including nine occasions when a checking
+instrument was itself the thing at fault.
+
+---
+
+## 8. Where to go next
+
+`ROADMAP.md` Blocks P and Q list what remains, which is engineering and
+communication rather than science: the two routes to the central claim are
+closed by measurement, and Round 64 recorded in writing that no further test
+will be attempted on this variant set.
 
 The honest summary in one line: **the structural machinery works and reproduces
 the literature; the variant prediction it was built for does not work, and the

@@ -50,6 +50,8 @@ ALLOWED = {
     1: "the number of usable within-position positions (R2456)",
     2: "small counts in prose (two routes, two of the three VUS)",
     0.05: "the conventional significance threshold",
+    8: "a section number in this document's own headings",
+    64: "a roadmap round number (the recorded decision not to test)",
     0.2: "the Round 26 pre-registered within-position criterion",
     0.55: "Rao 2019 wetting cutoff, a published threshold",
     10.2: "published dome radius (Haselwandter & MacKinnon 2018)",

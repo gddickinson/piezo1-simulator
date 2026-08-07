@@ -4,6 +4,52 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 67 — the methods note, organised around what each safeguard caught
+
+**Round 66 was already done, and I checked rather than assumed.** Block O
+proposed the conclusion document before Round 56 reached it. Verified: the page
+exists, states the unprovability result rather than listing nulls, carries both
+figures, gives 134 against 59, and its traceability guard passes. Ticked with a
+note. Round 68 is likewise superseded by Round 63.
+
+**The note's organising principle was the decision worth making.** The obvious
+structure is a list of mechanisms with what each is *for*. That reads as a
+manifesto and is unfalsifiable. So every section says what the mechanism
+**caught** instead — the three-clause decision rule because Round 41's p was
+0.0477 with an interval spanning zero; negative controls because in two rounds a
+deliberately meaningless predictor matched or beat every real endpoint;
+feasibility because "we need more data" was measurably the wrong conclusion.
+
+A safeguard nobody has watched fire is a claim, not a method.
+
+**Leading with the failure is the point, not a disclaimer**, and the note argues
+that explicitly: a pipeline that only ever confirmed things would tell you
+nothing about whether its safeguards work. This one produced five nulls and then
+showed the claim cannot be settled, which is exactly the condition under which
+the machinery is worth copying.
+
+**The section I found hardest to write honestly** is the calibration one,
+because the list of incidents is a list of my own errors: a spheroid fitter that
+would have reported 89% model error, a document checker that could not read its
+own documents' minus sign, two dead-code detectors that would have deleted the
+CLI, an audit that missed calibrations named in test names, a graft anchored on
+a whole flexible arm. Nine of them. Writing that as the strongest section rather
+than the most embarrassing one is the correct framing, and it took a moment to
+see it.
+
+**Guarded like the conclusion.** A methods note that drifted from the code would
+mislead precisely the reader most likely to act on it, so a test resolves every
+module it cites and imports it, checks the quoted figures still match `CLAIMS`
+and `paired_positions_required`, and asserts the calibration incidents are
+recorded in the session log rather than remembered.
+
+**Two of my own test's assumptions were wrong**, both about notation rather than
+facts. It searched for `analysis/x.py` at the repository root when that is the
+project's shorthand for `piezo1/analysis/x.py`, and it looked for "unicode
+minus" where the log says "U+2212". Both failed on wording rather than on
+substance — the same failure mode as Round 55's planted probe finding itself.
+
+
 ## Round 65 — one module implemented, four rows deleted, and a real modelling choice
 
 **All five had been promises, not stubs** — no file existed for any of them. The
