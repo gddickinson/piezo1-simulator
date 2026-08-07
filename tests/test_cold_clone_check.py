@@ -105,19 +105,33 @@ def test_it_removes_both_data_directories_before_running():
     assert '"ref", "data"' in text or "('ref', 'data')" in text
 
 
+def test_the_recursion_guard_is_set_for_the_clone(tmp_path):
+    """The guard must reach the clone's pytest, or it protects nothing."""
+    import os
+
+    step = ccc._run("probe", [sys.executable, "-c",
+                              "import os; print('guard=' + "
+                              "os.environ.get('PIEZO1_COLD_CLONE', 'unset'))"],
+                    cwd=tmp_path)
+    assert "guard=1" in step.detail
+
+
 def test_it_explains_what_a_failure_means():
     text = SCRIPT.read_text()
     assert "must SKIP, not fail" in text
     assert "reproducibility bug" in text
 
 
-def test_the_script_runs_and_reports(tmp_path):
-    """End to end, on the real repository. Slow but this is the whole point."""
-    result = subprocess.run(
-        [sys.executable, str(SCRIPT)], cwd=ROOT,
-        capture_output=True, text=True, timeout=1800)
-    assert "git clone" in result.stdout
-    assert "suite on the empty clone" in result.stdout
-    assert result.returncode == 0, (
-        f"the project no longer runs clean from an empty clone:\n"
-        f"{result.stdout[-2000:]}")
+# The end-to-end run is deliberately NOT a test.
+#
+# `git clone` copies committed state, so a test that clones HEAD exercises the
+# last commit rather than the working tree — it cannot validate the change being
+# made, and it reports on code the developer may have already replaced. Worse,
+# the clone contains this file, so the script-under-test runs a suite containing
+# a test that runs the script: unbounded recursion, which timed out at thirty
+# minutes once the file was committed.
+#
+# The eleven tests above cover the parsing and the pass/fail logic against
+# planted inputs, which is what a suite should do. The real end-to-end run is
+# `make coldclone`, which is where it belongs: a command you invoke on committed
+# code, not an assertion about a working tree it cannot see.

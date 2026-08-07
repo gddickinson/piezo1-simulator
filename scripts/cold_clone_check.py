@@ -38,6 +38,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
+#: Set in the environment of the clone's own pytest run, so the end-to-end test
+#: inside the clone skips instead of cloning again.
+#:
+#: Without it this recurses without bound: the script clones the repository and
+#: runs the suite, the suite contains a test that runs the script, and that
+#: clone contains the same test. It passed when written only because the test
+#: file was not yet committed, so the clone did not have it — the bug activated
+#: on commit, which is the worst time for one to appear.
+RECURSION_GUARD = "PIEZO1_COLD_CLONE"
+
 @dataclass
 class Step:
     """One stage of the chain, with what it cost and what it produced."""
@@ -108,8 +118,13 @@ def _counts(output: str) -> tuple[int, int, int, int]:
 
 
 def _run(name: str, command: list, cwd: Path, expect_tests: bool = False) -> Step:
+    import os
+
     started = time.time()
-    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True)
+    environment = dict(os.environ)
+    environment[RECURSION_GUARD] = "1"
+    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True,
+                            env=environment)
     step = Step(name=name, seconds=time.time() - started)
     if expect_tests:
         step.passed, step.failed, step.skipped, step.errors = _counts(result.stdout)
