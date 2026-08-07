@@ -4,6 +4,79 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 37 — cross-checking four methods, and being wrong about why one disagreed
+
+### What was built
+Round 30 re-derived three headline *physics results* by independent routes. This
+does the same for four *algorithms*, each swapping out the part most likely to
+be wrong:
+
+* **pore radius** — the pipeline runs a coarse polar grid then a shrinking
+  pattern search, a local optimiser on a piecewise-smooth surface whose failure
+  mode is a local maximum. The alternative maximises the same clearance by 20k
+  uniform random probe centres, which has no basin structure to get stuck in.
+* **SASA** — Shrake–Rupley with a fixed golden-spiral point set, against
+  Monte-Carlo with independent random directions. A defect in the point set is
+  invisible to a test that uses the same point set.
+* **conservation** — Needleman–Wunsch anchoring, against exact k-mer seeds with
+  no dynamic programming and no gap penalties at all.
+* **PCA** — the SVD of the centred coordinate matrix, against power iteration on
+  XᵀX, which touches no library eigensolver and never forms the 7389×7389
+  covariance.
+
+Each alternative is tested first against a case with an analytic answer — an
+isolated sphere, a planted component, a slab with a known gap — because two
+routes agreeing means nothing if neither is right.
+
+### Results
+PCA agrees **exactly** (0.0%, |cos| = 1.000000). SASA to **0.1%**.
+
+The pore check agrees to 5.2%, and the *sign* is the useful part: brute force
+finds **0.9783 Å** where the pattern search finds **0.9300 Å**. A brute force can
+only match or beat a local optimiser, so the larger value means the pattern
+search stops slightly short. That is under-convergence, not a wrong answer, and
+a test now bounds the gap so a real regression would widen it.
+
+### The one I got wrong
+Conservation correlates at **0.817**, and I wrote in the module docstring —
+before measuring — that the residual would concentrate near indels, since that
+is where an alignment does work a seed-based anchor cannot. That was a
+plausible story and it was wrong. The eight worst-disagreeing positions all have
+coverage 1.00: perfectly aligned.
+
+The real cause is a bias in *my* alternative. Anchoring by **maximum exact
+matches** is a selection — given a choice of offsets it prefers the one where
+residues agree — so it inflates conservation exactly where a position is
+variable. The evidence is unambiguous: the k-mer profile's floor is **0.36
+rather than 0**, it agrees at invariant positions (0.993 where the pipeline says
+1.00), and it reads **0.653** where the pipeline says below 0.50. A test now
+isolates the bias on random unrelated sequences, where it reads them as partly
+conserved.
+
+So the k-mer route is the weaker instrument, and the check confirms the pipeline
+rather than indicting it — the same shape of conclusion Round 30 reached about
+the parabola. The docstring was corrected rather than left with the tidier
+explanation.
+
+### Why that matters beyond this round
+A cross-check whose disagreement is explained by a guess is not a cross-check.
+The value came from measuring *where* the two routes part company, which took
+about as long as writing the alternative did, and overturned the explanation I
+had already committed to prose.
+
+### Notes
+- Three cross-check arguments map onto the pipeline's own registered parameters
+  (`pore.leash`, `pore.search`, `sasa.probe_radius`); the two k-mer arguments are
+  exempted with the reason that they are properties of the alternative
+  instrument, not of PIEZO1.
+- Six background research agents were restarted on request; all hit an API
+  session limit and none completed.
+
+627 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 36 — the third null, pre-registered first
 
 ### Why a third test at all

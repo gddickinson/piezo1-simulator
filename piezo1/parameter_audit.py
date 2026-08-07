@@ -110,6 +110,14 @@ EXEMPT = {
         "counter, initialised to zero",
     ("physics/permeation.py", "PermeationResult", "access_ohm"): "computed field",
     ("physics/permeation.py", "PermeationResult", "pore_ohm"): "computed field",
+    ("analysis/crosscheck_methods.py", "conservation_by_kmer_anchoring", "k"):
+        "seed length for the DP-free anchoring used only as a cross-check. It "
+        "is a property of the alternative instrument, not of PIEZO1, and the "
+        "pipeline's conservation does not depend on it.",
+    ("analysis/crosscheck_methods.py", "conservation_by_kmer_anchoring",
+     "window"):
+        "how far the seed may slide when anchoring; a search bound for the "
+        "cross-check route only",
     ("analysis/labelling.py", "predicted_brightness", "per_dye_intensity"):
         "defines the brightness unit rather than measuring anything: the "
         "histogram is in units of one dye, so 1.0 IS the unit",
@@ -189,6 +197,9 @@ MAPPED = {
     ("analysis/variant_impact.py", "d0"): "anm.d0",
     ("analysis/variant_impact.py", "gamma"): "anm.gamma",
     ("structure/pore.py", "step"): "pore.step",
+    ("analysis/crosscheck_methods.py", "leash"): "pore.leash",
+    ("analysis/crosscheck_methods.py", "search"): "pore.search",
+    ("analysis/crosscheck_methods.py", "probe"): "sasa.probe_radius",
     ("structure/pore.py", "leash"): "pore.leash",
     ("structure/pore.py", "search"): "pore.search",
     ("structure/pore.py", "threshold"): "pore.constriction_threshold",

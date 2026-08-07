@@ -1248,11 +1248,36 @@ changes that.
       not be run" and "was not significant" are different statements.
 
 ### Round 37 — Cross-check the remaining chain
-- [ ] Round 30 covered three links. Do the rest: pore radius without Apollonius
-      maximisation, SASA without Shrake–Rupley, conservation without pairwise
-      alignment, PCA without SVD.
-- [ ] Any disagreement is either a bug or a diagnosed approximation, and both
-      are worth the round.
+- [x] `analysis/crosscheck_methods.py` re-derives all four by routes sharing no
+      machinery with the pipeline. Run with `python scripts/crosscheck_methods.py`.
+      Each alternative is first tested against a case with an analytic answer,
+      because two routes agreeing only means something if neither is guessing.
+- [x] **PCA — exact.** Power iteration on XᵀX (no LAPACK eigensolver, never
+      forming the 7389×7389 covariance) reproduces the SVD eigenvalue to
+      **0.0%** with **|cos| = 1.000000** between the two PC1 directions.
+- [x] **SASA — 0.1%.** Shrake–Rupley's 256-point golden spiral gives
+      11707.9 Å² on the 4RAX cap; Monte-Carlo with 4000 independent random
+      directions gives 11692.0 Å².
+- [x] **Pore radius — 5.2%, and the sign is the informative part.** The
+      pipeline's polar-grid-plus-pattern-search gives 0.9300 Å at the 8YEZ
+      bottleneck; 20k uniform random probe centres give **0.9783 Å**. A brute
+      force can only match or beat a local optimiser, so the larger value means
+      the pattern search **stops slightly short** — under-convergence, not a
+      wrong answer. Bounded by a test so a real regression widens the gap.
+- [x] **Conservation — correlation 0.817, and the residual is a bias in the
+      *alternative*.** k-mer anchoring with no dynamic programming and no gap
+      penalties agrees at invariant positions (**0.993** where the pipeline says
+      1.00) but reads **0.653** where the pipeline says below 0.50, and its
+      floor is **0.36 rather than 0**. The cause is selection: anchoring by
+      *maximum exact matches* preferentially lines up residues that agree, so it
+      inflates conservation exactly where a position is variable. Needleman–
+      Wunsch uses gap penalties and a substitution matrix rather than raw match
+      counts and is not subject to it. **The k-mer route is the weaker
+      instrument** — the same verdict Round 30 reached about the parabola.
+- [x] My first explanation of that residual (that it would concentrate near
+      indels) was **wrong**: the eight worst positions all have coverage 1.00.
+      Diagnosed properly and the module docstring corrected, rather than leaving
+      a plausible story in place.
 
 ### Round 38 — Systematic error, not just statistical
 - [ ] Round 29 attached intervals but stated plainly that none captures model
