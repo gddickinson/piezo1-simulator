@@ -610,7 +610,7 @@ all**, and only R2456 appears in its own structure (8YFG).
 
 ## 8b. What the mechanical model cannot do
 
-**Four pre-registered tests, four nulls.** Round 7 (elastic-network ΔΔG,
+**Five pre-registered tests, five nulls.** Round 7 (elastic-network ΔΔG,
 δ = −0.083), Round 22 (FoldX ΔΔG, δ = −0.211) and Round 36 (substitution-aware
 ΔΔG, δ = −0.249, CI [−0.628, +0.151], p = 0.405) all failed to reject. The point
 estimate has grown monotonically in the hypothesised direction across the three,
@@ -642,6 +642,26 @@ constraint gives Cliff's δ −0.269 with an interval spanning zero (p = 0.0477 
 below threshold, and still a null because the pre-registered rule required the
 interval to exclude zero too). Its pre-registered negative control was
 indistinguishable from the predictor.
+
+**Round 48 tested the wild-type structure itself** — whether GoF and LoF
+variants simply sit at structurally different *positions*, independent of the
+substitution. Burial (the primary) gives Cliff's δ = **+0.036**, p = 0.509,
+AUROC 0.482 on 14 LoF versus 16 GoF positions; conservation, gate coupling,
+gating-mode amplitude and distance to the gate all follow, and nothing in the
+six-endpoint family survives correction (smallest q = 0.930). Distance to the
+gate separates *exactly* nothing (δ = +0.000). The pre-registered negative
+control — distance from the three-fold axis, chosen because no mechanism
+predicts it — has a **larger** effect (δ = +0.268) than every mechanistic
+endpoint, which is the same diagnostic Round 41 produced.
+
+That round also measured the ceiling it had pre-registered: a feature computed
+on the wild-type structure has **exactly 0%** within-position variance
+(between-position share 1.000000). Position R2456 carries four curated variants
+— R2456H/K/P gain-of-function, R2456C loss-of-function — and all four receive
+the identical value 0.127326. Against 4.9% for Round 7's predictor and 52.5%
+after Round 26, this is the confound that killed Round 7 in its limiting form,
+and it means a positive result there could never have assigned a direction to a
+substitution.
 
 PIEZO1 is also **not a constrained gene**: LOEUF 1.10, pLI ≈ 0, and `oe_mis`
 1.45 with `mis_z` −11.3 — missense-*enriched* rather than depleted. That was

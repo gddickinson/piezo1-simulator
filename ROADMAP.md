@@ -1486,13 +1486,29 @@ distinguishable from one another is worth more than improving any of them.
       Both numbers are now guarded in the claims registry.
 
 ### Round 48 — The LoF gap, addressed rather than lamented
-- [ ] Loss-of-function variants are absent from the structures but present in
+- [x] Loss-of-function variants are absent from the structures but present in
       the curated set. Test whether they are also structurally distinguishable
       *in the wild type* — do LoF positions differ from GoF positions in burial,
-      conservation, or coupling to the gate?
-- [ ] *Validate:* this is a position-level question, so it is vulnerable to the
+      conservation, or coupling to the gate? **No — the fifth null, and the
+      flattest.** Primary (relative SASA, 14 LoF vs 16 GoF): Cliff's δ **+0.036**,
+      CI [−0.384, +0.473], p = 0.509, AUROC 0.482 — all three decision clauses
+      fail. Nothing in the six-endpoint BH family survives; smallest q = **0.930**.
+      Gate distance separates *exactly* nothing (δ = +0.000).
+      docs/VALIDATION_ROUND48.md.
+- [x] *Validate:* this is a position-level question, so it is vulnerable to the
       exact confound Round 7 died of. Pre-register, and report the
       between-position variance share alongside any result.
+      **Pre-registered in its own commit (`7ffb008`) before the run, with the
+      ceiling stated up front rather than as a closing caveat.** The variance
+      share is now *measured*, not asserted: between-position **1.000000**,
+      within-position **0.000000**. R2456's four variants — R2456H/K/P (GoF) and
+      R2456C (LoF) — all take the identical value 0.127326, because the feature
+      never sees the substitution. Against 4.9% (Round 7) and 52.5% (Round 26),
+      a wild-type positional feature has **0%**, so a positive result could
+      never have become a variant-direction predictor.
+      The pre-registered **negative control** (distance from the C3 axis,
+      δ = +0.268) has a **larger effect than every mechanistic endpoint** — so
+      the spread across endpoints is noise, exactly as in Round 41.
 
 ### Round 49 — Provenance of the whole chain
 - [ ] One command that walks a claim from the figure back to the file, the

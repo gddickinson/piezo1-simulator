@@ -4,6 +4,64 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 48 — the LoF gap, and the ceiling measured rather than argued
+
+**Why this was worth running at all after Round 47.** Round 47 had just
+concluded that no reachable dataset resolves the effect the mechanical
+predictor produces. That conclusion was about a *per-variant* predictor at
+δ ≈ 0.25. Round 48 asks a different question — do LoF and GoF variants sit at
+structurally different *positions* — where the design has 80% power at
+\|δ\| ≥ 0.495. A large positional effect was still detectable, and the feature
+table already existed, so the test was cheap. It was pre-registered as
+exploratory below that threshold and committed alone (`7ffb008`) before
+anything ran.
+
+**The ceiling went in §2, before the hypothesis, on purpose.** Every previous
+round put the "this cannot become the predictor we want" caveat at the end. For
+this round it is the dominant fact: a feature computed on the wild-type
+structure has zero within-position variance, so it cannot distinguish two
+variants at one residue. Stating it first meant a positive result could not have
+been over-read afterwards — the pre-registration says in advance that it would
+license "GoF and LoF variants occur at different positions" and nothing more.
+
+**And then it was measured rather than asserted**, which is what the roadmap
+asked for. Between-position share **1.000000**, within-position **0.000000**,
+via the same `variance_decomposition` Round 26 was judged by. The demonstration
+is R2456: four curated variants, three GoF and one LoF, all valued 0.127326 to
+every digit. Set beside 4.9% (Round 7) and 52.5% (Round 26), the progression is
+the clearest statement of the confound the project has produced. The test for
+this includes a control on the instrument — a synthetic case where the
+decomposition *does* return non-zero — because a zero is only meaningful if the
+measurement could have said otherwise.
+
+**The result: the fifth null, and the flattest.** Primary δ = +0.036, p = 0.509,
+AUROC 0.482, all three decision clauses failing. Nothing in the six-endpoint BH
+family survives; the smallest q is 0.930. Distance to the gate — the endpoint
+with the clearest mechanical story — separates *exactly* nothing, δ = +0.000.
+
+**The negative control is again what decides the reading.** Distance from the
+three-fold axis was pre-registered because no mechanism predicts it, and at
+δ = +0.268 it out-performs every mechanistic endpoint. So the spread across
+endpoints is noise at this sample size, and any single large result would have
+been indistinguishable from it. Round 41 produced the same diagnostic; having it
+twice is what makes it a property of the data rather than of one predictor.
+
+**A trap the write-up had to name.** The median LoF position is *more* exposed
+than the median GoF position (0.219 vs 0.143), which reads as a reversal of the
+hypothesis. Cliff's δ is +0.036 — a rank statistic — so the distributions
+overlap almost entirely and the median gap rests on a few positions. Reporting
+the medians alone would have described an effect that is not there. The
+pre-registered statistic is what prevented that, and a test pins the warning.
+
+**Kept out of the record deliberately.** `prediction_record.VALIDATION_RECORD`
+is scoped to the mechanical ΔΔG score — the number the GUI shows next to a
+variant — so Rounds 41 and 48 do not belong in it. What *was* stale there is now
+fixed: the caveat list said "roughly 130 variants would be needed" (Round 47
+made that exactly 134 and added the reachable ceiling of 59), and it did not
+mention that two other predictor families had been pre-registered and failed.
+A user reading the GUI now sees five tests, five predictors, five nulls.
+
+
 ## Round 47 — a predictor that could survive its own data limit
 
 **The question, and why it is not another test.** Round 26 made the mechanical

@@ -111,7 +111,15 @@ def what_it_means() -> list[str]:
         "medium one, so the null excludes a large effect and not a medium one.",
         "The point estimate has grown across the three tests (−0.083, −0.211, "
         "−0.249) which is suggestive and is NOT evidence: at that effect size "
-        "roughly 130 variants would be needed and 34 were available.",
+        "134 variants would be needed and 34 were available.",
+        "Round 47 costed the ceiling: even if every variant this project could "
+        "ever curate were included, 59 would be reachable, where the smallest "
+        "detectable effect is 0.356 against the 0.249 observed. More data of "
+        "the kind that could exist would not settle this.",
+        "Two other predictor families were pre-registered and also failed: "
+        "population constraint (Round 41) and wild-type structural context — "
+        "burial, conservation, gate coupling (Round 48). Five tests, five "
+        "nulls, five predictors.",
         "The binding constraint is data, not method. Only one deposited variant "
         "structure resolves its own mutation, and all four are gain-of-function.",
         "Use the score to ask which residues sit in mechanically coupled "
