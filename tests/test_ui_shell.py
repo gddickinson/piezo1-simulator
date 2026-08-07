@@ -238,7 +238,8 @@ def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
                "labelling": "show_labelling", "fusion": "show_fusion_numbers",
                "nanodomain": "show_nanodomain",
                "prediction_record": "show_prediction_record",
-               "ligands": "show_ligands"}
+               "ligands": "show_ligands",
+               "paired_variant": "show_paired_variant"}
 
     for name in ANALYSES:
         assert name in drawn or name in tabular, (

@@ -348,6 +348,7 @@ def analysis_interactions(st: Structure, species: str, **kw) -> dict:
 #: analysis becomes available in both at once.
 from .report_tags import (analysis_fusion, analysis_labelling,   # noqa: E402
                           analysis_ligands, analysis_nanodomain,
+                          analysis_paired_variant,
                           analysis_permeation, analysis_prediction_record)
 
 ANALYSES = {
@@ -356,6 +357,7 @@ ANALYSES = {
     "nanodomain": analysis_nanodomain,
     "prediction_record": analysis_prediction_record,
     "ligands": analysis_ligands,
+    "paired_variant": analysis_paired_variant,
     "fusion": analysis_fusion,
     "labelling": analysis_labelling,
     "pore": analysis_pore,

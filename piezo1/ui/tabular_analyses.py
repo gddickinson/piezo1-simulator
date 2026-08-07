@@ -47,6 +47,10 @@ CAVEATS = {
         "Every binding site here is INFERRED from mutagenesis, docking or "
         "geometry. No PIEZO structure with a bound small-molecule modulator "
         "has ever been deposited, so none of these pockets has been observed."),
+    "paired_variant": (
+        "n = 1. Only one deposited variant entry resolves its own mutation, so "
+        "this is the single structural comparison available. It says what the "
+        "structures show, not what R2456H does."),
     "variant_structures": (
         "A null result, reported rather than worked around: every deposited "
         "human PIEZO1 structure is closed, so no difference in conductance can "
@@ -110,6 +114,10 @@ class TabularAnalysisMixin:
         self._run_registry_analysis(
             "prediction_record",
             "Can this predict gain- vs loss-of-function? — the record")
+
+    def show_paired_variant(self) -> None:
+        self._run_registry_analysis(
+            "paired_variant", "R2456H against wild type — the one pair")
 
     def show_variant_structures(self) -> None:
         """What the deposited variant structures can actually support."""

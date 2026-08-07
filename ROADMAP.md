@@ -1434,13 +1434,37 @@ unmeasured parameters, so not an independent prediction). Keeping those three
 distinguishable from one another is worth more than improving any of them.
 
 ### Round 46 — Where the model *can* be tested
-- [ ] The one comparison Round 34 leaves open: **8YFG (R2456H) against 8YEZ
-      (wild type)**, both human, both closed, mutation resolved in one. Report
-      bottleneck, wetting score and blocking mechanisms as a *paired* structural
-      comparison, and state plainly that n = 1 supports no inference.
-- [ ] *Validate:* whether the R2456H structure differs from wild type by more
-      than the wild-type entries differ among themselves — the only control that
-      makes a single pair interpretable.
+- [x] `analysis/paired_variant.py` measures 8YFG (R2456H) against the wild-type
+      entries, in the canonical frame, through the same pore and wetting
+      pipeline. Reachable as **Analysis → R2456H vs wild type…** and
+      `python -m piezo1.cli paired_variant`.
+- [x] **The control was widened, not narrowed.** The comparison is against
+      *three* independent wild-type entries (8YEZ, 8ZU3, 8ZU8), not one.
+      8YFC and 9VMX are excluded **by coordinate fingerprint** — they are
+      byte-identical to 8ZU3, and including them would have added two
+      zero-difference pairs, shrinking the wild-type spread and making the
+      variant look more distinct than it is.
+- [x] *Validate:* **R2456H is not structurally distinguishable.**
+
+      | measure | variant | wild-type range | WT spread | largest variant difference |
+      |---|---|---|---|---|
+      | bottleneck | **0.808 Å** | 0.673–0.930 | 0.257 | **0.135** |
+      | wetting score | **0.904** | 0.457–0.986 | 0.529 | **0.446** |
+
+      The variant falls *inside* the wild-type range on both, and its largest
+      difference from any wild-type entry is **smaller** than the largest
+      difference between two wild-type entries. Tested generously — *any*
+      measure exceeding the spread would have counted — and it still does not.
+- [x] **Why that is unsurprising once stated.** Every deposited human entry is
+      closed, and R2456H's phenotype is *slowed inactivation*. A closed
+      structure has no obligation to show a gating defect. That is part of the
+      result rather than an excuse for it.
+- [x] The control is itself tested both ways: a synthetic variant far outside
+      the wild-type set is detected, one just inside is not, and a wild-type set
+      of *identical* structures makes even a 0.001 difference "distinguishable"
+      — which is exactly what including the duplicates would have moved towards.
+- [x] **n = 1**, stated in the summary, the caveat and the note. This says what
+      the deposited structures show, not what R2456H does.
 
 ### Round 47 — A predictor that could survive its own data limit
 - [ ] Round 26 raised within-position variance from 4.9% to 52.5%. Ask the

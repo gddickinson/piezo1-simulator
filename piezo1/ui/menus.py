@@ -197,6 +197,12 @@ def _analysis_menu(win, bar) -> None:
             "structure - has FAILED three pre-registered tests. Shows all\n"
             "three, the power statement, and what the score may still be\n"
             "used for.")
+    _action(menu, "R2456H vs wild &type…", win.show_paired_variant, "",
+            "The only variant-versus-wild-type structural comparison this\n"
+            "project can make: 8YFG is the one deposited entry that resolves\n"
+            "its own mutation. Reported against how much wild-type entries\n"
+            "differ among themselves, which is what makes a single pair\n"
+            "interpretable. n = 1.")
     _action(menu, "&Variant structures…", win.show_variant_structures, "",
             "What the deposited variant structures can actually support.\n"
             "A null result: every deposited human PIEZO1 structure is closed,\n"

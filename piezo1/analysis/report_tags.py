@@ -15,7 +15,7 @@ from .report import _protomer_blocks
 
 __all__ = ["analysis_fusion", "analysis_labelling", "analysis_permeation",
            "analysis_nanodomain", "analysis_prediction_record",
-           "analysis_ligands"]
+           "analysis_ligands", "analysis_paired_variant"]
 
 
 def analysis_fusion(st: Structure, species: str, **kw) -> dict:
@@ -297,4 +297,30 @@ def analysis_ligands(st: Structure, species: str, **kw) -> dict:
              "description": l.description}
             for l in ligands.ligands],
         "note": ligands.note,
+    }
+
+
+def analysis_paired_variant(st: Structure, species: str, **kw) -> dict:
+    """The one variant-versus-wild-type structural comparison available.
+
+    Independent of the loaded structure: the comparison is between specific
+    deposited entries, not whatever happens to be on screen.
+    """
+    from .paired_variant import compare
+
+    result = compare()
+    if result is None or len(result.wild_type) < 2:
+        return {"error": "structures or the CHAP grid are not downloaded"}
+    return {
+        "variant": result.variant.pdb,
+        "wild_type_set": [m.pdb for m in result.wild_type],
+        "excluded_as_duplicates": [
+            {"entry": a, "identical_to": b}
+            for a, b in result.excluded_duplicates],
+        "metrics": result.report(),
+        "distinguishable": result.distinguishable,
+        "summary": result.summary(),
+        "note": ("n = 1. This says what the deposited structures show, not what "
+                 "R2456H does. Every entry is closed, and R2456H's phenotype is "
+                 "slowed inactivation, which a closed structure need not show."),
     }

@@ -1114,6 +1114,29 @@ No direction is assigned automatically. Reading "slowed inactivation" out of
 prose and calling it gain-of-function would put unreviewed labels into the set
 the blind tests depend on.
 
+## 8o. The one variant structure, measured against a control
+
+Round 34 established that only **8YFG (R2456H)** resolves its own mutation and is
+coordinate-distinct. That is one pair, and n = 1 supports no inference — unless
+it is measured against how much wild-type entries differ among *themselves*.
+
+| Measure | R2456H (8YFG) | Wild type (8YEZ, 8ZU3, 8ZU8) | WT spread | Largest variant difference |
+|---|---|---|---|---|
+| Bottleneck radius | **0.808 Å** | 0.673–0.930 Å | 0.257 | **0.135** |
+| Wetting score | **0.904** | 0.457–0.986 | 0.529 | **0.446** |
+
+**R2456H falls inside the wild-type range on both measures**, and differs from
+wild type by less than wild-type entries differ from each other.
+
+8YFC and 9VMX are excluded from the control by coordinate fingerprint: they are
+byte-identical to 8ZU3, and including them would have added zero-difference
+pairs that narrow the wild-type spread and flatter the variant.
+
+**This is unsurprising once stated.** Every deposited human structure is closed,
+and R2456H is a gain-of-function variant whose phenotype is slowed inactivation.
+A closed structure need not show a gating defect. The result says what the
+deposited structures show, not what the variant does.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

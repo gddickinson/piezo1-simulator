@@ -245,7 +245,8 @@ def build_parser() -> argparse.ArgumentParser:
             ("permeation", "ion current through the pore (1-D PNP)"),
             ("nanodomain", "calcium at the HaloTag when the channel opens"),
             ("prediction_record", "what a variant prediction is worth"),
-            ("ligands", "modulators and the standing of their binding sites")):
+            ("ligands", "modulators and the standing of their binding sites"),
+            ("paired_variant", "R2456H against wild type, with a control")):
         p = sub.add_parser(name, help=help_text, parents=[common])
         p.add_argument("structure")
         p.add_argument("--species", choices=["human", "mouse"])

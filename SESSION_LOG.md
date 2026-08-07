@@ -4,6 +4,58 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 46 — the one pair, and the control that interprets it
+
+### The question a single pair can answer
+Round 34 left exactly one comparison open: 8YFG (R2456H) is the only deposited
+entry that resolves its own mutation and is coordinate-distinct. Two structures
+always differ, so "does R2456H differ from wild type?" has no useful answer. The
+question that does is **"does it differ by more than wild-type entries differ
+among themselves?"**
+
+### Widening the control, not narrowing it
+The obvious comparison is 8YFG against 8YEZ — one pair. Instead the wild-type
+side is three independent entries (8YEZ, 8ZU3, 8ZU8), which gives a measurable
+within-wild-type spread.
+
+The subtlety is which entries count as independent. 8YFC and 9VMX are
+byte-identical to 8ZU3 — Round 34's finding — so including them would add two
+pairs differing by exactly zero, shrink the wild-type spread, and make the
+variant look more distinct. They are excluded **by coordinate fingerprint rather
+than by name**, so a future duplicate is caught without anyone maintaining a
+list.
+
+### The result
+R2456H: bottleneck **0.808 Å**, wetting **0.904**. Wild type: 0.673–0.930 and
+0.457–0.986. The variant sits *inside* both ranges, and its largest difference
+from any wild-type entry (0.135, 0.446) is smaller than the largest difference
+between two wild-type entries (0.257, 0.529).
+
+Tested generously — *any* measure exceeding the wild-type spread would have
+counted as distinguishable — and it still is not.
+
+### Why that is not a disappointment
+Every deposited human structure is closed, and R2456H's phenotype is *slowed
+inactivation*: it changes how long the channel stays open, not how wide the
+closed pore is. A closed structure has no obligation to show it.
+
+Saying that is part of the result rather than an excuse for it, and it was worth
+measuring precisely because the intuition "a severe gain-of-function variant
+should look different" is strong and, here, wrong.
+
+### Testing the control both ways
+"Not distinguishable" and "the test cannot distinguish anything" look the same
+from the outside. So the control is exercised on synthetic cases: a variant far
+outside the wild-type set is detected, one just inside is not, and — the one
+that matters — a wild-type set of *identical* structures makes even a 0.001
+difference "distinguishable". That last test is the duplicate trap made
+concrete, and it shows exactly what including 8YFC and 9VMX would have done.
+
+709 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 45 — the last route to more data, costed
 
 ### The premise, and what it was worth
