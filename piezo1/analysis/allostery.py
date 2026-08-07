@@ -36,6 +36,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 import numpy as np
+
+from ..parameters import PARAMETERS as _P
 from scipy.spatial import cKDTree
 
 __all__ = ["PRSResult", "AllostericPath", "covariance_blocks_norm",
@@ -216,8 +218,8 @@ class AllostericPath:
 def allosteric_path(coords: np.ndarray, dcc: np.ndarray,
                     source_sites, target_sites,
                     residues: np.ndarray,
-                    contact_cutoff: float = 10.0,
-                    min_correlation: float = 1e-3) -> AllostericPath:
+                    contact_cutoff: float | None = None,
+                    min_correlation: float | None = None) -> AllostericPath:
     """Shortest correlation-weighted path from a source to a target set.
 
     Edges join residues within ``contact_cutoff`` and cost ``−log|DCC_ij|``, so
@@ -225,6 +227,10 @@ def allosteric_path(coords: np.ndarray, dcc: np.ndarray,
     expensive. The shortest path is therefore the route along which motion is
     transmitted most reliably, not merely the shortest way through space.
     """
+    if min_correlation is None:
+        min_correlation = _P.value("allostery.min_correlation")
+    if contact_cutoff is None:
+        contact_cutoff = _P.value("allostery.contact_cutoff")
     from scipy.sparse import coo_matrix
     from scipy.sparse.csgraph import dijkstra
 
@@ -277,9 +283,13 @@ def allosteric_path(coords: np.ndarray, dcc: np.ndarray,
 
 
 def build_network(coords: np.ndarray, dcc: np.ndarray,
-                  contact_cutoff: float = 10.0,
-                  min_correlation: float = 1e-3):
+                  contact_cutoff: float | None = None,
+                  min_correlation: float | None = None):
     """Correlation-weighted contact graph, as a sparse matrix."""
+    if min_correlation is None:
+        min_correlation = _P.value("allostery.min_correlation")
+    if contact_cutoff is None:
+        contact_cutoff = _P.value("allostery.contact_cutoff")
     from scipy.sparse import coo_matrix
     coords = np.asarray(coords, dtype=float)
     n = len(coords)

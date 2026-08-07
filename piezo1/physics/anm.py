@@ -254,7 +254,7 @@ class ANM:
         n, _ = connected_components(adj, directed=False)
         return int(n)
 
-    def calc_modes(self, n_modes: int = 20, zero_modes: int | None = None,
+    def calc_modes(self, n_modes: int | None = None, zero_modes: int | None = None,
                    shift: float = -1e-6, tol: float = 0.0) -> ModeSet:
         """Lowest non-trivial modes by shift-invert Lanczos.
 
@@ -264,6 +264,8 @@ class ANM:
         ``shift`` sits just below zero so shift-invert converges onto the low
         end of the spectrum.
         """
+        if n_modes is None:
+            n_modes = int(_P.value("anm.n_modes"))
         if self.hessian is None:
             self.build()
         assert self.hessian is not None
@@ -299,8 +301,8 @@ class ANM:
 
     # ------------------------------------------------------------- symmetry
 
-    def label_symmetry(self, modes: ModeSet, n_protomers: int = 3,
-                       tolerance: float = 0.25) -> ModeSet:
+    def label_symmetry(self, modes: ModeSet, n_protomers: int | None = None,
+                       tolerance: float | None = None) -> ModeSet:
         """Classify modes by their C3 character.
 
         The sites must be ordered protomer-by-protomer with identical ordering
@@ -312,6 +314,10 @@ class ANM:
         ``+1`` for a totally symmetric ``A`` mode and ``-1/2`` for the ``E``
         pair.
         """
+        if tolerance is None:
+            tolerance = _P.value("anm.symmetry_tolerance")
+        if n_protomers is None:
+            n_protomers = int(_P.value("anm.n_protomers"))
         n = self.n_sites
         per = n // n_protomers
         if per * n_protomers != n:

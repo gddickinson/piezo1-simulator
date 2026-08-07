@@ -26,6 +26,8 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
+from ..parameters import PARAMETERS as _P
+
 from .superpose import SymmetryAxis, detect_c3_axis
 
 __all__ = ["fit_sphere", "SphereFit", "radial_profile", "RadialProfile",
@@ -177,7 +179,7 @@ class DomeGeometry:
 
 
 def measure_dome(xyz_by_chain: list[np.ndarray], surface_xyz: np.ndarray,
-                 n_bins: int = 40, trim: float = 0.15) -> DomeGeometry:
+                 n_bins: int | None = None, trim: float | None = None) -> DomeGeometry:
     """Measure dome geometry from transmembrane-surface coordinates.
 
     Parameters
@@ -191,6 +193,10 @@ def measure_dome(xyz_by_chain: list[np.ndarray], surface_xyz: np.ndarray,
     trim:
         Fraction of worst-fitting points ignored when fitting the sphere.
     """
+    if n_bins is None:
+        n_bins = int(_P.value("geometry.radial_bins"))
+    if trim is None:
+        trim = _P.value("geometry.sphere_trim")
     axis = detect_c3_axis(xyz_by_chain)
     surface = np.asarray(surface_xyz, dtype=np.float64)
 

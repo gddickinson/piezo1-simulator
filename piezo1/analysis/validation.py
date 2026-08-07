@@ -17,6 +17,8 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
+from ..parameters import PARAMETERS as _P
+
 __all__ = ["PermutationResult", "EffectSize", "permutation_test",
            "cliffs_delta", "bootstrap_cliffs_delta", "auroc",
            "interpret_delta"]
@@ -52,7 +54,7 @@ class EffectSize:
         return (self.ci_low > 0) or (self.ci_high < 0)
 
 
-def permutation_test(a: np.ndarray, b: np.ndarray, n_permutations: int = 10000,
+def permutation_test(a: np.ndarray, b: np.ndarray, n_permutations: int | None = None,
                      alternative: str = "less", seed: int = 0
                      ) -> PermutationResult:
     """Difference in means of ``a`` minus ``b``, tested by label shuffling.
@@ -65,6 +67,8 @@ def permutation_test(a: np.ndarray, b: np.ndarray, n_permutations: int = 10000,
     (n + 1)`` convention — so a p-value can never be exactly zero, which it
     should not be from a finite number of shuffles.
     """
+    if n_permutations is None:
+        n_permutations = int(_P.value("stats.n_permutations"))
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
     if len(a) < 2 or len(b) < 2:
@@ -114,9 +118,11 @@ def cliffs_delta(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def bootstrap_cliffs_delta(a: np.ndarray, b: np.ndarray,
-                           n_bootstrap: int = 10000, seed: int = 0,
+                           n_bootstrap: int | None = None, seed: int = 0,
                            alpha: float = 0.05) -> EffectSize:
     """Cliff's delta with a percentile bootstrap confidence interval."""
+    if n_bootstrap is None:
+        n_bootstrap = int(_P.value("stats.n_bootstrap"))
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
     point = cliffs_delta(a, b)

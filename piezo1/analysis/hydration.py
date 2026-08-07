@@ -338,7 +338,7 @@ class WettingPrediction:
 
 def predict_wetting(structure: Structure, profile,
                     grid: HydrationGrid | None = None,
-                    max_radius: float = 7.0,
+                    max_radius: float | None = None,
                     bandwidth_nm: float = KERNEL_BANDWIDTH_NM) -> WettingPrediction:
     """Apply the Rao et al. 2019 heuristic to a pore profile.
 
@@ -346,6 +346,8 @@ def predict_wetting(structure: Structure, profile,
     lining the narrow part of the pore — 0.7 nm there. Wide vestibules are
     always wet and would only dilute the score.
     """
+    if max_radius is None:
+        max_radius = _P.value("hydration.max_radius")
     grid = grid if grid is not None else load_grid()
     if not grid.available:
         return WettingPrediction(score=float("nan"), available=False,

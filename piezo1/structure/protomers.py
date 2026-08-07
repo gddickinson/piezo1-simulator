@@ -17,16 +17,22 @@ from __future__ import annotations
 import numpy as np
 
 from ..core.structure import Structure
+from ..parameters import PARAMETERS as _P
 
 __all__ = ["well_resolved_chains", "modelled_residues", "protomer_blocks"]
 
 #: A protomer needs at least this many C-alphas to count. Deposited entries
 #: often carry a short peptide or a partial chain that would otherwise be
 #: mistaken for a fourth subunit.
+#:
+#: Kept as a name because it is public API, but it is **not** what the code
+#: reads: :func:`well_resolved_chains` resolves ``geometry.min_ca_per_protomer``
+#: from the registry at call time, so an override takes effect. A test asserts
+#: the two cannot diverge.
 MIN_CA_PER_PROTOMER = 300
 
 
-def well_resolved_chains(st: Structure) -> list[str]:
+def well_resolved_chains(st: Structure, min_ca: int | None = None) -> list[str]:
     """Chains that are channel protomers, not auxiliary subunits.
 
     Six of the deposited entries carry three copies of MDFIC, a 21-residue
@@ -41,9 +47,11 @@ def well_resolved_chains(st: Structure) -> list[str]:
     chains = [ch for ch in st.chains
               if entities.chain_class.get(str(ch)) == EntityClass.PROTOMER]
     # Absolute floor as well: a trimer analysis on 200 residues is not useful
-    # even when all three chains agree.
+    # even when all three chains agree. Resolved at call time, not at import.
+    if min_ca is None:
+        min_ca = int(_P.value("geometry.min_ca_per_protomer"))
     return [ch for ch in chains
-            if (st.mask_ca() & (st.chain == ch)).sum() > MIN_CA_PER_PROTOMER]
+            if (st.mask_ca() & (st.chain == ch)).sum() > min_ca]
 
 
 def modelled_residues(st: Structure) -> set[int]:

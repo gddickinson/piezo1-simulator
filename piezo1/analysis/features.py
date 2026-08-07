@@ -164,7 +164,7 @@ def build_feature_table(structure: Structure,
     three chemically identical copies of each residue and reporting one would
     make the answer depend on which chain the file happened to list first.
     """
-    sasa_points = _P.value("sasa.n_points_fast") if sasa_points is None else sasa_points
+    sasa_points = int(_P.value("sasa.n_points_fast")) if sasa_points is None else sasa_points
     from .allostery import (build_network, cross_correlation,
                             path_betweenness, perturbation_response)
     from ..physics.anm import ANM

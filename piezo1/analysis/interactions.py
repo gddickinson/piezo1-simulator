@@ -36,6 +36,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 import numpy as np
+
+from ..parameters import PARAMETERS as _P
 from scipy.spatial import cKDTree
 
 from ..core.structure import Structure
@@ -179,7 +181,7 @@ def detect_interactions(structure: Structure,
                         mask_a: np.ndarray | None = None,
                         mask_b: np.ndarray | None = None,
                         kinds: tuple[str, ...] | None = None,
-                        min_sequence_separation: int = 2,
+                        min_sequence_separation: int | None = None,
                         ) -> InteractionSet:
     """Detect non-covalent interactions, optionally between two selections.
 
@@ -190,6 +192,8 @@ def detect_interactions(structure: Structure,
     ``min_sequence_separation`` suppresses trivial i,i+1 backbone neighbours
     within a chain; set it to 0 to keep them.
     """
+    if min_sequence_separation is None:
+        min_sequence_separation = int(_P.value("interactions.min_sequence_separation"))
     st = structure
     all_mask = np.ones(st.n_atoms, bool)
     a = all_mask if mask_a is None else np.asarray(mask_a)

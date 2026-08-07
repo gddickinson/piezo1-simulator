@@ -67,7 +67,7 @@ class OrthologSet:
 # --------------------------------------------------------------------------
 
 def fetch_orthologs(min_length: int = 2000, max_length: int = 3000,
-                    taxon: int = 7742, size: int = 100,
+                    taxon: int | None = None, size: int = 100,
                     force: bool = False) -> OrthologSet:
     """Download vertebrate PIEZO1 orthologs from UniProt, one per species.
 
@@ -79,6 +79,8 @@ def fetch_orthologs(min_length: int = 2000, max_length: int = 3000,
     Multiple entries for one species are isoforms or partial records, and
     counting a species twice silently weights it twice in the conservation.
     """
+    if taxon is None:
+        taxon = int(_P.value("conservation.taxon"))
     cache = SEQUENCE_DIR / "piezo1_orthologs.json"
     if cache.exists() and not force:
         return load_orthologs()
@@ -151,11 +153,19 @@ class ConservationProfile:
                 "identity": float(self.identity[i]),
                 "coverage": float(self.coverage[i])}
 
-    def top_conserved(self, n: int = 20, min_coverage: float = 0.7
+    def top_conserved(self, n: int = 20, min_coverage: float | None = None
                       ) -> list[tuple[int, float]]:
+        if min_coverage is None:
+            min_coverage = _P.value("conservation.min_coverage")
         ok = self.coverage >= min_coverage
         order = np.argsort(np.where(ok, self.conservation, -np.inf))[::-1][:n]
-        return [(int(self.residues[i]), float(self.conservation[i])) for i in order]
+        # Sorting a failing residue to the bottom is not the same as excluding
+        # it: when fewer than ``n`` residues meet the coverage requirement, the
+        # slice above still returns the rest, and they came back carrying their
+        # real conservation value with nothing to say they had failed. So the
+        # filter is applied here as well, and this returns *at most* n.
+        return [(int(self.residues[i]), float(self.conservation[i]))
+                for i in order if ok[i]]
 
     def domain_means(self, annotations) -> dict[str, float]:
         out: dict[str, list[float]] = {}
@@ -278,7 +288,7 @@ def conservation_profile(orthologs: OrthologSet,
 
 def constrained_positions(profile: ConservationProfile, annotations,
                           conservation_threshold: float | None = None,
-                          min_coverage: float = 0.7,
+                          min_coverage: float | None = None,
                           resolved: set[int] | None = None) -> list[dict]:
     """Highly conserved positions with **no reported variant**.
 
@@ -289,6 +299,8 @@ def constrained_positions(profile: ConservationProfile, annotations,
     ``resolved`` optionally restricts to residues present in a structure, since
     an untestable prediction is not much use.
     """
+    if min_coverage is None:
+        min_coverage = _P.value("conservation.min_coverage")
     conservation_threshold = _P.value("conservation.constrained_threshold") if conservation_threshold is None else conservation_threshold
     known = {v.residue for v in annotations.variants if v.residue is not None}
     out = []

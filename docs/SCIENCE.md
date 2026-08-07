@@ -628,12 +628,26 @@ set 0.25 Å, the override was tracked, and the 8YEZ pore bottleneck stayed at
 it verifies a literal is *declared* to correspond to a registered parameter,
 and a declaration is not a wire.
 
-All five `pore.*` parameters are now wired end to end; overriding `pore.step`
+All five `pore.*` parameters were wired end to end; overriding `pore.step`
 moves the bottleneck to 0.7649 Å and the default is unchanged. `analysis_pore`
 had been sampling at 1.5 Å while the registry advertised 1.0 Å, and now uses the
-registered value. The remaining 21 are recorded in ROADMAP.md as Round 49b and
-guarded by a ratcheting test, because a count that can only fall is the only
-kind of promise worth making here.
+registered value.
+
+**Round 49b closed the rest: all 21 remaining parameters are wired, and the
+unwired count is now zero.** Every number in the registry reaches the code that
+claims to use it, across 11 modules and 28 call sites, with every documented
+value unchanged. Wiring alone was not accepted as proof — 11 representative
+parameters were *measured* to move a result and restore it exactly, and that
+measurement caught a fault the static check would have passed: `value()`
+returns a float, so eleven count-valued parameters were arriving as `10000.0`
+where an integer was required.
+
+The same probing exposed an unrelated defect in `ConservationProfile.
+top_conserved`, which sorted residues failing its coverage filter to the bottom
+but still returned them when fewer than *n* qualified — reachable from the CLI
+as `conservation --top`, and reporting real conservation values for residues
+whose alignment coverage was below the stated minimum. It now returns at most
+*n*, all of them passing.
 
 ---
 

@@ -119,9 +119,9 @@ def _circumspheres(points: np.ndarray, simplices: np.ndarray
     return centers, radii
 
 
-def alpha_spheres(coords: np.ndarray, r_min: float = 3.0,
-                  r_max: float = 5.5, min_neighbours: int = 30,
-                  neighbour_radius: float = 8.0) -> AlphaSpheres:
+def alpha_spheres(coords: np.ndarray, r_min: float | None = None,
+                  r_max: float | None = None, min_neighbours: int | None = None,
+                  neighbour_radius: float | None = None) -> AlphaSpheres:
     """Delaunay alpha spheres of a point set, filtered by radius and burial.
 
     The radius filter alone is not enough on a large, open protein. PIEZO1 is a
@@ -135,6 +135,14 @@ def alpha_spheres(coords: np.ndarray, r_min: float = 3.0,
     surface and leaves the enclosed ones. Together with a tighter ``r_max``
     this stops the percolation.
     """
+    if neighbour_radius is None:
+        neighbour_radius = _P.value("pockets.neighbour_radius")
+    if min_neighbours is None:
+        min_neighbours = int(_P.value("pockets.min_neighbours"))
+    if r_max is None:
+        r_max = _P.value("pockets.r_max")
+    if r_min is None:
+        r_min = _P.value("pockets.r_min")
     coords = np.ascontiguousarray(coords, dtype=np.float64)
     if len(coords) < 5:
         raise ValueError("need at least five atoms for a tetrahedralisation")
@@ -223,9 +231,9 @@ def _buriedness(center: np.ndarray, coords: np.ndarray, tree: cKDTree,
     return blocked / n_rays
 
 
-def find_pockets(structure: Structure, r_min: float = 3.0, r_max: float = 5.5,
+def find_pockets(structure: Structure, r_min: float | None = None, r_max: float | None = None,
                  cluster_distance: float | None = None, min_spheres: int = 20,
-                 min_neighbours: int = 30,
+                 min_neighbours: int | None = None,
                  protein_only: bool = True, max_pockets: int = 30,
                  lining_cutoff: float | None = None) -> list[Pocket]:
     """Detect and rank cavities.
@@ -235,6 +243,12 @@ def find_pockets(structure: Structure, r_min: float = 3.0, r_max: float = 5.5,
     here — PIEZO1's structures contain resolved lipids sitting in exactly the
     pockets of interest.
     """
+    if min_neighbours is None:
+        min_neighbours = int(_P.value("pockets.min_neighbours"))
+    if r_max is None:
+        r_max = _P.value("pockets.r_max")
+    if r_min is None:
+        r_min = _P.value("pockets.r_min")
     lining_cutoff = _P.value("pockets.lining_cutoff") if lining_cutoff is None else lining_cutoff
     cluster_distance = _P.value("pockets.cluster_distance") if cluster_distance is None else cluster_distance
     mask = np.ones(structure.n_atoms, dtype=bool)
@@ -283,9 +297,11 @@ def find_pockets(structure: Structure, r_min: float = 3.0, r_max: float = 5.5,
 # Resolved ligands
 # --------------------------------------------------------------------------
 
-def ligand_contact_residues(structure: Structure, cutoff: float = 4.5
+def ligand_contact_residues(structure: Structure, cutoff: float | None = None
                             ) -> dict[str, dict]:
     """Residues contacting each resolved ligand or lipid, by chemical name."""
+    if cutoff is None:
+        cutoff = _P.value("pockets.ligand_cutoff")
     lig = structure.mask_ligands()
     if not lig.any():
         return {}

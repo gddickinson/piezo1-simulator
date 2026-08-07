@@ -4,6 +4,54 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 49b — wiring the other twenty-one, and why static proof was not accepted
+
+**The job.** Round 49 found 26 registered parameters that no code read and
+wired the five `pore.*` ones. This wired the remaining 21 — 11 modules, 28 call
+sites — taking the unwired count to **zero**. Every documented number is
+unchanged: 759 tests pass and all 18 claims verify with no drift.
+
+**Why a static check was not enough to close the round.** `provenance_chain`
+can show that code *reads* a key. That is not the same as the key mattering: it
+can be read into a variable that is shadowed, passed to a function that ignores
+it, or resolved on a branch nothing takes. Round 49 had already been misled once
+by reading source, so `parameter_effect` settles it the only way that is not an
+inference — override, recompute, and see whether the number moved. It checks
+both halves, because a parameter that changes the answer but does not restore it
+on reset is worse than one that does nothing: it leaves the process unable to
+reproduce the documented value.
+
+**The probe immediately caught a defect the wiring introduced.** `value()`
+returns a float, so `n_permutations` reached numpy as `10000.0` and was
+rejected. Eleven count-valued parameters now cast where they resolve. A static
+wiring check would have marked all eleven done — this is the concrete argument
+for paying for the empirical version.
+
+**And a probe is worthless until it is calibrated.** Two parameters first read
+"no effect" for reasons unrelated to wiring. The pockets probe used coordinates
+too diffuse to form a single alpha sphere, so every pockets key looked dead; and
+`pockets.r_max` was pushed *upward*, where nothing new can be admitted because
+the widest sphere in that geometry is 5.0 Å against a 5.5 Å default. Lowering it
+to 4.0 moved 79 → 66. A badly aimed probe produces exactly the reading a broken
+wire does, which is the same lesson this project has now learned in four
+different forms — an alternative must be checked against a known answer before
+its disagreement means anything.
+
+**A real bug fell out of it.** Probing `conservation.min_coverage` showed
+`top_conserved` returning 10 residues when only 1 met the coverage requirement.
+It sorted the failing ones to the bottom with `−inf` and then sliced `[:n]`,
+which returns them anyway — each carrying its true conservation value with
+nothing to mark it as unqualified. That is reachable from the CLI as
+`conservation --top`, so the project has been able to print a confidently wrong
+list. Sorting a failing entry to the bottom is not excluding it. Now fixed to
+return at most *n*, all passing, and pinned.
+
+**Nothing was deleted.** The round anticipated that some parameters might be
+better removed than wired, on the grounds that a parameter no calculation needs
+should not sit in the registry claiming a citation. Every one of the 21 turned
+out to have a real call site, so the question did not arise.
+
+
 ## Round 49 — checking the path instead of the number, and what it found
 
 **The distinction the round rests on.** `verify_claims` recomputes a documented

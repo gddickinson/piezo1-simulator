@@ -286,7 +286,7 @@ def _sphere_points(n: int) -> np.ndarray:
                      np.cos(phi)], axis=1)
 
 
-def sasa(structure: Structure, probe: float = 1.4, n_points: int = 256,
+def sasa(structure: Structure, probe: float | None = None, n_points: int | None = None,
          mask: np.ndarray | None = None) -> SASAResult:
     """Solvent-accessible surface area by the Shrake–Rupley algorithm.
 
@@ -295,6 +295,10 @@ def sasa(structure: Structure, probe: float = 1.4, n_points: int = 256,
     fraction. Deterministic, unlike a random point set, so repeated runs give
     identical numbers — which matters when the result goes into a report.
     """
+    if n_points is None:
+        n_points = int(_P.value("sasa.n_points"))
+    if probe is None:
+        probe = _P.value("sasa.probe_radius")
     sel = np.ones(structure.n_atoms, bool) if mask is None else np.asarray(mask)
     xyz = structure.xyz[sel].astype(np.float64)
     radii = structure.vdw_radii()[sel].astype(np.float64) + probe
@@ -335,12 +339,14 @@ def sasa(structure: Structure, probe: float = 1.4, n_points: int = 256,
 
 
 def buried_area(structure: Structure, mask_a: np.ndarray, mask_b: np.ndarray,
-                probe: float = 1.4, n_points: int = 128) -> float:
+                probe: float | None = None, n_points: int = 128) -> float:
     """Buried surface area at the interface between two selections, in Å².
 
     Defined as ``SASA(A) + SASA(B) − SASA(A∪B)``, the standard convention. Note
     this counts *both* sides of the interface; halve it for "interface area".
     """
+    if probe is None:
+        probe = _P.value("sasa.probe_radius")
     a = sasa(structure, probe, n_points, mask_a).total
     b = sasa(structure, probe, n_points, mask_b).total
     ab = sasa(structure, probe, n_points, mask_a | mask_b).total

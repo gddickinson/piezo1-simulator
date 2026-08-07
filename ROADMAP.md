@@ -1540,16 +1540,28 @@ distinguishable from one another is worth more than improving any of them.
       registered value. Unwired count 26 → 21, ratcheted by a test.
 
 ### Round 49b — The other twenty-one dead parameters
-- [ ] Wire the remaining 21, in the same way and with the same proof: override
-      it, show the number moves, show the default is unchanged. They are
-      `allostery.*` (2), `anm.n_modes/n_protomers/symmetry_tolerance`,
-      `conservation.*` (2), `geometry.*` (3), `hydration.max_radius`,
-      `interactions.min_sequence_separation`, `pockets.*` (5), `sasa.*` (2),
-      `stats.*` (2).
-- [ ] *Validate:* `test_provenance_chain.test_the_unwired_count_does_not_grow`
-      is a ratchet — tighten its bound with each batch. Some may be better
-      *deleted* than wired: a parameter no calculation needs should not be in
-      the registry claiming a citation.
+- [x] Wire the remaining 21, in the same way and with the same proof: override
+      it, show the number moves, show the default is unchanged.
+      **All 21 wired across 11 modules and 28 call sites. Unwired count 21 → 0:
+      every one of the 101 registered parameters is now read by code.** Every
+      documented number is unchanged — 759 tests pass and all 18 claims verify
+      with zero drift.
+- [x] *Validate:* the ratchet is now `test_no_registered_parameter_is_read_by
+      _nothing`, asserting **zero**, plus `test_parameter_effect` which
+      *empirically* proves 11 representative parameters move a number and
+      restore exactly. None were deleted: each had a real call site.
+- [x] *A defect the wiring itself introduced, caught by the empirical probe.*
+      `value()` returns a float, so `n_permutations` arrived as `10000.0` and
+      numpy rejected it outright. Eleven count-valued parameters now cast at
+      the point of resolution. **Static wiring would have called these done** —
+      the probe is what found it, which is the argument for the probe.
+- [x] *A pre-existing bug the probing uncovered.* `ConservationProfile.
+      top_conserved` sorted residues failing the coverage filter to the bottom
+      with `−inf` but **still returned them** when fewer than `n` qualified —
+      carrying their real conservation value with nothing to mark them, and
+      reachable from the CLI as `conservation --top`. With 1 residue passing at
+      coverage ≥ 0.99 it returned 10, of which 9 failed. Fixed to return *at
+      most* n, and pinned.
 
 ### Round 50 — What a user should not be able to do
 - [ ] Audit the UI for ways to produce a confident wrong number: analyses run on
