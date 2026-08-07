@@ -14,6 +14,20 @@ from __future__ import annotations
 import pytest
 
 from piezo1.analysis.harvest import harvest
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _needs_corpus():
+    """Skip rather than fail when the open-access corpus is not downloaded.
+
+    Round 60 ran the suite on an empty clone and these failed instead of
+    skipping: with no papers the harvest returns nothing, so every curated
+    label looks like it was invented. `conftest.py` states the project's rule —
+    skip when data is absent — and these tests did not follow it.
+    """
+    if harvest().n_papers == 0:
+        pytest.skip("open-access corpus not downloaded; "
+                    "run python -m piezo1.io.fetch")
 from piezo1.analysis.harvest_curation import (CATEGORIES, CURATION, Verdict,
                                               by_category, directional,
                                               summary)

@@ -144,6 +144,10 @@ def test_cli_list_runs(capsys):
 
 
 def test_cli_dome_emits_json(capsys):
+    from piezo1.config import STRUCTURE_DIR
+
+    if not (STRUCTURE_DIR / "8YEZ.cif").exists():
+        pytest.skip("8YEZ not downloaded; run python -m piezo1.io.fetch")
     assert main(["dome", "8YEZ", "--json"]) == 0
     data = json.loads(capsys.readouterr().out)
     assert 5.0 < data["radius_of_curvature_nm"] < 20.0

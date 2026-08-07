@@ -102,6 +102,11 @@ def test_the_identical_entries_are_different_files():
     """
     import hashlib
 
+    from piezo1.io.registry import load_registry
+
+    if not load_registry().available():
+        pytest.skip("no structures downloaded; run python -m piezo1.io.fetch")
+
     digests = {}
     for pdb in ("8ZU3", "8YFC", "9VMX"):
         data = (STRUCTURE_DIR / f"{pdb}.cif").read_bytes()

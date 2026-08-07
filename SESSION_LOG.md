@@ -4,6 +4,56 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 60 — an empty clone, and the three things a warm cache was hiding
+
+**The point of the exercise is that none of these could be seen here.** Every
+defect this round found is invisible on a machine that already has the data,
+because the failing code path is never taken. That is the argument for doing it
+at all, and it produced three.
+
+**Bug 1: eight tests failed instead of skipping.** `conftest.py` states the
+project's rule — skip when data is absent, do not fail — and eight tests did not
+follow it. Three of the eight I wrote in the last fifteen rounds. They now skip
+*and name the fetch command*, because a skip that does not say what to run
+leaves whoever hits it no better off.
+
+**Bug 2: the Ensembl CDS download had been broken.** The URL sent the content
+type as a `;content-type=text/x-fasta` query parameter. Ensembl used to honour
+that and no longer does — the plain URL answers **415**, and the project's
+downloader reported it as a 500. It must be an HTTP header. Nobody with the
+file on disk would ever see this, and the file has been on disk here for many
+rounds. `_download` now takes headers and both species fetch.
+
+While fixing it I hit a 503 on the second request and briefly took it for the
+same fault. It was rate limiting: a retry succeeded immediately. Worth
+recording because the two failures look identical in a log and mean opposite
+things — one is a broken integration, the other is a busy server.
+
+**Bug 3 is the one that matters, and it is not a crash.** `feasibility.assess()`
+calls the literature harvest to compute its ceiling. With no corpus the harvest
+returns nothing, so the ceiling fell from **59 to 34** — and the function said
+nothing. A reader on a fresh clone would have got a *stronger* conclusion than
+the data supports, out of the same code, with no indication. 59 is a documented
+number that appears in `CONCLUSION.md`, the README and the tour.
+
+That is precisely "anything that only works because of a stale cache", and it is
+worse than the two crashes because it produces an answer. It now reports
+`harvest_available = False` and refuses to state a ceiling at all.
+
+**What was not a bug.** The 110 skips on a populated clone are the recorded
+validation runs — `data/derived/*.json`, regenerable by their scripts — and the
+optional PAE download. `verify_claims` reports those four claims as *skipped,
+not drifted*, which is the behaviour `test_reproducibility.py` already pins. The
+distinction matters: drift means the code changed, skipped means the input is
+not here, and conflating them would make a fresh clone look broken.
+
+**And the test I wrote to pin bug 2 tripped on its own documentation** — the
+scan for the old `;content-type=` form found it in the comment explaining the
+fix. Comments are stripped now. That is the third time in six rounds that a
+checking instrument has caught itself rather than the code, which is at least a
+reassuring failure mode.
+
+
 ## Round 59 — the README ended on its licence, not on its result
 
 **The item was stale twice over, and checking which halves were real was most

@@ -133,12 +133,24 @@ class FeasibilityReport:
         return next((s for s in self.scenarios if s.label == label), None)
 
     @property
+    def harvest_available(self) -> bool:
+        """Whether the literature corpus was present when this was computed.
+
+        False means the ceiling is an underestimate and must not be quoted:
+        the harvest contributes zero candidates rather than its real 35.
+        """
+        return bool(self.meta.get("harvest_available", True))
+
+    @property
     def achievable(self) -> bool:
         """Could any reachable dataset detect the observed effect?"""
         return any(s.detects_observed for s in self.scenarios if s.reachable)
 
     def summary(self) -> str:
         ceiling = self.get("optimistic ceiling")
+        if not self.harvest_available:
+            return ("the open-access corpus is not downloaded, so the ceiling "
+                    "cannot be computed — run `python -m piezo1.io.fetch`")
         return (f"observed |δ| = {abs(self.observed_effect):.3f}; "
                 f"{self.required_n} variants would be needed for 80% power; "
                 f"the optimistic ceiling is {self.ceiling_n}, where power is "
@@ -170,6 +182,14 @@ def assess(n_simulations: int = 1500, split: float | None = None,
     report = harvest()
     fresh = len([c for c in report.passing()
                  if c.human_label and not c.already_curated])
+
+    # The harvest needs the downloaded open-access corpus. Without it the
+    # scan finds nothing and the ceiling would silently fall from 59 to 34 —
+    # a documented number quietly changing with the cache state, which Round 60
+    # found on an empty clone. Report the absence instead of the smaller number.
+    harvest_available = report.n_papers > 0
+    if not harvest_available:
+        fresh = 0
     ceiling = int((directional + fresh) * survival)
     required = 2 * sample_size_for(abs(effect), n_simulations=500,
                                    n_permutations=299)
@@ -202,6 +222,8 @@ def assess(n_simulations: int = 1500, split: float | None = None,
         scenarios=scenarios, ceiling_n=ceiling, required_n=required,
         observed_effect=effect,
         meta={"round": number, "tested": tested, "split": split,
+              "harvest_available": harvest_available,
+              "n_papers_scanned": report.n_papers,
               "directional_variants": directional,
               "fresh_harvest_candidates": fresh,
               "modelling_survival": survival,

@@ -22,7 +22,11 @@ from piezo1.analysis.feasibility import (assess, modelling_survival,
 
 @pytest.fixture(scope="module")
 def report():
-    return assess(n_simulations=600)
+    result = assess(n_simulations=600)
+    if not result.harvest_available:
+        pytest.skip("open-access corpus not downloaded, so the ceiling is not "
+                    "the real one; run python -m piezo1.io.fetch")
+    return result
 
 
 # --------------------------------------------------- no comparison happens

@@ -2140,10 +2140,41 @@ conclusion is revisited without anyone remembering to.
       surface was hand-written at a different time.
 
 ### Round 60 — A reproducibility run from an empty clone
-- [ ] `make reproduce` has never been run from a genuinely empty state in CI.
+- [x] `make reproduce` has never been run from a genuinely empty state in CI.
       Do it: fresh clone, `create_env.sh`, `python -m piezo1.io.fetch`, full
       suite, every figure, `verify_claims`. Anything that only works because of
       a stale cache is a reproducibility bug and this is how it surfaces.
+      **Done, and it surfaced three.** Measured chain:
+
+      | Step | Wall clock | Result |
+      |---|---|---|
+      | `git clone` | 2 s | clean, no `ref/` or `data/` |
+      | suite, empty clone (**before**) | 52 s | **8 failed**, 588 passed, 291 skipped |
+      | suite, empty clone (**after**) | 38 s | 572 passed, 315 skipped, **0 failed** |
+      | `python -m piezo1.io.fetch` | 21 s | **41/43** → 43/43 after the fix, 71 MB |
+      | suite with data | 209 s | 777 passed, 110 skipped, 0 failed |
+      | `verify_claims` (fast+medium) | 6 s | 14 ok, **0 drift**, 4 skipped |
+
+- [x] **Bug 1 — eight tests failed instead of skipping.** `conftest.py` states
+      the rule and eight tests did not follow it; three were written in recent
+      rounds, by me. All now skip *and name the fetch command*, because a skip
+      that does not say what to run is a dead end.
+- [x] **Bug 2 — the Ensembl CDS download was broken.** The content type was
+      sent as a `;content-type=` **query parameter**, which Ensembl no longer
+      honours: the plain URL now answers **415**. It must be an HTTP header.
+      This is invisible on any machine that already has the file, which is
+      exactly the class of defect this round exists to find. `_download` now
+      takes headers; both CDS files fetch.
+- [x] **Bug 3 — a documented number changed with the cache state.**
+      `feasibility.assess()` calls the literature harvest; with no corpus the
+      harvest returns nothing and the ceiling silently fell from **59 to 34**.
+      A reader on a fresh clone would have drawn a *stronger* conclusion than
+      the data supports, from the same code, with nothing said. It now reports
+      `harvest_available = False` and refuses to state a ceiling.
+- [x] *Not a bug:* the 110 skips on a populated clone are the recorded
+      validation runs (`data/derived/*.json`, regenerable) and the optional PAE
+      download. `verify_claims` reports those four claims as **skipped, not
+      drifted**, which `test_reproducibility.py` already guards.
 
 ---
 
@@ -2330,4 +2361,85 @@ predictor.
       measured how long it takes or what breaks first without a warm cache.
 - [ ] *Validate:* report the wall-clock and the first thing that fails, rather
       than fixing forward until it passes.
+
+---
+
+## Review after Rounds 56–60
+
+**What the five rounds did.** 56: the conclusion on one page, guarded so every
+number is traceable. 57: read all 35 harvested candidates by hand — five carry a
+direction, none unlocks anything. 58: retired the predictor's name, which had
+the illegitimate reading written into a public docstring. 59: made the README
+end where the science does. 60: ran the whole chain from an empty clone and
+found three defects a warm cache had hidden.
+
+**The pattern in this block is different from the last.** Rounds 51–55 kept
+finding faults in the *checking apparatus*. These five kept finding **stale
+prose and stale assumptions**: the roadmap item for 56 said four nulls when
+there were five, 57's premise assumed the harvest held usable measurements when
+its two "measurements" were parsing artefacts, 59's item asked for tour work
+Round 53 had already done, and 58 found a docstring still asserting the claim
+five tests had failed to support.
+
+The response has been the same each time and it is the right one: **link the
+surfaces by a test rather than by memory.** The tour reads the validation
+record, the conclusion and README summaries are guarded against untraceable
+numbers, and a cross-surface test asserts all three agree on the count.
+
+**Where the science stands — unchanged, and now stated once.** Five
+pre-registered tests, five predictor families, five nulls. The across-position
+route needs 134 variants against a reachable 59; the within-position route needs
+positions the data does not contain. `docs/CONCLUSION.md` says so on one page
+with every number traceable to the code.
+
+**What is left is not science.** The remaining work is finishing what was
+promised and not delivered, and making the negative result usable by someone
+else. Block P is that.
+
+---
+
+## Block P — finish what was promised (Rounds 71–75)
+
+### Round 71 — The five modules that have been 📋 since the beginning
+- [ ] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,
+      `analysis/variants.py`, `analysis/docking.py`. Round 55 showed everything
+      that exists is load-bearing; these are the opposite problem — an
+      INTERFACE that promises five modules the project does not have.
+- [ ] *Validate:* implement or delete the rows. `dead_code.audit()` stays at
+      zero either way, and a test should assert INTERFACE lists no module that
+      does not exist.
+
+### Round 72 — The methods note
+- [ ] The reusable output is the apparatus, not the predictor. Write the short
+      note that would let another structural-biology project apply it:
+      pre-registration with a decision rule fixed in advance, a negative control
+      in every test, feasibility costed before the next attempt, and every
+      checking instrument calibrated.
+- [ ] *Validate:* it must state that this pipeline's own output was five nulls,
+      and why that is the point rather than a disclaimer.
+
+### Round 73 — The engineered variants, decided in writing
+- [ ] Round 54 marked 15 measured functional effects `blocked` on a scientific
+      question, and Round 57 added five more of the same kind: may a conductance
+      or selectivity change stand for gain or loss of mechanosensitive function?
+      Answer it with the literature, and either admit them at their own evidence
+      level or record why not.
+- [ ] *Validate:* `variant_sets` must still refuse to pool evidence levels.
+
+### Round 74 — A cold-clone check that runs itself
+- [ ] Round 60 found three defects by hand. Make it repeatable: a script that
+      clones to a temporary directory, runs with no data, fetches, and reports
+      the chain with timings — so the next cache-shaped bug is found by running
+      one command rather than by remembering to.
+- [ ] *Validate:* it must fail if any test fails rather than skipping on an
+      empty clone, which is the specific bug Round 60 found eight times.
+
+### Round 75 — Retire the roadmap itself
+- [ ] Sixty rounds in, this file is part roadmap and part changelog, and the
+      changelog half duplicates `SESSION_LOG.md`. Split them, or fold the
+      completed rounds into the session log and leave the roadmap as the list of
+      what is not done.
+- [ ] *Validate:* no completed item may be lost — every measured result recorded
+      in a checkbox must survive the split, and a test should count them before
+      and after.
 

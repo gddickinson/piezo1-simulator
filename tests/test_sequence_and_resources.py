@@ -94,4 +94,6 @@ def test_registry_entries_resolve_to_files():
     for rec in reg.available():
         assert rec.path.exists()
         assert rec.species in ("human", "mouse", "unknown")
+    if not reg.available():
+        pytest.skip("no structures downloaded; run python -m piezo1.io.fetch")
     assert reg.default() is not None

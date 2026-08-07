@@ -74,11 +74,14 @@ class FetchResult:
         return self.error is None
 
 
-def _download(url: str, dest: Path, force: bool = False) -> FetchResult:
+def _download(url: str, dest: Path, force: bool = False,
+              headers: dict | None = None) -> FetchResult:
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.exists() and not force and dest.stat().st_size > 0:
         return FetchResult(dest, False, dest.stat().st_size)
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    request_headers = {"User-Agent": USER_AGENT}
+    request_headers.update(headers or {})
+    req = urllib.request.Request(url, headers=request_headers)
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
             data = r.read()
@@ -191,10 +194,15 @@ def fetch_cds(species: str = "human", force: bool = False) -> FetchResult:
     be invented, and silent variants could not be represented at all.
     """
     transcript, _accession = CDS_TRANSCRIPTS[species]
+    # The content type must be an HTTP header. Ensembl used to honour it as a
+    # `;content-type=` query parameter and no longer does — the plain URL now
+    # answers 415, and this fetch had been failing silently on any machine
+    # without a warm cache. Found by Round 60's empty-clone run, which is the
+    # only way a broken download surfaces once the file is already on disk.
     return _download(
-        f"https://rest.ensembl.org/sequence/id/{transcript}"
-        f"?type=cds;content-type=text/x-fasta",
-        SEQUENCE_DIR / f"{transcript}_{species}_PIEZO1_cds.fasta", force)
+        f"https://rest.ensembl.org/sequence/id/{transcript}?type=cds",
+        SEQUENCE_DIR / f"{transcript}_{species}_PIEZO1_cds.fasta", force,
+        headers={"Content-Type": "text/x-fasta"})
 
 
 def fetch_all(force: bool = False, structures: bool = True,
