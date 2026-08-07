@@ -4,6 +4,69 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 51 — calibrating the checkers, including the one doing the audit
+
+**Why this round exists.** Four of the last five rounds found their defect in
+the *instrument* rather than the science, and always the same way: an
+alternative route built to check the main one was itself wrong, and returned a
+plausible number instead of an error. The disagreement then looks like a
+finding. This round turns that pattern into a rule and a mechanism.
+
+**The audit's own instrument was uncalibrated, which is the round in
+miniature.** My first pass was a keyword scan over the test files, and it
+reported twelve instruments as having no calibration. Reading the tests showed
+why: it searched the test *bodies*, and several calibrations are named in the
+test *name* — `test_auroc_known_cases`, `test_cliffs_delta_extremes`. Corrected,
+the true count was four. Had I believed the first run, this round would have
+"fixed" eight things that were never broken, and the roadmap would now record
+eight false findings. I noticed only because the claim "the statistical
+instruments are uncalibrated" contradicted what `INTERFACE.md` said, and
+checking which was right is exactly the habit the rule now demands.
+
+**The four genuine gaps, and why each was a gap rather than an oversight.**
+`spring_model_error` was checked only by asserting its spread on real
+structures was "modest" — a statement about the answer, not the instrument; a
+version computing overlaps wrongly would have produced a modest spread too.
+`minimum_detectable_effect` was checked only against this project's own
+recorded results, which is circular, since the same function supplies the power
+statements those rounds are judged by. `sensitivity` was tested on its
+*wording* — that it refuses to call itself a confidence interval — and never on
+its arithmetic. `permutation_test` had a null case and a real-shift case but no
+exactly-known value, though for eight observations all seventy partitions can
+simply be enumerated.
+
+**Each calibration has to be able to fail.** A check that would pass on a broken
+instrument asserts nothing, so the register carries a test that the new
+calibrations reject a degenerate instrument — a `sensitivity` returning the
+reference at both ends, or a permutation test calling identical samples
+significant.
+
+**A reproducibility finding, and the check that stopped it becoming a scare.**
+The spring calibration was flaky, and the cause was not test order: `calc_modes`
+returns overlaps between 0.954 and 0.997 on *identical* inputs, because ARPACK
+starts from an unseeded random vector and the random test geometry has
+near-degenerate low modes. The immediate worry was `anm.gating_overlap`, which
+is a documented claim. Measured over four runs it is bit-identical to eight
+decimal places — real PIEZO1's low modes are well separated, so the
+non-determinism never reaches the science. Reporting "the mode solver is
+non-deterministic" without that check would have been a true statement that
+implied something false. The test now asserts the separation between spring
+models rather than an absolute bound, which is the scientific content anyway.
+
+**Made enforceable rather than aspirational.** `CALIBRATED` maps every public
+callable in the eight checking modules to the test that calibrates it;
+`test_every_checking_instrument_has_a_calibration` fails when one is added
+without a case, and `test_named_calibrating_tests_exist` fails when the named
+test does not exist. That second guard immediately caught two test names I had
+guessed from memory rather than read — which is the whole argument for having
+it.
+
+**The rule is now in `CLAUDE.md`** with the four incidents that motivated it,
+including the standing instruction that matters most: when a checker disagrees
+with the pipeline, suspect the checker first, because historically it has been
+wrong more often than the thing it was checking.
+
+
 ## Round 50 — auditing for wrong numbers rather than missing buttons
 
 **The distinction from Round 33.** That round asked whether every analysis was

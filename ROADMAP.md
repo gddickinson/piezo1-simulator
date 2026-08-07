@@ -1788,11 +1788,46 @@ What caught all three was calibrating the alternative against a known answer
 before pointing it at the unknown. That should be a standing rule, not a habit.
 
 ### Round 51 — Calibrate every alternative before it is believed
-- [ ] Audit the cross-check and model-error modules for any route not tested
+- [x] Audit the cross-check and model-error modules for any route not tested
       against an analytically known case first. Add the missing calibrations.
-- [ ] Write the rule into `CLAUDE.md`: a checking instrument is a measuring
+      **Audited 8 modules and 42 public checking callables. Four had no
+      known-answer case** and are now calibrated:
+      `model_error.spring_model_error` (plant a mode from one spring model —
+      it recovers 0.990 against 0.107 and 0.459 for the other two);
+      `design.minimum_detectable_effect` (the δ it returns must actually
+      deliver its stated power — measured 0.798 and 0.803 against a 0.80
+      target, closing a loop that had only ever been checked against this
+      project's own recorded results); `uncertainty.sensitivity` (the range
+      must be exactly the min and max of known outputs — it had only been
+      tested on its *wording*); `validation.permutation_test` (against
+      exhaustive enumeration of all C(8,4) = 70 partitions — exact 0.01429 vs
+      sampled 0.01515, and the (r+1)/(n+1) convention asserted to err
+      conservative rather than merely tolerated).
+- [x] Write the rule into `CLAUDE.md`: a checking instrument is a measuring
       instrument, and an uncalibrated one is worse than none because its
       disagreement looks like a finding.
+      **Written, with the four instances that motivated it, and made
+      enforceable:** `tests/test_calibration.py` holds the register, and
+      `test_every_checking_instrument_has_a_calibration` fails if an
+      instrument is added without one while `test_named_calibrating_tests_exist`
+      fails if the named test does not exist — which caught two test names I
+      had guessed wrongly on its first run.
+- [x] *A reproducibility finding, checked before being reported as harmless.*
+      Writing the spring calibration exposed that `ANM.calc_modes` is **not
+      run-to-run deterministic on near-degenerate systems** — identical inputs
+      gave overlaps from 0.954 to 0.997, because ARPACK starts from an unseeded
+      random vector. The obvious worry is `anm.gating_overlap`, a documented
+      claim. Measured over four runs it is **bit-identical** (0.70482207), since
+      the real structures have well-separated low modes and only the artificial
+      random geometry is degenerate. So no documented number is affected and
+      the fix belonged in the test, which now asserts the *separation* between
+      spring models rather than an absolute threshold.
+- [x] *The audit's own instrument needed calibrating, which is the round in
+      miniature.* My first keyword scan reported 12 instruments as
+      uncalibrated. Reading the tests showed it was missing calibrations named
+      in the test *name* rather than the body — `test_auroc_known_cases`,
+      `test_cliffs_delta_extremes`. Corrected, the real count was four.
+      An uncalibrated audit would have produced eight false findings.
 
 ### Round 52 — Widen the intervals that Round 38 showed are too narrow
 - [ ] The dome radius is quoted with a sampling interval 6× smaller than its

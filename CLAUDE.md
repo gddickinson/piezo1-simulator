@@ -120,6 +120,35 @@ had to correct were invisible in exactly that way.
   documented numbers were produced at the defaults, and comparing against
   anything else would report drift the user caused.
 
+**A checking instrument is a measuring instrument. Calibrate it first.**
+
+The most expensive errors in this project have all had the same shape: an
+*alternative* route, written to check the main one, was itself wrong — and it
+returned a plausible number rather than an error, so the disagreement looked
+like a finding. A spheroid fitter that would have reported 89% model error. A
+document checker that could not read the Unicode minus its own documents use. A
+parameter probe whose "no effect" came from coordinates too diffuse to form a
+single alpha sphere. A conservation cross-check whose bias I first explained
+with the wrong mechanism.
+
+So an uncalibrated checker is worse than none: it manufactures findings.
+
+- Before a cross-check, re-derivation, audit or probe is believed against real
+  data, run it on a case whose answer is **known independently** — an analytic
+  shape, a planted signal, a true null, an enumerable exact value, or a
+  deliberately inert input.
+- The calibration must be able to **fail**. A check that would pass on a broken
+  instrument asserts nothing; if there is no input that makes it say "no", it is
+  not a calibration.
+- Register it. Every public callable in `analysis/crosscheck.py`,
+  `crosscheck_methods.py`, `model_error.py`, `uncertainty.py`, `validation.py`,
+  `design.py`, `provenance_chain.py` and `parameter_effect.py` must appear in
+  `CALIBRATED` in `tests/test_calibration.py` with the test that calibrates it.
+  `test_every_checking_instrument_has_a_calibration` fails otherwise, and
+  `test_named_calibrating_tests_exist` fails if the named test does not exist.
+- When a checker disagrees with the pipeline, **suspect the checker first**.
+  Historically it has been wrong more often than the thing it was checking.
+
 **Code style.**
 - Files stay under 500 lines. If one is heading past that, split it first.
 - Structure-of-arrays with numpy, not per-atom Python objects. A PIEZO1 trimer
