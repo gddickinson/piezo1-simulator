@@ -354,6 +354,28 @@ analysis runs on the primary structure, whatever else is on screen.</p>
 """
 
 
+def _hazards_topic() -> str:
+    """Built from the hazard register, so the guide cannot overstate the guards.
+
+    Hand-written HTML here would be a second copy of `ui/hazards.py` and would
+    drift from it the first time a guard changed.
+    """
+    from .hazards import HAZARDS
+
+    rows = []
+    for hazard in HAZARDS:
+        rows.append(
+            f"<li><b>{hazard.scenario}</b><br>"
+            f"<i>What would be wrong:</i> {hazard.wrong}<br>"
+            f"<i>What stops it ({hazard.status}):</i> {hazard.guard}</li>")
+    return ("\n<h2>Ways to get a wrong number, and what stops them</h2>\n"
+            "<p>Every analysis here can be run in a situation where its answer "
+            "would not mean what it appears to. These are the ones known "
+            "about, each with the mechanism that prevents or marks it. "
+            "Anything not on this list has not been audited.</p>\n<ul>\n"
+            + "\n".join(rows) + "\n</ul>\n")
+
+
 TOPICS: list[tuple[str, str]] = [
     ("Getting started", _GETTING_STARTED),
     ("Model panel", _MODEL),
@@ -364,6 +386,7 @@ TOPICS: list[tuple[str, str]] = [
     ("HaloTag and ion current", _TAGS_AND_CURRENT),
     ("Framing and multiple structures", _FRAMING),
     ("Limits and honesty", _HONESTY),
+    ("Wrong numbers, and what stops them", _hazards_topic()),
 ]
 
 

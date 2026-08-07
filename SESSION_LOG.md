@@ -4,6 +4,62 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 50 — auditing for wrong numbers rather than missing buttons
+
+**The distinction from Round 33.** That round asked whether every analysis was
+*reachable* from the menus. This asks the harder question: given that a user can
+reach it, can they be handed a number that is wrong with nothing saying so. A
+wrong number that announces itself is a bug; one that looks exactly like a right
+one is the failure this project exists to avoid.
+
+**Two of the three named suspects were open.** The cross-species overlay
+refusal was real and fires. The other two were not guarded at the point where
+the number appears: a result window named **neither** the structure the numbers
+came from **nor** the parameter set they were computed under. With companions
+displayed there was nothing on the window identifying which structure it was —
+precisely the "companion mistaken for the primary" failure — and an overridden
+registry produced numbers that looked documented. The status bar did warn about
+overrides, but a separate, non-modal window is exactly where that warning fails
+to reach.
+
+**The stamp records compute time, not read time.** This mattered enough to test
+directly. A stamp recomputed on access would quietly agree with whatever the
+registry says later — but the numbers in the window were produced under the
+earlier set, so a window that outlives a parameter change must keep saying what
+it was computed under and visibly disagree with the status bar.
+
+**A third gap fell out of the audit.** `CAVEATS["interactions"]` was the empty
+string — the one tabular analysis shown with no warning at all. Interactions
+are measured directly from coordinates, so there is no *modelling* caveat, which
+is presumably why it was left blank; but there is a real one, and it is about
+state and resolution: the contacts are those of this structure in this
+conformation, unresolved side chains cannot contribute a bond, and the criteria
+are heavy-atom based because deposited entries carry no hydrogens. A test now
+forbids showing any analysis without a caveat.
+
+**Positive controls, not assertions.** Each hazard is exercised by constructing
+the dangerous situation and watching the guard fire. That immediately corrected
+one of my assumptions: I expected `verify_claims` to return results marked
+incomparable, and it *raises* instead — a stronger guard than I had written the
+test for, and the test now pins the real behaviour plus the deliberate
+`allow_overrides` escape that keeps a refusal from being an obstruction.
+
+**Generated, not duplicated.** The register produces the help topic rather than
+being re-written as HTML. A hand-written second copy would have drifted from the
+guards the first time one changed — the same reasoning as `prediction_record`
+and `claims`.
+
+**The review that came with this round found something the rounds themselves
+missed.** Round 48 measured one position carrying more than one variant, which
+made the within-position design look impossible. That count was over the 46
+directional missense subset. Over the full curated and ClinVar sets it is
+**40 positions** (6 curated, 13 ClinVar, 40 combined, 8 with three or more) —
+a real design rather than a curiosity, and reachable by curation rather than by
+experiments nobody has run. There are also 15 engineered variants, every one
+carrying a measured functional effect, excluded from every analysis set because
+`engineered` is not `GoF`/`LoF`. Block N is built around both.
+
+
 ## Round 49b — wiring the other twenty-one, and why static proof was not accepted
 
 **The job.** Round 49 found 26 registered parameters that no code read and

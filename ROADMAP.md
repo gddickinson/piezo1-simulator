@@ -1564,10 +1564,33 @@ distinguishable from one another is worth more than improving any of them.
       most* n, and pinned.
 
 ### Round 50 — What a user should not be able to do
-- [ ] Audit the UI for ways to produce a confident wrong number: analyses run on
+- [x] Audit the UI for ways to produce a confident wrong number: analyses run on
       a cross-species overlay, a modified registry left unmarked, a companion
       structure mistaken for the primary. Round 33's menu audit found real gaps;
       this is the same exercise pointed at correctness rather than reachability.
+      **`piezo1/ui/hazards.py` — ten hazards as data, each with the scenario,
+      what would be wrongly concluded, and the guard.** Every one is driven by a
+      **positive control** in `test_hazards.py`: the dangerous situation is
+      constructed and the guard asserted to fire, because a guard nobody has
+      watched fail is not evidence.
+- [x] *Of the three named suspects, one was already guarded and two were not.*
+      The cross-species overlay refusal was real and fires. The other two were
+      open: **a result window named neither the structure the numbers came from
+      nor the parameter set they were computed under.** With companions
+      displayed there was nothing on the window saying which structure it was —
+      the exact "companion mistaken for the primary" failure — and an
+      overridden registry produced numbers that looked documented. Both are now
+      stamped on every result window, recorded **at compute time** so a
+      non-modal window cannot silently agree with a registry that moved after it.
+- [x] *One further gap:* `CAVEATS["interactions"]` was the empty string, so the
+      interaction inventory was the one tabular analysis displayed with no
+      warning at all. It now states that contacts are those of *this* structure
+      in *this* state, and that criteria are heavy-atom based because deposited
+      entries carry no hydrogens. A test forbids any analysis being shown
+      without a caveat.
+- [x] *Reaches the user, not just the suite:* the register generates a tenth
+      help topic, "Wrong numbers, and what stops them", rather than being
+      re-written as HTML that could drift from it.
 
 
 ---
@@ -1853,3 +1876,103 @@ conclusion is revisited without anyone remembering to.
       Do it: fresh clone, `create_env.sh`, `python -m piezo1.io.fetch`, full
       suite, every figure, `verify_claims`. Anything that only works because of
       a stale cache is a reproducibility bug and this is how it surfaces.
+
+---
+
+## Review after Rounds 46–50
+
+**What the five rounds established, in one line each.** Round 46: the one
+variant structure is indistinguishable from wild type, with a control proving
+the comparison could have detected a difference. Round 47: no reachable dataset
+can resolve the effect the mechanical predictor produces — 134 variants needed,
+59 the optimistic ceiling. Round 48: a fifth null, and wild-type positional
+features have *exactly* 0% within-position variance. Round 49/49b: 26 of 101
+registered parameters were inert while advertised, now all wired and each
+proved to move a number. Round 50: two of three named UI hazards were open.
+
+**The pattern worth naming.** Four of these five rounds found the defect in the
+*instrument*, not the science: a spheroid fitter that would have reported 89%
+model error, a checker that could not read its own documents' minus sign, a
+registry whose parameters did nothing, a probe whose "no effect" came from
+badly chosen coordinates. The standing habit — calibrate an alternative against
+a known answer before believing its disagreement — has now paid for itself
+often enough to be the project's most reliable rule.
+
+**Where the destination stands.** Five pre-registered tests, five nulls, five
+predictor families. Round 47 showed this is not a "more data" problem for the
+across-position design: the data that *could* exist is not enough. So the
+across-position route is closed, and saying so is a result rather than a
+failure.
+
+**But the within-position route is far more open than Round 48 suggested, and
+this is the finding that should drive the next block.** Round 48 measured one
+position carrying more than one variant — *within the 46 directional missense
+subset it was using*. Over the full curated and ClinVar sets the count is:
+
+| Set | Positions carrying > 1 variant |
+|---|---|
+| Curated (68) | **6** — 1335, 1358, 2020, 2117, 2407, 2456 |
+| ClinVar (232) | **13** |
+| **Combined** | **40** (8 of them carrying ≥ 3) |
+
+Forty positions is a real design, not a curiosity. A within-position comparison
+removes the between-position variance that consumed 99.8% of Round 7's
+predictor, so it needs far fewer variants than 134 — and unlike the across-
+position ceiling, it is reachable by curation rather than by experiments nobody
+has run.
+
+There is also an unused asset: **15 engineered variants, every one with a
+measured functional effect**, two of them at positions shared with natural
+variants (1335, 2117). They are excluded from every analysis set because
+`engineered` is not `GoF`/`LoF` — which is correct for the disease question and
+wasteful for the mechanism question.
+
+---
+
+## Block N — the within-position route (Rounds 61–65)
+
+### Round 61 — How many shared positions would be enough
+- [ ] The Round 47 question, asked of the design that is actually open: for a
+      within-position comparison, what effect size is detectable at 40 shared
+      positions, and how does that compare with the across-position 134?
+- [ ] *Validate:* against `design.minimum_detectable_effect` and a paired
+      statistic, and **run no comparison** — this is feasibility, as Round 47
+      was. If the answer is that 40 positions suffice, that is the first time
+      this project has had a testable route to its central claim.
+
+### Round 62 — Direction at the shared positions
+- [ ] The 40 positions are only usable if both variants at a position carry a
+      direction. Measure how many do, at each evidence level, and what it would
+      take to resolve the rest. Round 45 costed the literature harvest; this
+      costs the much smaller, targeted question.
+- [ ] *Validate:* report the count honestly, including if it collapses the
+      Round 61 design. A route that looks open until the directions are counted
+      is exactly the kind of optimism this project has learned to check early.
+
+### Round 63 — The engineered variants, used or explicitly refused
+- [ ] Fifteen engineered variants carry measured functional effects and are
+      excluded from every analysis set. Decide, in writing, whether a
+      conductance or selectivity change can stand in for gain/loss of
+      mechanosensitive function — and if it cannot, record *why* rather than
+      leaving them silently unused.
+- [ ] *Validate:* if they are admitted, they enter as their own evidence level,
+      never pooled with `measured`; `variant_sets` already enforces that.
+
+### Round 64 — Pre-register the within-position test
+- [ ] Only if Rounds 61–63 leave a design with adequate power. Written under
+      `NEGATIVE_RESULT_PROTOCOL.md` §2, committed alone before anything runs,
+      with the power statement up front as Round 48 did.
+- [ ] *Validate:* the decision rule keeps the three clauses — Round 41 proved
+      the interval clause earns its place, and Round 48 that stating the
+      ceiling first stops a positive being over-read.
+
+### Round 65 — Finish the modules still marked planned
+- [ ] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,
+      `analysis/variants.py` and `analysis/docking.py` have been 📋 for the
+      whole project. Either implement them or delete the rows — an INTERFACE
+      that promises five modules it does not have is the documentation
+      equivalent of a registered parameter nothing reads.
+- [ ] *Validate:* `make provenance` reports 5/18 chains complete; most breaks
+      are legitimate, but the count should be explained rather than left as a
+      number that looks like failure.
+

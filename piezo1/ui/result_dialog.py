@@ -18,7 +18,28 @@ from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (QDialog, QDialogButtonBox, QLabel, QTextEdit,
                              QVBoxLayout)
 
-__all__ = ["ResultDialog", "format_result"]
+__all__ = ["ResultDialog", "format_result", "provenance_line"]
+
+
+def provenance_line(structure_name: str = "", species: str = "") -> str:
+    """Which structure, and which parameter set, a number was computed under.
+
+    Stamped onto every result window. Two of the three hazards Round 50 set out
+    to audit are exactly this: a number read against the wrong structure when
+    several are displayed, and a number read as the documented one when the
+    registry has been overridden. Neither is visible in a table of values, and
+    this window is non-modal, so it can outlive the state that produced it.
+    """
+    from ..parameters import PARAMETERS
+
+    where = structure_name or "unknown structure"
+    if species:
+        where += f" ({species} numbering)"
+    if PARAMETERS.modified:
+        return (f"{where} · ⚠ NON-DEFAULT PARAMETERS: "
+                f"{PARAMETERS.override_summary()} — not comparable with "
+                f"docs/SCIENCE.md")
+    return f"{where} · parameters at documented defaults"
 
 
 def format_result(data, indent: int = 0) -> list[str]:
@@ -61,13 +82,26 @@ def _number(value) -> str:
 class ResultDialog(QDialog):
     """Non-modal window showing one analysis result."""
 
-    def __init__(self, title: str, data, caveat: str = "", parent=None) -> None:
+    def __init__(self, title: str, data, caveat: str = "", parent=None,
+                 structure_name: str = "", species: str = "") -> None:
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setModal(False)
         self.resize(720, 560)
 
         layout = QVBoxLayout(self)
+
+        # Recorded at construction, which is when the numbers were computed —
+        # the window outlives the state, so a later override must not rewrite
+        # what this says.
+        self.provenance = provenance_line(structure_name, species)
+        stamp = QLabel(self.provenance)
+        stamp.setWordWrap(True)
+        stamp.setStyleSheet(
+            "color:#f2a65a;font-weight:bold;" if "NON-DEFAULT" in self.provenance
+            else "color:#6f7684;")
+        layout.addWidget(stamp)
+
         if caveat:
             note = QLabel(caveat)
             note.setWordWrap(True)

@@ -33,7 +33,11 @@ CAVEATS = {
         "PLACEMENT IS A MODEL. There is no structure of the PIEZO1-HaloTag "
         "fusion; the tag body is a sphere of its radius of gyration and the "
         "linker length is unverified."),
-    "interactions": "",
+    "interactions": (
+        "Contacts are those of THIS structure in THIS state. A closed-state "
+        "entry does not show the open-state salt bridges, and unresolved side "
+        "chains cannot contribute a bond. Geometric criteria are heavy-atom "
+        "based because deposited entries carry no hydrogens."),
     "nanodomain": (
         "The tag distance is MODELLED, not measured, and the calcium share of "
         "the current is unverified. Every deposited human structure is closed, "
@@ -62,7 +66,13 @@ class TabularAnalysisMixin:
     """Menu-driven analyses whose output is a table."""
 
     def _show_result(self, key: str, title: str, data) -> None:
-        dialog = ResultDialog(title, data, CAVEATS.get(key, ""), self)
+        # Name the structure the numbers came from. With companions displayed
+        # there is otherwise nothing on the window saying which one it is, and
+        # analyses always use the primary whatever else is drawn.
+        name = getattr(self.structure, "name", "") if self.structure else ""
+        species = self.record.numbering_species if self.record else ""
+        dialog = ResultDialog(title, data, CAVEATS.get(key, ""), self,
+                              structure_name=name, species=species)
         # Held on the window so it is not garbage-collected while open.
         if not hasattr(self, "_result_dialogs"):
             self._result_dialogs = []
