@@ -41,6 +41,7 @@ CHECKING_MODULES = (
     "analysis.design",
     "analysis.provenance_chain",
     "analysis.parameter_effect",
+    "dead_code",
 )
 
 #: instrument -> the test that drives it against a known answer.
@@ -120,6 +121,14 @@ CALIBRATED = {
     "provenance_chain.trace": "test_provenance_chain.py",
     "provenance_chain.walk": "test_provenance_chain.py",
     "provenance_chain.git_state": "test_provenance_chain.py",
+
+    # dead_code
+    "dead_code.audit":
+        "test_dead_code.py::test_the_detector_is_calibrated",
+    "dead_code.calibration":
+        "test_dead_code.py::test_the_detector_is_calibrated",
+    "dead_code.reference_counts":
+        "test_dead_code.py::test_same_file_references_count",
 
     # parameter_effect
     "parameter_effect.measure_effect":

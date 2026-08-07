@@ -315,50 +315,6 @@ def _ohmic_potential(z, areas, concentrations, species, temperature,
     return _solve_with_dirichlet(matrix, rhs)
 
 
-def _poisson_newton_step(z, area, potential, charge_density, screening,
-                         permittivity):
-    """One Newton step on the potential, ends held fixed.
-
-    Solving Poisson *directly* for phi and feeding it back is the obvious Gummel
-    loop and it diverges here — measured on 11ZC the potential went -0.37 V,
-    then -171 V, then -2e16 V in three iterations. Nothing in that update
-    opposes a change in phi, so a small charge imbalance is amplified without
-    limit.
-
-    The cure is the standard one: linearise about the current potential and keep
-    the term the direct form throws away,
-
-    .. math:: \\partial\\rho/\\partial\\phi
-              = -\\frac{F^2}{RT}\\sum_i z_i^2 c_i
-
-    which is negative — mobile ions move to cancel any field imposed on them.
-    It enters the diagonal, makes the operator negative-definite, and is
-    physically Debye screening: in 150 mM the screening length is about 0.8 nm,
-    so a potential excursion cannot propagate far down a 12 nm pore.
-    """
-    n = len(z)
-    h = np.diff(z)
-    face_area = 0.5 * (area[:-1] + area[1:])
-    coefficient = permittivity * face_area / h
-
-    matrix = np.zeros((n, n))
-    residual = np.zeros(n)
-    for k in range(1, n - 1):
-        left, right = coefficient[k - 1], coefficient[k]
-        width = 0.5 * (h[k - 1] + h[k])
-        matrix[k, k - 1] = left
-        matrix[k, k + 1] = right
-        matrix[k, k] = -(left + right) + screening[k] * area[k] * width
-        residual[k] = (left * (potential[k - 1] - potential[k])
-                       + right * (potential[k + 1] - potential[k])
-                       + charge_density[k] * area[k] * width)
-
-    # The ends are Dirichlet, so their correction is exactly zero.
-    matrix[0, 0] = matrix[-1, -1] = 1.0
-    residual[0] = residual[-1] = 0.0
-    return potential + _solve_with_dirichlet(matrix, -residual)
-
-
 def solve_pnp(profile, wetting=None, voltage: float | None = None,
               species: list[IonSpecies] | None = None,
               fixed_charge: np.ndarray | None = None,

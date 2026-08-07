@@ -161,9 +161,3 @@ def plddt_colors(structure: Structure) -> np.ndarray:
         out[b >= threshold] = color
     return out
 
-
-def distinct_colors(n: int, saturation: float = 0.62,
-                    value: float = 0.92) -> np.ndarray:
-    """``n`` evenly spaced hues — for labelling arbitrary groups."""
-    return np.array([colorsys.hsv_to_rgb(i / max(n, 1), saturation, value)
-                     for i in range(n)], dtype=np.float32)

@@ -213,20 +213,3 @@ def verify_record() -> dict:
           and drift["n_gof"] == 0 and drift["n_lof"] == 0)
     return {"checked": True, "agrees": ok, "drift": drift}
 
-
-@dataclass
-class PredictionContext:
-    """A variant's mechanical score, wrapped in what it is worth."""
-
-    label: str
-    ddg_gating: float | None = None
-    modelled: bool = False
-    evidence: dict = field(default_factory=dict)
-    caveats: list = field(default_factory=list)
-    note: str = ""
-
-    def summary(self) -> str:
-        if not self.modelled:
-            return f"{self.label}: residue not modelled — no prediction."
-        return (f"{self.label}: ΔΔG(gating) = {self.ddg_gating:+.4g}. "
-                f"{headline()}")

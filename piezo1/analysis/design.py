@@ -375,10 +375,3 @@ def leave_one_out(scores, labels, combine=None) -> LeaveOneOutResult:
         auroc_out=auroc(out, labels), auroc_in=auroc(in_sample, labels),
         n=n, meta={"n_features": scores.shape[1]})
 
-
-def permutation_p(scores, labels, alternative: str = "less", **kw) -> float:
-    """Convenience: the pre-registered permutation p-value for one predictor."""
-    scores = np.asarray(scores, dtype=float)
-    labels = np.asarray(labels, dtype=bool)
-    return permutation_test(scores[labels], scores[~labels],
-                            alternative=alternative, **kw).p_value

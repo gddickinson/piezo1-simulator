@@ -4,6 +4,53 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 55 — retiring what earns nothing, and three attempts at the detector
+
+**The answer to the question asked was "almost nothing", which is worth
+recording.** The round assumed the codebase had accumulated scaffolding to
+delete. Measured across 109 modules and 568 top-level definitions, every module
+is imported, tested or a documented entry point; at definition level exactly
+five things earned nothing. So the project is already load-bearing, and the
+round's value is the standing guard rather than the deletions.
+
+**The hard part was the detector, and two versions of it would have done real
+damage.** The first was a grep over `__all__`: 102 unused public names,
+including `format_result` (used inside its own module) and every return-type
+dataclass, which is constructed but never named elsewhere. The second used the
+AST but collapsed same-file references into a *set*, so a helper called only
+from its own module looked unreferenced — 129 dead functions including
+`fetch_pdb`, `cmd_list` and `_optimise_slice`. Acting on that list would have
+deleted the CLI.
+
+Round 51's rule is the only reason neither was believed. Both outputs were
+plausible: a long list of unfamiliar names is exactly what a real finding would
+look like, and nothing about it announces itself as wrong. What caught it was
+checking the list against names I *knew* were used before reading the rest.
+
+**So the calibration is now part of the instrument.** `dead_code.calibration()`
+requires that nine known-used names are not flagged and that a planted
+unreferenced name is, and every test runs it before touching the audit's
+output. The fix to the counting was to count *occurrences* rather than files,
+and to count bare words inside string literals — this project dispatches by
+string through `ANALYSES` and the CLI subcommands, so a name reached only that
+way is live.
+
+**The calibration probe defeated itself first.** The planted name was written
+as a literal, so the string scanner found it in the detector's own source and
+reported the instrument as broken. That is the string scanning working exactly
+as designed; the probe now builds the token from fragments so it appears
+nowhere. A small thing, but it is the third time this round that the checking
+apparatus was the thing at fault.
+
+**One deletion needed permission from the record.** `_poisson_newton_step` was
+42 lines of dead code whose docstring carried a real numerical finding — the
+Gummel loop going −0.37 V, then −171 V, then −2×10¹⁶ V in three iterations,
+which is why the solver uses the electroneutral limit. I checked that the
+divergence is recorded in the module, in `test_permeation.py` and in
+`SCIENCE.md` before removing it. Deleting the last copy of a finding would be
+worse than keeping dead code, and a test now pins all three records.
+
+
 ## Round 54 — costing the data limit, and correcting my own review
 
 **The item was stale, like Round 53's.** It named two routes needing no new

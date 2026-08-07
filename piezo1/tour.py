@@ -31,11 +31,6 @@ __all__ = ["TourStep", "TOUR", "step_by_key", "Results"]
 Results = dict
 
 
-def _published(key: str) -> str:
-    parameter = PARAMETERS.get(key)
-    return f"{PARAMETERS.value(key):g} {parameter.unit}".strip()
-
-
 @dataclass
 class TourStep:
     """One stop on the tour."""

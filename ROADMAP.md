@@ -1936,10 +1936,38 @@ before pointing it at the unknown. That should be a standing rule, not a habit.
       the review was not.
 
 ### Round 55 — Retire what does not earn its place
-- [ ] The codebase has grown to ~100 modules and 651 tests. Find the analyses
+- [x] The codebase has grown to ~100 modules and 651 tests. Find the analyses
       nothing depends on, that no round cites, and that no test pins to a
       result — and delete them. A smaller project that is entirely load-bearing
       is easier to trust than a large one that is mostly scaffolding.
+      **Measured across 109 modules and 568 top-level definitions: the project
+      is already load-bearing at module level — every module is imported,
+      tested or a documented entry point.** At definition level, **five** things
+      earned nothing and were deleted: `_poisson_newton_step` (42 lines, the
+      Gummel-loop route abandoned for the electroneutral limit),
+      `PredictionContext` (a dataclass never constructed), `permutation_p`,
+      `distinct_colors` and `_published` (dead since Round 25). Suite 822 green
+      after removal.
+- [x] *The hard part was the detector, not the deleting, and two versions of it
+      would have done real damage.* A grep over `__all__` reported **102**
+      unused public names — including `format_result`, used inside its own
+      module, and every return-type dataclass, which is constructed but never
+      named elsewhere. An AST version that collapsed same-file references into
+      a set reported **129** dead functions including `fetch_pdb`, `cmd_list`
+      and `_optimise_slice`; acting on it would have deleted the CLI. Round 51's
+      rule is why neither was believed.
+- [x] *`piezo1/dead_code.py` is the standing guard*, registered in
+      `test_calibration.py` and calibrated on every run: known-used names must
+      not be flagged, and a planted unreferenced name must be. It counts
+      *occurrences* rather than files (the bug that hid same-file calls) and
+      counts bare words in string literals, because this project dispatches by
+      string through `ANALYSES` and the CLI.
+- [x] *One deletion needed a check first.* `_poisson_newton_step` carried a real
+      numerical finding in its docstring — the Gummel loop going −0.37 V →
+      −171 V → −2×10¹⁶ V. It was removed only after confirming that divergence
+      is recorded in the module, in `test_permeation.py` and in `SCIENCE.md`.
+      Deleting the last copy of a finding would be worse than keeping dead code,
+      and a test now pins that all three records survive.
 
 
 ---
@@ -2100,4 +2128,87 @@ wasteful for the mechanism question.
 - [ ] *Validate:* `make provenance` reports 5/18 chains complete; most breaks
       are legitimate, but the count should be explained rather than left as a
       number that looks like failure.
+
+---
+
+## Review after Rounds 51–55
+
+**What the five rounds did.** 51: calibrated every checking instrument and put
+the rule in `CLAUDE.md`. 52: decided what interval to publish beside each
+headline number — the widest term, named for its kind. 53: rewrote the tour's
+ending on the record, with figures. 54: costed every remaining route to more
+phenotyped variants. 55: audited for scaffolding and found the project already
+load-bearing.
+
+**The pattern, and it has hardened into the project's main risk.** In *four* of
+these five rounds the defect was in the checking apparatus, not the science:
+an audit that missed calibrations named in test names (51), a model comparison
+anchored on a differently-trimmed fit (52), a review that counted 40 positions
+without asking what each row was (54), and two dead-code detectors that would
+have deleted the CLI (55). Every one produced a plausible number rather than an
+error. The standing rule — calibrate against a known answer, and suspect the
+checker before the pipeline — has now caught six separate incidents and is the
+single most valuable convention here.
+
+**Two corrections to my own earlier writing**, both in this block of rounds:
+the Round 50 review's "40 positions is a real design" (actually one), and the
+Round 53 discovery that the tour still said "tested twice" after five tests.
+Both were optimistic readings that survived because nobody re-derived them.
+That is an argument for the claims registry and the ratcheting tests, not for
+more prose.
+
+**Where the science stands.** Five pre-registered tests, five nulls, five
+predictor families. Round 47 closed the across-position route (134 variants
+needed, 59 reachable). Round 54 closed the within-position route (one usable
+position, at most four if three named variants could be directed). Both are now
+measured costs rather than impressions. **The central claim is not merely
+unproven; it has been shown to be unprovable with data that could exist.** That
+is a result, and Block O should treat it as one rather than looking for a sixth
+predictor.
+
+---
+
+## Block O — say what was established, and make it reusable (Rounds 66–70)
+
+### Round 66 — The conclusion document
+- [ ] `docs/CONCLUSION.md`: what the project set out to do, what it established,
+      what it could not, with the numbers and the figures Round 53 built. Block
+      M §56 proposed this before Rounds 47 and 54 existed; it can now state the
+      *unprovability* result rather than a list of nulls.
+- [ ] *Validate:* every number in it must come from the claims registry or the
+      validation record, and a test must assert that — this project has twice
+      shipped prose that went stale.
+
+### Round 67 — What the negative result is worth to someone else
+- [ ] The reusable output is not the predictor; it is the machinery that showed
+      the predictor could not be validated: pre-registration discipline,
+      `feasibility`, `data_routes`, `published_interval`, `calibration`. Write
+      the short methods note that would let another structural-biology project
+      apply the same test to its own central claim.
+- [ ] *Validate:* it must be honest that this pipeline's main output was five
+      nulls, and say why that is the point rather than a disclaimer.
+
+### Round 68 — The engineered variants, decided
+- [ ] Round 54 left 15 measured functional effects marked `blocked` on a
+      scientific question: may a conductance or selectivity change stand for
+      gain or loss of mechanosensitive function? Answer it in writing, with the
+      literature, and either admit them at their own evidence level or record
+      why not.
+- [ ] *Validate:* `variant_sets` already refuses to pool evidence levels; if
+      they are admitted, that refusal must still hold.
+
+### Round 69 — Retire the planned modules
+- [ ] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,
+      `analysis/variants.py`, `analysis/docking.py` have been 📋 for the whole
+      project. Round 55 showed everything that exists is load-bearing; these are
+      the opposite problem. Implement or delete the rows.
+- [ ] *Validate:* `dead_code.audit()` must stay at zero, and INTERFACE must not
+      promise a module that does not exist.
+
+### Round 70 — A fresh clone, start to finish
+- [ ] `make reproduce` on a clean checkout, timed, with every step's failure
+      mode recorded. The project claims reproducibility as aim A5 and has never
+      measured how long it takes or what breaks first without a warm cache.
+- [ ] *Validate:* report the wall-clock and the first thing that fails, rather
+      than fixing forward until it passes.
 
