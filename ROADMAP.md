@@ -2299,13 +2299,40 @@ wasteful for the mechanism question.
       at every evidence level, with numbers.
 
 ### Round 63 — The engineered variants, used or explicitly refused
-- [ ] Fifteen engineered variants carry measured functional effects and are
+- [x] Fifteen engineered variants carry measured functional effects and are
       excluded from every analysis set. Decide, in writing, whether a
       conductance or selectivity change can stand in for gain/loss of
-      mechanosensitive function — and if it cannot, record *why* rather than
-      leaving them silently unused.
-- [ ] *Validate:* if they are admitted, they enter as their own evidence level,
-      never pooled with `measured`; `variant_sets` already enforces that.
+      mechanosensitive function — and if it cannot, record *why*.
+      **Decided: it cannot — and the evidence is the project's own annotations,
+      not caution.** Two of the fifteen demonstrate that the axes dissociate at
+      a single residue: **A2078W** loses Yoda1 sensitivity *"while
+      mechanosensitivity to stretch is retained"*, and **KKKK2166-** removes
+      inactivation *"without changing mechanical sensitivity"*. So an assay on
+      one axis does not report the other, and a residue that halves unitary
+      conductance has changed how much current flows once open — a different
+      question from how readily force opens the channel.
+
+      | Axis | n | Is it a direction? |
+      |---|---|---|
+      | mechanosensitivity | **5** | yes |
+      | permeation (conductance, selectivity, block) | 5 | no |
+      | chemical agonist only | 2 | no |
+      | structural probe (cysteine accessibility) | 2 | no |
+      | inactivation only | 1 | no |
+
+- [x] *Refusing the permeation ones is not refusing all fifteen.* **Five are
+      admissible in principle** — S1335A, S1335V, A1718W, P2113A raise the
+      threshold or desensitise mechanically, and S2446E stabilises an open
+      intermediate.
+- [x] *And the measurement settles it rather than the reasoning:* admitting all
+      five adds **zero** discriminating positions. None sits at a position
+      carrying a directional curated variant. Position 1335 does hold the only
+      engineered pair — S1335A and S1335V — but **both raise the threshold**, so
+      it is same-direction and a within-position test needs the two to disagree.
+- [x] *Validate:* if admitted they enter as their own evidence level, never
+      pooled with `measured`. **`engineered` is not in `EVIDENCE_LEVELS`** and a
+      test asserts it stays out, so admission would have to add a level rather
+      than widen one.
 
 ### Round 64 — Pre-register the within-position test
 - [ ] Only if Rounds 61–63 leave a design with adequate power. Written under

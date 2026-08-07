@@ -4,6 +4,50 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 63 — a scientific decision, settled by the project's own annotations
+
+**This was the one remaining question that was not about counting.** Fifteen
+engineered variants carry measured functional effects and no analysis set uses
+them. Round 54 marked them `blocked` on a genuine scientific question — may a
+conductance or selectivity change stand for gain or loss of mechanosensitive
+function? — and deliberately declined to answer it while counting routes,
+because a costing exercise that answers a scientific question by arithmetic is
+how bad decisions get made quietly.
+
+**The answer is no, and the argument did not have to be general.** I expected to
+reason from the disease phenotypes: hereditary xerocytosis variants show slowed
+inactivation and larger mechanically-evoked currents, lymphatic dysplasia
+variants show reduced ones, and neither is a statement about unitary
+conductance. That argument is sound but it is the kind a reader has to take on
+trust.
+
+Two of the fifteen make it concrete instead. **A2078W**: "Yoda1 sensitivity
+severely reduced *while mechanosensitivity to stretch is retained*".
+**KKKK2166-**: "selectively removes inactivation *without changing mechanical
+sensitivity*". Both dissociate the axes at a single residue, in the project's
+own curated annotations. So the refusal rests on measurements already in the
+file rather than on a principle I am asserting.
+
+**Refusing is not refusing all fifteen, and that distinction mattered.** Five
+are on the right axis — S1335A and S1335V raise the force threshold, A1718W
+loses stretch-activated currents, P2113A desensitises mechanically, S2446E
+stabilises an open intermediate. A blanket exclusion would have been easier to
+write and would have thrown away real evidence.
+
+**Then the measurement settled it.** Admitting all five adds **zero**
+discriminating positions. None sits at a position carrying a directional curated
+variant. Position 1335 does hold the only engineered pair — and both variants
+*raise* the threshold, so it is same-direction, and a within-position test needs
+the two to disagree. That near miss is pinned, because it is exactly the kind of
+thing a later round could misread as a usable pair.
+
+**A test I nearly wrote badly.** The first version checked each verdict's axis
+against my own classification, which is circular — I wrote both. It now checks
+that each verdict's stated basis is a real phrase from the curated
+`functional_effect`, so a loose paraphrase cannot put a variant on whichever
+axis the argument needs.
+
+
 ## Round 62 — the count was already known; the evidence level was not
 
 **Most of this item was answered two rounds early.** It asks how many of the

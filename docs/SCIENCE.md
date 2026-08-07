@@ -758,9 +758,28 @@ across-position design needs. The case for pairing was always that it would
 99.8% of Round 7's predictor — not that it needs fewer observations at the same
 one.
 
+**Round 63 settled the last held-back evidence.** Fifteen engineered variants
+carry measured functional effects and no analysis set uses them. May a change in
+conductance or selectivity stand for gain or loss of mechanosensitive function?
+**No** — and the evidence is internal rather than a general argument from
+caution. A2078W has *"Yoda1 sensitivity severely reduced while
+mechanosensitivity to stretch is retained"*, and KKKK2166- *"selectively removes
+inactivation without changing mechanical sensitivity"*. Both dissociate at a
+single residue, so an assay on one axis does not report the other. A selectivity
+filter residue that halves unitary conductance has changed how much current
+flows once the channel is open, which is not how readily force opens it.
+
+Five of the fifteen *are* on the right axis — S1335A, S1335V, A1718W and P2113A
+raise the mechanical threshold or desensitise, and S2446E stabilises an open
+intermediate — so the refusal is specific rather than blanket. Admitting them
+adds **zero** discriminating positions: none sits beside a directional curated
+variant, and the only engineered pair (S1335A/S1335V at position 1335) is
+same-direction.
+
 So both the across-position and within-position routes are closed by data, and
-`analysis/data_routes.py` and `analysis/feasibility.py` record the cost of each
-so the question is not reopened without new numbers.
+`analysis/data_routes.py`, `analysis/feasibility.py` and
+`analysis/engineered.py` record the cost of each so the question is not
+reopened without new numbers.
 
 Round 36's design was powered at 84% for a large effect and 50% for a medium
 one, so its null **excludes a large effect and does not exclude a medium one**.
