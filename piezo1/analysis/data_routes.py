@@ -208,3 +208,62 @@ def assess_routes() -> list:
                    "loss of mechanosensitive function. Whether one may stand "
                    "for the other is a scientific question, not a data one."),
     ]
+
+
+# --------------------------------------------------------------------------
+# The same question, split by how the direction was established
+# --------------------------------------------------------------------------
+#
+# Round 62. `variant_sets` refuses to pool `measured` (electrophysiology) with
+# `disease_mechanism` (inferred from which disease the variant causes), so a
+# within-position design has a different ceiling at each level. Counting only
+# the pooled total would overstate what a confirmatory test could use.
+
+def positions_by_evidence() -> dict:
+    """Usable and reachable shared positions, per evidence level.
+
+    Returns ``{level: {"usable": [...], "reachable": [...]}}`` where *usable*
+    means the position already carries both directions at that level, and
+    *reachable* adds the positions one curated label away whose existing
+    partner is at that level — a pair cannot be stronger than its weaker half.
+    """
+    from .variant_sets import build_analysis_set
+
+    out = {}
+    for levels in (("measured",), ("measured", "disease_mechanism")):
+        entries = build_analysis_set(levels=levels).missense().entries
+        by_position: dict[int, dict] = {}
+        for entry in entries:
+            by_position.setdefault(entry.residue, {})[entry.label] = \
+                entry.classification
+        usable = sorted(p for p, labels in by_position.items()
+                        if len({d for d in labels.values()
+                                if d in DIRECTIONS}) > 1)
+
+        # A target only reaches this level if the partner it joins is at it.
+        at_level = {e.label for e in entries}
+        extra = sorted({t.position for t in one_label_away()
+                        if t.unlocks_with in at_level})
+
+        out["+".join(levels)] = {
+            "usable": usable,
+            "reachable": sorted(set(usable) | set(extra)),
+        }
+    return out
+
+
+def evidence_summary() -> dict:
+    """The Round 62 answer as counts, against the Round 61 requirement."""
+    from .feasibility import paired_positions_required
+
+    levels = positions_by_evidence()
+    # The most optimistic requirement Round 61 computed: delta 0.8, meaning the
+    # predictor orders nine pairs in ten correctly.
+    best_case = paired_positions_required(0.8, n_simulations=1500).positions
+    return {
+        "by_level": {name: {"usable": len(v["usable"]),
+                            "reachable": len(v["reachable"])}
+                     for name, v in levels.items()},
+        "best_case_requirement": best_case,
+        "reachable_anywhere": max(len(v["reachable"]) for v in levels.values()),
+    }

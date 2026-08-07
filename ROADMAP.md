@@ -2269,13 +2269,34 @@ wasteful for the mechanism question.
       than merely discouraging.
 
 ### Round 62 — Direction at the shared positions
-- [ ] The 40 positions are only usable if both variants at a position carry a
+- [x] The 40 positions are only usable if both variants at a position carry a
       direction. Measure how many do, at each evidence level, and what it would
-      take to resolve the rest. Round 45 costed the literature harvest; this
-      costs the much smaller, targeted question.
-- [ ] *Validate:* report the count honestly, including if it collapses the
-      Round 61 design. A route that looks open until the directions are counted
-      is exactly the kind of optimism this project has learned to check early.
+      take to resolve the rest.
+      **The count was Round 54's (one, not forty). What was genuinely unmeasured
+      is the evidence-level split**, and it matters because `variant_sets`
+      refuses to pool `measured` electrophysiology with `disease_mechanism`
+      inference — so the design has a different ceiling at each level.
+
+      | Evidence level | Usable now | Reachable by curating the named targets |
+      |---|---|---|
+      | `measured` only | **1** | **3** |
+      | `measured` + `disease_mechanism` | 1 | 4 |
+      | *Round 61's most optimistic requirement* | | **8** |
+
+- [x] *Two findings, one reassuring and one not.*
+      **Reassuring:** R2456's four variants are **all at `measured` evidence** —
+      electrophysiology, not inference. The single discriminating position is
+      not a weak one a stricter design would discard; it is the project's
+      best-evidenced position. The problem is purely that there is one of it.
+      **Not:** a pair is no stronger than its weaker half, so **M870 can never
+      make a `measured`-level pair** — M870I is `disease_mechanism`, and
+      curating M870V cannot change that. At the level a confirmatory test would
+      need, the ceiling is **3**, not 4.
+- [x] *Validate:* report the count honestly, including if it collapses the
+      Round 61 design. **It does not collapse it — it confirms it and makes it
+      slightly worse.** No evidence level reaches the requirement: 3 or 4
+      against a best case of 8. Both routes to the central claim are now closed
+      at every evidence level, with numbers.
 
 ### Round 63 — The engineered variants, used or explicitly refused
 - [ ] Fifteen engineered variants carry measured functional effects and are

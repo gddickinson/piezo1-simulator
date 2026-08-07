@@ -4,6 +4,40 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 62 — the count was already known; the evidence level was not
+
+**Most of this item was answered two rounds early.** It asks how many of the
+"40 positions" carry directions — and Round 54 had already established the 40
+was wrong and the answer is one. Repeating that would have been busywork.
+
+**What was genuinely unmeasured is the evidence-level split**, and it is not a
+detail. `variant_sets` refuses to pool `measured` electrophysiology with
+`disease_mechanism` inference, deliberately, so a within-position design has a
+*different ceiling at each level* — and only the pooled number had ever been
+counted.
+
+**One finding is reassuring.** R2456's four variants are all at `measured`
+evidence. The single discriminating position the project has is not a weak one
+that a stricter design would throw away; it is its best-evidenced position. I
+had half expected the opposite — that the one usable site would turn out to
+rest on inference — and it was worth checking rather than assuming.
+
+**The other is not.** A pair is no stronger than its weaker half. M870I is
+`disease_mechanism`, so curating M870V — one of Round 54's three named targets —
+can never produce a `measured`-level pair. At the level a confirmatory test
+would actually need, the ceiling is **3**, not 4.
+
+**So the answer to "does this collapse the Round 61 design" is no: it confirms
+it and makes it slightly worse.** Round 61 measured that even a predictor
+ordering nine pairs in ten correctly needs 8 shared positions. The best
+reachable count is 4 pooled, 3 on measured evidence alone. No level reaches the
+requirement.
+
+That closes the last open question about the central claim. Both designs —
+across positions and within them — are now costed and closed at every evidence
+level, by measurement rather than by discouragement.
+
+
 ## Round 61 — costing the design that was supposed to be the way out
 
 **The premise was already dead, and the question still worth asking.** I wrote

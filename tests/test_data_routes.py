@@ -133,3 +133,61 @@ def test_no_route_claims_to_solve_the_problem():
     assert total < 50, (
         f"routes now total {total}; if this approaches 134 the feasibility "
         f"conclusion must be recomputed")
+
+
+# ------------------------------- Round 62: the same count, per evidence level
+
+def test_the_one_usable_position_is_at_the_strongest_evidence_level():
+    """R2456's four variants are all electrophysiology, not inference.
+
+    Worth knowing before concluding: the single discriminating position is not
+    a weak one that a stricter design would discard. It is the project's
+    best-evidenced position. The problem is that there is one of it.
+    """
+    from piezo1.analysis.data_routes import positions_by_evidence
+
+    levels = positions_by_evidence()
+    assert levels["measured"]["usable"] == [2456]
+    assert levels["measured+disease_mechanism"]["usable"] == [2456], (
+        "pooling in the inferred level adds no usable position")
+
+
+def test_a_pair_is_no_stronger_than_its_weaker_half():
+    """M870 can only ever make an inferred-level pair, so it is not counted
+    at `measured` — the ceiling is 3 there, not 4."""
+    from piezo1.analysis.data_routes import positions_by_evidence
+
+    levels = positions_by_evidence()
+    assert 870 not in levels["measured"]["reachable"], (
+        "M870I is disease_mechanism; curating M870V cannot make it measured")
+    assert 870 in levels["measured+disease_mechanism"]["reachable"]
+    assert len(levels["measured"]["reachable"]) == 3
+    assert len(levels["measured+disease_mechanism"]["reachable"]) == 4
+
+
+def test_no_evidence_level_reaches_the_requirement():
+    """The Round 62 answer: splitting by evidence makes the ceiling worse.
+
+    Round 61 measured that even a predictor ordering nine pairs in ten
+    correctly needs 8 positions. The best reachable count at any level is 4,
+    and 3 if the test is to be confirmatory on measured evidence alone.
+    """
+    from piezo1.analysis.data_routes import evidence_summary
+
+    report = evidence_summary()
+    assert report["best_case_requirement"] >= 5
+    assert report["reachable_anywhere"] < report["best_case_requirement"], (
+        "a route has opened; Rounds 61 and 62 must be revisited")
+    for level, counts in report["by_level"].items():
+        assert counts["reachable"] < report["best_case_requirement"], level
+
+
+def test_the_evidence_levels_are_not_pooled_by_accident():
+    """The `measured` view must be a strict subset of the pooled one."""
+    from piezo1.analysis.data_routes import positions_by_evidence
+
+    levels = positions_by_evidence()
+    strict = set(levels["measured"]["reachable"])
+    pooled = set(levels["measured+disease_mechanism"]["reachable"])
+    assert strict <= pooled
+    assert strict != pooled, "pooling must add something, or the split is moot"
