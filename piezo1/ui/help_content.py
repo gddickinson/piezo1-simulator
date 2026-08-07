@@ -11,6 +11,8 @@ __all__ = ["TOPICS", "DOC_LINKS", "SHORTCUTS", "topic_html"]
 
 #: Documents shipped with the project, opened in the system viewer.
 DOC_LINKS = [
+    ("What was established", "docs/CONCLUSION.md",
+     "The one page: what this project showed, and what it could not"),
     ("README.md", "README.md", "Overview, install, and the headline results"),
     ("Scientific basis", "docs/SCIENCE.md",
      "Every parameter, its source, and the open gaps"),

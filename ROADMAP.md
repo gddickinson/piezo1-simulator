@@ -2020,12 +2020,28 @@ deposited, if the corpus gains a supplementary table, the tests fail and the
 conclusion is revisited without anyone remembering to.
 
 ### Round 56 — Say the conclusion once, at the top
-- [ ] The four nulls, the data limits and the model-error result are spread
+- [x] The four nulls, the data limits and the model-error result are spread
       across `SCIENCE.md`, four `VALIDATION_*.md` files and the roadmap. Write a
       single page — `docs/CONCLUSION.md` — that states what this project set out
       to do, what it established, and what it could not, with the numbers.
-- [ ] Link it from `README.md` and the in-application help, so it is the first
+      **Written.** The item said *four* nulls; there are **five**, and the
+      document can now state something stronger than a list of them — Rounds 47
+      and 54 turned "unproven" into **"cannot be settled with data that could
+      exist"**, by two independent measured routes (134 needed against a 59
+      ceiling across positions; one usable position within them).
+- [x] Link it from `README.md` and the in-application help, so it is the first
       thing a reader meets rather than the last thing they assemble.
+      Linked at the top of the README and first in the help window's document
+      index, ahead of the README itself.
+- [x] *Every number in it is traceable, and that is enforced.*
+      `tests/test_conclusion.py` extracts every number from the document and
+      requires each to come from `CLAIMS`, `ALL_PREREGISTERED`, `HEADLINE`, or
+      an allowlist where each entry states why it is exempt. It caught two
+      derived percentages on the first run. There is also a calibration —
+      an invented number must fail the check — because a guard that cannot fail
+      asserts nothing. This exists because the project has shipped stale prose
+      twice: the tour said "tested twice" after five tests, and a review counted
+      40 usable positions where there was one.
 
 ### Round 57 — Hand-curate the 35 fresh candidates
 - [ ] Round 45 found 35 substitutions not in the curated set, each with its

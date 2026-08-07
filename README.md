@@ -12,6 +12,11 @@ lever that carries blade motion to the gate.*
 
 ---
 
+> **[What this project established, and what it could not](docs/CONCLUSION.md)**
+> — the structural machinery reproduces the literature; the variant prediction
+> it was built for does not work, and the data that would decide it does not
+> exist. One page, every number traceable to the code.
+
 ## Why PIEZO1
 
 PIEZO1 converts mechanical force into an ionic current. It is how your

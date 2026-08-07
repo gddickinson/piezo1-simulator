@@ -4,6 +4,47 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 56 — the conclusion, and a guard so it cannot go stale
+
+**The item was written before the result it now states existed.** It asked for a
+page collecting "the four nulls, the data limits and the model-error result".
+There are five nulls, and more importantly Rounds 47 and 54 changed what the
+page can claim: not "the central claim is unproven" but **"the central claim
+cannot be settled with data that could exist"**, established by two independent
+measured routes — 134 variants needed against a reachable 59 across positions,
+and exactly one usable position within them.
+
+That is a result rather than an apology, and the document is organised around
+it: what was established, what was not, and then why the second is a finding.
+
+**Why the page is guarded rather than proof-read.** This project has shipped
+stale prose twice in the last ten rounds — the tour still said "tested twice"
+after five tests had run, and my own Round 50 review counted 40 usable
+within-position sites where there is one. Both survived because nobody
+re-derived them. A page whose whole purpose is to be trusted without reading
+the working is exactly where that failure would matter most.
+
+So `tests/test_conclusion.py` extracts every number from the document and
+requires each to be supported by the claims registry, the validation record,
+the published-interval table, or an allowlist in which every entry states why
+it is exempt. It caught two numbers on its first run — the derived agreement
+percentages 0.4% and 0.01% — which are legitimate but are arithmetic on two
+sourced values, so they are allowed *with the derivation written down* rather
+than silently permitted.
+
+**And the guard is calibrated**, per the standing rule: a test asserts that an
+invented number would fail the check. A guard that cannot fail is a rubber
+stamp, and this one would have been easy to write that way — the allowlist is
+generous enough that a lazy version would pass everything.
+
+**One thing I deliberately did not do.** The obvious way to satisfy "every
+number traceable" is to generate the document from the registries. I wrote it
+by hand instead, because a generated page would be a table rather than an
+argument, and the argument — that two independent routes are closed, so a sixth
+test should not be run — is the part a reader needs. The guard gets the safety
+without giving up the prose.
+
+
 ## Round 33 (completed) — a rate made visible, and the label that makes it honest
 
 **Why this was left undone and why it was worth finishing.** Round 33 built the
