@@ -237,10 +237,43 @@ class AnnotationPanel(QWidget):
             f"{var.domain or ''}<br>"
             f"{var.phenotype or ''}<br>{var.functional_effect or ''}"
             f"{' — ' + var.effect_magnitude if var.effect_magnitude else ''}"
-            f"{cons}{warn}<br>"
+            f"{cons}{warn}{self._evidence_html(var.label)}<br>"
             f"<span style='color:#7f8798'>mouse equivalent: "
             f"{var.mouse_residue or 'n/a'} · resolved in: {modelled or 'none'}"
             f"{pmid}</span>")
+
+    def _evidence_html(self, label: str) -> str:
+        """How the direction was established, and where the two sources differ.
+
+        The classification alone reads as a fact. It is not: for 20 of the 46
+        directional variants the direction is *inferred* from which disease the
+        variant causes rather than measured, and for one the two sources
+        disagree outright. Both belong next to the label rather than in a report
+        the user will not open.
+        """
+        from ...analysis.prediction_record import variant_evidence
+
+        try:
+            evidence = variant_evidence(label)
+        except Exception:
+            return ""
+        if not evidence["in_analysis_set"]:
+            return ""
+
+        colour = {"measured": "#7fd18a",
+                  "disease_mechanism": "#ffb454"}.get(evidence["evidence"], "#7f8798")
+        text = (f"<br><span style='color:{colour}'>direction "
+                f"<b>{evidence['evidence'].replace('_', ' ')}</b></span>"
+                f"<span style='color:#7f8798'> — {evidence['evidence_note']}"
+                "</span>")
+        if evidence["conflict"]:
+            conflict = evidence["conflict"]
+            text += (f"<br><span style='color:#ff6b6b'>⚠ sources disagree: "
+                     f"curated says {conflict['curated']}, the disease "
+                     f"mechanism implies {conflict['inferred']} — this project "
+                     f"reports the disagreement rather than resolving it"
+                     f"</span>")
+        return text
 
     # -------------------------------------------------------------- context
 

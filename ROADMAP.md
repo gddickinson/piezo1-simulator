@@ -1313,9 +1313,29 @@ changes that.
       since both may be wrong the same way.
 
 ### Round 39 — The GUI reaches the variant pipeline
-- [ ] The variant work is the project's central claim and is still CLI-only.
-      Surface the evidence levels, the power statement and both null results
-      where a user meets a variant.
+- [x] `analysis/prediction_record.py` holds the central claim's record as
+      **data, Qt-free**, so the GUI, the CLI and the tests read the same numbers
+      and cannot drift. Three tests, three nulls: Round 7 (δ −0.083, p 0.234),
+      Round 22 (δ −0.211), Round 36 (δ −0.249, p 0.405).
+- [x] **Evidence level now appears beside every variant** in the Annotation
+      panel, colour-coded: `measured` (electrophysiology) in green,
+      `disease_mechanism` (inferred from the disease) in amber, with the
+      sentence explaining the difference. A classification alone reads as a
+      fact, and for 20 of the 46 directional variants it is inferred.
+- [x] **The one conflicting variant is flagged where it is met.** V598M shows
+      "sources disagree: curated says GoF, the disease mechanism implies LoF —
+      this project reports the disagreement rather than resolving it". Round 36
+      excluded it in writing beforehand; a user should see why.
+- [x] **Analysis → Variant prediction record…** shows all three tests, the power
+      statement, and five standing caveats — including the one that says what
+      the score may still legitimately be used for (finding mechanically coupled
+      positions) rather than only what it cannot do.
+- [x] `verify_record()` re-reads the stored Round 36 run and fails if the frozen
+      numbers drift; measured agreement is **1.2×10⁻⁴**. The same discipline
+      `analysis.claims` applies to the documented numbers.
+- [x] The GUI-reachability guard written in Round 34 caught this round's new
+      analysis the moment it entered the registry without a menu entry — the
+      second time it has paid for itself.
 
 ### Round 40 — Reproduce a published figure end to end
 - [ ] Pick one figure from Haselwandter & MacKinnon 2018 or Young 2023 and
@@ -1482,3 +1502,63 @@ what would most move the destination — predicting direction from structure.
 - [ ] *Validate:* every harvested value must pass the same wild-type-residue
       gate the curated set already uses, and carry its PMID and its recording
       conditions — a T50 from a different preparation is not comparable.
+
+
+---
+
+## Block L — review after Rounds 35–39
+
+**What these five rounds were actually about: knowing what the numbers are worth.**
+None of them added a new capability to the model. Rounds 35–39 measured the
+*trustworthiness* of what was already there, and in four of the five the
+instrument being checked turned out to be the thing that was wrong.
+
+- Round 35's nanodomain prediction **held**, robustly — the one positive result.
+- Round 36 ran the third pre-registered test and returned the **third null**,
+  and found `sample_size_for` returning a confident wrong answer.
+- Round 37 cross-checked four methods; the **k-mer conservation route** was the
+  biased one, not the pipeline.
+- Round 38 estimated model error and found the **spheroid fitter** wrong before
+  it found anything about the dome — and then that the dome interval is **6×
+  too narrow**.
+- Round 39 surfaced all of it where a user meets a variant.
+
+**The recurring failure mode is worth naming.** Three times in five rounds, an
+*alternative* built to check the pipeline was itself defective, and each time it
+would have produced a plausible number rather than an error: a 15-16 nm tag
+distance, an 89% dome model error, a 32 pA current through a closed channel.
+What caught all three was calibrating the alternative against a known answer
+before pointing it at the unknown. That should be a standing rule, not a habit.
+
+### Round 51 — Calibrate every alternative before it is believed
+- [ ] Audit the cross-check and model-error modules for any route not tested
+      against an analytically known case first. Add the missing calibrations.
+- [ ] Write the rule into `CLAUDE.md`: a checking instrument is a measuring
+      instrument, and an uncalibrated one is worse than none because its
+      disagreement looks like a finding.
+
+### Round 52 — Widen the intervals that Round 38 showed are too narrow
+- [ ] The dome radius is quoted with a sampling interval 6× smaller than its
+      model spread. Decide what to publish: a wider interval, a stated model
+      caveat, or both — and apply the same question to the footprint, T₅₀ and
+      the gating overlap.
+- [ ] *Validate:* `verify_claims` must still pass, which means the documented
+      numbers and their stated uncertainties have to move together.
+
+### Round 53 — The tour should end on the record, not the mechanism
+- [ ] The guided tour ends on two null results. There are now three, plus a
+      quantified model error and a data limit with a number attached. Rewrite
+      the closing steps so a student leaves knowing what the project does *not*
+      know, with figures.
+
+### Round 54 — Make the data limit actionable
+- [ ] Every route to the central claim now ends in "not enough phenotyped
+      variants". Block K §41 (gnomAD constraint) and §45 (published
+      supplementary tables) are the two that need no new experiments. Cost them
+      honestly and do the cheaper one.
+
+### Round 55 — Retire what does not earn its place
+- [ ] The codebase has grown to ~100 modules and 651 tests. Find the analyses
+      nothing depends on, that no round cites, and that no test pins to a
+      result — and delete them. A smaller project that is entirely load-bearing
+      is easier to trust than a large one that is mostly scaffolding.

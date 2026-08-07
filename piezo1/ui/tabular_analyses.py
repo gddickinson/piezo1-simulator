@@ -39,6 +39,10 @@ CAVEATS = {
         "the current is unverified. Every deposited human structure is closed, "
         "so the current is borrowed from the open-like 11ZC and labelled as "
         "such."),
+    "prediction_record": (
+        "This is the project's central claim and it has FAILED three "
+        "pre-registered tests. The record below is what a variant score from "
+        "this application is entitled to claim, which is less than it looks."),
     "variant_structures": (
         "A null result, reported rather than worked around: every deposited "
         "human PIEZO1 structure is closed, so no difference in conductance can "
@@ -93,6 +97,11 @@ class TabularAnalysisMixin:
     def show_nanodomain(self) -> None:
         self._run_registry_analysis(
             "nanodomain", "Calcium nanodomain at the HaloTag")
+
+    def show_prediction_record(self) -> None:
+        self._run_registry_analysis(
+            "prediction_record",
+            "Can this predict gain- vs loss-of-function? — the record")
 
     def show_variant_structures(self) -> None:
         """What the deposited variant structures can actually support."""

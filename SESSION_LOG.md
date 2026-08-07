@@ -4,6 +4,73 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 39 — putting the record where the user meets the claim
+
+### The problem
+The mechanical ΔΔG is this project's central claim and it has failed three
+pre-registered tests. All of that lived in `docs/` and the CLI. A GUI user could
+select a variant, see a classification and a score, and have no way of learning
+that the score has never predicted anything.
+
+That is the worst possible arrangement: the machinery is visible and the
+evidence about the machinery is not.
+
+### What was built
+`analysis/prediction_record.py` holds the record as **data, Qt-free**, so the
+GUI, the CLI and the tests read the same numbers and cannot drift. Following
+`tour.py`, which solved the same problem for the guided tour.
+
+Three things now reach the user:
+
+**Evidence level, beside every variant.** A classification alone reads as a
+fact. For 20 of the 46 directional variants the direction is *inferred* from
+which disease the variant causes rather than measured, and the panel now says
+which, colour-coded, with the sentence explaining the difference.
+
+**The conflicting variant, flagged where it is met.** V598M is the one variant
+where the curated and ClinVar-inferred directions disagree. Round 36 excluded it
+in writing beforehand; the panel now shows "sources disagree: curated says GoF,
+the disease mechanism implies LoF — this project reports the disagreement rather
+than resolving it".
+
+**The record itself**, under *Analysis → Variant prediction record…*: all three
+tests, the power statement, and five standing caveats.
+
+### The caveat that took the most thought
+Four of the five caveats say what the score cannot do. The fifth says what it
+still can: *use it to ask which residues sit in mechanically coupled positions;
+do not use it to assign a direction to a variant.*
+
+That distinction is real and worth stating. Round 7's diagnostic was that the
+predictor reports **where a residue sits** rather than which substitution
+occurred — which is a failure for direction prediction and is exactly what a
+coupling map should do. Leaving it out would have made the interface
+discouraging rather than accurate, and a caveat nobody believes is a caveat
+nobody reads.
+
+### Keeping it honest
+`verify_record()` re-reads the stored Round 36 run and fails if the frozen
+constants drift; measured agreement is 1.2e-4. Same discipline `analysis.claims`
+applies to the documented numbers — a frozen record that drifts from its own run
+is worse than no record, because it looks like provenance.
+
+The GUI-reachability guard from Round 34 caught the new analysis the moment it
+entered the registry without a menu entry. Second time it has paid for itself,
+and both times within a round of being written.
+
+### Block L appended
+Five rounds since the last review. The pattern worth naming: **three times in
+five rounds an alternative built to check the pipeline was itself defective**,
+and each time it produced a plausible number rather than an error — a 15–16 nm
+tag distance, an 89% dome model error, 32 pA through a closed channel. What
+caught all three was calibrating the alternative against a known answer first.
+Round 51 proposes making that a written rule rather than a habit.
+
+651 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 38 — the error the intervals never contained
 
 ### What the round is for

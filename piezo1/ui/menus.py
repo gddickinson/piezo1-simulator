@@ -186,6 +186,12 @@ def _analysis_menu(win, bar) -> None:
     _action(menu, "&Interactions…", win.show_interactions, "",
             "Hydrogen bonds, salt bridges, hydrophobic contacts, pi-stacking,\n"
             "cation-pi and disulfides, using published geometric criteria.")
+    _action(menu, "Variant &prediction record…", win.show_prediction_record, "",
+            "What a variant score from this application is entitled to claim.\n"
+            "The central claim - predicting gain- vs loss-of-function from\n"
+            "structure - has FAILED three pre-registered tests. Shows all\n"
+            "three, the power statement, and what the score may still be\n"
+            "used for.")
     _action(menu, "&Variant structures…", win.show_variant_structures, "",
             "What the deposited variant structures can actually support.\n"
             "A null result: every deposited human PIEZO1 structure is closed,\n"

@@ -14,7 +14,7 @@ from ..parameters import PARAMETERS
 from .report import _protomer_blocks
 
 __all__ = ["analysis_fusion", "analysis_labelling", "analysis_permeation",
-           "analysis_nanodomain"]
+           "analysis_nanodomain", "analysis_prediction_record"]
 
 
 def analysis_fusion(st: Structure, species: str, **kw) -> dict:
@@ -241,4 +241,31 @@ def analysis_nanodomain(st: Structure, species: str, step: float = 1.0,
                  "puncta brightness reports labelling stoichiometry and open "
                  "probability rather than calcium amplitude. Tag distance is "
                  "modelled, not measured."),
+    }
+
+
+def analysis_prediction_record(st: Structure, species: str, **kw) -> dict:
+    """What a variant prediction from this project is entitled to claim.
+
+    The project's central claim, its three pre-registered tests, and the
+    standing caveats — surfaced rather than left in `docs/`. Independent of the
+    loaded structure, because the record is about the predictor, not about any
+    one entry.
+    """
+    from .prediction_record import (VALIDATION_RECORD, evidence_levels,
+                                    headline, verify_record, what_it_means)
+
+    return {
+        "central_claim": ("predicting gain- versus loss-of-function from "
+                          "structure"),
+        "verdict": headline(),
+        "tests": [{"round": e.round, "predictor": e.predictor,
+                   "n_gof": e.n_gof, "n_lof": e.n_lof,
+                   "cliffs_delta": e.cliffs_delta, "p_value": e.p_value,
+                   "power_at_large_effect": e.power_at_large,
+                   "conclusion": e.conclusion, "document": e.document}
+                  for e in VALIDATION_RECORD],
+        "what_this_means": what_it_means(),
+        "evidence_levels": evidence_levels(),
+        "record_matches_the_stored_run": verify_record(),
     }

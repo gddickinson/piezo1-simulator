@@ -347,12 +347,14 @@ def analysis_interactions(st: Structure, species: str, **kw) -> dict:
 #: Name to function. The CLI and the report share this registry, so a new
 #: analysis becomes available in both at once.
 from .report_tags import (analysis_fusion, analysis_labelling,   # noqa: E402
-                          analysis_nanodomain, analysis_permeation)
+                          analysis_nanodomain, analysis_permeation,
+                          analysis_prediction_record)
 
 ANALYSES = {
     "dome": analysis_dome,
     "permeation": analysis_permeation,
     "nanodomain": analysis_nanodomain,
+    "prediction_record": analysis_prediction_record,
     "fusion": analysis_fusion,
     "labelling": analysis_labelling,
     "pore": analysis_pore,
