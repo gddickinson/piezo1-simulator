@@ -4,6 +4,57 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 33 (completed) — a rate made visible, and the label that makes it honest
+
+**Why this was left undone and why it was worth finishing.** Round 33 built the
+permeation physics and deferred the animation with a one-line note that the
+morph clock's discipline applies. It does, and inverted: the morph refuses a
+seconds axis because an interpolation between two endpoints is not a
+trajectory, whereas a current genuinely *is* a rate — so a time base here is
+meaningful and the honest move is to name the factor rather than avoid it.
+
+**The factor is what makes the label non-optional.** A single channel passes
+1.5 × 10⁷ ions per second. At 60 fps that is a quarter of a million ions per
+frame, so anything a person can follow runs about a millionfold slow. An
+unlabelled stream of particles reads as "this is what it looks like", which is
+wrong by six orders of magnitude — the same class of error as quoting a
+confidence interval where a model spread dominates.
+
+**A shut pore animates nothing, and that is a first-class outcome.** The
+permeation result is gated by the wetting verdict and every deposited human
+structure is closed. Measured: 8YEZ draws no ions and shows why — score 0.82
+against a 0.55 cutoff, bottleneck 0.095 nm, occluded *and* hydrophobically
+gated. 11ZC gives 2.44 pA. Drawing a trickle through a closed gate would
+contradict the project's own structural result while looking like a
+demonstration of it.
+
+**And the rate declares what it inherits.** The solver gives 41 pS against a
+published 25–30 — a disagreement this project already records and deliberately
+does not tune away. So the animation runs about 1.5× fast, and the HUD says
+that as well. A stream calibrated to a number 1.5× too large, shown without
+saying so, is precisely the confident-wrong-picture failure Round 50 audited
+for; having just built that audit, shipping one would have been poor.
+
+**Two faults in my own work, and the second is the useful one.** The controller
+first read `result.current_pA`, a field that does not exist — and
+`PermeationResult.current` is in **amperes**, so had the name been right and
+the units unconverted, the rate would have been wrong by 10¹² and would have
+looked like a plausible animation either way.
+
+The test meant to cover this inspected the controller's *source* for
+`predict_wetting`. It passed the entire time the units were wrong, and then
+failed the moment I moved the gating into a function where it could actually be
+run. A source-inspection test proves reachability, not correctness, and it
+fails for the wrong reason exactly when the code improves. The physics now
+lives in `render.flux.timebase_for_structure`, Qt-free and exercised on real
+8YEZ and 11ZC coordinates.
+
+**Also closed: a stale checkbox from Round 1.** "Expose the pore profile in the
+GUI" was deferred, delivered in a later round, and never ticked — the Analysis
+dock has had a two-axis pore plot with click-to-locate for some time. Verified
+rather than assumed before ticking it.
+
+
 ## Round 55 — retiring what earns nothing, and three attempts at the detector
 
 **The answer to the question asked was "almost nothing", which is worth

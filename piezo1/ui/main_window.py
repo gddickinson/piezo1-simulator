@@ -30,6 +30,7 @@ from .alignment import AlignmentMixin
 from .companions import CompanionMixin
 from .tabular_analyses import TabularAnalysisMixin
 from .fusion_controller import FusionController
+from .ion_flux_controller import IonFluxController
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
 from .presentation import PresentationController
@@ -91,6 +92,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
 
         self._build_docks()
         self.fusion = FusionController(self)
+        self.ion_flux = IonFluxController(self)
         self.session = SessionController(self)
         self.presentation = PresentationController(self)
         self._build_menu()

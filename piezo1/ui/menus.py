@@ -99,6 +99,13 @@ def _view_menu(win, bar) -> None:
             "orientation axes and which measured values")
     menu.addSeparator()
 
+    _action(menu, "&Ion flux animation", win.ion_flux.show, "",
+            checkable=True, checked=False,
+            tip="Animate ions crossing the pore at the rate the computed\n"
+                "current sets. A channel passes ~10^7 ions/s, so the stream\n"
+                "runs about a MILLIONFOLD slow and the HUD states the factor.\n"
+                "A pore the wetting model calls shut shows no ions at all.")
+
     halotag = menu.addMenu("&HaloTag fusion")
     halotag.setToolTipsVisible(True)
     _action(halotag, "Show modelled &tags", win.fusion.show, "",

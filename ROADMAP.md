@@ -43,7 +43,10 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   rediscovered all three curated constrictions — the V2450 hydrophobic gate at
   3.0 Å and the CTD constrictions at M2467 (1.2 Å) and P2510 (1.4 Å) — from
   coordinates alone, with no knowledge of the annotation.
-- [ ] *Deferred to a later round:* expose the pore profile in the GUI.
+- [x] *Deferred to a later round:* expose the pore profile in the GUI.
+      **Done** — Analysis dock → Pore tab, drawn by `ui/profile_plot.py` with
+      radius against hydrophobicity and click-to-locate. The checkbox was
+      simply never updated when the panel landed.
 
 ### Round 2 — Gating kinetics  ✅
 - [x] `physics/kinetics.py`: the Young et al. 2023 PNAS four-state model
@@ -1100,10 +1103,34 @@ BAPTA's **~0.2 µM** Kd.
       that would be tuning. Both are registered `unverified`.
       Calcium at 2 mM carries **<5%** of the current, consistent with PIEZO1's
       weak selectivity.
-- [ ] Particle animation whose flux is **set by** the computed current, with the
+- [x] Particle animation whose flux is **set by** the computed current, with the
       HUD stating what the frame rate is in real time. The morph clock's
-      discipline applies. **Not done** — the physics is in place and the current
-      is available to drive it, but nothing is animated yet.
+      discipline applies.
+      **`render/flux.py` (Qt-free) + `ui/ion_flux_controller.py`, under View →
+      Ion flux animation.** The measured fact that makes the label
+      non-optional: a channel passes **1.5 × 10⁷ ions/s**, so a watchable
+      stream runs about **10⁶× slower than real time** and the HUD says so.
+      The morph clock refuses a seconds axis because an interpolation is not a
+      trajectory; here the current genuinely *is* a rate, so the honest move is
+      the opposite — name the factor rather than avoid it.
+- [x] *A shut pore animates nothing.* Gated by the wetting verdict, so the GUI
+      cannot reach a different conclusion from the headless pipeline. Measured:
+      **8YEZ shows no ions** and states why (score 0.82 > 0.55 cutoff,
+      bottleneck 0.095 nm, occluded *and* hydrophobic); **11ZC gives 2.44 pA**.
+      Drawing a trickle through a closed gate would contradict the project's own
+      structural result while looking like a demonstration of it.
+- [x] *The rate declares the disagreement it inherits.* The solver gives 41 pS
+      against a published 25–30 — a recorded result, reported not tuned — so the
+      animation runs ~1.5× fast and the HUD states that too. An animation
+      calibrated to a number 1.5× too large, shown without saying so, is exactly
+      the confident-wrong-picture failure Round 50 audited for.
+- [x] *Two faults in my own work, both instructive.* The controller first read
+      `result.current_pA`, which does not exist — and `PermeationResult.current`
+      is in **amperes**, so had the field existed the rate would have been wrong
+      by 10¹². The test that was supposed to cover this only inspected the
+      controller's *source* for `predict_wetting`; it passed throughout, then
+      broke when the logic moved somewhere testable. The physics now lives in
+      `timebase_for_structure`, exercised on real 8YEZ and 11ZC coordinates.
 
 ### Round 34 — Variant permeation
 - [x] `analysis/variant_structures.py` runs the same pore / wetting / permeation
