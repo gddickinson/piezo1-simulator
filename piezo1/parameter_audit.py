@@ -110,6 +110,16 @@ EXEMPT = {
         "counter, initialised to zero",
     ("physics/permeation.py", "PermeationResult", "access_ohm"): "computed field",
     ("physics/permeation.py", "PermeationResult", "pore_ohm"): "computed field",
+    ("analysis/gnomad.py", None, "window"):
+        "half-width of the window over which observed missense variation is "
+        "averaged. A smoothing scale for a population-genetics readout, not a "
+        "property of PIEZO1; frozen at 25 by "
+        "docs/PREREGISTRATION_ROUND41.md and tested at 10 and 50 as "
+        "pre-registered secondaries so no result can rest on the choice.",
+    ("analysis/gnomad.py", "missense_density", "n_residues"):
+        "length of human PIEZO1, a fact about the sequence rather than a "
+        "parameter of any calculation; the same 2521 that "
+        "core.sequence carries.",
     ("analysis/model_error.py", "pore_convention_error", "uniform_radius"):
         "the radius the *alternative* convention gives every atom. It defines "
         "that convention rather than describing PIEZO1, and the whole point of "

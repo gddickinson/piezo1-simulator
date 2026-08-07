@@ -1482,15 +1482,39 @@ what would most move the destination — predicting direction from structure.
 **The binding constraint is still data, and two of these attack it directly.**
 
 ### Round 41 — gnomAD, for the missing loss-of-function direction
-- [ ] Round 34 established there is no deposited loss-of-function *structure*,
-      and Round 22 that there are too few phenotyped *variants*. gnomAD v4 has
-      ~800k exomes: pLoF variants, constraint scores (LOEUF, pLI, mis_z) and
-      per-residue missense depletion. It cannot give a *measured* direction, but
-      **regional constraint** is a phenotype-adjacent signal that exists for
-      every residue rather than for 39.
-- [ ] *Validate:* does missense depletion in gnomAD separate the curated GoF
-      from LoF positions? Pre-register first — this is the same position-level
-      confound Round 7 died of.
+- [x] `analysis/gnomad.py`: cached, offline-tolerant GraphQL client following
+      `analysis/external.py`. 6,708 missense variants placed on 2,521 residues,
+      none unplaced. Pre-registered in `docs/PREREGISTRATION_ROUND41.md`,
+      committed in its own commit (`eb9ae1f`) before any comparison.
+- [x] **The gene-level answer arrived first and it is discouraging** — recorded
+      in the pre-registration rather than after: **LOEUF 1.10**, **pLI 1.5×10⁻¹⁰⁰**,
+      `oe_mis` **1.45**, `mis_z` **−11.3**. PIEZO1 is not merely unconstrained
+      but missense-**enriched**. Looking for regional depletion inside such a
+      gene was always a long shot, and saying so beforehand is what makes the
+      null interpretable.
+- [x] *Validate:* **FOURTH NULL.** Primary Cliff's δ **−0.269**, CI
+      **[−0.595, +0.074]**, **p = 0.0477**, AUROC 0.634 on 18 LoF vs 24 GoF
+      positions. Medians differ in the hypothesised direction (LoF 2.275 vs GoF
+      2.520 missense/residue) but the interval contains zero. Nothing in the
+      five-test secondary family survives BH (min q = 0.140).
+- [x] **The three-part decision rule earned its place.** p = 0.0477 is *below*
+      threshold. A rule written as "p < 0.05" alone would have produced this
+      project's first positive result, on a p-value 0.0023 under the line, with
+      an interval comfortably containing no effect. The conjunction — p, sign,
+      **and** an interval excluding zero — was fixed in advance for exactly this.
+- [x] **The pre-registered negative control is the informative row.** The raw
+      per-residue count, declared beforehand as something that "should show
+      nothing", gives δ **−0.231, p 0.078** — indistinguishable from the ±25
+      predictor. The windowing that makes this a *regional* estimate contributes
+      nothing, so the predictor cannot be told apart from its own control. That
+      is a stronger reason to disbelieve the primary than the interval alone.
+- [x] Position **2456 excluded in writing beforehand** as the only residue
+      carrying both directions (R2456H/K/P gain, R2456C loss) — simultaneously
+      the reason for the exclusion and the cleanest demonstration that a
+      position-level predictor has a ceiling.
+- [x] Named the biggest methodological weakness for a successor: observed counts
+      conflate "few variants seen" with "few expected". gnomAD's own regional
+      missense constraint model fits expected counts and would separate them.
 
 ### Round 42 — MD trajectories other people have already run
 - [ ] Two sources make this cheap. **MemProtMD** (Oxford) hosts coarse-grained

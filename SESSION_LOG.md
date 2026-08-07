@@ -4,6 +4,83 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 41 — the fourth null, and the clause that caught it
+
+### The gene-level answer arrived before the test
+gnomAD's constraint metrics for PIEZO1 came back in the first query, and they
+are discouraging: **LOEUF 1.10**, **pLI 1.5e-100**, `oe_mis` **1.45**, `mis_z`
+**−11.3**. The gene is not merely unconstrained — missense variation is
+*enriched* relative to the mutational model. Loss-of-function tolerance is
+biologically unsurprising (E756del is a common African allele), but the missense
+enrichment means selection is not removing missense variation from PIEZO1 at
+all.
+
+That went into §2 of the pre-registration, before the per-position test, because
+it changes what a null means. Looking for regional depletion inside a gene with
+no global depletion was always a long shot, and saying so beforehand is the
+difference between a predicted null and an excuse.
+
+### The result, and the clause that decided it
+Primary Cliff's δ **−0.269**, CI **[−0.595, +0.074]**, **p = 0.0477**, on 18 LoF
+versus 24 GoF positions. Medians differ in the hypothesised direction — LoF
+2.275 against GoF 2.520 missense per residue, about 10% lower.
+
+**p = 0.0477 is below the conventional threshold.** The pre-registered rule
+required three things: p < 0.05, δ negative, *and* the bootstrap interval
+excluding zero. The first two pass; the interval contains zero. **Fail to
+reject.**
+
+Had the rule been written as "p < 0.05" — which is how most of these are written
+— this would have been the project's first positive result, on a p-value 0.0023
+under the line, with an effect estimate whose interval comfortably contains no
+effect. The conjunction was fixed in advance for precisely this case, and this
+is the first time it has been the deciding clause rather than a formality.
+
+### The negative control did more work than the primary
+§7.4 pre-registered the raw per-residue count as a control that "should be
+dominated by shot noise and show nothing". It gives δ **−0.231, p 0.078** —
+statistically indistinguishable from the ±25 smoothed predictor, and from both
+the ±10 and ±50 alternatives.
+
+So the windowing that makes this a *regional* constraint estimate contributes
+nothing. Whatever weak tendency is there is present in the unsmoothed counts,
+and the predictor cannot be told apart from its own negative control. That is a
+stronger reason to disbelieve the primary than the interval alone, and it exists
+only because the control was pre-registered rather than added afterwards to
+explain a result.
+
+The summed allele count ran the *opposite* direction (+0.250): how often a
+position is hit says the reverse of how many ways it is hit. Uninformative at
+q = 0.716, and reported because the family is reported whole.
+
+### R2456 again
+Excluded in writing beforehand as the only position carrying both directions —
+R2456H/K/P gain, R2456C loss. A position-level predictor is structurally
+incapable of separating them, so the exclusion is both necessary and the
+cleanest available statement of this predictor's ceiling. The same residue was
+Round 7's diagnostic example for the mechanical predictor. Two different
+predictors, the same residue, the same reason.
+
+### Where four nulls leave the project
+Four pre-registered tests, four nulls, four different predictors: elastic-network
+ΔΔG, FoldX, substitution-aware ΔΔG, and now population constraint. Every
+diagnosis has ended in data rather than method.
+
+`docs/SCIENCE.md` §8b now says four rather than three. The honest summary is that
+this project has found **no signal that separates gain- from loss-of-function**,
+from structure or from population genetics.
+
+I named the biggest methodological weakness for whoever picks this up: observed
+counts conflate "few variants seen" with "few expected". gnomAD's own regional
+missense constraint model fits expected counts per region and would separate
+them — that is a better instrument than the one used here, and it is the fair
+next test rather than another window width.
+
+668 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 40 — reproducing a published figure, and getting one of two
 
 ### Choosing what to reproduce

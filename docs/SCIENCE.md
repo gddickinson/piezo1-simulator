@@ -610,7 +610,7 @@ all**, and only R2456 appears in its own structure (8YFG).
 
 ## 8b. What the mechanical model cannot do
 
-**Three pre-registered tests, three nulls.** Round 7 (elastic-network ΔΔG,
+**Four pre-registered tests, four nulls.** Round 7 (elastic-network ΔΔG,
 δ = −0.083), Round 22 (FoldX ΔΔG, δ = −0.211) and Round 36 (substitution-aware
 ΔΔG, δ = −0.249, CI [−0.628, +0.151], p = 0.405) all failed to reject. The point
 estimate has grown monotonically in the hypothesised direction across the three,
@@ -621,6 +621,16 @@ Round 36's design was powered at 84% for a large effect and 50% for a medium
 one, so its null **excludes a large effect and does not exclude a medium one**.
 The substitution-aware predictor beat its own volume-only control tenfold
 (−0.249 vs −0.025), so Round 26's improvement is real and still insufficient.
+
+Round 41 added population genetics and got the same answer: regional missense
+constraint gives Cliff's δ −0.269 with an interval spanning zero (p = 0.0477 —
+below threshold, and still a null because the pre-registered rule required the
+interval to exclude zero too). Its pre-registered negative control was
+indistinguishable from the predictor.
+
+PIEZO1 is also **not a constrained gene**: LOEUF 1.10, pLI ≈ 0, and `oe_mis`
+1.45 with `mis_z` −11.3 — missense-*enriched* rather than depleted. That was
+recorded before the test and predicts the outcome.
 
 The binding constraint is data. Round 34 showed the structural side cannot
 supply it: one informative variant structure, all gain-of-function.
