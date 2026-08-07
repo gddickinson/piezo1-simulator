@@ -703,9 +703,29 @@ predictor a factor of two short of what any reachable dataset could resolve.
 So the honest position is not "more data is needed" but "the data that could
 exist is not enough for this effect size" — which says a fifth pre-registered
 test on this variant set should not be run whatever predictor goes into it.
-What would change it is a within-position design (the curated set holds one
-such position, R2456) or a directional set several times larger than curation
-can produce. See `docs/FEASIBILITY_ROUND47.md`.
+What would change it is a within-position design or a directional set several
+times larger than curation can produce. See `docs/FEASIBILITY_ROUND47.md`.
+
+**Round 54 costed the within-position route and it is not open either.** A
+comparison matched within position removes the between-position variance that
+consumed 99.8% of Round 7's predictor, so it would need far fewer than 134
+variants — but it needs positions carrying two or more *missense* variants that
+each have a *direction*, from sources that do not disagree. Across the 68
+curated and 232 ClinVar variants there is **one**: R2456, with H/K/P
+gain-of-function and C loss-of-function.
+
+Forty positions carry more than one variant of some kind, and an earlier review
+took that as a workable design. It is not: the count includes nonsense variants
+(Q1009\*), insertions (E2496ELE), positions whose second variant carries no
+direction, and V598M, which is curated as gain-of-function and inferred from
+ClinVar as loss-of-function. Exactly **three** further variants — M870V, R1358C
+and A2020V — would each unlock one more position if a direction could be
+assigned; two of the three are curated as VUS precisely because that evidence
+was not found. The reachable maximum is four positions.
+
+So both the across-position and within-position routes are closed by data, and
+`analysis/data_routes.py` records the cost of each so the question is not
+reopened without new numbers.
 
 Round 36's design was powered at 84% for a large effect and 50% for a medium
 one, so its null **excludes a large effect and does not exclude a medium one**.

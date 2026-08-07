@@ -1898,10 +1898,42 @@ before pointing it at the unknown. That should be a standing rule, not a habit.
       number the user is not looking at.
 
 ### Round 54 — Make the data limit actionable
-- [ ] Every route to the central claim now ends in "not enough phenotyped
+- [x] Every route to the central claim now ends in "not enough phenotyped
       variants". Block K §41 (gnomAD constraint) and §45 (published
       supplementary tables) are the two that need no new experiments. Cost them
       honestly and do the cheaper one.
+      **Both named routes were already spent** — Round 41 ran gnomAD constraint
+      (null, with the negative control indistinguishable from the predictor) and
+      Round 45 harvested the supplementary literature (35 candidates, **none**
+      directional, only 2 with any measurement). So the costing is of what is
+      left, in `analysis/data_routes.py`:
+
+      | Route | Yield | Cost | Status |
+      |---|---|---|---|
+      | Population constraint | +0 | already spent | done |
+      | Literature harvest | +0 | already spent | done |
+      | Within-position pairs as they stand | **+1** | none | open |
+      | Curate the variants one label from a pair | **+3** | 3 literature reads | open |
+      | Admit the engineered variants | +15 | a scientific decision | blocked |
+
+- [x] *"Not enough variants" is now a named list rather than a lament.* Exactly
+      **three** variants would each unlock a new within-position pair:
+      **M870V** (position has M870I, LoF), **R1358C** (has R1358P, GoF) and
+      **A2020V** (has A2020T, GoF). That is the cheapest route with any yield
+      and the only one that is a finite list rather than a search — but the
+      yield is an **upper bound**, since two of the three are curated as VUS
+      *precisely because* the evidence to direct them was not found. Even at
+      full yield this reaches four positions, which is not a design.
+- [x] *The important result is a correction to the Round 50 review, not a new
+      route.* That review counted 40 positions carrying more than one variant
+      and called it "a real design". Filtered to what the design needs — two or
+      more **missense** variants, each **directional**, with no **source
+      conflict** — the count is **one** (R2456), which is what Round 48 said.
+      The 40 included nonsense variants (Q1009\*), insertions (E2496ELE),
+      positions whose second variant has no direction, and V598M, which is
+      curated GoF and ClinVar LoF. That conflict was already being reported by
+      `variant_sets.disagreements()`, so the existing machinery was right and
+      the review was not.
 
 ### Round 55 — Retire what does not earn its place
 - [ ] The codebase has grown to ~100 modules and 651 tests. Find the analyses
@@ -1993,22 +2025,26 @@ across-position design: the data that *could* exist is not enough. So the
 across-position route is closed, and saying so is a result rather than a
 failure.
 
-**But the within-position route is far more open than Round 48 suggested, and
-this is the finding that should drive the next block.** Round 48 measured one
-position carrying more than one variant — *within the 46 directional missense
-subset it was using*. Over the full curated and ClinVar sets the count is:
+**~~But the within-position route is far more open than Round 48 suggested~~ —
+CORRECTED BY ROUND 54, and the correction is the more useful result.** This
+review counted 40 positions carrying more than one variant and called that "a
+real design". Round 54 applied the filters such a design actually needs — two or
+more **missense** variants at one position, each carrying a **direction**, with
+no **source conflict** — and the count is **one**, which is what Round 48 said.
 
-| Set | Positions carrying > 1 variant |
+| Filter | Positions surviving |
 |---|---|
-| Curated (68) | **6** — 1335, 1358, 2020, 2117, 2407, 2456 |
-| ClinVar (232) | **13** |
-| **Combined** | **40** (8 of them carrying ≥ 3) |
+| carrying > 1 variant of any kind (this review's figure) | 40 |
+| … both missense (drops nonsense, insertions, deletions) | fewer |
+| … both carrying a direction | 1 |
+| … no curated-versus-ClinVar conflict (drops V598M) | **1** — R2456 |
 
-Forty positions is a real design, not a curiosity. A within-position comparison
-removes the between-position variance that consumed 99.8% of Round 7's
-predictor, so it needs far fewer variants than 134 — and unlike the across-
-position ceiling, it is reachable by curation rather than by experiments nobody
-has run.
+The forty included nonsense variants (Q1009\*), insertions (E2496ELE), positions
+whose second variant has no direction at all, and one where the two sources
+disagree. A within-position comparison still removes the between-position
+variance that consumed 99.8% of Round 7's predictor — the reasoning was right —
+but the data to run it does not exist, and this review's optimism came from a
+number that does not survive its own filters.
 
 There is also an unused asset: **15 engineered variants, every one with a
 measured functional effect**, two of them at positions shared with natural

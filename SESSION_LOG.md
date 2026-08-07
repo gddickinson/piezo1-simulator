@@ -4,6 +4,55 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 54 — costing the data limit, and correcting my own review
+
+**The item was stale, like Round 53's.** It named two routes needing no new
+experiments: gnomAD constraint and published supplementary tables. Both had
+already been run — Round 41 returned null with its negative control
+indistinguishable from the predictor, and Round 45 found 35 candidates of which
+none carries a direction and only two have any measurement. So "cost them and
+do the cheaper one" had no cheaper one left to do, and the useful work was
+costing what remains.
+
+**The real result is a correction to something I wrote last round.** The Round
+50 review counted 40 positions carrying more than one variant and called that
+"a real design, not a curiosity". That was the most encouraging number this
+project had produced in a while, and it was wrong for the purpose. A
+within-position comparison needs two or more **missense** variants at a
+position, each carrying a **direction**, from sources that do not **disagree**.
+Applying those filters gives **one** position — R2456 — which is exactly what
+Round 48 measured before I talked myself past it.
+
+What the 40 contained: nonsense variants (Q1009\*, a truncation, not a
+substitution a structural predictor can score), insertions (E2496ELE), positions
+whose second variant has no direction at all, and V598M, which is curated as
+gain-of-function and inferred from ClinVar as loss-of-function. That last one is
+worth noting for the right reason: `variant_sets.disagreements()` was **already
+reporting it**. The machinery was correct and the review was not — I had
+counted rows without asking what each row was.
+
+**"Not enough variants" is now a named list.** Exactly three variants would each
+unlock one more position: M870V (the position already has M870I, LoF), R1358C
+(has R1358P, GoF) and A2020V (has A2020T, GoF). That is the cheapest remaining
+route and the only one that is a finite list rather than a search. It is also an
+upper bound — two of the three are curated as VUS *precisely because* the
+evidence to direct them was not found, so the expected yield is below three and
+the ceiling is four positions. Four positions is not a design.
+
+**Why the engineered variants are marked blocked rather than open.** Fifteen
+carry a measured functional effect, which is the only untapped measured data in
+the project. But the effects are changes in conductance and selectivity, not in
+gain or loss of mechanosensitive function. Whether one may stand for the other
+is a scientific question and belongs in its own round with its own reasoning,
+not in a costing exercise that would quietly answer it by counting.
+
+**What this closes.** Round 47 established the across-position route needs 134
+variants against a ceiling of 59. Round 54 establishes the within-position route
+needs positions the data does not contain. Both are now recorded as measured
+costs rather than impressions, so the next round to reach for either has a
+number to argue with.
+
+
 ## Round 53 — ending the tour on the record, and finding the roadmap item stale
 
 **The item was out of date, which is the finding.** It asked for the closing
