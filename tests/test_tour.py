@@ -15,7 +15,7 @@ import numpy as np
 import pytest
 
 from piezo1.parameters import PARAMETERS
-from piezo1.tour import TOUR, step_by_key
+from piezo1.tour import TourStep, TOUR, step_by_key
 
 
 def test_tour_covers_the_mechanism():
@@ -129,13 +129,58 @@ def test_variant_step_reads_the_curated_table():
     assert "GoF" in text and "LoF" in text
 
 
-def test_limits_step_states_both_null_results():
+def test_the_record_step_states_every_pre_registered_test():
     """A learning instrument that only shows its successes teaches the wrong
-    lesson, so this is asserted rather than left to good intentions."""
+    lesson, so this is asserted rather than left to good intentions.
+
+    Read from ALL_PREREGISTERED rather than pinned as strings, so that adding a
+    sixth test updates the tour instead of quietly leaving it stale — which is
+    exactly what happened before Round 53, when the closing step still said
+    "tested twice" after five tests had been run.
+    """
+    from piezo1.analysis.prediction_record import ALL_PREREGISTERED
+
+    text = step_by_key("record").report({})
+    assert f"{len(ALL_PREREGISTERED)} pre-registered tests" in text
+    for entry in ALL_PREREGISTERED:
+        assert f"Round {entry.round}" in text
+        assert f"{entry.cliffs_delta:+.3f}" in text
+    assert "nulls" in text
+
+
+def test_the_data_limit_step_reads_the_recorded_feasibility_numbers():
+    """It must not restate 134 and 59 as literals in prose."""
+    import inspect
+
+    from piezo1 import tour
+
+    text = step_by_key("data_limit").report({})
+    assert "134" in text and "59" in text
+    source = inspect.getsource(tour._data_limit)
+    assert "134" not in source and "59" not in source, (
+        "the numbers must come from the claims registry, not from prose")
+
+
+def test_the_final_step_states_the_model_uncertainty():
+    """Round 52's result belongs where a student meets the dome number."""
     text = step_by_key("limits").report({})
-    assert "0.234" in text
-    assert "0.542" in text
-    assert "-0.211" in text or "−0.211" in text
+    assert "9.72" in text
+    assert "14.99" in text or "15.0" in text
+    assert "0.554" in text and "0.723" in text
+
+
+def test_the_closing_steps_carry_their_figures():
+    """'With figures' was the requirement; a missing PNG must degrade, not crash."""
+    for key in ("record", "data_limit"):
+        step = step_by_key(key)
+        assert step.image, f"{key} has no figure"
+        if step.image_path() is not None:
+            assert "<img" in step.body_html()
+            assert step.image_caption, f"{key}'s figure has no caption"
+
+    missing = TourStep(key="x", title="t", body="<p>b</p>", image="absent.png")
+    assert missing.image_path() is None
+    assert missing.body_html() == "<p>b</p>"
 
 
 def test_pore_step_reports_both_ways_of_being_shut(human_structure):

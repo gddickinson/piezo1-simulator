@@ -4,6 +4,52 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 53 — ending the tour on the record, and finding the roadmap item stale
+
+**The item was out of date, which is the finding.** It asked for the closing
+steps to be rewritten because the tour ended on *two* nulls when there were
+*three*. There are now **five**, and the tour's final step still said "it has
+been tested twice, both times pre-registered". A student taking the tour was
+being told the project had made two attempts on its central claim when it had
+made five, all null. That is the exact failure the round exists to fix, and it
+had happened to the fix itself.
+
+**So the rewrite is structural, not editorial.** The closing measurements now
+read `ALL_PREREGISTERED` and the claims registry rather than restating numbers,
+so a sixth test updates the tour automatically. A test asserts that
+`_data_limit`'s source contains neither 134 nor 59 — the numbers must arrive
+from the registry, because prose is what went stale last time.
+
+**Three closing steps instead of one.** The record (five tests, five
+predictors, five nulls), the data limit (134 needed against a ceiling of 59),
+and what remains uncertain even where the measurements worked (the dome's
+shape spread, ~18× its bootstrap interval). Splitting them matters because they
+say different things: the first is "the claim is unsupported", the second is
+"and it cannot be supported with reachable data", the third is "and even the
+successes are less precise than they look".
+
+**The sharpest line is Round 48's.** A feature computed on the wild-type
+structure has exactly zero within-position variance, so R2456H, R2456K, R2456P
+and R2456C receive the identical value to every digit. That is worth a student's
+attention more than any p-value: it says the *kind* of predictor cannot answer
+the question, independent of how well it is fitted.
+
+**Where I kept the scoping rather than simplifying it.** The obvious move was to
+append Rounds 41 and 48 to `VALIDATION_RECORD`. I did not: that record is what
+the GUI shows beside a variant's ΔΔG score, and pooling in tests of population
+constraint and wild-type context would make the caveat describe a number the
+user is not looking at. `OTHER_PREREGISTERED` holds those, `ALL_PREREGISTERED`
+joins them, and the tour reads the joined view.
+
+**Figures, and why they must be allowed to be absent.** `TourStep` gained an
+`image` field, and `body_html()` appends the figure only when the PNG exists.
+`docs/img` is regenerable and git-ignored, so a fresh clone would otherwise get
+a tour that raised or showed a broken image. Degrading to prose is the correct
+behaviour and is pinned. Both figures took two layout passes — the first put the
+title through the "no effect" label, the second hid the ceiling annotation
+behind a bar label — which is the usual cost of not looking at what you made.
+
+
 ## Round 52 — publishing the interval that answers the question actually asked
 
 **The problem, restated.** Round 38 measured that the dome radius's model

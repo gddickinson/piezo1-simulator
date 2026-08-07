@@ -1864,10 +1864,38 @@ before pointing it at the unknown. That should be a standing rule, not a habit.
       spread, so the conclusion is unaffected. Recorded as its own term.
 
 ### Round 53 — The tour should end on the record, not the mechanism
-- [ ] The guided tour ends on two null results. There are now three, plus a
+- [x] The guided tour ends on two null results. There are now three, plus a
       quantified model error and a data limit with a number attached. Rewrite
       the closing steps so a student leaves knowing what the project does *not*
       know, with figures.
+      **The roadmap item was itself stale: there are now *five* nulls, not
+      three, and the tour's closing step still said "tested twice".** Rewritten
+      as three closing steps (11 steps → 13):
+      **11 · The central claim, and five attempts on it** — every
+      pre-registered test with its effect size, and the sharpest result: a
+      wild-type positional feature has *exactly zero* within-position variance,
+      so R2456H/K/P/C receive the identical value and no such feature could
+      ever assign a direction. Figure: forest plot, every interval crossing zero.
+      **12 · Why more data would not settle it** — 134 variants needed against
+      a ceiling of 59, and the distinction between "we need more data" and "the
+      data that could exist is not enough". Figure: reachable versus required.
+      **13 · What this application cannot do** — Round 52's model error where a
+      student meets the dome number (9.72 nm, but [9.45, 14.99] across shapes,
+      ~18× the bootstrap interval), plus the clinical disclaimer.
+- [x] *Figures:* `scripts/make_record_figure.py` writes both from **recorded**
+      results, recomputing nothing frozen. `TourStep` gained `image` /
+      `image_caption`, and a missing PNG degrades to prose rather than raising —
+      the figures are git-ignored regenerable outputs, so a fresh clone must
+      still be able to take the tour.
+- [x] *No number is stated in prose.* The closing measurements read
+      `ALL_PREREGISTERED` and the claims registry, so a sixth test updates the
+      tour instead of leaving it stale — which is precisely how it came to say
+      "tested twice" after five tests had run. A test asserts `_data_limit`'s
+      source contains neither 134 nor 59.
+      `prediction_record` gained `OTHER_PREREGISTERED` (Rounds 41 and 48) and
+      `ALL_PREREGISTERED`; `VALIDATION_RECORD` stays scoped to the ΔΔG score
+      the GUI shows beside a variant, so its caveat does not start describing a
+      number the user is not looking at.
 
 ### Round 54 — Make the data limit actionable
 - [ ] Every route to the central claim now ends in "not enough phenotyped

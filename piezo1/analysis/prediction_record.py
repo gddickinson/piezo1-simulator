@@ -19,7 +19,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-__all__ = ["ValidationEntry", "VALIDATION_RECORD", "headline", "what_it_means",
+__all__ = ["ValidationEntry", "VALIDATION_RECORD", "OTHER_PREREGISTERED",
+           "ALL_PREREGISTERED", "headline", "what_it_means",
            "evidence_levels", "verify_record", "variant_evidence"]
 
 
@@ -72,6 +73,34 @@ VALIDATION_RECORD: tuple[ValidationEntry, ...] = (
         power_at_large=0.84, conclusion="failed to reject; nothing survived BH",
         document="docs/VALIDATION_ROUND36.md"),
 )
+
+#: Pre-registered tests of predictors that are **not** the mechanical ΔΔG.
+#: Kept separate because :data:`VALIDATION_RECORD` answers "what is the score
+#: this application shows you worth?", and these tested other things entirely —
+#: population genetics and wild-type structural context. Pooling them would
+#: make the GUI caveat about a number the user is not looking at.
+OTHER_PREREGISTERED: tuple = (
+    ValidationEntry(
+        round=41, predictor="regional missense constraint (gnomAD)",
+        n_gof=24, n_lof=18, cliffs_delta=-0.269, p_value=0.0477,
+        power_at_large=None,
+        conclusion="failed to reject; interval spans zero and the negative "
+                   "control matched the predictor",
+        document="docs/VALIDATION_ROUND41.md"),
+    ValidationEntry(
+        round=48, predictor="wild-type structural context",
+        n_gof=16, n_lof=14, cliffs_delta=0.036, p_value=0.509,
+        power_at_large=None,
+        conclusion="failed to reject; nothing survived BH and the negative "
+                   "control beat every real endpoint",
+        document="docs/VALIDATION_ROUND48.md"),
+)
+
+#: Every pre-registered test this project has run, in order. The tour reads
+#: this so its closing step cannot state a number of its own.
+ALL_PREREGISTERED: tuple = tuple(
+    sorted(VALIDATION_RECORD + OTHER_PREREGISTERED, key=lambda e: e.round))
+
 
 #: What the two evidence levels mean, in the words a user needs.
 EVIDENCE_LEVELS = {

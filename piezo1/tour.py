@@ -57,6 +57,35 @@ class TourStep:
     #: Parameter keys whose values are quoted in the body, for the citation
     #: line the panel shows beneath each step.
     cites: tuple[str, ...] = field(default_factory=tuple)
+    #: Filename in ``docs/img`` to show beneath the prose. Kept as a name
+    #: rather than a path so this module stays independent of where the
+    #: project is installed, and Qt-free so the tour can be read headlessly.
+    image: str = ""
+    image_caption: str = ""
+
+    def image_path(self):
+        """Absolute path to the figure, or ``None`` if it is not there.
+
+        Missing figures are not an error: they are regenerable and git-ignored
+        outputs, and a tour that refused to open because a PNG had not been
+        built would be worse than one that shows the prose alone.
+        """
+        from .config import PROJECT_ROOT
+
+        if not self.image:
+            return None
+        path = PROJECT_ROOT / "docs" / "img" / self.image
+        return path if path.exists() else None
+
+    def body_html(self) -> str:
+        """The prose, with the figure appended when it exists."""
+        path = self.image_path()
+        if path is None:
+            return self.body
+        caption = (f'<div style="color:#8b93a1;font-size:11px;">'
+                   f'{self.image_caption}</div>' if self.image_caption else "")
+        return (f'{self.body}<p><img src="{path.as_uri()}" width="620"></p>'
+                f'{caption}')
 
     def report(self, results: Results) -> str:
         if self.measure is None:
@@ -146,13 +175,49 @@ def _variant(results: Results) -> str:
             f"Three gain function and one loses it — from the same residue.")
 
 
+def _record(results: Results) -> str:
+    """Every pre-registered test, read from the frozen record."""
+    from .analysis.prediction_record import ALL_PREREGISTERED
+
+    parts = [f"Round {r.round} ({r.predictor}) delta {r.cliffs_delta:+.3f}"
+             for r in ALL_PREREGISTERED]
+    return (f"{len(ALL_PREREGISTERED)} pre-registered tests, "
+            f"{len(ALL_PREREGISTERED)} nulls: " + "; ".join(parts)
+            + ". Every interval crosses zero.")
+
+
+def _data_limit(results: Results) -> str:
+    """The Round 47 feasibility numbers, read from the claims registry.
+
+    Read rather than recomputed: these are documented values, and a tour step
+    must not spend ten seconds of simulation before it can draw itself.
+    """
+    from .analysis.claims import CLAIMS
+
+    values = {c.key: c.expected for c in CLAIMS}
+    needed = values.get("feasibility.required_n", float("nan"))
+    ceiling = values.get("feasibility.ceiling", float("nan"))
+    return (f"The best predictor produces an effect of delta −0.249. Detecting "
+            f"that at {PARAMETERS.value('stats.target_power'):g} power needs "
+            f"{needed:.0f} directional variants. The most this project could "
+            f"ever assemble — every curated variant plus every candidate the "
+            f"literature harvest found — is {ceiling:.0f}, where the power is "
+            f"about a coin flip. The gap is a factor of {needed / ceiling:.1f}.")
+
+
 def _limits(results: Results) -> str:
-    return (f"The pre-registered blind test returned p = 0.234, Cliff's delta "
-            f"−0.083, AUROC 0.542 over 25 variants; a second, differently "
-            f"posed test returned delta −0.211 with an interval spanning zero. "
-            f"Both are recorded in full. With {PARAMETERS.value('stats.target_power'):g} "
-            f"target power the first design could only have detected an effect "
-            f"above |delta| 0.55, so it excludes a large effect and little else.")
+    """What the remaining uncertainty is, on the numbers the tour just showed."""
+    from .analysis.published_interval import publish
+
+    dome = publish("dome")
+    overlap = publish("gating overlap")
+    return (f"Even the measurements that worked carry more uncertainty than a "
+            f"confidence interval shows. The dome radius is "
+            f"{dome.estimate:.2f} nm, but a sphere and an oblate spheroid fitted "
+            f"to the same points give [{dome.low:.2f}, {dome.high:.2f}] nm — "
+            f"about {dome.overconfident_by:.0f} times wider than the bootstrap "
+            f"interval. The gating overlap is {overlap.estimate:.3f} but ranges "
+            f"{overlap.low:.3f}–{overlap.high:.3f} across network cutoffs.")
 
 
 # --------------------------------------------------------------------------
@@ -280,21 +345,74 @@ same residue, four different substitutions, and they do not all do the same
 thing.</p>"""),
 
     TourStep(
-        key="limits", title="11 · What this application cannot do",
-        measure=_limits, cites=("stats.alpha", "stats.target_power"),
+        key="record", title="11 · The central claim, and five attempts on it",
+        measure=_record, cites=("stats.alpha",),
+        image="record_nulls.png",
+        image_caption="Every pre-registered test. The red line is no effect; "
+                      "every interval crosses it.",
         body="""
 <p>A learning instrument that only shows its successes teaches the wrong lesson,
-so the tour ends here.</p>
+so the tour ends on the record.</p>
 <p>The project's central aim is to predict gain- versus loss-of-function from
-structure. It has been tested twice, both times pre-registered in advance, and
-<b>both times it did not work</b>. The diagnostic from the first attempt is the
-useful part: the mechanical predictor reports <i>where a residue sits</i> rather
-than <i>which substitution occurred</i>, which is exactly why all four R2456
-variants score alike.</p>
-<p>The second thing worth taking away is that the null does not mean "no effect".
-With 25 variants the design could only ever have detected a large one. The
-binding constraint on this question is data, not modelling — and saying so is
-more useful than another reanalysis.</p>"""),
+structure. It has been tested <b>five times</b>, each pre-registered in its own
+commit before the comparison was run, with five different predictors: elastic
+network energy, FoldX stability, a substitution-aware version of the first,
+population constraint from gnomAD, and the wild-type structural context of the
+position. <b>All five returned null.</b></p>
+<p>The diagnostic from the first attempt is still the useful one: the mechanical
+predictor reports <i>where a residue sits</i> rather than <i>which substitution
+occurred</i>, which is exactly why all four R2456 variants score alike. Round 26
+raised its sensitivity to the substitution from 4.9% to 52.5% of the variance,
+and the effect grew from −0.083 to −0.249 — real improvement, still not
+significant.</p>
+<p>The last of the five is the sharpest. A feature computed on the wild-type
+structure has <b>exactly zero</b> within-position variance: R2456H, R2456K,
+R2456P and R2456C receive the identical value, to every digit. Such a feature
+could never assign a direction to a substitution, whatever its p-value.</p>"""),
+
+    TourStep(
+        key="data_limit", title="12 · Why more data would not settle it",
+        measure=_data_limit, cites=("stats.target_power",),
+        image="record_data_limit.png",
+        image_caption="Blue is reachable; red is not. The dashed line is the "
+                      "most this project could ever assemble.",
+        body="""
+<p>The usual conclusion from a null is "we need more data". Here that was
+checked rather than assumed, and it is not the right conclusion.</p>
+<p>The effect the best predictor actually produces would need about
+<b>134 directional variants</b> to detect at the conventional power. The curated
+set supplies 34 that can be modelled. Adding every candidate a systematic
+literature harvest could find, and assuming every one of them could be assigned
+a direction it does not currently have, reaches <b>59</b> — where the power is
+roughly a coin flip.</p>
+<p>So the honest statement is not "we need more data" but <b>"the data that
+could exist is not enough for an effect this size"</b>. Those sound alike and
+are different: only the second tells you that a sixth test on this variant set
+should not be run, whatever predictor goes into it.</p>
+<p>What would change it is not a better model. It is a design matched
+<i>within</i> position — comparing two variants at the same residue, which
+removes the between-position variance that consumed 99.8% of the first
+predictor's signal — and that is a curation problem rather than a modelling
+one.</p>"""),
+
+    TourStep(
+        key="limits", title="13 · What this application cannot do",
+        measure=_limits, cites=("stats.alpha", "stats.target_power"),
+        body="""
+<p>Two last things, so that nothing here is read as more certain than it is.</p>
+<p><b>The measurements that worked still carry model uncertainty.</b> The dome
+radius quoted in step 3 has a bootstrap interval of about ±0.9 nm — but fit an
+oblate spheroid to the same surface points instead of a sphere and the radius of
+curvature moves from 9.45 to 14.99 nm. The spheroid fits <i>better</i>. What
+limits that number is the choice of shape, not the scatter of the points, and
+the confidence interval was answering a question nobody asked.</p>
+<p><b>And this is not a clinical tool.</b> Nothing here is validated for
+diagnosis. A variant's position on the structure is a hypothesis about
+mechanism, not a statement about a patient.</p>
+<p>What the project does establish: the dome geometry reproduces the published
+curvature, the gating scheme reproduces a measured half-activation tension to
+0.4%, the closed pore is predicted to dewet, and every number carries its
+source. What it does not establish is the thing it set out to do.</p>"""),
 ]
 
 

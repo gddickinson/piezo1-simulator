@@ -92,7 +92,7 @@ class TourPanel(QWidget):
         if not (0 <= row < len(TOUR)):
             return
         step = TOUR[row]
-        self.body.setHtml(_style(step.body))
+        self.body.setHtml(_style(step.body_html()))
         self.measurement.setText(
             "<i>running…</i>" if step.run or step.measure else "")
         self.progress.setValue(row + 1)
