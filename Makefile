@@ -70,6 +70,9 @@ validate:  ## Re-run both pre-registered variant tests
 verify:  ## Check that every documented number still comes out of the code
 	$(PY) scripts/reproduce.py --verify
 
+coldclone:  ## Run the suite from an empty clone; a failure is a reproducibility bug
+	$(PY) scripts/cold_clone_check.py
+
 provenance:  ## Walk each documented number back to its file, parameters and commit
 	$(PY) -m piezo1.analysis.provenance_chain
 

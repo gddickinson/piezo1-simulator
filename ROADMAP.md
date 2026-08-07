@@ -2600,12 +2600,28 @@ else. Block P is that.
       discriminating positions.
 
 ### Round 74 — A cold-clone check that runs itself
-- [ ] Round 60 found three defects by hand. Make it repeatable: a script that
-      clones to a temporary directory, runs with no data, fetches, and reports
-      the chain with timings — so the next cache-shaped bug is found by running
-      one command rather than by remembering to.
-- [ ] *Validate:* it must fail if any test fails rather than skipping on an
-      empty clone, which is the specific bug Round 60 found eight times.
+- [x] Round 60 found three defects by hand. Make it repeatable.
+      **`scripts/cold_clone_check.py`** — clones to a temporary directory,
+      removes `ref/` and `data/`, runs the suite, and optionally fetches and
+      re-runs, reporting each step with its wall clock. Currently: clone 2 s,
+      empty-clone suite 57 s, **616 passed / 0 failed / 337 skipped**.
+- [x] *Validate:* it must fail if any test fails rather than skipping.
+      **It found two on its first run** — `test_hybrid.py` and
+      `test_provenance_chain.py`, both written by me in Rounds 65 and 67,
+      failing on an empty clone instead of skipping. Exactly the bug Round 60
+      found eight times, reintroduced within five rounds, which is the argument
+      for automating the check rather than remembering it.
+      The hybrid one was fixed in the *code* rather than the test:
+      `build_hybrid_model` loaded a 2.4 MB AlphaFold model before validating the
+      structure it was handed, so a caller's own error surfaced as a missing
+      file. Validating the argument first is better regardless.
+- [x] *And the checker needed calibrating twice, as usual.* It first reported a
+      clean run as broken: with `-q` and no failures pytest's last line is a
+      progress bar, so reading the tail found zero of everything. Then the
+      counts stayed at zero because `pytest.ini` already sets `-q` and passing
+      another made it `-qq`, which suppresses the summary line entirely. The
+      exit code is now the pass/fail signal and the counts are for the report,
+      with tests that plant a failure, a clean run, and an all-skipped run.
 
 ### Round 75 — Retire the roadmap itself
 - [ ] Sixty rounds in, this file is part roadmap and part changelog, and the

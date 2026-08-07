@@ -38,14 +38,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-#: pytest's summary line, from which failures are read. Counting "FAILED" lines
-#: instead would miss collection errors, which are the loudest way a cold clone
-#: can break and produce no FAILED lines at all.
-_SUMMARY = re.compile(
-    r"(?:(\d+) failed)?,?\s*(?:(\d+) passed)?,?\s*(?:(\d+) skipped)?"
-    r"[^\n]*?(?:(\d+) error)?", re.I)
-
-
 @dataclass
 class Step:
     """One stage of the chain, with what it cost and what it produced."""
@@ -92,11 +84,26 @@ class ColdCloneReport:
 
 
 def _counts(output: str) -> tuple[int, int, int, int]:
-    """(passed, failed, skipped, errors) from pytest's tail."""
-    tail = output.strip().splitlines()[-1] if output.strip() else ""
+    """(passed, failed, skipped, errors) from pytest's summary line.
+
+    Searched for anywhere in the output rather than taken from the last line:
+    with ``-q`` and no failures the final line is a progress bar, so reading
+    the tail found zero of everything and reported a clean run as broken.
+
+    And pytest is invoked without a verbosity flag, because ``pytest.ini``
+    already sets ``-q`` — passing another made it ``-qq``, which suppresses the
+    summary line entirely and left the counts at zero however they were parsed.
+    """
+    summary = ""
+    for line in reversed(output.strip().splitlines()):
+        if re.search(r"\d+ (passed|failed|skipped|error)", line):
+            summary = line
+            break
+
     def find(word):
-        match = re.search(rf"(\d+) {word}", tail)
+        match = re.search(rf"(\d+) {word}", summary)
         return int(match.group(1)) if match else 0
+
     return find("passed"), find("failed"), find("skipped"), find("error")
 
 
@@ -106,9 +113,10 @@ def _run(name: str, command: list, cwd: Path, expect_tests: bool = False) -> Ste
     step = Step(name=name, seconds=time.time() - started)
     if expect_tests:
         step.passed, step.failed, step.skipped, step.errors = _counts(result.stdout)
-        # A cold clone may skip freely. It may not fail, and it may not error:
-        # a collection error produces no FAILED lines and is easy to miss.
-        step.ok = step.failed == 0 and step.errors == 0 and step.passed > 0
+        # pytest's exit code is the signal; the counts are for the report. A
+        # cold clone may skip freely, and 0 means nothing failed or errored —
+        # including collection errors, which produce no FAILED lines at all.
+        step.ok = result.returncode == 0
         if not step.ok:
             step.detail = "\n".join(
                 l for l in result.stdout.splitlines()
@@ -140,7 +148,7 @@ def check(fetch: bool = False, keep: bool = False,
             shutil.rmtree(clone / name, ignore_errors=True)
 
         report.steps.append(_run(
-            "suite on the empty clone", [sys.executable, "-m", "pytest", "-q"],
+            "suite on the empty clone", [sys.executable, "-m", "pytest"],
             cwd=clone, expect_tests=True))
 
         if fetch:
@@ -148,7 +156,7 @@ def check(fetch: bool = False, keep: bool = False,
                 "python -m piezo1.io.fetch",
                 [sys.executable, "-m", "piezo1.io.fetch"], cwd=clone))
             report.steps.append(_run(
-                "suite with data", [sys.executable, "-m", "pytest", "-q"],
+                "suite with data", [sys.executable, "-m", "pytest"],
                 cwd=clone, expect_tests=True))
         return report
     finally:

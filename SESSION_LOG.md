@@ -4,6 +4,44 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 74 — automating the cold-clone run, which immediately caught me
+
+**Five rounds were already done and I verified each rather than ticking them.**
+69 and 71 by Round 65 (hybrid implemented, four rows deleted, `dead_code.audit()`
+at zero), 70 by Round 60, 72 by Round 67, 73 by Round 63. Round 74 was genuinely
+open.
+
+**The argument for automating it turned out to be stronger than I expected.**
+Round 60 found eight tests that failed instead of skipping on an empty clone.
+Fourteen rounds later, `scripts/cold_clone_check.py` found **two more on its
+first run** — both written by me, in Rounds 65 and 67. The same class of bug
+came back within five rounds of being fixed, which is exactly the case for a
+command rather than a habit.
+
+**One of the two was better fixed in the code than the test.**
+`build_hybrid_model` loaded a 2.4 MB AlphaFold model *before* checking the
+structure it had been handed, so a caller's own error surfaced as a missing
+file. Validating the argument first is better regardless of clones: a large read
+should not stand between a caller and the mistake in their input.
+
+**The checker needed calibrating twice, which is becoming the pattern.** It
+first reported a clean run as broken: with `-q` and no failures pytest's final
+line is a progress bar, so reading the tail found zero of everything. Fixing
+that, the counts stayed at zero — because `pytest.ini` already sets `-q`, and
+passing another made it `-qq`, which suppresses the summary line however it is
+parsed. The exit code is now the signal and the counts are decoration.
+
+That is the tenth time an instrument built to check something in this project
+was itself the thing at fault. The tests for it plant a failing run, a clean
+run, and an all-skipped run, because "all skipped" must count as *success* on an
+empty clone and that is the assertion most likely to be written backwards.
+
+**What it does not do.** The `--fetch` path exists and is not run by default:
+it needs the network, and a check that fails when a server is busy would train
+people to ignore it. Round 60's finding was that the *fetch* was broken, so that
+half still needs running deliberately.
+
+
 ## Round 67 — the methods note, organised around what each safeguard caught
 
 **Round 66 was already done, and I checked rather than assumed.** Block O
