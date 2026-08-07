@@ -2499,18 +2499,23 @@ predictor.
       they are admitted, that refusal must still hold.
 
 ### Round 69 — Retire the planned modules
-- [ ] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,
+- [x] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,
       `analysis/variants.py`, `analysis/docking.py` have been 📋 for the whole
       project. Round 55 showed everything that exists is load-bearing; these are
       the opposite problem. Implement or delete the rows.
-- [ ] *Validate:* `dead_code.audit()` must stay at zero, and INTERFACE must not
+- [x] *Validate:* `dead_code.audit()` must stay at zero, and INTERFACE must not
       promise a module that does not exist.
 
+      **Superseded by Round 65**, verified not assumed: `hybrid.py` exists and
+      its row is ✅; the `modes`, `contacts`, `variants` and `docking` rows are
+      deleted with reasons. Two 📋 rows remain in INTERFACE and both are
+      documents, not modules. `dead_code.audit()` is at zero.
+
 ### Round 70 — A fresh clone, start to finish
-- [ ] `make reproduce` on a clean checkout, timed, with every step's failure
+- [x] `make reproduce` on a clean checkout, timed, with every step's failure
       mode recorded. The project claims reproducibility as aim A5 and has never
       measured how long it takes or what breaks first without a warm cache.
-- [ ] *Validate:* report the wall-clock and the first thing that fails, rather
+- [x] *Validate:* report the wall-clock and the first thing that fails, rather
       than fixing forward until it passes.
 
 ---
@@ -2551,31 +2556,48 @@ else. Block P is that.
 
 ## Block P — finish what was promised (Rounds 71–75)
 
+      **Superseded by Round 60**, which ran it and reported the wall-clock and
+      the first failures rather than fixing forward: clone 2 s, empty-clone
+      suite 38 s, fetch 21 s for 43 resources, full suite 209 s, claims 6 s —
+      and three defects a warm cache had hidden.
+
 ### Round 71 — The five modules that have been 📋 since the beginning
-- [ ] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,
+- [x] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,
       `analysis/variants.py`, `analysis/docking.py`. Round 55 showed everything
       that exists is load-bearing; these are the opposite problem — an
       INTERFACE that promises five modules the project does not have.
-- [ ] *Validate:* implement or delete the rows. `dead_code.audit()` stays at
+- [x] *Validate:* implement or delete the rows. `dead_code.audit()` stays at
       zero either way, and a test should assert INTERFACE lists no module that
       does not exist.
 
+      **Superseded by Round 65.** Same work as §69; recorded here rather than
+      left unchecked.
+
 ### Round 72 — The methods note
-- [ ] The reusable output is the apparatus, not the predictor. Write the short
+- [x] The reusable output is the apparatus, not the predictor. Write the short
       note that would let another structural-biology project apply it:
       pre-registration with a decision rule fixed in advance, a negative control
       in every test, feasibility costed before the next attempt, and every
       checking instrument calibrated.
-- [ ] *Validate:* it must state that this pipeline's own output was five nulls,
+- [x] *Validate:* it must state that this pipeline's own output was five nulls,
       and why that is the point rather than a disclaimer.
 
+      **Superseded by Round 67** — `docs/METHODS_NOTE.md`, organised around
+      what each mechanism caught, opening on the failure, and guarded by a test
+      that imports every module it cites.
+
 ### Round 73 — The engineered variants, decided in writing
-- [ ] Round 54 marked 15 measured functional effects `blocked` on a scientific
+- [x] Round 54 marked 15 measured functional effects `blocked` on a scientific
       question, and Round 57 added five more of the same kind: may a conductance
       or selectivity change stand for gain or loss of mechanosensitive function?
       Answer it with the literature, and either admit them at their own evidence
       level or record why not.
-- [ ] *Validate:* `variant_sets` must still refuse to pool evidence levels.
+- [x] *Validate:* `variant_sets` must still refuse to pool evidence levels.
+
+      **Superseded by Round 63**: a conductance or selectivity change may not
+      stand for a direction, on the project's own dissociation evidence
+      (A2078W, KKKK2166-), and admitting the five admissible ones adds zero
+      discriminating positions.
 
 ### Round 74 — A cold-clone check that runs itself
 - [ ] Round 60 found three defects by hand. Make it repeatable: a script that

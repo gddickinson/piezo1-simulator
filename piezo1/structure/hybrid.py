@@ -125,9 +125,9 @@ def build_hybrid_model(experimental, predicted=None, chain: str | None = None,
     from ..core.structure import Structure
     from .superpose import kabsch
 
-    if predicted is None:
-        predicted = Structure.from_file(STRUCTURE_DIR / DEFAULT_PREDICTED_MODEL)
-
+    # Validate the structure we were handed before loading anything else: a
+    # 2.4 MB read should not stand between a caller and the error in their own
+    # argument, and on a clone with no data the load raises first and masks it.
     if chain is None:
         chains = [c for c in experimental.chains
                   if (experimental.mask_ca()
@@ -135,6 +135,9 @@ def build_hybrid_model(experimental, predicted=None, chain: str | None = None,
         if not chains:
             raise ValueError("no chain with enough C-alphas to graft onto")
         chain = chains[0]
+
+    if predicted is None:
+        predicted = Structure.from_file(STRUCTURE_DIR / DEFAULT_PREDICTED_MODEL)
 
     keep = experimental.chain == chain
     exp_res = experimental.res_seq[keep & experimental.mask_ca()]

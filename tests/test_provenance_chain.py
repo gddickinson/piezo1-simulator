@@ -239,6 +239,12 @@ def test_links_are_the_documented_five():
 
 
 def test_the_incomplete_chains_are_incomplete_for_benign_reasons(calibrated=None):
+    """Skips without data: the walk runs claims, which read structures."""
+    from piezo1.io.registry import load_registry
+
+    if not load_registry().available():
+        pytest.skip("no structures downloaded; run python -m piezo1.io.fetch")
+
     """Round 65: the fraction reads as failure and is not.
 
     A claim computed from a frozen validation record consumes no registered
