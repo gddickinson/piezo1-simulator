@@ -50,6 +50,7 @@ EXEMPT_NAMES = {
     "max_nodes": "solver node cap",
     "max_pairs": "sampling cap, reported when it truncates",
     "max_n": "search ceiling",
+    "n_max": "search ceiling; returning it would be reported as no answer",
     "ROUND": "which recorded validation a design analysis refers to; an "
              "identifier, not a quantity — the numbers are read from the record",
     "chunk": "memory blocking; cannot change a result",

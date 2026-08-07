@@ -2235,13 +2235,38 @@ wasteful for the mechanism question.
 ## Block N — the within-position route (Rounds 61–65)
 
 ### Round 61 — How many shared positions would be enough
-- [ ] The Round 47 question, asked of the design that is actually open: for a
+- [x] The Round 47 question, asked of the design that is actually open: for a
       within-position comparison, what effect size is detectable at 40 shared
       positions, and how does that compare with the across-position 134?
-- [ ] *Validate:* against `design.minimum_detectable_effect` and a paired
-      statistic, and **run no comparison** — this is feasibility, as Round 47
-      was. If the answer is that 40 positions suffice, that is the first time
-      this project has had a testable route to its central claim.
+      **The premise was already dead: Round 54 corrected 40 shared positions to
+      one.** The question is still answerable and worth answering, because
+      "how many would be enough" does not require having them. The statistic is
+      a **sign test** — at each position carrying both directions, does the
+      predictor rank the gain-of-function variant above the loss-of-function
+      one? Under the null that is a coin flip, so nothing has to be assumed
+      about a distribution there is no sample to estimate.
+
+      | Paired δ | Shared positions needed | Available |
+      |---|---|---|
+      | 0.25 (the across-position effect) | **102** | 1 |
+      | 0.35 | 49 | 1 |
+      | 0.50 | 26 | 1 |
+      | 0.70 | 13 | 1 |
+      | 0.80 — 90% correct ordering | **8** | 1 |
+
+- [x] *Validate:* against `design.minimum_detectable_effect` and a paired
+      statistic, and **run no comparison**. **No comparison was run** — a test
+      asserts the module imports no statistic that could produce one. The
+      answer is **no**: the route Round 47 left open is closed too. Even at an
+      implausible δ = 0.8 it needs **8** positions against **1**, and Round 54
+      put the absolute ceiling at 4 if three named variants could be directed.
+- [x] *And pairing is not cheaper at the same effect.* At the across-position
+      δ = 0.249 the paired design needs ~102 positions, comparable to Round 47's
+      134 variants. The argument for pairing was always that it would **enlarge**
+      the effect by removing the between-position variance that consumed 99.8%
+      of Round 7's predictor — not that it needs fewer observations at the same
+      one. That distinction is what makes the 8-against-1 result decisive rather
+      than merely discouraging.
 
 ### Round 62 — Direction at the shared positions
 - [ ] The 40 positions are only usable if both variants at a position carry a

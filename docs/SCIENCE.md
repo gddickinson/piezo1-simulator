@@ -739,9 +739,28 @@ carrying a measurement are **truncation artefacts** — `'7 pS, V2132A; 59.'` is
 the tail of a conductance list — so the number of harvested candidates with a
 usable measurement is **zero, not two**.
 
+**Round 61 costed the within-position design rather than only counting its
+sites.** The natural statistic is a sign test: at each position carrying both
+directions, does the predictor rank the gain-of-function variant above the
+loss-of-function one? Under the null that is a coin flip, so nothing need be
+assumed about a distribution there is no sample to estimate.
+
+| Paired δ | Shared positions needed |
+|---|---|
+| 0.25 (the across-position effect) | 102 |
+| 0.50 | 26 |
+| 0.80 — 90% correct ordering | **8** |
+
+Against **one** available. And pairing is not cheaper at the same effect: at
+δ = 0.249 it needs ~102 positions, comparable to the 134 variants the
+across-position design needs. The case for pairing was always that it would
+*enlarge* the effect by removing the between-position variance that consumed
+99.8% of Round 7's predictor — not that it needs fewer observations at the same
+one.
+
 So both the across-position and within-position routes are closed by data, and
-`analysis/data_routes.py` records the cost of each so the question is not
-reopened without new numbers.
+`analysis/data_routes.py` and `analysis/feasibility.py` record the cost of each
+so the question is not reopened without new numbers.
 
 Round 36's design was powered at 84% for a large effect and 50% for a medium
 one, so its null **excludes a large effect and does not exclude a medium one**.

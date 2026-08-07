@@ -38,7 +38,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 __all__ = ["Scenario", "FeasibilityReport", "assess", "recorded_round",
-           "observed_effect", "modelling_survival"]
+           "observed_effect", "modelling_survival", "PairedRequirement",
+           "paired_positions_required", "paired_feasibility",
+           "shared_positions_available"]
 
 #: Which recorded validation this round reasons about. The substitution-aware
 #: predictor is Round 36; Round 26 is what made it substitution-aware.
@@ -243,3 +245,98 @@ def _main() -> None:
 
 if __name__ == "__main__":
     _main()
+
+
+# --------------------------------------------------------------------------
+# The other design: comparing two variants at the SAME position
+# --------------------------------------------------------------------------
+#
+# Round 47 costed the across-position route and closed it. The within-position
+# route was the one it left open, because pairing removes the between-position
+# variance that consumed 99.8% of Round 7's predictor. Round 61 costs it.
+#
+# The natural statistic is a **sign test**: at each position carrying variants
+# of both directions, does the predictor rank the gain-of-function one above
+# the loss-of-function one? Under the null that is a coin flip, so no
+# distributional assumption is needed — which matters, because there is no
+# sample to estimate a distribution from.
+#
+# Cliff's delta for a paired ordering is 2p - 1, so the requirement can be
+# stated against the same effect scale the other rounds use.
+
+def shared_positions_available() -> int:
+    """Positions carrying variants of both directions — measured, not stated.
+
+    Derived from :func:`data_routes.discriminating_positions` rather than
+    written down, so the requirement and the supply cannot disagree. Today it
+    is one: R2456.
+    """
+    from .data_routes import discriminating_positions
+
+    return len(discriminating_positions())
+
+
+@dataclass
+class PairedRequirement:
+    """How many shared positions a within-position test would need."""
+
+    delta: float
+    positions: int | None       # None when the effect is undetectable at any n
+    available: int = field(default_factory=shared_positions_available)
+
+    @property
+    def reachable(self) -> bool:
+        return self.positions is not None and self.positions <= self.available
+
+    def summary(self) -> str:
+        if self.positions is None:
+            return f"paired δ {self.delta:+.2f}: not detectable at any sample size"
+        return (f"paired δ {self.delta:+.2f}: needs {self.positions} shared "
+                f"positions, {self.available} available")
+
+
+def paired_positions_required(delta: float, alpha: float | None = None,
+                              power: float | None = None, n_max: int = 400,
+                              n_simulations: int = 4000,
+                              seed: int = 0) -> PairedRequirement:
+    """Shared positions needed for a sign test to detect a paired effect.
+
+    ``delta`` is Cliff's delta on the paired ordering, so the probability of
+    ranking a position's pair correctly is ``0.5 + delta / 2``. At ``delta = 0``
+    the predictor is a coin flip and no sample size suffices; the function
+    returns ``None`` rather than ``n_max``, because returning the search bound
+    would look like an answer.
+    """
+    import numpy as np
+    from scipy import stats
+
+    from ..parameters import PARAMETERS
+
+    if alpha is None:
+        alpha = PARAMETERS.value("stats.alpha")
+    if power is None:
+        power = PARAMETERS.value("stats.target_power")
+
+    p = 0.5 + float(delta) / 2.0
+    if not 0.0 < p <= 1.0:
+        raise ValueError(f"delta {delta} puts p outside (0, 1]")
+
+    rng = np.random.default_rng(seed)
+    for n in range(4, n_max + 1):
+        hits = rng.binomial(n, p, size=n_simulations)
+        critical = stats.binom.ppf(1.0 - alpha, n, 0.5)
+        if (hits > critical).mean() >= power:
+            return PairedRequirement(delta=float(delta), positions=n)
+    return PairedRequirement(delta=float(delta), positions=None)
+
+
+def paired_feasibility(deltas=(0.249, 0.35, 0.5, 0.7, 0.8), **kw) -> list:
+    """The requirement across a range of paired effect sizes.
+
+    A range rather than a point, because the paired effect **cannot be
+    measured without running the comparison** — which the pre-registration
+    protocol forbids until a design is registered. So this reports what each
+    hypothetical effect would need, and the reader compares that with what
+    exists.
+    """
+    return [paired_positions_required(d, **kw) for d in deltas]

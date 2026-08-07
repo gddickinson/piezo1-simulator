@@ -4,6 +4,54 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 61 — costing the design that was supposed to be the way out
+
+**The premise was already dead, and the question still worth asking.** I wrote
+this item after Round 50, when I believed 40 shared positions existed. Round 54
+corrected that to one. But "how many would be enough" does not require having
+them, and it is the question that decides whether the route Round 47 left open
+is a route at all.
+
+**Choosing the statistic was the substantive decision.** A within-position
+comparison has no distribution to estimate — there is no sample. So the sign
+test is the right instrument: at each position carrying both directions, does
+the predictor rank the gain-of-function variant above the loss-of-function one?
+Under the null that is a coin flip, and the requirement follows from the
+binomial alone. Cliff's delta on a paired ordering is 2p − 1, which keeps the
+answer on the same effect scale the other rounds use.
+
+**The answer closes the route.** At the across-position effect (δ = 0.249) the
+paired design needs about **102** positions. At δ = 0.5, twenty-six. Even at
+δ = 0.8 — the predictor ordering nine pairs in ten correctly, which nothing in
+five rounds suggests it can do — it needs **eight**. There is **one**, and Round
+54 put the absolute ceiling at four if three named variants could be directed.
+
+**The part that makes this decisive rather than merely discouraging.** Pairing
+is *not cheaper at the same effect*: 102 positions against Round 47's 134
+variants is the same order. The entire argument for pairing was that it would
+**enlarge** the effect by removing the between-position variance that consumed
+99.8% of Round 7's predictor. So the route only ever paid off if the paired
+effect were much larger — and it needs eight positions even then.
+
+**Calibrated before believed, as the standing rule requires.** The instrument is
+a simulation, so it is checked at both ends first: a coin-flip predictor must
+return "not detectable at any sample size" rather than the search bound (the
+failure mode the kinetics calibration was fixed for), and a perfect predictor
+must need a handful. Only then is the middle of the curve trusted.
+
+**And no comparison was run**, as in Round 47. A test asserts the module imports
+no statistic that could produce one — because the temptation here is obvious:
+there is one discriminating position, R2456, and looking at how the predictor
+orders it would be a one-line answer to a question that is not pre-registered.
+
+**One thing the parameter audit improved.** I first wrote the available count as
+`SHARED_POSITIONS_AVAILABLE = 1`. The audit flagged the literal, and the right
+fix was not to register it but to *derive* it from
+`data_routes.discriminating_positions()` — so the requirement and the supply
+cannot disagree. A test had already been asserting they matched, which is a sign
+the constant should not have existed.
+
+
 ## Round 60 — an empty clone, and the three things a warm cache was hiding
 
 **The point of the exercise is that none of these could be seen here.** Every
