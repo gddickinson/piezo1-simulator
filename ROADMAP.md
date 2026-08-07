@@ -2335,12 +2335,34 @@ wasteful for the mechanism question.
       than widen one.
 
 ### Round 64 — Pre-register the within-position test
-- [ ] Only if Rounds 61–63 leave a design with adequate power. Written under
-      `NEGATIVE_RESULT_PROTOCOL.md` §2, committed alone before anything runs,
-      with the power statement up front as Round 48 did.
-- [ ] *Validate:* the decision rule keeps the three clauses — Round 41 proved
-      the interval clause earns its place, and Round 48 that stating the
-      ceiling first stops a positive being over-read.
+- [x] Only if Rounds 61–63 leave a design with adequate power.
+      **They do not, so nothing was pre-registered.** The condition was written
+      into the item and it was not met: **8** positions required at an
+      implausibly good predictor (102 at the observed effect), **1** available,
+      3–4 reachable after curation whose yield is an upper bound, and **0**
+      added by the engineered variants. `docs/NOT_PREREGISTERED_ROUND64.md`
+      records the refusal with the numbers, because "we decided not to test" is
+      a result and should be written down like one.
+- [x] *And why not run it exploratorily.* §2 of the protocol permits exploratory
+      work, and it is not a way round this. **A sign test on one pair has a
+      minimum one-sided p of 0.5** — checked, not asserted — so the only
+      possible outcomes are "not significant" and "not significant". Even four
+      perfect pairs give p = 0.0625. The one available position is **R2456**,
+      which the project has cited since Round 7 as the example that *breaks*
+      the predictor, so testing on it is not blind. And a δ from one pair would
+      outlive its caveat, which is a failure mode this project has recorded
+      several times.
+- [x] *Validate:* the refusal is enforced rather than trusted.
+      `test_not_preregistered_round64.py` re-checks the arithmetic, asserts no
+      within-position comparison exists in the codebase, and **ratchets the
+      count of discriminating positions** — so if a new one appears the suite
+      fails and the question resurfaces automatically, instead of depending on
+      a later round finding the document.
+- [x] *A false positive in my own guard, caught by calibration.* The
+      codebase check first flagged `feasibility.py`, which simulates a sign test
+      to compute the *required* sample size and imports the discriminating
+      positions to compare against. That is the design analysis, not the
+      comparison. Sharpened to require variant **scores** as well.
 
 ### Round 65 — Finish the modules still marked planned
 - [ ] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,

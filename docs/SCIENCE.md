@@ -781,6 +781,16 @@ So both the across-position and within-position routes are closed by data, and
 `analysis/engineered.py` record the cost of each so the question is not
 reopened without new numbers.
 
+**Round 64 therefore declined to pre-register the within-position test**, and
+recorded the refusal in `docs/NOT_PREREGISTERED_ROUND64.md` rather than leaving
+it as an absence. Running it exploratorily is not a way round the power problem:
+a sign test on a single pair has a minimum one-sided p of **0.5**, and even four
+perfect pairs reach only 0.0625. The one available position is R2456, which this
+project has cited since Round 7 as the example that breaks the predictor, so a
+test on it would not be blind. The refusal is enforced by a test that ratchets
+the count of discriminating positions, so the question reopens by itself if the
+data ever changes.
+
 Round 36's design was powered at 84% for a large effect and 50% for a medium
 one, so its null **excludes a large effect and does not exclude a medium one**.
 The substitution-aware predictor beat its own volume-only control tenfold

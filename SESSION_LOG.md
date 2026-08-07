@@ -4,6 +4,49 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 64 — declining to pre-register, and recording that as a result
+
+**The item was written conditionally and the condition failed.** "Only if
+Rounds 61–63 leave a design with adequate power." They leave 8 positions
+required at an implausibly good predictor against 1 available, 3–4 reachable,
+and 0 added by the engineered variants. So nothing was pre-registered.
+
+**Writing that down was the round.** The easy version of this is to tick the box
+with "not applicable" and move on. But a decision not to test is a decision, and
+this one rests on numbers from three rounds that a later reader would have to
+reassemble. `NOT_PREREGISTERED_ROUND64.md` states them once, in the same shape
+as a null result — what was proposed, why it will not be run, and what would
+change it.
+
+**The harder question was whether to run it exploratorily.** §2 of the protocol
+explicitly permits exploratory work if it is labelled. So the refusal needed a
+reason beyond "underpowered", and there are three.
+
+A sign test on one pair has a minimum one-sided p of **0.5** — I checked rather
+than asserting, and even four perfect pairs give only 0.0625. There is no
+outcome. Second, the one available position is R2456, which every round since 7
+has cited as the example that *breaks* the predictor: the informal answer is
+already known, so a pre-registration written afterwards would be a formality
+dressed as a safeguard. Third, a δ from one pair would be quoted somewhere
+without its caveat, which this project has watched happen enough times to treat
+as a prediction rather than a worry.
+
+**A refusal is worth nothing unless something makes it stick.** The test does
+three things: re-checks the arithmetic, asserts no within-position comparison
+exists in the codebase, and — the part that matters — **ratchets the count of
+discriminating positions**. If a new one ever appears the suite fails and points
+at the document. The question reopens by itself rather than depending on a
+future round finding a file.
+
+**And my own guard had a false positive, caught by calibrating it.** The
+codebase check flagged `feasibility.py`, which simulates a sign test to compute
+the *required* sample size and imports the discriminating positions to compare
+against. That is the design analysis, not the comparison — the two look alike to
+a keyword scan and are opposites. Sharpened to require variant scores as well.
+That is the seventh time a checking instrument in this project has caught itself
+first.
+
+
 ## Round 63 — a scientific decision, settled by the project's own annotations
 
 **This was the one remaining question that was not about counting.** Fifteen
