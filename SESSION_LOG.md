@@ -6,9 +6,27 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ## Session handoff — paused after Round 74
 
-**State: clean.** Everything is committed and pushed; `1333f9e` is the head and
-nothing is half-finished. The last full run was 955 passed, 10 skipped, GUI
-smoke test clean, no file over 500 lines.
+**State: clean, after correcting a regression Round 74 shipped.** Head is
+`74680ac`. Full suite 955 passed / 10 skipped in 5:05; `make coldclone` clean in
+61 s (628 passed, 0 failed, 337 skipped); no file over 500 lines.
+
+**The regression, because it is worth remembering.** Round 74's
+`test_the_script_runs_and_reports` ran `cold_clone_check.py`, which clones the
+repository and runs the suite *inside the clone* — and the clone contains that
+same test, which runs the script again. Unbounded recursion, timing out at 1800
+seconds and making both `pytest` and `make coldclone` unusable.
+
+It passed when written **only because the test file was not yet committed**, so
+the clone did not contain it. The bug activated on commit: green locally, broken
+for everyone afterwards. I then reported the suite as clean on the strength of
+that run, which was wrong and is corrected here.
+
+The repair is not the obvious one. An environment guard breaks the recursion,
+but `git clone` copies *committed* state — so an end-to-end test that clones
+HEAD exercises the last commit rather than the working tree. It cannot see the
+change being made. A test that cannot see the code under test does not belong in
+a suite, so the end-to-end run is now `make coldclone` only, and the eleven
+remaining tests cover the logic against planted inputs.
 
 **Where the roadmap stands.** Rounds 1–74 are complete or explicitly superseded.
 The remaining unchecked items are:
