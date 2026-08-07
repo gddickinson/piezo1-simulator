@@ -208,6 +208,7 @@ geometry at a fraction of the triangle count.
 | `reproduce.py` | One-command reproduction: fetch, rebuild resources, test, re-run both validations, regenerate figures, then **verify every documented number**. `--verify`, `--quick`, `--skip`, `--only`. | ✅ |
 | `render_offscreen.py` | Headless render to PNG; also a renderer regression check. | ✅ |
 | `make_figures.py` | All README/doc figures, on shared scale and orientation. | ✅ |
+| `reproduce_young2023.py` | **End-to-end reproduction** of Young et al. 2023's four-state tension response from their published rates, checked against two other papers: T₅₀ agrees with Lewis 2015 to 0.4%, inactivation τ disagrees with Bae 2013 by 8.5×. | ✅ |
 | `make_labelling_figure.py` | The labelling figure: saturation curve, the `p³` amplification, and the 1:2:3-dye histogram. Separate from `make_figures.py`, which renders through OpenGL rather than matplotlib. | ✅ |
 | `run_validation.py` | Executes the pre-registered blind test and writes the result. | ✅ |
 | `crosscheck_chain.py` | Runs the physics re-derivations and reports where the routes agree. | ✅ |
@@ -242,6 +243,7 @@ geometry at a fraction of the triangle count.
 | `test_morph.py` | Endpoint preparation, the chord artefact and its removal, modal capture fraction, mismatched-mode-set rejection. | ✅ |
 | `test_pore.py` | Leash enforcement, closed-vs-open bottleneck, and agreement between detected constrictions and the curated gate/CTD residues. | ✅ |
 | `test_hydration.py` | The hydrophobic-gating heuristic. Grid axes and the recovered critical-radius contour against the published 0.2/0.4 nm; the closed/flat verdicts; and the control that decides the round — holding radii fixed and flattening the hydrophobicity scale collapses the closed call, proving it is not a radius threshold in disguise. Skips without the downloaded grid. | ✅ |
+| `test_reproduce_young2023.py` | The reproduction, both halves: that T₅₀ matches Lewis 2015 within 2%, that τ is 7–10× Bae 2013's and pinned so it cannot drift silently either way, that an out-of-reach calibration target is refused rather than clipped, and that `with_modification` scales rather than sets. | ✅ |
 | `test_kinetics.py` | Published rate values, microscopic reversibility, generator validity, half-activation against measured T50, Gillespie-vs-analytic agreement, and mutant direction. | ✅ |
 | `test_measure.py` | Geometry on analytic shapes, SASA of an isolated atom against 4πr², determinism, and the pore-helix tilt result. | ✅ |
 | `test_interactions.py` | The annotated disulfide, the R2456–E2117 inter-protomer salt bridge, cutoff enforcement, and the donor–donor exclusion. | ✅ |

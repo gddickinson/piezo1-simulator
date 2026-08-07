@@ -961,6 +961,33 @@ constriction.
 Every figure here is a **lower bound**: two models disagreeing bounds model
 error from below, two agreeing does not bound it from above.
 
+## 8j. Reproducing Young et al. 2023 end to end
+
+Their published rate constants, this project's solver and time-constant
+extraction, checked against **two other papers** — so nothing is compared with
+the numbers the model was built from.
+
+| Quantity | Model | Measured | Source | Result |
+|---|---|---|---|---|
+| Half-activation tension T₅₀ | **2.711 mN/m** | 2.7 ± 0.1 | Lewis 2015 | **agrees, 0.4%** |
+| Inactivation τ at 5 mN/m | **73.3 ms** | 8.6 ± 0.4 | Bae 2013 | **disagrees, 8.5×** |
+
+The agreement on T₅₀ is the strong result: three independent things — Young's
+rates, this solver, a third group's measurement — land within 0.4%.
+
+**The disagreement on τ is real, not a fitting artefact.** The decay is cleanly
+mono-exponential; a bi-exponential fit adds nothing. The O→I₁ rate k₂ carries
+the timescale, and at its published 8 s⁻¹ it sets ~125 ms before the rest of the
+four-state system pulls it to 73. Matching Bae's 8.6 ms needs k₂ ≈ 103 s⁻¹, a
+12.8-fold increase.
+
+The two papers used different preparations, which is why this project calibrates
+mutants by **fold change** against the wild-type τ and never by absolute τ across
+preparations. That policy predates this measurement; the measurement is what
+turns it from caution into a quantified necessity.
+
+![Young 2023 reproduction](img/young2023_response.png)
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

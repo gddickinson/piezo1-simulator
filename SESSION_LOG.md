@@ -4,6 +4,68 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 40 — reproducing a published figure, and getting one of two
+
+### Choosing what to reproduce
+Haselwandter & MacKinnon's footprint would largely have tested our own linear
+solver against our own parameters. Young et al. 2023 was the better choice
+because their **full rate set is published and registered**, so the output can
+be checked against papers the model was not built from. That is the difference
+between an integration test and a restatement.
+
+### One agreement, one disagreement
+**T₅₀ = 2.711 mN/m** against Lewis et al. 2015's measured **2.7 ± 0.1** — a
+0.4% difference. Young's rates, this project's solver, a third group's
+measurement: three independent things landing on the same number. That is the
+strongest cross-source agreement in the project.
+
+**τ_inact = 73.3 ms** against Bae et al. 2013's **8.6 ± 0.4 ms** — **8.5×**
+slower. Checked that this is not a fitting artefact: the decay is cleanly
+mono-exponential, and a bi-exponential fit sends its second time constant to
+2.2e6 ms, i.e. a constant. k₂ carries the timescale — at 8 s⁻¹ it sets ~125 ms
+before the rest of the system pulls it to 73 — and reaching 8.6 ms needs a
+12.8-fold increase to ~103 s⁻¹.
+
+The agreement is what makes the disagreement informative. If both had failed the
+natural conclusion would be that our solver is wrong.
+
+### It justifies a policy that already existed
+`kinetics.wt_tau_ms` already carried the note that mutants are calibrated by
+**fold change** against the wild-type τ, "never by absolute τ across
+preparations". That was written as caution, before anyone measured how far apart
+the preparations are. This round supplies the number: 8.5×. The policy was right
+and is now quantified rather than merely prudent.
+
+### An API I misread, and why it matters here specifically
+`with_modification` takes **fold changes, not absolute rates**. Passing
+``k2=8.0`` to a model whose k2 is already 8 gives **64**. I read it as a setter,
+measured τ = 13 ms, and briefly had two irreconcilable numbers for the same
+model — 13 ms and 73 ms.
+
+What makes this worth recording is that the misreading was wrong by roughly the
+same factor the round was measuring. Had I not already had the 73 ms figure from
+the default model, 13 ms would have looked like a modest disagreement with Bae
+rather than a large one, and the round's conclusion would have flipped. The
+reconciliation came from diffing the two model objects rather than from
+re-reading the docstring, which is the faster route when two numbers disagree
+and both look plausible.
+
+`calibrate_k2_for_tau` came out well: it **refuses** an out-of-reach target and
+states the reachable range instead of returning its search bound. Clipping would
+have looked like an answer.
+
+### Notes
+- The figure is `docs/img/young2023_response.png`: tension steps, the T₅₀ curve
+  with Lewis's band, and τ against tension on a log axis with Bae's band, so
+  both the agreement and the 8.5× gap are visible at a glance.
+- No parameters changed; this round consumed the registry rather than adding to
+  it, which is what an integration test should do.
+
+660 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 39 — putting the record where the user meets the claim
 
 ### The problem

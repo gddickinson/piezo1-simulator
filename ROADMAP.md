@@ -1338,9 +1338,35 @@ changes that.
       second time it has paid for itself.
 
 ### Round 40 — Reproduce a published figure end to end
-- [ ] Pick one figure from Haselwandter & MacKinnon 2018 or Young 2023 and
-      regenerate it from this codebase. Agreement is a strong integration test;
-      disagreement is a finding.
+- [x] Chose **Young et al. 2023's four-state tension response**, because their
+      full rate set is published and registered, so the output can be checked
+      against **two other papers** rather than against the numbers the model was
+      built from. `scripts/reproduce_young2023.py` →
+      `docs/img/young2023_response.png`.
+- [x] **Half-activation AGREES, and strongly.** Young's rates through this
+      project's solver give **T₅₀ = 2.711 mN/m** against Lewis et al. 2015's
+      measured **2.7 ± 0.1** — a **0.4%** difference, from three independent
+      sources (their rates, our solver, a third group's measurement).
+- [x] **Inactivation DISAGREES by 8.5×.** τ at 5 mN/m is **73.3 ms** against Bae
+      et al. 2013's **8.6 ± 0.4 ms**. The decay is cleanly mono-exponential (a
+      bi-exponential fit adds nothing), so this is not a fitting artefact. k2,
+      the O→I₁ rate, carries the timescale: at 8 s⁻¹ it sets ~125 ms before the
+      rest of the system pulls it to 73. Reaching 8.6 ms needs a **12.8×**
+      increase in k2, to ~103 s⁻¹.
+- [x] **This justifies a policy the project already had.** `kinetics.wt_tau_ms`
+      already carried the note that mutants are calibrated by *fold change*
+      against the wild-type τ, "never by absolute τ across preparations". That
+      was written before this measurement; the measurement is what makes it more
+      than caution.
+- [x] `calibrate_k2_for_tau` **refuses** an out-of-reach target and states the
+      reachable range (13.3–211.2 ms at the default bounds) rather than
+      returning its search bound — checked, because clipping would have looked
+      like an answer.
+- [x] An API I misread, pinned so nobody repeats it: `with_modification` takes
+      **fold changes, not absolute rates**. Passing `k2=8.0` to a model whose k2
+      is already 8 gives **64**. Reading it as a setter produced τ = 13 ms where
+      the model really gives 73 — a plausible number, wrong by roughly the very
+      factor this round measures.
 
 ---
 
