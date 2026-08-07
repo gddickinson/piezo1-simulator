@@ -147,6 +147,22 @@ def main() -> int:
     print("shape for the dome, or springs the right physics. A bootstrap tells")
     print("you how well a fit is determined, not whether it was the right fit.")
 
+    # Round 52: what actually gets published is the WIDEST term, not whichever
+    # one this script happens to compute. Printed here so the two cannot be
+    # read as competing answers.
+    from piezo1.analysis.published_interval import HEADLINE
+
+    print("\nPUBLISHED interval for each headline number (the widest term):")
+    for entry in HEADLINE:
+        print(f"\n  {entry.quantity}: {entry.estimate:.4g} {entry.unit}")
+        print(f"    {entry.dominant.describe()}")
+        if entry.overconfident_by > 2:
+            print(f"    quoting the narrowest term would have been "
+                  f"{entry.overconfident_by:.1f}x too tight")
+        out.setdefault("published", {})[entry.quantity] = {
+            "estimate": entry.estimate, "low": entry.low, "high": entry.high,
+            "kind": entry.dominant.kind, "unit": entry.unit}
+
     DERIVED_DIR.mkdir(parents=True, exist_ok=True)
     path = DERIVED_DIR / "uncertainty.json"
     path.write_text(json.dumps(out, indent=1))

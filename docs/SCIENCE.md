@@ -155,16 +155,48 @@ too large at the r₀/λ where PIEZO1 sits.
 Our solver reproduces this to second order and recovers λ = 13.998 nm from its
 own output against an input of 14.0 nm.
 
-**Intervals (Round 29).** The dome radius of curvature is **9.73 nm with a 95%
-confidence interval of [8.83, 10.34]**, bootstrapped over the 66 transmembrane
-surface points. The published closed-state value of 10.2 nm lies *inside* that
-interval: the measurement and the publication are statistically
-indistinguishable, not merely close. The elastic-network gating overlap is
-**0.705 but ranges 0.554–0.723** across network cutoffs from 10 to 20 Å — the
-qualitative result survives every cutoff, the third digit does not. Ensemble PC1
-is **0.900 [0.796, 0.972]** over ten structures. None of these captures model
-error: a bootstrap says how well a sphere fit is determined, not whether a
-sphere was the right shape.
+**Intervals (Rounds 29 and 52).** Each headline number is quoted with its
+**widest** term, named for what kind of spread it is. Quoting a bootstrap
+interval when a larger model spread exists is overconfident even when every
+individual figure is correct, and Round 38 measured that this is exactly the
+dome's situation.
+
+| Quantity | Value | Published interval | Kind |
+|---|---|---|---|
+| Dome radius of curvature (7WLT) | 9.72 nm | **[9.45, 14.99] nm** | model form — *not* a CI, and a **lower bound** |
+| Lowest A-mode gating overlap | 0.705 | **[0.554, 0.723]** | sensitivity to the network cutoff — *not* a CI |
+| Half-activation tension T₅₀ | 2.711 mN/m | **[2.584, 2.838] mN/m** | propagated from the Young 2023 rates at ±20% |
+| Nonlinear footprint energy | 25.27 k_BT | **[25.27, 26.94] k_BT** | propagated from κ = 20–25 k_BT |
+
+**The dome is the one that changes.** Its bootstrap interval over the 66
+transmembrane surface points is [8.80, 10.30] nm, and the choice of outlier
+trim moves it only 0.30 nm — but a sphere and an oblate spheroid fitted to the
+same points give radii of curvature of 9.45 and 14.99 nm. The spheroid fits
+*better* (rmse 5.24 Å against 6.18 Å) with flattening +0.431, so the surface is
+not spherical. The sphere remains the comparator because the published 10.2 nm
+is itself a sphere fit — and 10.2 nm still lies inside the bootstrap interval,
+so the agreement with Haselwandter & MacKinnon stands — but what limits this
+number is the shape assumption, not the point scatter. **±0.9 nm was answering
+a question nobody asked.**
+
+*A mismatch found while doing this and kept rather than quietly repaired:* the
+model comparison is anchored on the **untrimmed** sphere fit (9.45 nm) while
+the published value is trimmed (9.72 nm). The 0.27 nm gap is small against a
+5.54 nm model spread, so the conclusion is unaffected, but the two were not
+like-for-like.
+
+**T₅₀ is limited by its inputs, not its solver.** The matrix exponential and an
+adaptive ODE integration agree to 0.6% (2.711 vs 2.727 mN/m). Perturbing the
+published rate constants by ±20% moves it to [2.584, 2.838], sixteen times
+wider — and the measured 2.7 ± 0.1 mN/m lies inside, so the agreement with
+Lewis & Grandl survives the uncertainty on the inputs rather than depending on
+their exact values.
+
+Ensemble PC1 is **0.900 [0.796, 0.972]** over ten structures, which is a genuine
+bootstrap: structures were resampled. None of these captures every kind of
+error — a bootstrap says how well a sphere fit is determined, not whether a
+sphere was the right shape, and a model spread over two shapes does not bound
+the error from above, because both may be wrong the same way.
 
 **But it must not be applied to PIEZO1 at face value.** The dome meets the
 bilayer at a contact slope near 2.0, about 63°. The Monge expansion drops terms

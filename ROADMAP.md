@@ -1830,12 +1830,38 @@ before pointing it at the unknown. That should be a standing rule, not a habit.
       An uncalibrated audit would have produced eight false findings.
 
 ### Round 52 — Widen the intervals that Round 38 showed are too narrow
-- [ ] The dome radius is quoted with a sampling interval 6× smaller than its
+- [x] The dome radius is quoted with a sampling interval 6× smaller than its
       model spread. Decide what to publish: a wider interval, a stated model
       caveat, or both — and apply the same question to the footprint, T₅₀ and
       the gating overlap.
-- [ ] *Validate:* `verify_claims` must still pass, which means the documented
+      **Decided: both, by a stated rule — publish the *widest* term and name
+      its kind.** `analysis/published_interval.py` holds the rule and all four
+      numbers with every term measured:
+
+      | Quantity | Value | Published | Kind | Narrowest would have been |
+      |---|---|---|---|---|
+      | Dome radius | 9.72 nm | **[9.45, 14.99] nm** | model form (lower bound) | **18.5× too tight** |
+      | Gating overlap | 0.705 | **[0.554, 0.723]** | cutoff sensitivity | 3.6× |
+      | T₅₀ | 2.711 mN/m | **[2.584, 2.838]** | rates at ±20% | **15.9×** |
+      | Footprint energy | 25.27 k_BT | **[25.27, 26.94]** | κ = 20–25 k_BT | 1.0× |
+
+      **T₅₀ was the surprise**: the two solvers agree to 0.6%, so the number
+      looked well determined, but its input rates make it 16× less certain than
+      the numerical route suggests. The measured 2.7 ± 0.1 still lies inside, so
+      the agreement with Lewis 2015 survives the input uncertainty rather than
+      depending on the exact published rates — a stronger statement than before.
+- [x] *Validate:* `verify_claims` must still pass, which means the documented
       numbers and their stated uncertainties have to move together.
+      **18 claims, 0 drift.** The point estimates deliberately did not move —
+      only what is claimed *about* them — so claim tolerances (which detect
+      code drift) and published uncertainty (a scientific statement) stay
+      separate questions.
+- [x] *A mismatch found while doing this, kept rather than quietly repaired.*
+      The dome's model comparison is anchored on the **untrimmed** sphere fit
+      (9.45 nm) while the published number is **trimmed** (9.72 nm) — the two
+      were never like-for-like. Measured: the registered `geometry.sphere_trim`
+      moves the radius by only 0.30 nm across 0–0.25, against a 5.54 nm model
+      spread, so the conclusion is unaffected. Recorded as its own term.
 
 ### Round 53 — The tour should end on the record, not the mechanism
 - [ ] The guided tour ends on two null results. There are now three, plus a

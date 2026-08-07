@@ -4,6 +4,56 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 52 — publishing the interval that answers the question actually asked
+
+**The problem, restated.** Round 38 measured that the dome radius's model
+spread is six times its bootstrap interval. Nothing about that was wrong: the
+bootstrap correctly reports how well a sphere is determined by 66 surface
+points. It just is not the limiting uncertainty, because the open question is
+whether a sphere is the right shape. Publishing ±0.9 nm was answering a
+question nobody asked.
+
+**The decision, as a rule rather than four judgements.** Publish the *widest*
+term and name its kind in the same breath; never call a sensitivity range or a
+model spread a confidence interval, because a network cutoff has no sampling
+distribution; and where the widest term is a model spread, say it is a **lower
+bound**, since two models agreeing does not bound the error from above. Written
+as `analysis/published_interval.py` so the rule and the numbers live together
+and a fifth quantity cannot be added without stating its terms.
+
+**T₅₀ was the surprise, and it is the most useful result of the round.** It
+looked well determined — the matrix exponential and an adaptive ODE integration
+agree to 0.6% — so the natural thing to quote is the solver agreement. But
+perturbing the published Young 2023 rate constants by ±20% moves it to
+[2.584, 2.838], **sixteen times wider**. The number is limited by its inputs,
+not its arithmetic, and quoting the solver agreement would have implied
+precision it does not have.
+
+This also makes the headline agreement *stronger* rather than weaker. The
+measured 2.7 ± 0.1 mN/m lies inside the input-propagated range, so the match
+with Lewis & Grandl survives the uncertainty on the rate constants instead of
+depending on their exact published values. A test pins that, because it is the
+part that would quietly stop being true if a rate were revised.
+
+**A mismatch found on the way, kept rather than repaired silently.** The dome's
+model comparison is anchored on the **untrimmed** sphere fit (9.45 nm) while
+the published number is **trimmed** (9.72 nm) — the two were never
+like-for-like, and nobody had noticed. Before deciding whether it mattered I
+measured the trim's own effect: `geometry.sphere_trim` moves the radius by
+0.30 nm across 0–0.25, against a 5.54 nm model spread. So the conclusion is
+untouched, and the honest thing is to record the mismatch as its own term
+rather than delete it by re-anchoring the comparison and saying nothing.
+
+**Why `verify_claims` is untouched, and why that is the right answer.** The
+roadmap asked that the documented numbers and their stated uncertainties move
+together. They did — by the point estimates deliberately not moving at all.
+What changed is only what is claimed *about* them. A claim tolerance exists to
+detect code drift; a published interval is a scientific statement about what
+the measurement can support. Conflating them would mean widening drift
+detection every time an honest uncertainty grew, which would make the drift
+guard weaker exactly when the science got less certain.
+
+
 ## Round 51 — calibrating the checkers, including the one doing the audit
 
 **Why this round exists.** Four of the last five rounds found their defect in
