@@ -2115,9 +2115,29 @@ conclusion is revisited without anyone remembering to.
       an old name.
 
 ### Round 59 — The tour and the README should end where the science does
-- [ ] Both still present the project as pursuing the central claim. It has been
+- [x] Both still present the project as pursuing the central claim. It has been
       tested four times. Rewrite the closing steps and the README summary to
       match Round 56's page.
+      **The item is stale twice over: it is five tests, not four, and the tour
+      half was already delivered by Round 53.** Checked rather than assumed —
+      no tour step before the ending presents the claim as open, and the variant
+      step already frames R2456 as *why this is hard*. The real gap was the
+      README, which **ended on data sources and licence** — the science stopped
+      at "the result that says it works", which is the structural validation.
+- [x] *Added: a closing "What this established, and what it did not" section*
+      stating the five nulls with the forest-plot figure, then the part that
+      makes it more than a list — 134 needed against a ceiling of 59 across
+      positions, exactly one usable site within them, and therefore that a sixth
+      test should not be run whatever predictor goes into it. It ends on what is
+      reusable: the apparatus, not the predictor.
+- [x] *Guarded, because three surfaces stating the same record is how drift
+      happens.* The conclusion page's traceability guard now also covers the
+      README summary — every number must come from the claims registry, the
+      validation record or `HEADLINE`. Plus a cross-surface test that the tour,
+      the README and `CONCLUSION.md` agree on the **count**, so a sixth test
+      updates all three or fails. They were out of step before: the tour said
+      "tested twice" after five tests had run, and it survived because each
+      surface was hand-written at a different time.
 
 ### Round 60 — A reproducibility run from an empty clone
 - [ ] `make reproduce` has never been run from a genuinely empty state in CI.

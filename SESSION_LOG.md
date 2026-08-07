@@ -4,6 +4,48 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 59 — the README ended on its licence, not on its result
+
+**The item was stale twice over, and checking which halves were real was most
+of the work.** It said the claim "has been tested four times" — it is five —
+and it asked for the tour's closing steps to be rewritten, which Round 53
+already did. Rather than assume, I checked: no tour step before the ending
+presents the claim as open, and the variant step already frames R2456 as *why
+this is hard*. That half was genuinely done.
+
+**The README half was not.** Round 56 put a link to the conclusion at the top,
+which is where a reader starts — but the document *ended* on data sources and a
+licence. Its last scientific statement was "The result that says it works",
+which is the structural validation: the mode overlap and the dome curvature.
+Both are true and neither is the project's answer. A reader who read to the end
+would finish on the part that worked.
+
+**So the README now ends where the science does**: five pre-registered tests
+across five predictor families, five nulls, the forest plot — and then the part
+that makes it more than a list of failures. 134 variants needed against a
+ceiling of 59 across positions; exactly one usable site within them. Therefore a
+sixth test should not be run, whatever predictor goes into it. It closes on what
+is reusable, which is the apparatus rather than the predictor.
+
+**Guarded, because three surfaces stating one record is exactly how drift
+happens.** The conclusion page's traceability guard now covers the README
+summary too — every number must come from the claims registry, the validation
+record or the published-interval table. And a new cross-surface test asserts the
+tour, the README and `CONCLUSION.md` agree on the *count*, so a sixth test
+updates all three or fails.
+
+That test exists because these surfaces have already gone out of step. The tour
+said "tested twice" after five tests had run, and it survived for several rounds
+because each surface was hand-written at a different time and nobody compared
+them. Linking them by a test is cheaper than remembering to.
+
+**One thing I deliberately left alone.** "The result that says it works"
+overstates nothing — the elastic network really does find the gating transition
+through the symmetry channel theory permits, and the dome really does reproduce
+the published curvature. Softening a section that is accurate, because a
+different claim failed, would be its own kind of dishonesty.
+
+
 ## Round 58 — the illegitimate reading was written into the API
 
 **What I expected to find, and what was actually there.** Round 39 recorded

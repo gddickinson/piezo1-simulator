@@ -22,7 +22,9 @@ from piezo1.analysis.claims import CLAIMS
 from piezo1.analysis.prediction_record import ALL_PREREGISTERED
 from piezo1.analysis.published_interval import HEADLINE
 
-DOC = Path(__file__).resolve().parents[1] / "docs" / "CONCLUSION.md"
+ROOT = Path(__file__).resolve().parents[1]
+DOC = ROOT / "docs" / "CONCLUSION.md"
+README = ROOT / "README.md"
 
 #: Numbers that are structural facts or counts rather than computed results.
 #: Each must say where it comes from; an unexplained entry is how a guard like
@@ -173,10 +175,99 @@ def test_it_links_the_figures_the_tour_uses(text):
 
 
 def test_it_is_reachable_from_the_readme_and_the_help():
-    root = Path(__file__).resolve().parents[1]
-    readme = (root / "README.md").read_text()
+    readme = README.read_text()
     assert "CONCLUSION.md" in readme, "the conclusion must be linked from README"
     from piezo1.ui.help_content import DOC_LINKS
 
     assert any("CONCLUSION" in str(v) for v in
                (DOC_LINKS.values() if isinstance(DOC_LINKS, dict) else DOC_LINKS))
+
+
+# --------------------------- the README must end where the science does
+
+def _readme_summary() -> str:
+    """The closing section, which Round 59 required to match this page."""
+    text = README.read_text()
+    start = text.index("## What this established, and what it did not")
+    return text[start:text.index("## Data sources", start)]
+
+
+def test_the_readme_ends_on_the_record_not_on_the_machinery():
+    summary = _readme_summary()
+    assert "five nulls" in summary.lower()
+    assert "does not work" in summary
+    assert "CONCLUSION.md" in summary
+
+
+def test_the_readme_summary_states_the_unprovability_result():
+    """A list of nulls is not the finding; the closed routes are."""
+    flowed = " ".join(_readme_summary().split())
+    assert "134" in flowed and "59" in flowed, "the across-position limit"
+    assert "one" in flowed and "usable site" in flowed, "the within-position limit"
+    assert "should not be run" in flowed
+
+
+def test_every_number_in_the_readme_summary_is_traceable():
+    """The same guard as the conclusion page, on the section that mirrors it."""
+    supported = _supported()
+    unexplained = []
+    for value in sorted(_numbers_in(_readme_summary())):
+        if value in ALLOWED or abs(value) in ALLOWED:
+            continue
+        if any(abs(value - s) <= max(abs(s) * 0.005, 1e-9) for s in supported):
+            continue
+        unexplained.append(value)
+    assert not unexplained, (
+        f"untraceable numbers in the README summary: {unexplained}")
+
+
+def test_the_readme_summary_does_not_soften_the_null():
+    lowered = _readme_summary().lower()
+    for banned in ("trend toward", "approaching significance", "promising",
+                   "encouraging", "preliminary evidence"):
+        assert banned not in lowered, f"softening language: {banned!r}"
+
+
+# ------------------- the three places must not drift from one another
+
+def test_the_tour_the_readme_and_the_conclusion_agree_on_the_count():
+    """Three surfaces state the record; a sixth test must update all three.
+
+    They went out of step before: the tour said "tested twice" after five tests
+    had run, and it survived because each surface was written by hand at a
+    different time. The tour now reads the record, the conclusion is guarded,
+    and this asserts the README cannot be the one left behind.
+    """
+    from piezo1.tour import step_by_key
+
+    n = len(ALL_PREREGISTERED)
+    words = {2: "two", 3: "three", 4: "four", 5: "five", 6: "six"}
+    word = words[n]
+
+    tour_text = step_by_key("record").report({})
+    assert f"{n} pre-registered tests" in tour_text
+
+    for name, body in (("CONCLUSION.md", DOC.read_text()),
+                       ("README.md", _readme_summary())):
+        lowered = " ".join(body.split()).lower()
+        assert f"{word} pre-registered" in lowered or f"{word} nulls" in lowered, (
+            f"{name} does not state {word} pre-registered tests")
+
+
+def test_no_surface_still_says_the_project_is_pursuing_the_claim():
+    """The framing Round 59 was written to remove.
+
+    Not a search for the word "predict" — the project legitimately predicts a
+    gating motion and a wetting verdict. This looks for the claim being
+    presented as open.
+    """
+    from piezo1.tour import TOUR
+
+    surfaces = {"README.md": README.read_text(),
+                "CONCLUSION.md": DOC.read_text()}
+    surfaces.update({f"tour:{s.key}": s.body for s in TOUR})
+    for name, body in surfaces.items():
+        lowered = " ".join(body.split()).lower()
+        for phrase in ("aims to predict", "will predict whether",
+                       "sets out to predict gain", "hopes to"):
+            assert phrase not in lowered, f"{name} still presents the claim as open"

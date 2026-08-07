@@ -300,6 +300,39 @@ decisions.
 
 ---
 
+## What this established, and what it did not
+
+The structural machinery works, and the numbers are in
+[`docs/CONCLUSION.md`](docs/CONCLUSION.md) with the code that regenerates each
+one. The dome curvature, the half-activation tension, the gating mode and the
+closed-pore dewetting all reproduce or predict something checkable.
+
+**The variant prediction it was built for does not work.** Five pre-registered
+tests, five different predictor families — elastic-network energy, FoldX
+stability, a substitution-aware version of the first, population constraint,
+and the wild-type structural context of the position — and five nulls. Every
+effect interval crosses zero.
+
+![Five pre-registered tests](docs/img/record_nulls.png)
+
+**And the data that would decide it does not exist.** This is the part that
+makes the result more than a list of failures, and it was measured rather than
+assumed. Across positions, the effect the best predictor produces would need
+**134** directional variants; the most this project could ever assemble is
+**59**. Within positions — comparing two variants at the same residue, which
+removes the between-position variance that consumed 99.8% of the first
+predictor's signal — the curated and ClinVar sets together contain exactly
+**one** usable site.
+
+So a sixth test on this variant set should not be run, whatever predictor goes
+into it. What is reusable is not the predictor but the apparatus that showed it
+could not be validated: pre-registration with a decision rule fixed in advance,
+a negative control in every test, feasibility costed before another attempt,
+and every checking instrument calibrated against a known answer before its
+disagreement is believed.
+
+---
+
 ## Data sources
 
 Structures from the [RCSB PDB](https://www.rcsb.org/); sequence and features
