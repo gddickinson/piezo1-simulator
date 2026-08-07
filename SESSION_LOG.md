@@ -4,6 +4,56 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 47 — a predictor that could survive its own data limit
+
+**The question, and why it is not another test.** Round 26 made the mechanical
+predictor substitution-aware (within-position variance 4.9% → 52.5%) and
+Round 36 tested it: δ = −0.249, p = 0.405, the fourth null. The roadmap asked
+what effect size is now detectable and whether the predictor reaches it — and
+said explicitly not to run the comparison without a pre-registration first. So
+this round is a **design analysis on already-recorded effects**, and the module
+is built so that it cannot quietly become a test.
+
+**The answer is no, and the margin is what matters.** Round 26 genuinely helped:
+the effect grew from −0.083 to −0.249 and the required sample fell from over 800
+variants to 134. But the reachable maximum is 59 — the 46 directional missense
+variants plus Round 45's 35 harvest candidates, times the 74% that survived
+Round 36's modelling gate. At 59 the minimum detectable effect is 0.356 against
+an observed 0.249, and power is 0.51.
+
+**Why that distinction is worth a module.** "We need more data" invites another
+curation round. "The data that could exist is not enough" says a fifth
+pre-registered test on this variant set should not be run *whatever predictor
+goes into it*, because a null would be uninformative by construction. Only the
+second is actionable, and it is the one the numbers support.
+
+**Derived, not restated.** The first draft hard-coded `OBSERVED_EFFECT = -0.249`
+and a `split = 0.55`. The parameter audit flagged both, which was the right
+call for the wrong reason — the real problem was not that they were
+unregistered but that they were *copies*. Everything now reads from
+`prediction_record.VALIDATION_RECORD`: the effect, the group sizes, the split
+(19/34 = 0.559), and the survival rate (34/46 = 0.739). The module cannot
+disagree with the record it argues about. Fixing this moved the ceiling 61 → 59,
+because my hand-computed survival rate had used the wrong denominator.
+
+**A guard that was too crude.** The test forbidding a comparison originally
+banned the string `cliffs_delta` anywhere in the module — and then failed, because
+reading `record.cliffs_delta` off the recorded result is exactly what the module
+should do. Rewritten to ban the *imports* that could compute a fresh statistic.
+The distinction is the whole point of the round: reading a recorded effect is
+allowed, producing a new one is not.
+
+**Also corrected.** A first draft of the document claimed
+`analysis.paired_variant` had been built for within-position pairing and found
+too few positions. It had not — that module pairs a variant *structure* against
+wild-type structures, which is Round 34's n = 1 problem. Checked before
+committing rather than after.
+
+**Guarded.** `feasibility.required_n` (134 ± 22) and `feasibility.ceiling`
+(59 ± 1) are in the claims registry, so the conclusion fails loudly if a larger
+variant source ever appears — which is the one thing that would overturn it.
+
+
 ## Round 46 — the one pair, and the control that interprets it
 
 ### The question a single pair can answer

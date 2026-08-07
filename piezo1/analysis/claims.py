@@ -340,7 +340,34 @@ def _recorded(path: str, *keys) -> float:
 # The registry
 # --------------------------------------------------------------------------
 
+def _feasibility_required_n() -> float:
+    """Variants needed for 80% power at the substitution-aware predictor's effect.
+
+    Guards docs/FEASIBILITY_ROUND47.md. Simulation-based but seeded, so the
+    value is reproducible; what must not drift is the conclusion that the
+    requirement is several times the reachable ceiling.
+    """
+    from .feasibility import assess
+
+    return float(assess(n_simulations=200).required_n)
+
+
+def _feasibility_ceiling() -> float:
+    """The most directional variants this project could ever test."""
+    from .feasibility import assess
+
+    return float(assess(n_simulations=200).ceiling_n)
+
+
 CLAIMS: list[Claim] = [
+    Claim("feasibility.required_n",
+          "Variants needed for 80% power at the recorded delta",
+          134.0, 10.0, "variants", "docs/FEASIBILITY_ROUND47.md",
+          _feasibility_required_n, "slow"),
+    Claim("feasibility.ceiling",
+          "Most directional variants that could ever be tested",
+          59.0, 1.0, "variants", "docs/FEASIBILITY_ROUND47.md",
+          _feasibility_ceiling, "slow"),
     Claim("dome.radius_7wlt", "Dome radius of curvature, 7WLT",
           9.72, 0.15, "nm", "docs/SCIENCE.md", _dome_radius, "medium",
           published="10.2 nm (Haselwandter & MacKinnon 2018)"),

@@ -1467,11 +1467,23 @@ distinguishable from one another is worth more than improving any of them.
       the deposited structures show, not what R2456H does.
 
 ### Round 47 — A predictor that could survive its own data limit
-- [ ] Round 26 raised within-position variance from 4.9% to 52.5%. Ask the
+- [x] Round 26 raised within-position variance from 4.9% to 52.5%. Ask the
       question that follows: given 39 directioned variants, what effect size is
       now detectable, and does the substitution-aware predictor reach it?
-- [ ] *Validate:* against `design.minimum_detectable_effect`, and **do not run
+      **No — and no reachable dataset would.** Round 26 did help: the effect
+      grew −0.083 → −0.249 and the requirement fell from >800 variants to 134.
+      But the optimistic ceiling is **59** (46 directional + Round 45's 35
+      harvest candidates, × the 74% modelling-gate survival), where the minimum
+      detectable effect is **0.356** against the observed **0.249** and power is
+      **0.51** — a coin flip. `analysis/feasibility.py`, docs/FEASIBILITY_ROUND47.md.
+      *(The roadmap's "39" is stale; the count is 46 directional, 34 tested.
+      The conclusion holds for any of the three.)*
+- [x] *Validate:* against `design.minimum_detectable_effect`, and **do not run
       the comparison** unless the pre-registration protocol is followed first.
+      **No comparison was run.** Every effect size is read from
+      `prediction_record.VALIDATION_RECORD` rather than recomputed, and a test
+      asserts the module imports no statistic that could produce a fresh one.
+      Both numbers are now guarded in the claims registry.
 
 ### Round 48 — The LoF gap, addressed rather than lamented
 - [ ] Loss-of-function variants are absent from the structures but present in

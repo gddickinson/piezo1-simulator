@@ -614,8 +614,23 @@ all**, and only R2456 appears in its own structure (8YFG).
 δ = −0.083), Round 22 (FoldX ΔΔG, δ = −0.211) and Round 36 (substitution-aware
 ΔΔG, δ = −0.249, CI [−0.628, +0.151], p = 0.405) all failed to reject. The point
 estimate has grown monotonically in the hypothesised direction across the three,
-which is suggestive and is **not evidence**: at δ = −0.25 about 130 variants
+which is suggestive and is **not evidence**: at δ = −0.25, **134** variants
 would be needed for 80% power, against the 34 available.
+
+**And 134 is out of reach, which is the stronger statement.** Round 47 costed
+the ceiling: 46 directional missense variants plus the 35 candidates Round 45's
+literature harvest found, times the 74% that survive the modelling gate, gives
+**59** — where the minimum detectable effect is 0.356 against the observed
+0.249, and power is **0.51**. Round 26's improvement was real and large (the
+requirement fell from over 800 variants to 134), and it still leaves the
+predictor a factor of two short of what any reachable dataset could resolve.
+
+So the honest position is not "more data is needed" but "the data that could
+exist is not enough for this effect size" — which says a fifth pre-registered
+test on this variant set should not be run whatever predictor goes into it.
+What would change it is a within-position design (the curated set holds one
+such position, R2456) or a directional set several times larger than curation
+can produce. See `docs/FEASIBILITY_ROUND47.md`.
 
 Round 36's design was powered at 84% for a large effect and 50% for a medium
 one, so its null **excludes a large effect and does not exclude a medium one**.
