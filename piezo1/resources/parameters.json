@@ -464,6 +464,32 @@
    "description": "Widest slice that is scored."
   },
   {
+   "key": "hybrid.plddt_confident",
+   "name": "AlphaFold confidence threshold",
+   "value": 70.0,
+   "unit": "pLDDT",
+   "minimum": 0.0,
+   "maximum": 100.0,
+   "kind": "convention",
+   "category": "Hybrid model",
+   "citation": "convention",
+   "source_note": "AlphaFold's own banding calls 70-90 confident and below 70 low; the project adopts that boundary rather than choosing its own, so the reported confident fraction means what a reader of AlphaFold DB expects",
+   "description": "pLDDT at or above which a predicted residue is treated as placed."
+  },
+  {
+   "key": "hybrid.anchor_window",
+   "name": "Hybrid graft anchor window",
+   "value": 200,
+   "unit": "residues",
+   "minimum": 20,
+   "maximum": 2000,
+   "kind": "method",
+   "category": "Hybrid model",
+   "citation": "method_choice",
+   "source_note": "the graft is anchored on residues NEAR the seam, not on the whole overlap: fitting all 1279 shared residues gives 19.0 A RMSD because the AlphaFold and cryo-EM blades are different conformations, and spreading that error into the join misplaces the graft. A 200-residue window uses 110 residues and fits to 2.4 A",
+   "description": "Residues either side of the seam used to place the predicted distal blade."
+  },
+  {
    "key": "geometry.sphere_trim",
    "name": "Sphere-fit trim fraction",
    "value": 0.15,

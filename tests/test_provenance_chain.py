@@ -236,3 +236,21 @@ def test_a_claim_that_cannot_run_reports_the_error_not_a_number():
 
 def test_links_are_the_documented_five():
     assert LINKS == ("document", "code", "parameters", "data", "commit")
+
+
+def test_the_incomplete_chains_are_incomplete_for_benign_reasons(calibrated=None):
+    """Round 65: the fraction reads as failure and is not.
+
+    A claim computed from a frozen validation record consumes no registered
+    parameter; an analytic claim reads no structure. Both are facts about the
+    claim. What would be a real break — a number absent from its own document —
+    is zero, and that is the number that matters.
+    """
+    report = walk(cost=None, run=True)
+    explanation = report.explain()
+    assert explanation["document_breaks"] == 0, (
+        "a documented number is not in the document that states it")
+    assert explanation["benign"], (
+        f"a chain breaks for a reason that is not benign: "
+        f"{sorted(explanation['breaks'])}")
+    assert explanation["complete"] > 0

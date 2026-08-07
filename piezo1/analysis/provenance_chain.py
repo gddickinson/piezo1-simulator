@@ -128,6 +128,31 @@ class ChainReport:
         """Claims that consumed no registered parameter while running."""
         return [t for t in self.traces if not t.parameters and not t.error]
 
+    def explain(self) -> dict:
+        """Why the incomplete chains are incomplete, by category.
+
+        The bare fraction reads as failure and is not. A claim computed from a
+        frozen validation record legitimately consumes no registered parameter;
+        an analytic claim legitimately reads no structure. What would be a real
+        break is a number missing from its own document, or code that cannot be
+        located — and both of those are zero.
+        """
+        counts: dict = {}
+        for trace in self.traces:
+            for link, reason in trace.broken.items():
+                key = ("no registered parameter"
+                       if "no registered parameter" in reason else
+                       "no structure or resource file"
+                       if "no structure or resource" in reason else
+                       f"{link}: {reason[:40]}")
+                counts[key] = counts.get(key, 0) + 1
+        return {"complete": len(self.complete), "total": len(self.traces),
+                "breaks": counts,
+                "document_breaks": len(self.drifted),
+                "benign": all(
+                    k in ("no registered parameter",
+                          "no structure or resource file") for k in counts)}
+
     def summary(self) -> str:
         return (f"{len(self.complete)}/{len(self.traces)} chains complete; "
                 f"{len(self.drifted)} numbers missing from their own document; "

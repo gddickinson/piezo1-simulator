@@ -4,6 +4,58 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 65 — one module implemented, four rows deleted, and a real modelling choice
+
+**All five had been promises, not stubs** — no file existed for any of them. The
+decision was one-per-module rather than a policy.
+
+`physics/modes.py` was deleted on the evidence of its own row, which said the
+useful parts already live on `ModeSet`. `analysis/contacts.py` and
+`analysis/variants.py` went because `interactions`, `allostery`, `annotations`,
+`variant_sets` and `variant_impact` already cover what they promised.
+`analysis/docking.py` went for a better reason: it contradicts the project's own
+stance. `build_ligands.py` *refuses* a `bound_structure` claim and verifies
+against the downloads that no bound modulator exists — shipping a docking module
+would generate poses the ligand file declines to accept as evidence.
+
+**`structure/hybrid.py` was implemented because nothing else serves aim A1.**
+The full-length model — cryo-EM core plus predicted distal blade, seam visible
+— is a stated project aim that had gone fifty rounds without an implementation.
+
+**What it reports about itself is the point.** 8YEZ resolves 570–2521, so the
+graft is 569 residues of distal blade. Mean pLDDT there is 64.5 with only 48%
+above the conventional 70: the prediction is least confident exactly where it is
+being relied on. Every atom carries `source` and `plddt` so no analysis can
+average across the join silently.
+
+**The modelling decision was measured, not assumed.** My first version anchored
+the graft on the whole 1279-residue overlap and reported 19.0 Å RMSD. That is a
+plausible number for a flexible multi-domain protein, and I nearly recorded it
+as the finding. Anchoring near the seam instead fits to **2.4 Å** — because what
+determines where a grafted piece attaches is the local geometry, not the average
+over an arm whose conformation differs. Then the far end of the blade sits 75 Å
+from the experiment, and that is reported too, because a good local fit hides
+exactly that.
+
+**A bug I found by not trusting the first number.** The 19 Å looked large enough
+to check, and the check found that `build_hybrid_model` fell back to the whole
+trimer when `Structure.select` did not exist — building the residue map over
+three chains and keeping whichever came last. That is the `dict(zip(...))`
+pattern from an earlier round. Fixing it did **not** change the 19 Å, which I
+should say plainly: the bug was real, the number was not caused by it, and I had
+assumed otherwise for a few minutes.
+
+**Two error pages were living in `ref/structures/`** — 127-byte XML `NoSuchKey`
+responses named as AlphaFold v4 models, from before `_download` gained its size
+guard. Nothing read them, but a glob over the structure directory would have.
+
+**And the provenance count is now explained rather than displayed.** 7 of 21
+chains complete reads as failure and is not: every break is a claim computed
+from a frozen record consuming no parameter, or an analytic claim reading no
+structure. Document breaks — the kind that would mean something — are zero, and
+a test asserts every break stays benign.
+
+
 ## Round 64 — declining to pre-register, and recording that as a result
 
 **The item was written conditionally and the condition failed.** "Only if

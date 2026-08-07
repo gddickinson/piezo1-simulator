@@ -2365,14 +2365,47 @@ wasteful for the mechanism question.
       comparison. Sharpened to require variant **scores** as well.
 
 ### Round 65 — Finish the modules still marked planned
-- [ ] `structure/hybrid.py`, `physics/modes.py`, `analysis/contacts.py`,
-      `analysis/variants.py` and `analysis/docking.py` have been 📋 for the
-      whole project. Either implement them or delete the rows — an INTERFACE
-      that promises five modules it does not have is the documentation
-      equivalent of a registered parameter nothing reads.
-- [ ] *Validate:* `make provenance` reports 5/18 chains complete; most breaks
-      are legitimate, but the count should be explained rather than left as a
-      number that looks like failure.
+- [x] Five modules had been 📋 for the whole project. **One implemented, four
+      rows deleted.** All five were pure promises — no file existed for any.
+      - **`structure/hybrid.py` — implemented.** It serves aim A1, which nothing
+        else does: the full-length model, cryo-EM core plus the AlphaFold distal
+        blade, with the seam kept visible.
+      - **`physics/modes.py` — deleted.** Its own row said the useful parts
+        already live on `ModeSet`.
+      - **`analysis/contacts.py` — deleted.** `interactions.py` does interface
+        detection and state-to-state comparison; `allostery.build_network` does
+        the contact network.
+      - **`analysis/variants.py` — deleted.** `annotations`, `variant_sets` and
+        `variant_impact` cover mapping, domain context and scoring.
+      - **`analysis/docking.py` — deleted.** It is against the project's own
+        stance: `build_ligands.py` *refuses* a `bound_structure` claim, and
+        docking poses would be evidence the ligand file declines to accept.
+- [x] *What the hybrid actually reports is the interesting part.* 8YEZ resolves
+      570–2521, so the graft is the N-terminal **569** residues. Mean pLDDT
+      there is **64.5** with only **48%** above the conventional 70 — the
+      prediction is least confident exactly where it is relied on. Every atom
+      carries `source` and `plddt`, and `experimental_only` is the selection an
+      analysis should use.
+- [x] *And a real modelling decision, measured rather than assumed.* Anchoring
+      the graft on the **whole** 1279-residue overlap gives **19.0 Å** RMSD,
+      because the AlphaFold and cryo-EM blades are different conformations of a
+      long flexible arm. Anchoring near the seam instead fits it to **2.4 Å** —
+      and then the far end of the blade sits **75 Å** from the experiment. Both
+      numbers are reported, because a good local fit hides the second.
+      `hybrid.anchor_window` (200 residues) and `hybrid.plddt_confident` (70)
+      are registered, the second as a `convention` because it is AlphaFold's own
+      banding rather than a choice this project made.
+- [x] *Validate:* explain the provenance count rather than leaving it looking
+      like failure. **`ChainReport.explain()` categorises every break**, and
+      they fall into exactly two benign kinds: a claim computed from a frozen
+      validation record consumes no registered parameter, and an analytic claim
+      reads no structure file. **Document breaks: zero** — which is the number
+      that would mean something. Now 7/21 complete, with a test asserting every
+      break is benign.
+- [x] *Also removed:* two 127-byte XML error pages (`NoSuchKey`) sitting in
+      `ref/structures/` named as AlphaFold v4 models. Nothing read them —
+      `_download`'s size guard would reject them today — but a glob over the
+      structure directory would have found them.
 
 ---
 
@@ -2537,4 +2570,72 @@ else. Block P is that.
 - [ ] *Validate:* no completed item may be lost — every measured result recorded
       in a checkbox must survive the split, and a test should count them before
       and after.
+
+---
+
+## Review after Rounds 61–65
+
+**What the five rounds did.** 61: costed the within-position design — 8 shared
+positions needed at an implausibly good predictor. 62: split that by evidence
+level and found the ceiling is 3, not 4. 63: decided the engineered variants may
+not stand in, on the project's own dissociation evidence. 64: declined to
+pre-register, and recorded the refusal with a guard that makes it self-revoking.
+65: implemented the one planned module that served a real aim and deleted four
+rows that promised what already existed.
+
+**This block ends the scientific programme.** Rounds 47 and 54 closed the two
+routes to the central claim; 61–63 costed the last one from three directions and
+64 wrote down that it will not be attempted. There is no unexplored route left
+that this project could take with data that could exist. That is a finish, not
+an abandonment, and `docs/CONCLUSION.md` says so on one page.
+
+**The habit that paid off most.** Round 65 produced a 19.0 Å number I nearly
+recorded as a finding, and checking it found a real bug — which turned out not
+to cause it. Both halves are worth noting: the check was right to run, and the
+honest report is that the bug and the number were unrelated. Nine rounds in this
+project have now turned on not believing a plausible first number.
+
+**What remains is engineering and communication**, and Block P already lists
+most of it. Block Q adds what these five rounds exposed.
+
+---
+
+## Block Q — what the last five rounds exposed (Rounds 76–80)
+
+### Round 76 — The hybrid model should be reachable
+- [ ] `structure/hybrid.py` exists and nothing in the GUI or CLI can build one.
+      It serves a stated project aim and is currently notebook-only, which is
+      the exposure gap Round 58 found for the coupling score.
+- [ ] *Validate:* the seam must be visibly rendered — a full-length model whose
+      predicted 569 residues look like the experimental ones is precisely the
+      confident-wrong-picture failure Round 50 audited for.
+
+### Round 77 — A fetch that verifies what it downloaded
+- [ ] Round 60 found a broken CDS endpoint; Round 65 found two 127-byte error
+      pages stored as structures. `_download`'s size guard is necessary and not
+      sufficient. Verify content type or parse-ability before writing.
+- [ ] *Validate:* a planted error page must be rejected, and the test must show
+      the guard rejecting something the size check would accept.
+
+### Round 78 — Retire `HALOTAG_CALCIUM_PLAN.md`
+- [ ] It is marked 📋 and describes work Rounds 29–32 completed. A plan document
+      that outlived its execution is the documentation equivalent of the four
+      module rows Round 65 deleted.
+- [ ] *Validate:* nothing may be lost — anything in it not carried by the
+      implemented modules must move to `SCIENCE.md` first.
+
+### Round 79 — `ARCHITECTURE.md`, or the row goes
+- [ ] The last 📋 in INTERFACE. Either write why the code is shaped this way —
+      the dependency arrow, the impostor rendering, structure-of-arrays — or
+      delete the promise as Round 65 deleted four others.
+- [ ] *Validate:* if written, it must not restate INTERFACE; it is the *why*,
+      and a test should check it cites the constraints rather than the contents.
+
+### Round 80 — What a reader should be told first, measured
+- [ ] Five surfaces now state the record (README, CONCLUSION, tour, help,
+      SCIENCE). Round 59 linked three by a test. Extend it to all five, and
+      measure how many clicks or scrolls a new reader needs to reach the
+      conclusion from each entry point.
+- [ ] *Validate:* the answer must be one step from every entry point, or the
+      surface is wrong rather than the reader.
 
