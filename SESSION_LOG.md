@@ -4,6 +4,62 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 43 — the ligands that have no structure
+
+### What the resource is really for
+`ligands.json` had been 📋 since the project began, and it would have been easy
+to fill it with pocket residues from the literature. The reason not to is that
+**no PIEZO structure with a bound small-molecule modulator has been deposited**.
+Every "Yoda1 pocket" in the field comes from mutagenesis, docking or geometry —
+and once residues are drawn on a structure they look exactly like residues that
+were observed there.
+
+So the file's organising idea is a graded `site_evidence` field that travels
+with each site, and a build that rejects `bound_structure` outright.
+
+### Verifying rather than asserting
+The claim "no bound modulator exists" is the kind that quietly stops being true.
+`deposited_modulators()` scans the heteroatoms of all 21 downloaded structures
+against the set that is legitimately there — lipid, detergent, glycan, ion — and
+reports anything else. Nothing else is present. If a Yoda1-bound entry is ever
+deposited and downloaded, the build **fails**, which is the correct outcome
+because the resource would then be wrong.
+
+That is the same shape as Round 42's control: an absence is only evidence if the
+instrument can detect presence.
+
+### What the six ligands actually support
+Only **one of six** carries a residue-level site — Yoda1's 1718/2075/2078, at
+`docking_md`. The other five record *why* they have none, which matters because
+silence would read as "not looked at" rather than "deliberately absent":
+
+- **Dooku1** competes with Yoda1, which implies a shared site but does not
+  locate one. No residues claimed.
+- **GsMTx4** partitions into the outer leaflet and acts on the bilayer. Recording
+  protein residues would misrepresent the mechanism, not merely overstate it.
+- **Yoda2** is assumed to share the Yoda1 pocket by analogy — an assumption, so
+  no site.
+- **Jedi1/2** act through the blade and beam, mapped by mutation, but no residue
+  set is specific enough to call a binding site.
+
+### Gates the build enforces
+Chemistry is fetched from PubChem and the returned **InChIKey is compared with
+the recorded one**, so a wrong CID cannot pass silently — the same failure mode
+that gave this project a bone-marrow-transplantation paper as a PIEZO1 citation
+in an earlier round. Every citation must resolve in `references.json`. A site
+with residues must carry a citation; a site without must carry an explanation.
+
+### Validated against the project's own anchors
+Yoda1 **EC50 26.6 µM** (Syeda 2015) and GsMTx4 **Kd 155 nM** (Bae 2011), both
+matching the ground-truth table in `CLAUDE.md`. Those are the two numbers the
+project committed to at the start, and they are now in a machine-readable
+resource with their provenance rather than only in prose.
+
+683 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 42 — the premise was wrong, and that is the result
 
 ### What the round assumed

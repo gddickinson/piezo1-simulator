@@ -62,6 +62,7 @@ testable headlessly and lets the whole engine be driven from a notebook.
 | `sequence.py` | Sequence alignment and the **human↔mouse residue numbering map**, built from a real global alignment. The only sanctioned way to convert between numbering systems. | `align_global()`, `NumberingMap`, `load_numbering_map()`, `human_to_mouse()`, `mouse_to_human()` | ✅ |
 | `entities.py` | **What is actually in a deposited file.** Classifies every atom as channel protomer, auxiliary subunit, lipid, detergent, glycan, ion, water or other. Six entries carry three copies of MDFIC (21-residue auxiliary subunit, residues 226–247 — numbers that sit *inside* PIEZO1's own range); 6B3R carries poly-UNK. Principal chains are identified **relative to the largest**, so 4RAX's lone 227-residue domain survives while a 21-residue peptide beside a 1,280-residue protomer does not. | `EntityClass`, `EntityMap`, `classify()`, `LIGAND_NAMES` | ✅ |
 | `annotations.py` | Loads `resources/*.json` into typed records carrying provenance and confidence. Represents "we do not know" explicitly. | `Domain`, `ResidueGroup`, `Variant`, `Annotations`, `load_annotations()` | ✅ |
+| `ligands.py` | Loads `resources/ligands.json` into typed records carrying the site-evidence level, so a pocket inferred from docking cannot be read as one that was observed. | `Ligand`, `LigandSet`, `load_ligands()`, `SITE_EVIDENCE_ORDER` | ✅ |
 | `sequences.py` | Named sequences and their comparison, Qt-free. Keeps UniProt, structure and translated-CDS sequences **distinct**, each with its own numbering; global or by-residue-number comparison. | `NamedSequence`, `SequenceComparison`, `compare_sequences()`, `load_named_sequences()`, `translate()`, `CODON_TABLE` | ✅ |
 
 ### `piezo1/structure/` — structural operations
@@ -187,7 +188,7 @@ geometry at a fraction of the triangle count.
 | `variants_clinvar.json` | 232 ClinVar pathogenic/likely-pathogenic variants past the same wild-type gate, with direction *inferred* from the disease mechanism and 11 marked ambiguous for being reported under both diseases. | ✅ |
 | `functional_residues.json` | 37 residues in 11 groups: hydrophobic gate, selectivity glutamates, CTD constrictions, Yoda1 pocket, PIP2 cluster, basic patches. | ✅ |
 | `numbering_human_mouse.json` | Cached human↔mouse alignment map. | ✅ |
-| `ligands.json` | Yoda1, Yoda2, Jedi1/2, Dooku1, GsMTx4 and lipids with chemistry and binding-site residues. | 📋 |
+| `ligands.json` | Six modulators with PubChem-verified chemistry, measured potency and — the point of the file — a **graded site-evidence level**. Only one carries a residue-level site, at `docking_md`. `bound_structure` is rejected by the build, which verifies against the downloaded entries that no bound modulator exists. | ✅ |
 | `structures.json` | Registry of 21 structures with state, resolution, coverage, ligands, citation. | ✅ |
 | `parameters.json` | **101 parameters** in 19 categories — every number the calculations use, with unit, bounds, kind and citation. 31 cite a paper; 30 are method choices, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
 
@@ -203,6 +204,8 @@ geometry at a fraction of the triangle count.
 | `build_functional_residues.py` | Authors `functional_residues.json`, verifying each residue against the sequence. | ✅ |
 | `build_variants.py` | Promotes researched variants into `variants.json` behind a validation gate. | ✅ |
 | `build_variants_clinvar.py` | Fetches ClinVar pathogenic variants, parses the protein change, verifies the wild type against Q92508, and infers direction from the disease mechanism — marking as ambiguous anything reported under both diseases. | ✅ |
+| `build_ligands.py` | Authors `ligands.json` behind a provenance gate: refuses a `bound_structure` claim, verifies PubChem InChIKeys, requires every citation to resolve, and **scans the downloaded structures** to confirm no bound modulator exists. | ✅ |
+| `ligand_table.py` | The curated modulator table as data, split so it can be read without the validation machinery. | ✅ |
 | `build_structure_registry.py` | Authors `structures.json`. | ✅ |
 | `build_parameters.py` | The provenance gate: refuses to write unless every citation resolves in `references.json` or declares itself a method choice **and says why**. | ✅ |
 | `parameter_table.py` | The parameter table itself, as data so the whole set can be read and diffed without the validation machinery. | ✅ |
@@ -239,6 +242,7 @@ geometry at a fraction of the triangle count.
 | `test_prediction_record.py` | That the record matches the run that produced it, that the growing effect stays labelled as not-evidence, that the one conflicting variant is flagged where a user meets it, and that the dialog caveat does not soften the result. | ✅ |
 | `test_variant_structures.py` | Round 34's null, pinned so it cannot decay: that no deposited human structure conducts, that only 8YFG resolves its own mutation, that three entries share byte-identical coordinates — **and that the three files are genuinely different downloads**, which is the far likelier explanation and had to be excluded. | ✅ |
 | `test_nanodomain.py` | The Green's function against analytic limits, the prediction and — the part that makes it non-trivial — that the sweep is wide enough to have broken it. Pins the occupancy floor from resting calcium, and the silent frame bug that reported a closed structure as carrying 32 pA. | ✅ |
+| `test_ligands.py` | That no site claims a bound structure, that the one residue-level site says it is inferred where it is read, that a ligand without a site explains why, that the two ground-truth potencies match, and that the deposited structures still contain no modulator. | ✅ |
 | `test_external_md.py` | The availability null, written to fail if it improves: that MemProtMD holds only 3JAC, that the probe had a working control, that 3JAC resolves 4 of 15 lipid residues, and that an offline run reports "not checked" rather than manufacturing the conclusion. | ✅ |
 | `test_geometry.py` | Sphere fitting on synthetic spheres and caps; dome curvature regression against the published 10.2 nm; curved vs flat separation. | ✅ |
 | `test_superpose.py` | Kabsch round-trip, reflection exclusion, C3 exactness, reversed-handedness detection. | ✅ |

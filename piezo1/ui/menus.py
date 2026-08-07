@@ -186,6 +186,11 @@ def _analysis_menu(win, bar) -> None:
     _action(menu, "&Interactions…", win.show_interactions, "",
             "Hydrogen bonds, salt bridges, hydrophobic contacts, pi-stacking,\n"
             "cation-pi and disulfides, using published geometric criteria.")
+    _action(menu, "&Modulators…", win.show_ligands, "",
+            "Yoda1, Yoda2, Jedi1/2, Dooku1 and GsMTx4: chemistry, measured\n"
+            "potency and what is known about where each binds.\n"
+            "NO PIEZO structure with a bound modulator has been deposited, so\n"
+            "every site is inferred from mutagenesis, docking or geometry.")
     _action(menu, "Variant &prediction record…", win.show_prediction_record, "",
             "What a variant score from this application is entitled to claim.\n"
             "The central claim - predicting gain- vs loss-of-function from\n"

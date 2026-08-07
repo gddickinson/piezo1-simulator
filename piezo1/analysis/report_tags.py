@@ -14,7 +14,8 @@ from ..parameters import PARAMETERS
 from .report import _protomer_blocks
 
 __all__ = ["analysis_fusion", "analysis_labelling", "analysis_permeation",
-           "analysis_nanodomain", "analysis_prediction_record"]
+           "analysis_nanodomain", "analysis_prediction_record",
+           "analysis_ligands"]
 
 
 def analysis_fusion(st: Structure, species: str, **kw) -> dict:
@@ -268,4 +269,32 @@ def analysis_prediction_record(st: Structure, species: str, **kw) -> dict:
         "what_this_means": what_it_means(),
         "evidence_levels": evidence_levels(),
         "record_matches_the_stored_run": verify_record(),
+    }
+
+
+def analysis_ligands(st: Structure, species: str, **kw) -> dict:
+    """The curated modulators, and how much is known about where they bind.
+
+    Reports the site evidence level with every site, because no PIEZO structure
+    with a bound small-molecule modulator has been deposited and a pocket drawn
+    on a structure looks exactly like one observed in it.
+    """
+    from ..core.ligands import load_ligands
+
+    ligands = load_ligands()
+    if not len(ligands):
+        return {"error": ligands.note}
+    return {
+        "summary": ligands.summary(),
+        "no_bound_structure_exists": not ligands.any_observed_site,
+        "site_evidence_levels": ligands.evidence_levels,
+        "ligands": [
+            {"name": l.name, "role": l.role, "kind": l.kind,
+             "formula": l.formula, "molecular_weight": l.molecular_weight,
+             "pubchem_cid": l.pubchem_cid, "uniprot": l.uniprot,
+             "potency": l.potency_text(), "site": l.site_text(),
+             "site_evidence": l.site_evidence,
+             "description": l.description}
+            for l in ligands.ligands],
+        "note": ligands.note,
     }

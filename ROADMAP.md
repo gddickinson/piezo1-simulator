@@ -1542,13 +1542,32 @@ what would most move the destination — predicting direction from structure.
       exactly this round's conclusion.
 
 ### Round 43 — the ligands that have no structure
-- [ ] `ligands.json` is still 📋 and the registry contains **no** Yoda1-, Jedi-,
-      Dooku1- or GsMTx4-bound entry, because none has been deposited. What does
-      exist: **ChEMBL / PubChem BioAssay** dose-response data, **BindingDB**
-      affinities, and the published mutagenesis that defines the Yoda1 pocket.
-- [ ] Build `ligands.json` from those with provenance, and state plainly that
-      every binding site in it is **inferred from mutagenesis and geometry, not
-      from a bound structure**.
+- [x] `resources/ligands.json` built by `scripts/build_ligands.py` behind a
+      provenance gate, with the table split into `scripts/ligand_table.py` so
+      the data can be read without the machinery. Six modulators: Yoda1, Yoda2,
+      Jedi1, Jedi2, Dooku1, GsMTx4.
+- [x] Chemistry fetched from PubChem and **verified**: the build compares the
+      returned InChIKey against the recorded one, so a wrong CID cannot pass
+      silently. Yoda1 C13H8Cl2N4S2 (CID 2746822), Dooku1 C13H9Cl2N3OS,
+      Jedi1 C12H10O3, Jedi2 C10H8O3S, Yoda2 C16H9Cl2KN2O2S2; GsMTx4 is a
+      peptide, recorded by UniProt Q7YT39.
+- [x] **Every binding site is labelled as inferred, and the build verifies the
+      claim rather than asserting it.** `deposited_modulators()` scans the
+      heteroatoms of all 21 downloaded structures: nothing outside lipid,
+      detergent, glycan and ion codes is present, so no bound modulator exists
+      in any of them. If one is ever deposited, the build **fails** and the
+      resource is correctly marked out of date.
+- [x] Site evidence is a graded field — `mutagenesis`, `docking_md`,
+      `geometric`, `none` — and `bound_structure` is **rejected by the build**.
+      Only **one** of six carries a residue-level site: Yoda1's
+      1718/2075/2078, at `docking_md`, from MD rather than from contact.
+      Each of the other five records *why* it has no site, so silence cannot
+      read as "not looked at".
+- [x] *Validated* against the project's own ground-truth table: Yoda1
+      **EC50 26.6 µM** (Syeda 2015) and GsMTx4 **Kd 155 nM** (Bae 2011), both
+      matching, with every citation required to resolve in `references.json`.
+- [x] Reachable as **Analysis → Modulators…** and
+      `python -m piezo1.cli ligands`, with the caveat shown above the numbers.
 
 ### Round 44 — predicted structures beyond AlphaFold2
 - [ ] The project already fetches AlphaFold DB. **AlphaFold3 / Boltz-2 / Chai-1**

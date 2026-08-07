@@ -244,7 +244,8 @@ def build_parser() -> argparse.ArgumentParser:
             ("labelling", "HaloTag labelling kinetics on the three sites"),
             ("permeation", "ion current through the pore (1-D PNP)"),
             ("nanodomain", "calcium at the HaloTag when the channel opens"),
-            ("prediction_record", "what a variant prediction is worth")):
+            ("prediction_record", "what a variant prediction is worth"),
+            ("ligands", "modulators and the standing of their binding sites")):
         p = sub.add_parser(name, help=help_text, parents=[common])
         p.add_argument("structure")
         p.add_argument("--species", choices=["human", "mouse"])

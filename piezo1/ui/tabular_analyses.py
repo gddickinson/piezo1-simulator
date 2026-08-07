@@ -43,6 +43,10 @@ CAVEATS = {
         "This is the project's central claim and it has FAILED three "
         "pre-registered tests. The record below is what a variant score from "
         "this application is entitled to claim, which is less than it looks."),
+    "ligands": (
+        "Every binding site here is INFERRED from mutagenesis, docking or "
+        "geometry. No PIEZO structure with a bound small-molecule modulator "
+        "has ever been deposited, so none of these pockets has been observed."),
     "variant_structures": (
         "A null result, reported rather than worked around: every deposited "
         "human PIEZO1 structure is closed, so no difference in conductance can "
@@ -97,6 +101,10 @@ class TabularAnalysisMixin:
     def show_nanodomain(self) -> None:
         self._run_registry_analysis(
             "nanodomain", "Calcium nanodomain at the HaloTag")
+
+    def show_ligands(self) -> None:
+        self._run_registry_analysis(
+            "ligands", "Modulators — and how much is known about their sites")
 
     def show_prediction_record(self) -> None:
         self._run_registry_analysis(

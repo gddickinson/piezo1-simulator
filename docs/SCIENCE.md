@@ -1021,6 +1021,28 @@ residues cannot report their occupancies however good the simulation is.
 So this project's geometrically-found lipid sites remain unchecked against an
 independent method, and the reason is data availability rather than method.
 
+## 8l. The modulators, and what is known about where they bind
+
+| Ligand | Role | Chemistry | Potency | Site evidence |
+|---|---|---|---|---|
+| Yoda1 | activator | C13H8Cl2N4S2 | EC50 **26.6 µM** (Syeda 2015) | `docking_md` — 1718/2075/2078, from MD |
+| Yoda2 | activator | C16H9Cl2KN2O2S2 | — | none recorded |
+| Dooku1 | antagonist | C13H9Cl2N3OS | IC50 vs Yoda1 1.3 µM (Evans 2018) | none — competition does not locate a site |
+| Jedi1 | activator | C12H10O3 | — | `mutagenesis` — blade/beam, no specific residues |
+| Jedi2 | activator | C10H8O3S | — | `mutagenesis` — as Jedi1 |
+| GsMTx4 | inhibitor | peptide, Q7YT39 | Kd **155 nM** (Bae 2011) | none — acts on the bilayer, not a protein site |
+
+**No PIEZO structure with a bound small-molecule modulator has been deposited.**
+Every site above is inferred from mutagenesis, docking or geometry, and the
+build *verifies* that absence rather than asserting it: it scans the heteroatoms
+of all 21 downloaded structures and finds nothing outside lipid, detergent,
+glycan and ion codes. If a bound structure is ever deposited, the build fails
+and the resource is marked out of date.
+
+Only **one of six** carries a residue-level site, and it comes from simulation
+rather than from contact. The other five each record *why* they have none, so
+silence cannot be read as "not looked at".
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:
