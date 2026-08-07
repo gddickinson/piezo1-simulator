@@ -116,6 +116,17 @@ EXEMPT = {
         "property of PIEZO1; frozen at 25 by "
         "docs/PREREGISTRATION_ROUND41.md and tested at 10 and 50 as "
         "pre-registered secondaries so no result can rest on the choice.",
+    ("analysis/prediction_confidence.py", None, "n_residues"):
+        "length of human PIEZO1, a fact about the sequence rather than a "
+        "parameter; the same 2521 core.sequence carries",
+    ("analysis/prediction_confidence.py", "saturation", "min_separation"):
+        "sequence separation beyond which PAE is read as long-range. A "
+        "reporting threshold for a confidence readout, not a physical "
+        "quantity; the separation-binned table beside it shows the whole "
+        "curve so no conclusion rests on the single cut.",
+    ("analysis/prediction_confidence.py", "assess_seam", "seam"):
+        "where a hybrid model would be cut, which is set by which residues the "
+        "experimental structures resolve rather than chosen",
     ("analysis/gnomad.py", "missense_density", "n_residues"):
         "length of human PIEZO1, a fact about the sequence rather than a "
         "parameter of any calculation; the same 2521 that "

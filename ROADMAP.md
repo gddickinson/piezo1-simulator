@@ -1570,13 +1570,38 @@ what would most move the destination — predicting direction from structure.
       `python -m piezo1.cli ligands`, with the caveat shown above the numbers.
 
 ### Round 44 — predicted structures beyond AlphaFold2
-- [ ] The project already fetches AlphaFold DB. **AlphaFold3 / Boltz-2 / Chai-1**
-      predict complexes and ligands, and the **AlphaFold Protein Structure
-      Database** now carries PAE matrices this project does not read. PAE is the
-      honest way to say which inter-domain distances the prediction actually
-      constrains — directly relevant to the unresolved distal blade.
-- [ ] *Validate:* does PAE-weighted confidence agree with where the hybrid model
-      seam had to be placed?
+- [x] `analysis/prediction_confidence.py` reads the **PAE matrix** the project
+      has been downloading and ignoring. pLDDT says how well a residue's *local*
+      environment is predicted; PAE says how well residue *i* is placed when the
+      model is aligned on *j* — the only one that answers a hybrid model's
+      question. AlphaFold DB v6, 2521×2521, max 31.75 Å.
+- [x] *Validate:* **half yes, half no, and the "no" is the more useful half.**
+      **pLDDT agrees with the seam**: the unresolved distal blade (1–569)
+      averages **64.5** against the core's **74.2**, with **52.2%** of blade
+      residues below 70 versus **27.0%** of the core.
+      **PAE does not single out the seam.** The raw block comparison looks
+      decisive — 27.3 Å across versus 16.1/20.7 Å within — but that conflates
+      "across the seam" with "far apart in sequence". Controlled for separation
+      the penalty is at most **+4.3 Å on a 31.75 Å scale**, and at 50–150
+      separation it **reverses**: cross-seam pairs score **13.25** against
+      **15.82** within.
+- [x] **The stronger finding.** PAE is **85% saturated** beyond 800 residues of
+      separation — and **80% saturated within the cryo-EM-resolved core alone**,
+      a region experiment places confidently. AlphaFold does not determine
+      PIEZO1's long-range architecture *anywhere*. So for `hybrid.py` the seam
+      is **not** the weak point: the global arrangement is unconstrained
+      wherever the cut is made, which argues for placing the distal blade by the
+      experimental C3 symmetry and dome geometry rather than trusting the
+      prediction's relative placement at all.
+- [x] The separation control is itself tested against a **planted** seam
+      penalty (recovers 6.0 as 6.5) and against a matrix with none (residual
+      under 1.0), because "no penalty found" and "the control does not work"
+      would otherwise be indistinguishable — the same discipline as Round 42's
+      probe control.
+- [x] Not pursued: AlphaFold3 / Boltz-2 / Chai-1. The PAE result says the
+      limitation is the prediction's global architecture rather than its
+      vintage, so a newer predictor is not obviously the fix and would need its
+      own confidence readout to be worth trusting.
 
 ### Round 45 — the electrophysiology that is already published as data
 - [ ] **IonChannelGenealogy**, **Channelpedia** and the supplementary tables of

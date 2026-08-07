@@ -1043,6 +1043,44 @@ Only **one of six** carries a residue-level site, and it comes from simulation
 rather than from contact. The other five each record *why* they have none, so
 silence cannot be read as "not looked at".
 
+## 8m. What AlphaFold actually constrains
+
+The project has downloaded AlphaFold models since the start and never read the
+**predicted aligned error**. pLDDT says how well a residue's local environment
+is predicted; PAE says how well residue *i* is placed when the model is aligned
+on *j*. Only the second answers whether a hybrid model can trust the distal
+blade's position.
+
+| Measure | Distal blade (1–569) | Core (570–2521) |
+|---|---|---|
+| mean pLDDT | **64.5** | **74.2** |
+| fraction below 70 | 52.2% | 27.0% |
+
+**pLDDT agrees with the seam.** PAE does not.
+
+| Sequence separation | within a region | across the seam | penalty |
+|---|---|---|---|
+| 50–150 | 15.82 | **13.25** | **−2.57** |
+| 150–400 | 17.83 | 19.73 | +1.90 |
+| 400–800 | 20.91 | 25.22 | +4.31 |
+| 800–1500 | 24.74 | 28.36 | +3.62 |
+| 1500–2600 | 28.18 | 28.83 | +0.65 |
+
+The raw block comparison (27.3 Å across versus 16.1/20.7 Å within) looks
+decisive but conflates "across the seam" with "far apart in sequence". Controlled
+for separation the penalty peaks at **+4.3 Å on a 31.75 Å scale** and *reverses*
+at short separation.
+
+**The stronger result: PAE is 85% saturated beyond 800 residues of separation,
+and 80% saturated within the cryo-EM-resolved core alone.** AlphaFold does not
+determine PIEZO1's long-range architecture anywhere — including in a region
+experiment places confidently.
+
+For a hybrid model this means the seam is not the weak point. The global
+arrangement is unconstrained wherever the cut is made, so the distal blade should
+be placed using the experimental C3 symmetry and dome geometry rather than the
+prediction's relative placement.
+
 ## 9. Known gaps
 
 Stated so nobody has to rediscover them:

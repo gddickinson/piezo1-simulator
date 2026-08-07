@@ -4,6 +4,61 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 44 — reading the confidence we had already downloaded
+
+### What was ignored
+`fetch_alphafold(with_pae=True)` has existed for many rounds. Nothing ever read
+the matrix. pLDDT — which the project does use, for colouring — says how well a
+residue's *local* environment is predicted, and says nothing about whether two
+domains are correctly placed relative to each other. That second question is the
+only one a hybrid model cares about.
+
+### The trap I nearly fell into
+The obvious comparison is mean PAE across the seam versus within each region:
+**27.3 Å against 16.1 and 20.7 Å**. That looks like a decisive statement that
+AlphaFold has no idea where the distal blade sits.
+
+It conflates two things. Pairs spanning a boundary near one end of a 2521-residue
+chain are systematically *further apart in sequence* than pairs within a region,
+and PAE grows with separation. Controlled for separation the picture changes:
+the penalty peaks at **+4.3 Å on a 31.75 Å scale**, and at 50–150 separation it
+**reverses** — cross-seam pairs score 13.25 against 15.82 within.
+
+So **pLDDT agrees with where the seam had to be placed and PAE does not single
+it out**, which is a more interesting answer than either alone.
+
+The control is tested both ways, against a planted penalty and against a matrix
+with none, because "no penalty found" and "the control does not work" are
+otherwise indistinguishable. A third test builds a matrix with *no* seam
+penalty and shows the uncontrolled comparison manufacturing one anyway — the
+mistake made concrete rather than described.
+
+### The finding that actually matters
+PAE is **85% saturated** beyond 800 residues of separation, and — the part worth
+stopping on — **80% saturated within the cryo-EM-resolved core alone**, a region
+experiment places with confidence.
+
+AlphaFold does not determine PIEZO1's long-range architecture *anywhere*. So for
+`hybrid.py` the seam is not the weak point. Wherever the cut is made, the global
+arrangement of the two halves is unconstrained by the prediction, which argues
+for placing the distal blade by the experimental C3 symmetry and dome geometry
+and treating AlphaFold as a source of local fold only.
+
+That is a design constraint on a module that has not been written yet, arrived
+at before writing it, which is the cheapest moment to learn it.
+
+### What I did not do
+AlphaFold3, Boltz-2 and Chai-1 were named in the round. I did not pursue them:
+the PAE result says the limitation is the prediction's global architecture rather
+than its vintage, so a newer predictor is not obviously the fix — and any
+replacement would need its own confidence readout before it could be trusted more
+than this one. Recorded on the roadmap rather than silently dropped.
+
+692 tests pass, 10 skipped; `parameter_audit` clean; no file over 500 lines;
+`screenshot_app.py --structure 8YEZ` completes.
+
+---
+
 ## Round 43 — the ligands that have no structure
 
 ### What the resource is really for
