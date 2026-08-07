@@ -2044,13 +2044,39 @@ conclusion is revisited without anyone remembering to.
       40 usable positions where there was one.
 
 ### Round 57 — Hand-curate the 35 fresh candidates
-- [ ] Round 45 found 35 substitutions not in the curated set, each with its
+- [x] Round 45 found 35 substitutions not in the curated set, each with its
       sentence and source. Curating them by hand is a bounded task with a known
       denominator, and it is the only remaining route that adds *measured*
-      directions.
-- [ ] *Validate:* how many of the 35 have a direction recoverable by a human
-      from the sentence alone? That number decides whether a fifth test is ever
-      possible.
+      directions. **All 35 read. `analysis/harvest_curation.py` records one
+      verdict each, with the phrase it rests on.**
+- [x] *Validate:* how many of the 35 have a direction recoverable by a human
+      from the sentence alone? **Five.**
+
+      | Category | n | What it is |
+      |---|---|---|
+      | `loss_of_function` | **5** | the sentence says the channel is non-functional |
+      | `chemical_only` | 4 | agonist response, not mechanics — two are double mutants |
+      | `conductance_only` | 5 | a conductance change, which is not a direction |
+      | `no_phenotype` | 17 | a construct list, a figure legend, or a location |
+      | `sequence_variant` | 3 | a clone's difference from the reference |
+      | `wrong_protein` | 1 | the sentence is about STOML3 |
+
+- [x] *And the five are worth less than five.* All are **alanine-scanning
+      mutants reading "non-functional"** — loss of *channel* function in a
+      screen, not the loss-of-function-in-disease the curated set records;
+      pooling them would be the evidence-level mistake `variant_sets` exists to
+      prevent. Decisively: **none of the five sits at a position carrying any
+      other variant**, so they unlock **zero** within-position pairs and Round
+      54's count of one usable position is unchanged.
+- [x] *Two failure modes found in the harvest itself.* **V190P is a STOML3
+      mutation**, not PIEZO1 — the wild-type gate passed it because position 190
+      is valine in PIEZO1 too, so the gate that rejects 23% of raw hits cannot
+      catch a substitution belonging to another protein. And the **two
+      candidates Round 45 reported as carrying a measurement are truncation
+      artefacts** (`'7 pS, V2132A; 59.'` is the tail of a conductance list), so
+      the count of candidates with usable measurements is **zero, not two**.
+      Both are recorded rather than filtered, because a filter would hide how
+      the gate can fail.
 
 ### Round 58 — Retire the predictor, keep the coupling map
 - [ ] Round 39 recorded that the score has a legitimate use — finding

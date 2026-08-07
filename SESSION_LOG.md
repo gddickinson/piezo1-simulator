@@ -4,6 +4,51 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 57 — reading all 35 by hand, and what that was worth
+
+**The round asked a precise question and it has a precise answer: five.** Round
+45 extracted 35 substitutions the curated set does not have, each with its
+sentence. How many carry a direction a human can recover from the sentence
+alone? I read all 35. Five do.
+
+**And the five are worth less than five.** Every one is an alanine-scanning
+mutant whose sentence says "non-functional" — D1975A, D2034A, L2131A, R2135A,
+W2140A in the source numbering. That is loss of *channel* function in a
+mutagenesis screen, not the loss-of-function-in-disease the curated set records;
+admitting them at the same evidence level would be exactly the pooling
+`variant_sets` refuses. More decisively: **none of the five sits at a position
+carrying any other variant**, so they create no within-position pair and Round
+54's count of one usable position is untouched.
+
+**The other thirty are informative about why the corpus does not help.** Four
+give a direction only for chemical agonist response, and two of those are
+double mutants whose single-mutant phenotype is never separated. Five are
+conductance changes, which Round 54 already marked as a different question.
+Seventeen have no phenotype in the sentence at all — construct lists, figure
+legends listing plot symbols, or statements that some mutations are "scattered
+throughout the channel". Three are a clone's sequencing differences from the
+reference rather than mutants anyone tested.
+
+**Two faults in the harvest, found only by reading.** V190P is a **STOML3**
+mutation from a paper studying STOML3 and PIEZO1 together. The wild-type gate —
+which rejects 23% of raw hits and is the reason to trust the rest — passed it
+because position 190 is valine in PIEZO1 as well. No residue-identity check can
+catch a substitution that is real but belongs to another protein, and the honest
+response is to record the class of error rather than filter this one instance
+away.
+
+The second: Round 45 reported two candidates carrying a measurement. Read in
+context, both are fragments of a conductance list — `'7 pS, V2132A; 59.'` is the
+tail of something like "56.7 pS". So the number of harvested candidates with a
+usable measurement is **zero, not two**, and the small encouraging figure in the
+Round 45 record was a parsing artefact.
+
+**What this closes.** The harvest was the last route that could add *measured*
+directions without new experiments. It is now spent, and the answer is recorded
+as data with the phrase each verdict rests on, so nobody has to read 35
+sentences again to find out.
+
+
 ## Round 56 — the conclusion, and a guard so it cannot go stale
 
 **The item was written before the result it now states existed.** It asked for a

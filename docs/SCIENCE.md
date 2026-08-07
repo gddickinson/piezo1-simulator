@@ -723,6 +723,22 @@ and A2020V — would each unlock one more position if a direction could be
 assigned; two of the three are curated as VUS precisely because that evidence
 was not found. The reachable maximum is four positions.
 
+**Round 57 then spent the last route that could have changed this.** Round 45's
+35 harvested candidates were read by hand, one verdict each. **Five** carry a
+direction recoverable from the sentence alone — and all five are alanine-
+scanning mutants reading "non-functional", which is loss of *channel* function
+in a mutagenesis screen rather than the loss-of-function-in-disease the curated
+set records. None of the five sits at a position carrying any other variant, so
+they unlock no within-position pair and the count of one usable position stands.
+
+The curation also found two faults in the harvest. **V190P is a STOML3
+mutation**, not PIEZO1: the wild-type gate passed it because position 190 is
+valine in both proteins, so the gate that rejects 23% of raw hits cannot catch a
+substitution belonging to another protein. And the two candidates reported as
+carrying a measurement are **truncation artefacts** — `'7 pS, V2132A; 59.'` is
+the tail of a conductance list — so the number of harvested candidates with a
+usable measurement is **zero, not two**.
+
 So both the across-position and within-position routes are closed by data, and
 `analysis/data_routes.py` records the cost of each so the question is not
 reopened without new numbers.
