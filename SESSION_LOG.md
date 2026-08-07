@@ -4,6 +4,50 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Session handoff — paused after Round 74
+
+**State: clean.** Everything is committed and pushed; `1333f9e` is the head and
+nothing is half-finished. The last full run was 955 passed, 10 skipped, GUI
+smoke test clean, no file over 500 lines.
+
+**Where the roadmap stands.** Rounds 1–74 are complete or explicitly superseded.
+The remaining unchecked items are:
+
+- **Round 75 — retire the roadmap itself.** *Started but not begun in earnest:*
+  the only work done was measuring the file, and no edits were made. The task is
+  to split `ROADMAP.md` into "what is not done" and a completed-rounds record,
+  since the changelog half now duplicates this log. Its validation condition is
+  the hard part: **no completed item may be lost**, and a test should count the
+  measured results before and after the split.
+- **Block Q (Rounds 76–80)**, appended after the Rounds 61–65 review: make the
+  hybrid model reachable from the GUI with the seam visibly rendered; a fetch
+  that verifies *what* it downloaded rather than only the size; retire
+  `HALOTAG_CALCIUM_PLAN.md`; write or delete `ARCHITECTURE.md`; and measure how
+  many steps a reader needs to reach the conclusion from each entry point.
+
+**Where the science stands, and why it is finished.** Five pre-registered tests,
+five predictor families, five nulls. Round 47 closed the across-position route
+(134 variants needed, 59 reachable) and Rounds 54 and 61–62 closed the
+within-position one (8 shared positions needed at an implausibly good predictor,
+one available, 3–4 reachable). Round 64 recorded in writing that no further test
+will be attempted on this variant set, with a ratcheting guard so the question
+reopens by itself if the data ever changes. `docs/CONCLUSION.md` states all of
+it on one page with every number traceable to the code.
+
+**What remains is engineering and communication, not science.**
+
+**One untidy thing worth knowing.** Commit `835b079` is a scratch `wip: cold
+clone fixes` commit, made so that `cold_clone_check.py` — which clones the
+repository — could see fixes that were not yet committed. It is real work and it
+is pushed; it simply has a worse message than it deserves.
+
+**If the GUI test finds something**, the most likely recent culprits are the two
+things Round 74 touched in the interface's vicinity: `View → Ion flux animation`
+(Round 33, added late) and the result-window provenance stamp (Round 50). Both
+have tests, but `scripts/screenshot_app.py` has caught what tests did not twice
+before.
+
+
 ## Round 74 — automating the cold-clone run, which immediately caught me
 
 **Five rounds were already done and I verified each rather than ticking them.**
