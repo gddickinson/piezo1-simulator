@@ -102,6 +102,18 @@ EXEMPT_NAMES = {
 #: Specific (module, owner, name) triples exempt for reasons of their own.
 EXEMPT = {
     ("structure/frame.py", "Frame", "n_atoms_fitted"): "counter, initialised to zero",
+    ("structure/fusion_pose.py", None, "SPIN_SAMPLES"):
+        "how finely the tag's undetermined spin is sampled when reporting what "
+        "fraction of orientations touch the channel. A reporting resolution, "
+        "not a property of the fusion: finer sampling sharpens the fraction "
+        "and the drawn angle, it cannot change which orientations are "
+        "admissible, and the measured answer is zero of them at every "
+        "sampling tried.",
+    ("structure/fusion_pose.py", "place_tag", "spin"):
+        "the undetermined degree of freedom itself. Zero means 'as aligned by "
+        "the seam', which is a starting point for the scan rather than a "
+        "measured angle — the whole point of the module is that nothing "
+        "determines this number.",
     ("structure/fusion.py", "AccessibleVolume", "n_before_clash"):
         "counter, initialised to zero",
     ("physics/permeation.py", None, "F_FARADAY"):

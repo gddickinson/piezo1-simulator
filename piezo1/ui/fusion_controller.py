@@ -5,11 +5,20 @@ each of the three is to carry a dye, but nothing put it on screen — the number
 were reachable only through ``python -m piezo1.cli fusion``. This draws them.
 
 **Everything here is a model, and it is drawn so as to look like one.** There is
-no structure of the fusion. The tag body is a sphere of the tag's radius of
-gyration, not its fold; the linker is a straight seam, not a conformation; and
-the accessible-volume cloud is shown precisely so that a single sphere is not
-mistaken for a determined position. The channel itself stays in its own
+no structure of the fusion. The linker is a straight seam, not a conformation,
+and the accessible-volume cloud is shown precisely so that a single position is
+not mistaken for a determined one. The channel itself stays in its own
 colouring, so what is measured and what is modelled never share a style.
+
+The tag body can be drawn two ways, and the difference is the point:
+
+* **as a sphere** of the tag's radius of gyration — the honest picture of a
+  position that is modelled and an orientation that is unknown;
+* **as its real fold**, the deposited 6U32 coordinates rigidly placed at the
+  same centre. More informative and more dangerous, because a drawn fold looks
+  like a determined pose. So the spin about the seam stays a free angle the
+  user can turn, the atoms that touch the channel are coloured as such, and the
+  status line says how many of the sampled orientations clear it at all.
 """
 
 from __future__ import annotations
@@ -17,14 +26,26 @@ from __future__ import annotations
 import numpy as np
 
 __all__ = ["FusionController", "TAG_COLOR", "SEAM_COLOR", "ENVELOPE_COLOR",
-           "DYE_COLOR"]
+           "DYE_COLOR", "CONTACT_COLOR", "TAG_ATOM_SCALE"]
 
-#: Deliberately unlike any colouring the channel uses, so a tag is never read as
-#: part of the experimental structure.
+#: Chosen to sit apart from the channel — but only *mostly*, and the difference
+#: matters now the fold is drawn. Measured against the chain palette, TAG_COLOR
+#: is 0.10 from its orange and DYE_COLOR 0.10 from its red, which is not far;
+#: nor is there anywhere to move to, since the eight chain hues plus a dark
+#: background leave no free colour that is still visible. So colour is *not*
+#: what keeps a modelled tag from being read as experimental structure. The
+#: status line is, which is why the fold cannot be drawn without it.
 TAG_COLOR = (0.85, 0.55, 0.25)
 SEAM_COLOR = (0.95, 0.80, 0.35)
 ENVELOPE_COLOR = (0.35, 0.55, 0.70)
 DYE_COLOR = (0.90, 0.30, 0.45)
+#: Tag atoms inside the channel, so the reported contact count is also visible.
+CONTACT_COLOR = (0.95, 0.15, 0.15)
+
+#: Fraction of the van der Waals radius the fold is drawn at. Full radii make a
+#: featureless blob and the project's ball-and-stick 0.42 A makes a dot cloud;
+#: half fills the fold enough to read its shape. Presentation only.
+TAG_ATOM_SCALE = 0.5
 
 NAME = "halotag"
 
@@ -35,8 +56,13 @@ class FusionController:
     def __init__(self, window) -> None:
         self.win = window
         self.model = None
+        self.pose = None
         self.show_envelope = False
         self.show_dyes = False
+        self.show_atoms = False
+        #: None means "whichever orientation clears the channel best"; once the
+        #: user turns it, an explicit angle they chose.
+        self.spin = None
 
     # ------------------------------------------------------------- lifecycle
 
@@ -66,6 +92,30 @@ class FusionController:
         if self.visible:
             self._draw()
 
+    def set_atoms(self, on: bool) -> None:
+        """Swap between the radius-of-gyration sphere and the real fold."""
+        self.show_atoms = bool(on)
+        self.spin = None
+        if self.visible:
+            self._draw()
+
+    def rotate_tags(self) -> None:
+        """Turn the tag about the seam by one sampling step.
+
+        This exists to make the undetermined degree of freedom *visible*. A
+        caption saying the orientation is arbitrary is easy to skip; watching
+        the fold spin while the channel, the anchor and every reported distance
+        stay put is not.
+        """
+        if not self.visible or not self.show_atoms:
+            self.win._set_status("show the tag structure first")
+            return
+        from ..structure.fusion_pose import SPIN_SAMPLES
+
+        current = self.pose.spin if self.pose is not None else 0.0
+        self.spin = (current + 2.0 * np.pi / SPIN_SAMPLES) % (2.0 * np.pi)
+        self._draw()
+
     def clear(self) -> None:
         scene = self.win.viewport.scene
         if scene is not None:
@@ -73,6 +123,7 @@ class FusionController:
                 if key.startswith(f"{NAME}:"):
                     scene.remove(key)
         self.model = None
+        self.pose = None
         if self.win.viewport.scene is not None:
             self.win.viewport.update()
 
@@ -99,16 +150,15 @@ class FusionController:
             self.model = None
             return
 
-        self._draw()
         distances = self.model.pore_exit_distances()
-        self.win._set_status(
+        self._draw(default_status=(
             f"HaloTag ×{self.model.n_tags} modelled at residue "
             f"{self.model.anchor_residues[0]} — tag centre "
             f"{distances[0]:.1f} nm from the pore exit, "
             f"{self.model.volume.volume:.0f} nm³ accessible. "
-            f"MODEL, not a structure.")
+            f"MODEL, not a structure."))
 
-    def _draw(self) -> None:
+    def _draw(self, default_status: str = "") -> None:
         scene = self.win.viewport.scene
         if scene is None or self.model is None:
             return
@@ -119,17 +169,22 @@ class FusionController:
         centres = np.asarray(self.model.tag_centres, dtype=np.float32)
         radius = float(self.model.meta["tag_radius"])
 
-        # The tag body. One sphere of the radius of gyration: the fold is known
-        # but its orientation on the channel is not, so drawing the real fold
-        # would imply a pose that has not been determined.
-        bodies = scene.spheres(f"{NAME}:tags")
-        bodies.upload(centres,
-                      np.full(len(centres), radius, np.float32),
-                      np.tile(np.float32(TAG_COLOR), (len(centres), 1)),
-                      np.zeros(len(centres), np.float32))
+        status = default_status
+        if self.show_atoms:
+            seams, status = self._draw_fold(scene)
+        else:
+            # One sphere of the radius of gyration. The fold is known but its
+            # orientation on the channel is not, so a sphere is the shape that
+            # claims exactly what the model determined.
+            self.pose = None
+            bodies = scene.spheres(f"{NAME}:tags")
+            bodies.upload(centres,
+                          np.full(len(centres), radius, np.float32),
+                          np.tile(np.float32(TAG_COLOR), (len(centres), 1)),
+                          np.zeros(len(centres), np.float32))
+            seams = np.asarray(self.model.seams(), dtype=np.float32)
 
         # The seam — the part with no experimental support at all.
-        seams = np.asarray(self.model.seams(), dtype=np.float32)
         starts, ends = seams[:, 0], seams[:, 1]
         seam_batch = scene.cylinders(f"{NAME}:seam")
         colour = np.tile(np.float32(SEAM_COLOR), (len(starts), 1))
@@ -139,8 +194,48 @@ class FusionController:
         if self.show_envelope:
             self._draw_envelope(scene)
         if self.show_dyes:
-            self._draw_dyes(scene, centres)
+            # The dye count is informative, the fold's line carries the caveat.
+            # So the count prefixes it rather than replacing it: a drawn fold
+            # must never be on screen without the statement that its
+            # orientation is undetermined.
+            dyes = self._draw_dyes(scene, centres)
+            if dyes:
+                status = f"{dyes}. {status}" if self.show_atoms else dyes
+        if status:
+            self.win._set_status(status)
         self.win.viewport.update()
+
+    def _draw_fold(self, scene) -> tuple[np.ndarray, str]:
+        """The deposited tag structure at the modelled centres.
+
+        Returns the seams to draw and the status line. The seams now run to
+        each tag's own N-terminus rather than to its centre: with the fold
+        shown, the linker's far end is a real atom rather than a notional
+        middle.
+        """
+        from ..structure.fusion_pose import pose_for_display
+
+        pose = pose_for_display(self.win.structure, self.model, spin=self.spin)
+        self.pose = pose
+
+        colours = np.tile(np.float32(TAG_COLOR), (pose.n_atoms, 1))
+        colours[pose.ligand] = DYE_COLOR
+        colours[pose.touching & pose.body] = CONTACT_COLOR
+
+        batch = scene.spheres(f"{NAME}:fold")
+        batch.upload(
+            pose.coords.reshape(-1, 3).astype(np.float32),
+            np.tile(pose.radii * TAG_ATOM_SCALE, pose.n_tags).astype(np.float32),
+            np.tile(colours, (pose.n_tags, 1)),
+            np.zeros(pose.n_atoms * pose.n_tags, np.float32))
+
+        clear = pose.meta["clear_spins"]
+        return np.asarray(pose.seams, dtype=np.float32), (
+            f"HaloTag {pose.meta['tag_pdb']} fold at spin "
+            f"{np.degrees(pose.spin):.0f}°, {pose.body_contacts} atoms inside "
+            f"the channel (red). {clear} of {pose.meta['spins_sampled']} "
+            f"orientations clear it. THE SPIN IS UNDETERMINED — this is one "
+            f"draw; turn it with View → HaloTag fusion → Turn tag orientation.")
 
     def _draw_envelope(self, scene) -> None:
         """The accessible volume, as a thinned point cloud.
@@ -171,28 +266,36 @@ class FusionController:
                      np.tile(np.float32(ENVELOPE_COLOR), (len(cloud), 1)),
                      np.zeros(len(cloud), np.float32))
 
-    def _draw_dyes(self, scene, centres: np.ndarray) -> None:
+    def _draw_dyes(self, scene, centres: np.ndarray) -> str:
         """Which tags carry a dye, drawn from the labelling model.
 
         A single draw from the occupancy distribution, not a prediction that
         these particular tags are the labelled ones — at a saturating protocol
         all three are, and the interest is in the sub-saturating case.
+
+        With the fold drawn the marker goes on the dye 6U32 actually resolves,
+        which is where a fluorophore sits relative to the tag; with only the
+        sphere it goes at the centre, because that is all the sphere knows.
         """
         from ..analysis.labelling import label_sites
 
         try:
             result = label_sites(self.model)
         except Exception as exc:
-            self.win._set_status(f"labelling unavailable: {exc}")
-            return
+            return f"labelling unavailable: {exc}"
         occupied = np.asarray(result["occupied"], dtype=bool)
         if not occupied.any():
-            return
-        spots = centres[:len(occupied)][occupied]
+            return ""
+        if self.pose is not None and self.pose.ligand.any():
+            sites = np.array([self.pose.coords[i][self.pose.ligand].mean(axis=0)
+                              for i in range(self.pose.n_tags)],
+                             dtype=np.float32)
+        else:
+            sites = centres
+        spots = sites[:len(occupied)][occupied[:len(sites)]]
         batch = scene.spheres(f"{NAME}:dyes")
         batch.upload(spots, np.full(len(spots), 3.0, np.float32),
                      np.tile(np.float32(DYE_COLOR), (len(spots), 1)),
                      np.zeros(len(spots), np.float32))
-        self.win._set_status(
-            f"{result['n_dyes']} of {len(occupied)} tags labelled "
-            f"(per-site p = {result['p_site']:.3f})")
+        return (f"{result['n_dyes']} of {len(occupied)} tags labelled "
+                f"(per-site p = {result['p_site']:.3f})")

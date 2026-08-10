@@ -265,15 +265,33 @@ _TAGS_AND_CURRENT = """
 <h3>Seeing the tags — View &rarr; HaloTag fusion</h3>
 <p>PIEZO1 imaging constructs fuse <b>HaloTag</b> to the cytosolic C-terminus,
 one per protomer. <b>There is no structure of the fusion</b>, so everything
-drawn here is a model and is drawn to look like one: the tag body is a sphere of
-its radius of gyration rather than its fold, the linker is a straight seam in a
-colour the channel never uses, and the <b>accessible volume</b> is shown as a
-point cloud precisely so a single sphere is not mistaken for a determined
-position.</p>
+drawn here is a model: the linker is a straight seam rather than a
+conformation, and the <b>accessible volume</b> is shown as a point cloud
+precisely so a single position is not mistaken for a determined one.</p>
+<p>The tag body can be drawn two ways. <b>Show modelled tags</b> gives a sphere
+of the tag's radius of gyration — the shape that claims exactly what the model
+determined, a position and nothing about orientation. <b>Show tag structure</b>
+gives the real 6U32 fold, rigidly placed at the same centre and turned so its
+N-terminus faces the channel's C-terminus. That is more informative and more
+dangerous, because a drawn fold reads as a determined pose. It is not: the
+<b>spin about the linker is undetermined</b>, and <b>Turn tag orientation</b>
+rotates it 10° at a time so you can see that for yourself — the fold turns and
+nothing else moves. Atoms inside the channel are drawn red, and the status line
+says how many of the 36 sampled orientations clear it.</p>
+<p>Colour is <i>not</i> what keeps a modelled tag from reading as experimental
+structure: the tag's orange sits 0.10 from the chain palette's orange, and every
+colour genuinely distant from the eight chain hues is too dark to see. The
+status line is the guard, which is why the fold cannot be drawn without it.</p>
+<p>Drawing the fold measures something the sphere could only assert. Over 36
+spins the fold clears the channel in <b>27 of 36</b> orientations on 7WLT, 7 on
+8YFG, <b>1</b> on 8YEZ and <b>none</b> on 11ZC — and 11ZC is exactly the entry
+whose sphere clearance (15.7 Å) falls below the radius of gyration (17.6 Å). The
+two models agree on which structures admit a tag, while the sphere is generous
+about how much room there is.</p>
 <p>Measured inputs, from PDB <b>6U32</b> (1.8 Å, TMR ligand bound): radius of
-gyration <b>17.6 Å</b>, N-terminus <b>19.9 Å</b> from the centre. A C-terminal
-fusion attaches to the tag's <i>N</i>-terminus, so that offset — not the radius
-of gyration — sets where the body sits.</p>
+gyration <b>17.6 Å</b>, N-terminus <b>19.9 Å</b> from the centre, furthest atom
+<b>30.0 Å</b>. A C-terminal fusion attaches to the tag's <i>N</i>-terminus, so
+that offset — not the radius of gyration — sets where the body sits.</p>
 <p>The tag centre lands <b>3.3–4.2 nm</b> from the pore exit across all twenty
 downloaded entries. That is <i>below</i> the 4–6 nm this project first
 estimated, and sweeping the unverified linker length from 1 to 30 residues moves

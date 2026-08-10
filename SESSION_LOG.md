@@ -4,6 +4,65 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Drawing the real HaloTag fold — a user request, and the finding it produced
+
+Not a roadmap round. George asked, while testing the GUI, whether the three
+orange spheres under **View → HaloTag fusion → Show modelled tags** could show
+the tag's actual structure. They can: the tag's fold is experimental (6U32) and
+already downloaded — what is modelled is where it sits, not what it looks like.
+
+**Why the sphere was there in the first place, and why replacing it needed
+care.** `fusion.py` deliberately produces a region rather than a pose, and the
+sphere was the visual form of that refusal. A drawn fold is more informative and
+more dangerous: it looks like a determined structure. So the fold is placed with
+the freedoms named — position and seam direction from the model, the spin about
+the linker left free — and `View → HaloTag fusion → Turn tag orientation` turns
+it, because a user watching the fold spin while nothing else moves understands
+"undetermined" in a way no caption achieves. The guard is a test that no path
+can put a fold on screen without the status line saying so; it caught a real
+case, where switching dyes on replaced the caveat with the dye count.
+
+**The measurement, which is the reason this was worth doing properly.**
+`accessible_volume` treats the tag as a sphere of its radius of gyration and
+says in its own docstring that the real fold, reaching 30.0 Å, "clashes where
+this says it does not". With real coordinates that becomes a number. Over 36
+spins: 7WLT 27 clear, 8YFG 7, 8YEZ 1, 11ZC 0. The two models agree on the
+question that matters — 11ZC is the one entry whose sphere clearance (15.7 Å)
+falls below the radius of gyration (17.6 Å), and the one where no orientation of
+the fold clears — while the sphere is generous about how much room there is.
+That is a genuine cross-check of an approximation that had only ever been
+asserted.
+
+**And the eleventh instance of the standing lesson.** The first version counted
+every touching atom and reported **0 of 36 orientations clear on all four
+structures** — the fold apparently contradicting the sphere. It did not. The
+persistent contact was the tag's own N-terminal residue against PIEZO1's
+C-terminus: the two ends of the linker, which the placement rule deliberately
+points at each other. The instrument was reporting its own construction as a
+finding, and it returned a plausible number rather than an error, exactly as
+CLAUDE.md warns. Excluding the anchor residue is what turned a manufactured
+disagreement into the agreement above. `test_the_attachment_residue_is_excluded_and_that_is_what_mattered`
+pins it on synthetic coordinates so it holds even if the deposited structures
+change, and the three mutations tried against the suite — dropping the
+exclusion, placing the fold at the anchor, making the spin a no-op — each fail
+four to six tests.
+
+**A claim corrected rather than defended.** The controller said its colours were
+"deliberately unlike any colouring the channel uses". Measured, the tag's orange
+is 0.10 from the chain palette's orange and the dye's red 0.10 from its red, and
+there is nowhere to move: every colour far from those eight hues is too dark to
+see against the background. The comment now says what is true — colour is not
+the guard, the status line is — and a test pins both halves together so that
+finding a free colour cannot become a reason to drop the caveat.
+
+Registered `fusion.pose_contact_distance` (3.4 Å, twice Bondi's carbon radius);
+the finding is insensitive to it from 2.0 to 4.0 Å. Suite 955 → 987 passing
+(20 new in `test_fusion_pose.py`, 12 in `test_ui_fusion.py`);
+`screenshot_app.py --structure 8YEZ` clean; the fold verified through the real
+GL path, not only the fake scene.
+
+---
+
 ## Session handoff — paused after Round 74
 
 **State: clean, after correcting a regression Round 74 shipped.** Head is

@@ -44,11 +44,15 @@ from .superpose import SymmetryAxis, detect_c3_axis, rotation_matrix
 
 __all__ = ["HaloTag", "AccessibleVolume", "FusionModel", "load_halotag",
            "cterm_anchors", "accessible_volume", "build_fusion",
-           "HALOTAG_PDB"]
+           "HALOTAG_PDB", "SOLVENT_NAMES"]
 
 #: HaloTag with a TMR-HaloTag ligand covalently bound, 1.8 A. Chosen over an
 #: apo structure because the conjugate is what a labelling experiment produces.
 HALOTAG_PDB = "6U32"
+
+#: Het residues that are crystallisation solvent rather than the bound dye.
+#: Shared with ``fusion_pose``, which draws the same atom set it measures.
+SOLVENT_NAMES = ("HOH", "CL", "NA", "K", "MG", "CA", "ZN", "SO4")
 
 
 @dataclass
@@ -203,8 +207,8 @@ def load_halotag(pdb: str = HALOTAG_PDB) -> HaloTag:
     # the lowest-numbered resolved residue that anchors it.
     anchor = structure.xyz[ca & (structure.res_seq == numbers.min())][0]
 
-    ligand_mask = structure.hetero & ~np.isin(
-        structure.res_name, ["HOH", "CL", "NA", "K", "MG", "CA", "ZN", "SO4"])
+    ligand_mask = structure.hetero & ~np.isin(structure.res_name,
+                                              list(SOLVENT_NAMES))
     ligand = (structure.xyz[ligand_mask].astype(np.float64).mean(axis=0)
               if ligand_mask.any() else None)
 

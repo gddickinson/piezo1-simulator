@@ -114,6 +114,17 @@ def _view_menu(win, bar) -> None:
                 "THIS IS A MODEL: there is no structure of the fusion, so the\n"
                 "tag body is drawn as a sphere of its radius of gyration and\n"
                 "the linker as a straight seam.")
+    _action(halotag, "Show tag &structure", win.fusion.set_atoms, "",
+            checkable=True, checked=False,
+            tip="Draw the tag's real fold — the deposited 6U32 coordinates —\n"
+                "instead of the sphere, placed so its N-terminus faces the\n"
+                "channel's C-terminus. The POSITION is the model's; the SPIN\n"
+                "about the linker is undetermined, so this is one draw of\n"
+                "many. Atoms inside the channel are red.")
+    _action(halotag, "T&urn tag orientation", win.fusion.rotate_tags, "",
+            tip="Rotate the fold about the linker by 10°. Nothing else moves:\n"
+                "the free angle is shown rather than asserted, because a\n"
+                "drawn fold otherwise reads as a determined pose.")
     _action(halotag, "Show accessible &volume", win.fusion.set_envelope, "",
             checkable=True, checked=False,
             tip="The region the tag centre can occupy without clashing, as a\n"

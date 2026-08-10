@@ -50,6 +50,19 @@ TAG_PARAMETERS = [
          source_note="added to the tag's own radius when rejecting positions, "
                      "so contact rather than overlap is what is excluded",
          description="Extra clearance required between tag body and channel."),
+    dict(key="fusion.pose_contact_distance", name="Tag-atom contact distance",
+         value=3.4, unit="A", minimum=2.0, maximum=6.0, kind="method",
+         category="HaloTag fusion", citation="method_choice",
+         source_note="twice Bondi's carbon van der Waals radius, so a pair at "
+                     "this separation is touching. It applies only to the "
+                     "drawn fold: it sets how many atoms are reported in "
+                     "contact with the channel and which of the undetermined "
+                     "spins is drawn, and changes no modelled position. The "
+                     "finding is insensitive to it — no spin is contact-free "
+                     "on 8YEZ, 7WLT or 11ZC anywhere from 2.0 to 4.0 A, "
+                     "except 7WLT below 3.4 A.",
+         description="Separation below which a drawn tag atom counts as "
+                     "touching the channel."),
 
     # ------------------------------------------------- HaloTag labelling ----
     # Imported from the halotag_binding_sim project in Round 32. The model is
