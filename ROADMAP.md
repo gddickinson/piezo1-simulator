@@ -3,8 +3,8 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: 8 open items across four rounds**, all of them Block Q.
-Everything finished — 365 items across 76 rounds, each carrying the result it
+**Status: 6 open items in Block Q, plus a new Block R.**
+Everything finished — 368 items across 77 rounds, each carrying the result it
 measured — is in
 [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
 
@@ -71,13 +71,6 @@ measured P50 and inactivation kinetics.** Each round closes one link.
 
 ## Block Q — what the last five rounds exposed (Rounds 76–80)
 
-### Round 77 — A fetch that verifies what it downloaded
-- [ ] Round 60 found a broken CDS endpoint; Round 65 found two 127-byte error
-      pages stored as structures. `_download`'s size guard is necessary and not
-      sufficient. Verify content type or parse-ability before writing.
-- [ ] *Validate:* a planted error page must be rejected, and the test must show
-      the guard rejecting something the size check would accept.
-
 ### Round 78 — Retire `HALOTAG_CALCIUM_PLAN.md`
 - [ ] It is marked 📋 and describes work Rounds 29–32 completed. A plan document
       that outlived its execution is the documentation equivalent of the four
@@ -99,3 +92,81 @@ measured P50 and inactivation kinetics.** Each round closes one link.
       conclusion from each entry point.
 - [ ] *Validate:* the answer must be one step from every entry point, or the
       surface is wrong rather than the reader.
+
+---
+
+## Block R — what a comparable research tool has and this does not (Rounds 81–85)
+
+*Added 2026-08-10, after reviewing the codebase against HOLE, CHAP, MOLEonline,
+ProDy and the APBS/PDB2PQR electrostatics route. Three of the five items below
+are gaps this project can state as measurements rather than opinions: an API
+argument nothing supplies, a field on every structure nothing reads, and a
+downloaded entry nothing compares.*
+
+### Round 81 — The pore has no charge, and the API already says so
+- [ ] `solve_pnp` takes a `fixed_charge` argument, its documented equation
+      carries a ρ_fixed term, and **no caller anywhere has ever supplied one**.
+      Every permeation number this project has produced treats the pore as
+      electrically neutral. Meanwhile `functional_residues.json` curates four
+      sequence-verified acidic residues as *"acidic residues setting ion
+      selectivity"* — human E2117, E2461, E2469, E2470, so twelve charges
+      across the trimer — and `default_species()` offers a generic "cation" and
+      "anion" that are not even named Na⁺, K⁺ and Ca²⁺. A cation channel
+      modelled without charge cannot be selective, and this one is not.
+- [ ] Map the curated acidic and basic pore-lining residues onto the axial
+      slices the pore profile already produces, and pass the result through.
+- [ ] *Validate:* the charged pore must make the model **cation-selective**, as
+      a permeability ratio compared with the published PIEZO1 value — and if it
+      does not, that is the result and it gets reported. Zero fixed charge must
+      reproduce today's numbers **exactly**, so the change is visible,
+      reversible, and cannot silently move the existing conductance claim.
+
+### Round 82 — The B-factors every structure carries, and nothing reads
+- [ ] `Structure` parses `b_factor` for every atom and no analysis has ever
+      looked at one. Comparing predicted mean-square fluctuation against
+      observed B-factor is the standard validation of an elastic network — the
+      one ProDy users run first — and this project has never run it on the
+      network its central mechanism claim rests on. There is no GNM here
+      either; the ANM has no scalar-fluctuation counterpart.
+- [ ] *Validate:* report the correlation **including if it is poor**, and
+      calibrate before believing it: cryo-EM B-factors are sharpened, per-atom
+      values in a backbone-only model may be uniform, and some entries carry
+      pLDDT rather than B in that column. Establish on a case with a known
+      answer that the comparison can distinguish a good network from a
+      deliberately bad one, or record why the comparison cannot be made here.
+
+### Round 83 — PIEZO2 is downloaded, classified, and only ever excluded
+- [ ] 6KG7 is fetched, entity-classified and then excluded from every ensemble
+      as a paralogue. That exclusion is correct for a PIEZO1 ensemble and wrong
+      as a final answer. PIEZO2 is the tactile paralogue with different
+      inactivation kinetics, and it is the obvious control for the question
+      this project never asks: **how much of this mechanism is PIEZO1, and how
+      much is the fold?**
+- [ ] *Validate:* the dome geometry and the gating-mode symmetry analysis must
+      run on PIEZO2 and be reported beside PIEZO1. If the two are
+      indistinguishable, say so plainly — that is a result about generality,
+      not a failure. Cross-species numbering must go through the alignment, and
+      PIEZO2 is 2,752 aa, so a constant offset is certain to be wrong.
+
+### Round 84 — Nothing computed can leave the application
+- [ ] Conservation, mechanical coupling, PRS response, mode displacement and
+      the wetting score are all per-residue scalars, and none of them can be
+      exported in a form another viewer can colour by. `to_pdb` writes
+      coordinates only. The standard interop route — write the scalar into the
+      B-factor column and open it in PyMOL or ChimeraX — is about twenty lines
+      and is missing, so every result this project computes is trapped inside
+      it or inside a JSON blob.
+- [ ] *Validate:* check the round trip **numerically**, not by eye — read the
+      written file back and compare the B-factor column against the source
+      array element by element. A file that merely opens proves nothing. State
+      what is lost: unmeasured residues must be distinguishable from a genuine
+      zero, which is exactly the trap `analysis_controller` already handles by
+      using the map floor rather than zero.
+
+### Round 85 — Review after Rounds 81–84
+- [ ] Five-round review. The standing question for this block: the project has
+      spent seventy rounds proving what it *cannot* establish, and these four
+      items are the first in a while that could each return a positive result.
+      Check that the same discipline held — pre-registration where a comparison
+      is involved, a calibrated instrument before any cross-check is believed,
+      and a null reported as a null.

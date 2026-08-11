@@ -24,7 +24,7 @@ from ..config import (DERIVED_DIR, HUMAN_ACC, HUMAN_PIEZO2_ACC, LIGAND_DIR,
 __all__ = ["fetch_pdb", "fetch_alphafold", "fetch_uniprot", "fetch_ligand",
            "fetch_all", "fetch_chap_grid", "fetch_cds", "CDS_TRANSCRIPTS",
            "DEFAULT_PDB_IDS", "DEFAULT_LIGANDS",
-           "CHAP_GRID_URL", "CHAP_LICENCE"]
+           "CHAP_GRID_URL", "CHAP_LICENCE", "CONTENT_CHECKS"]
 
 #: The water free-energy landscape underlying the Rao et al. 2019 hydrophobic
 #: gating heuristic, as published in the CHAP repository. 100x100 grid over
@@ -74,8 +74,62 @@ class FetchResult:
         return self.error is None
 
 
+def _check_cif(data: bytes) -> str:
+    head = data[:4096].decode("utf-8", "replace")
+    if not head.lstrip().startswith("data_"):
+        return "not an mmCIF: no data_ block header"
+    if b"_atom_site" not in data:
+        return "mmCIF has no _atom_site loop, so it carries no coordinates"
+    return ""
+
+
+def _check_fasta(data: bytes) -> str:
+    if not data.lstrip().startswith(b">"):
+        return "not FASTA: no > header"
+    body = b"".join(data.split(b"\n")[1:])
+    if not body.strip():
+        return "FASTA header with no sequence"
+    return ""
+
+
+def _check_json(data: bytes) -> str:
+    try:
+        json.loads(data)
+    except ValueError as exc:
+        return f"not JSON: {exc}"
+    return ""
+
+
+def _check_sdf(data: bytes) -> str:
+    if b"$$$$" not in data:
+        return "not SDF: no $$$$ record terminator"
+    if b"V2000" not in data and b"V3000" not in data:
+        return "SDF has no counts line, so it carries no atoms"
+    return ""
+
+
+#: What each kind of download has to look like once it arrives.
+#:
+#: The size guard is necessary and not sufficient, which the project has learned
+#: twice: Round 60 found an Ensembl endpoint returning an HTML error, and Round
+#: 65 found two 127-byte error pages **stored as structures** — the file existed,
+#: had a plausible name, and every later step treated it as data. An error page
+#: from a CDN is comfortably larger than 200 bytes, so only content can catch it.
+CONTENT_CHECKS = {
+    "cif": _check_cif,
+    "fasta": _check_fasta,
+    "json": _check_json,
+    "sdf": _check_sdf,
+}
+
+
 def _download(url: str, dest: Path, force: bool = False,
-              headers: dict | None = None) -> FetchResult:
+              headers: dict | None = None, kind: str | None = None) -> FetchResult:
+    """Fetch ``url`` to ``dest``, refusing to write anything that is not ``kind``.
+
+    Nothing is written until the payload has been checked, so a rejected
+    download leaves no file behind for a later step to pick up and believe.
+    """
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.exists() and not force and dest.stat().st_size > 0:
         return FetchResult(dest, False, dest.stat().st_size)
@@ -90,6 +144,12 @@ def _download(url: str, dest: Path, force: bool = False,
     if len(data) < 200:
         return FetchResult(dest, False, len(data),
                            f"suspiciously small response ({len(data)} bytes)")
+    check = CONTENT_CHECKS.get(kind or "")
+    if check is not None:
+        problem = check(data)
+        if problem:
+            return FetchResult(dest, False, len(data),
+                               f"{problem} ({len(data)} bytes from {url})")
     dest.write_bytes(data)
     return FetchResult(dest, True, len(data))
 
@@ -102,7 +162,7 @@ def fetch_pdb(pdb_id: str, force: bool = False) -> FetchResult:
     """Download an mmCIF coordinate file from the RCSB."""
     pdb_id = pdb_id.upper()
     return _download(f"https://files.rcsb.org/download/{pdb_id}.cif",
-                     STRUCTURE_DIR / f"{pdb_id}.cif", force)
+                     STRUCTURE_DIR / f"{pdb_id}.cif", force, kind="cif")
 
 
 def fetch_alphafold(accession: str, force: bool = False,
@@ -128,10 +188,12 @@ def fetch_alphafold(accession: str, force: bool = False,
     entry = entries[0]
     out = []
     cif_url = entry["cifUrl"]
-    out.append(_download(cif_url, STRUCTURE_DIR / Path(cif_url).name, force))
+    out.append(_download(cif_url, STRUCTURE_DIR / Path(cif_url).name, force,
+                         kind="cif"))
     if with_pae and entry.get("paeDocUrl"):
         url = entry["paeDocUrl"]
-        out.append(_download(url, STRUCTURE_DIR / Path(url).name, force))
+        out.append(_download(url, STRUCTURE_DIR / Path(url).name, force,
+                             kind="json"))
     return out
 
 
@@ -139,9 +201,11 @@ def fetch_uniprot(accession: str, species: str, force: bool = False) -> list[Fet
     """Download the UniProt FASTA and full JSON entry."""
     out = [
         _download(f"https://rest.uniprot.org/uniprotkb/{accession}.fasta",
-                  SEQUENCE_DIR / f"{accession}_{species}_PIEZO1.fasta", force),
+                  SEQUENCE_DIR / f"{accession}_{species}_PIEZO1.fasta", force,
+                  kind="fasta"),
         _download(f"https://rest.uniprot.org/uniprotkb/{accession}.json",
-                  SEQUENCE_DIR / f"{accession}_{species}_PIEZO1.json", force),
+                  SEQUENCE_DIR / f"{accession}_{species}_PIEZO1.json", force,
+                  kind="json"),
     ]
     return out
 
@@ -155,10 +219,11 @@ def fetch_ligand(name: str, cid: int, force: bool = False) -> list[FetchResult]:
     """Download 2D and, where PubChem has one, 3D SDF records."""
     base = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}"
     out = [_download(f"{base}/SDF?record_type=2d",
-                     LIGAND_DIR / f"{name}_CID{cid}_2d.sdf", force)]
+                     LIGAND_DIR / f"{name}_CID{cid}_2d.sdf", force, kind="sdf")]
     if cid not in NO_3D_CONFORMER:
         out.append(_download(f"{base}/SDF?record_type=3d",
-                             LIGAND_DIR / f"{name}_CID{cid}_3d.sdf", force))
+                             LIGAND_DIR / f"{name}_CID{cid}_3d.sdf", force,
+                             kind="sdf"))
     return out
 
 
@@ -174,7 +239,7 @@ def fetch_chap_grid(force: bool = False) -> FetchResult:
     it rather than failing.
     """
     return _download(CHAP_GRID_URL, DERIVED_DIR / "chap_heuristic_grid.json",
-                     force)
+                     force, kind="json")
 
 
 #: Canonical coding sequences, from the Ensembl transcript UniProt cross-links
@@ -202,7 +267,7 @@ def fetch_cds(species: str = "human", force: bool = False) -> FetchResult:
     return _download(
         f"https://rest.ensembl.org/sequence/id/{transcript}?type=cds",
         SEQUENCE_DIR / f"{transcript}_{species}_PIEZO1_cds.fasta", force,
-        headers={"Content-Type": "text/x-fasta"})
+        headers={"Content-Type": "text/x-fasta"}, kind="fasta")
 
 
 def fetch_all(force: bool = False, structures: bool = True,

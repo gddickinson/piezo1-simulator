@@ -2670,3 +2670,25 @@ most of it. Block Q adds what these five rounds exposed.
       the shared `plddt_band_colors`, which the controller reuses rather than
       copying.
 
+### Round 77 — A fetch that verifies what it downloaded
+- [x] **Done.** `_download` now takes a `kind` and refuses to write anything
+      that is not it: `cif` needs a `data_` header *and* an `_atom_site` loop,
+      `fasta` needs a header and a body, `json` must parse, `sdf` needs atoms
+      and a terminator. Nothing reaches disk until the payload has been
+      checked, which matters because `_download` serves an existing file from
+      cache without re-checking it — that is what made Round 65's error pages
+      durable. All 11 download calls declare a kind, and a test fails if one
+      does not.
+- [x] *Validate:* **the guard rejects what the size check accepts.** The
+      planted case is a 554-byte HTML error page — comfortably past the
+      200-byte floor that caught Round 65's 127-byte pages only by luck — and
+      every one of the four kinds refuses it. The other half is checked too: a
+      real 8YEZ still passes, and a live `fetch_pdb(force=True)` round-trips
+      through the new guard and parses to 1,807 atoms.
+- [x] **An unlooked-for catch, from getting the test wrong first.** Serving the
+      first 200 kB of a real mmCIF was refused, because metadata runs well past
+      that before the first coordinate. The guard was right and my test was
+      wrong — and the behaviour is worth keeping: a connection that drops
+      mid-transfer otherwise leaves a file that opens, parses, and contains a
+      fraction of the molecule. Pinned as its own test.
+

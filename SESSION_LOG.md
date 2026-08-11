@@ -4,6 +4,68 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 77, and a codebase review against comparable software
+
+**Round 77 — a fetch that verifies what arrived.** The size floor has been
+necessary and insufficient twice: Round 60 found an Ensembl endpoint returning
+HTML, Round 65 found two 127-byte error pages *stored as structures*. Both were
+caught only because they happened to be tiny. `_download` now takes a `kind` and
+refuses to write anything that is not it.
+
+The load-bearing check is that the guard rejects **what the size check
+accepts** — a 554-byte HTML error page, comfortably past the 200-byte floor. A
+guard that only fired on things the old one already caught would be worth
+nothing. Nothing is written before the check, which matters more than it looks:
+`_download` serves an existing file from cache *without re-checking it*, so a
+bad file written once is served forever. That is what made Round 65's failure
+durable.
+
+Writing the "a real mmCIF still passes" half, I served the first 200 kB of 8YEZ
+and it was refused. The guard was right and my test was wrong — mmCIF metadata
+runs well past 200 kB before the first coordinate — and the behaviour is worth
+keeping, so it is now its own test: a connection that drops mid-transfer
+otherwise leaves a file that opens, parses, and contains a fraction of the
+molecule.
+
+**The review.** Compared against HOLE, CHAP, MOLEonline, ProDy and the
+APBS/PDB2PQR route, three gaps are statable as measurements rather than
+opinions, and they became Block R:
+
+1. **`solve_pnp` takes a `fixed_charge` argument that no caller has ever
+   supplied.** The documented equation carries a ρ_fixed term; every permeation
+   number this project has produced treats the pore as electrically neutral.
+   Meanwhile `functional_residues.json` has curated four sequence-verified
+   acidic residues as "acidic residues setting ion selectivity" since early on —
+   twelve charges across the trimer — and `default_species()` offers a generic
+   "cation" and "anion" not even named Na⁺, K⁺ and Ca²⁺. **A cation channel
+   modelled without charge cannot be selective, and this one is not.** This is
+   the strongest item in the block: the machinery, the annotation and the
+   equation are all present, and only the wire between them is missing.
+2. **`b_factor` is parsed for every atom and no analysis reads one.** Predicted
+   fluctuation against observed B-factor is the first validation a ProDy user
+   runs, and this project has never run it on the network its central mechanism
+   claim rests on. It needs calibrating before it is believed — sharpened
+   cryo-EM values, backbone-only entries, and AlphaFold files carrying pLDDT in
+   that column are three ways to get a confident wrong correlation.
+3. **PIEZO2 (6KG7) is downloaded, classified, and only ever excluded.** Correct
+   for a PIEZO1 ensemble, wrong as a final answer: it is the obvious control for
+   the question never asked — how much of this mechanism is PIEZO1 and how much
+   is the fold?
+
+Plus a fourth from the interop comparison: **nothing computed can leave the
+application.** Conservation, coupling, PRS response and mode displacement are
+all per-residue scalars, and `to_pdb` writes coordinates only, so the standard
+route into PyMOL or ChimeraX — the scalar in the B-factor column — does not
+exist.
+
+Block R is deliberately the first block in a long while whose items could each
+return a *positive* result, so Round 85's review carries a standing question:
+check the same discipline held.
+
+Suite 1101 → 1116.
+
+---
+
 ## The empty `notebooks/` folder — what it was, and filling it
 
 George asked what the empty `notebooks/` directory was for. The answer is

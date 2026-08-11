@@ -25,10 +25,12 @@ ARCHIVE = ROOT / "docs" / "ROADMAP_COMPLETED.md"
 #: "nothing was lost", and it does not move as later rounds are added.
 PRE_SPLIT_COMMIT = "4c1c61c"
 
-#: Measured after the split, with the duplicated Round 68 merged and Round 75
-#: itself ticked. The pre-split file had 358 completed and 14 open.
-COMPLETED_AT_SPLIT = 365
-OPEN_AT_SPLIT = 8
+#: Measured after the split, with the duplicated Round 68 merged and Rounds 75
+#: to 77 ticked. The pre-split file had 358 completed and 14 open. `OPEN` rose
+#: when Block R was appended, which is what a roadmap is for; the ratchet below
+#: is on the *completed* count, which only ever grows.
+COMPLETED_AT_SPLIT = 368
+OPEN_AT_SPLIT = 16
 
 
 def items(text: str, mark: str) -> list[str]:
@@ -87,10 +89,10 @@ def test_every_open_item_survived_and_lives_in_the_roadmap():
     before = set(items(original, "- [ ]"))
     after = set(items(ROADMAP.read_text(), "- [ ]"))
     closed = before - after
-    assert len(closed) == 6, (
-        f"{len(closed)} open items disappeared; six have been closed since the "
-        f"split — the duplicated Round 68's two (Round 63 had done them), "
-        f"Round 75's own two, and Round 76's: {sorted(closed)[:7]}")
+    assert len(closed) == 8, (
+        f"{len(closed)} open items disappeared; eight have been closed since "
+        f"the split — the duplicated Round 68's two (Round 63 had done them), "
+        f"and Rounds 75, 76 and 77's two each: {sorted(closed)[:9]}")
     assert not items(ARCHIVE.read_text(), "- [ ]"), \
         "an unfinished item is filed under completed work"
 
