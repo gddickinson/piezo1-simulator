@@ -106,6 +106,16 @@ def _view_menu(win, bar) -> None:
                 "runs about a MILLIONFOLD slow and the HUD states the factor.\n"
                 "A pore the wetting model calls shut shows no ions at all.")
 
+    _action(menu, "&Dome surface", win.dome_surface.show, "",
+            checkable=True, checked=False,
+            tip="Draw the membrane dome that the Physics panel measures.\n"
+                "TWO surfaces, in two colours. The BLUE cap is a sphere fitted\n"
+                "to the transmembrane helices on screen — a measurement, and\n"
+                "the one thing that shows whether it was fitted to the right\n"
+                "atoms. The PURPLE skirt outside it is the linearised Helfrich\n"
+                "footprint: a solution to an equation with two registered\n"
+                "parameters in it, which overestimates this footprint 3.65x at\n"
+                "PIEZO1's contact slope. Nothing here resolves it.")
     _action(menu, "&Full-length model", win.hybrid.show, "",
             checkable=True, checked=False,
             tip="Graft the AlphaFold distal blade onto the experimental core.\n"

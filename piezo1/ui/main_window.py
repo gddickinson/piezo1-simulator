@@ -30,6 +30,8 @@ from .alignment import AlignmentMixin
 from .companions import CompanionMixin
 from .tabular_analyses import TabularAnalysisMixin
 from .fusion_controller import FusionController
+from .dome_controller import DomeController
+from .dome_controller import DomeController
 from .hybrid_controller import HybridController
 from .ion_flux_controller import IonFluxController
 from .appearance import AppearanceMixin
@@ -105,6 +107,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self._build_docks()
         self.fusion = FusionController(self)
         self.hybrid = HybridController(self)
+        self.dome_surface = DomeController(self)
         self.ion_flux = IonFluxController(self)
         self.session = SessionController(self)
         self.presentation = PresentationController(self)
@@ -375,6 +378,9 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.physics.reset()
         self.analysis.reset()
         self.fusion.clear()
+        # The surface was fitted to the structure being replaced, so
+        # leaving it up would draw one model's dome over another's.
+        self.dome_surface.clear()
 
         self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.set_species(rec.numbering_species)

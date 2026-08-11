@@ -35,6 +35,32 @@ from piezo1.core.structure import Structure  # noqa: E402
 #: swept it in as an unclassified "unknown" species, and it took two unrelated
 #: tests failing to notice. `fusion.load_halotag` reads 6U32 by path and never
 #: through the registry, so nothing needs it here.
+#: AlphaFold models that belong in the chooser, keyed by file stem. They were
+#: skipped entirely until now, which meant the only way to look at one was to
+#: open the file by hand — and the graft that uses them could not be compared
+#: against the thing it grafts.
+#:
+#: They are MONOMERS. Everything in this project that needs a three-fold axis —
+#: the dome, the pore, the elastic network, the paralogue comparison — will
+#: refuse them, and that is correct rather than a gap. AlphaFold DB serves one
+#: model per accession, so there is exactly one conformation each: for the same
+#: fold in different states, use a deposited entry with the Completeness
+#: selector instead.
+PREDICTED_MODELS = {
+    "AF-Q92508-F1-MODEL_V6": dict(
+        species="human", state="predicted", gating="unknown",
+        note="AlphaFold DB model of human PIEZO1, the whole 2,521 residues. "
+             "A MONOMER and a PREDICTION: the B-factor column holds pLDDT, "
+             "and anything needing three protomers will refuse it. This is "
+             "the model the full-length graft takes its distal blade from.",
+        recommended_for=["predicted", "full_length_source"]),
+    "AF-E2JF22-F1-MODEL_V6": dict(
+        species="mouse", state="predicted", gating="unknown",
+        note="AlphaFold DB model of mouse Piezo1, 2,547 residues. Monomer, "
+             "prediction, pLDDT in the B-factor column.",
+        recommended_for=["predicted", "full_length_source"]),
+}
+
 NOT_A_PIEZO = {
     "6U32",   # HaloTag bound to its tetramethylrhodamine ligand
     # 4PKE is a Piezo *domain* from a distant organism — 211 residues, no
@@ -177,10 +203,20 @@ def main() -> int:
     entries = []
     for path in sorted(STRUCTURE_DIR.glob("*.cif")):
         pdb = path.stem.upper()
-        if pdb.startswith("AF-") or pdb in NOT_A_PIEZO:
+        if pdb in NOT_A_PIEZO:
+            continue
+        if pdb.startswith("AF-") and pdb not in PREDICTED_MODELS:
             continue
         info = meta.get(pdb)
-        if info is None or args.refresh:
+        if pdb in PREDICTED_MODELS:
+            # AlphaFold models have no RCSB entry, and asking for one 404s and
+            # drops them. Their provenance comes from the AlphaFold DB fetch,
+            # which already records the version it discovered.
+            info = {"pdb": pdb, "res": None, "date": "",
+                    "title": "AlphaFold DB predicted model",
+                    "journal": "Nucleic Acids Res", "year": 2024,
+                    "pmid": None, "doi": "10.1093/nar/gkad1011", "emdb": []}
+        elif info is None or args.refresh:
             try:
                 e = rcsb_metadata(pdb)
             except Exception as exc:
@@ -218,8 +254,9 @@ def main() -> int:
         if not identity.explained:
             print(f"  ! {pdb}: numbering not identified — {identity.summary()}")
 
-        cur = CURATION.get(pdb, dict(species="unknown", state="unclassified",
-                                     gating="unknown", note="", recommended_for=[]))
+        cur = PREDICTED_MODELS.get(pdb) or CURATION.get(
+            pdb, dict(species="unknown", state="unclassified",
+                      gating="unknown", note="", recommended_for=[]))
         entries.append({
             "pdb": pdb, "file": path.name,
             "resolution": info.get("res"), "released": info.get("date"),

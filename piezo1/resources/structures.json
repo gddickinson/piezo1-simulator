@@ -387,6 +387,39 @@
    ]
   },
   {
+   "pdb": "AF-Q92508-F1-MODEL_V6",
+   "file": "AF-Q92508-F1-model_v6.cif",
+   "resolution": null,
+   "released": "",
+   "title": "AlphaFold DB predicted model",
+   "journal": "Nucleic Acids Res",
+   "year": 2024,
+   "pmid": null,
+   "doi": "10.1093/nar/gkad1011",
+   "emdb": [],
+   "n_atoms": 20228,
+   "n_protomers": 1,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 2521,
+     "first": 1,
+     "last": 2521
+    }
+   ],
+   "ligands": [],
+   "protein": "PIEZO1",
+   "numbering": "human",
+   "species": "human",
+   "state": "predicted",
+   "gating": "unknown",
+   "note": "AlphaFold DB model of human PIEZO1, the whole 2,521 residues. A MONOMER and a PREDICTION: the B-factor column holds pLDDT, and anything needing three protomers will refuse it. This is the model the full-length graft takes its distal blade from.",
+   "recommended_for": [
+    "predicted",
+    "full_length_source"
+   ]
+  },
+  {
    "pdb": "4RAX",
    "file": "4RAX.cif",
    "resolution": 1.45,
@@ -1221,6 +1254,39 @@
    "note": "Flattened mPIEZO1 in a lipid bilayer. Low resolution (6.81 A) and the pore remains closed.",
    "recommended_for": [
     "morph_end"
+   ]
+  },
+  {
+   "pdb": "AF-E2JF22-F1-MODEL_V6",
+   "file": "AF-E2JF22-F1-model_v6.cif",
+   "resolution": null,
+   "released": "",
+   "title": "AlphaFold DB predicted model",
+   "journal": "Nucleic Acids Res",
+   "year": 2024,
+   "pmid": null,
+   "doi": "10.1093/nar/gkad1011",
+   "emdb": [],
+   "n_atoms": 20588,
+   "n_protomers": 1,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 2547,
+     "first": 1,
+     "last": 2547
+    }
+   ],
+   "ligands": [],
+   "protein": "PIEZO1",
+   "numbering": "mouse",
+   "species": "mouse",
+   "state": "predicted",
+   "gating": "unknown",
+   "note": "AlphaFold DB model of mouse Piezo1, 2,547 residues. Monomer, prediction, pLDDT in the B-factor column.",
+   "recommended_for": [
+    "predicted",
+    "full_length_source"
    ]
   }
  ]

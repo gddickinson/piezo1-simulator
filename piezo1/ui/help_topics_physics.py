@@ -93,6 +93,21 @@ downloaded, so a PIEZO2 entry is refused rather than given a PIEZO1 blade —
 a wrong graft is not visible on screen, it is a blade in roughly the right
 place in the wrong sequence.</p>
 
+<h3>Seeing the dome — View &rarr; Dome surface</h3>
+<p>The dome is the project's central geometric claim and it was four numbers in
+a status bar. This draws it. The <b>blue cap</b> is the sphere fitted to the
+transmembrane helices on screen, out to the footprint radius — and a picture is
+the only check that catches a sphere fitted to the <i>wrong</i> atoms, which
+returns a perfectly reasonable radius. The <b>grey disc</b> is that cap's own
+flat projection, so the gap between the two surfaces <i>is</i> the excess area
+the gating model is built on.</p>
+<p><b>What is not drawn, and why.</b> The obvious third surface is the bilayer
+relaxing back to flat outside the rim. It is not here. PIEZO1's cap meets the
+membrane at a slope near <b>1.9</b> — a 63° contact angle — and the linearised
+Helfrich theory is a small-slope expansion: continued from that rim it plunges
+158 Å over a 526 Å skirt and overestimates the real footprint <b>3.65×</b>. The
+footprint radius is given as a number instead.</p>
+
 <h3>Is any of this PIEZO1? — Analysis &rarr; PIEZO2 comparison</h3>
 <p><b>The catalogue now holds four PIEZOs.</b> PIEZO1 (human and mouse),
 PIEZO2 (<b>human</b> and mouse), <i>C. elegans</i> PEZO-1 and <i>Drosophila</i>

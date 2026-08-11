@@ -225,9 +225,20 @@ def test_the_survey_of_every_downloaded_entry(structure_by_id):
 
     assert len(rows) >= 20
     assert len(usable) >= 17, f"only {len(usable)} entries could answer"
-    assert {r["pdb"] for r in refused} == {"3JAC", "6BPZ", "4RAX"}
+    # An exact refusal list was pinned here, and it went stale the moment the
+    # catalogue grew. What must hold is that the three known reasons are still
+    # the reasons, and that nothing is refused without one.
+    names = {r["pdb"] for r in refused}
+    assert {"3JAC", "6BPZ", "4RAX"} <= names, names
     for row in refused:
         assert row["reason"], f"{row['pdb']} was refused without a reason"
+    # The AlphaFold entries are in the catalogue now, and their column holds
+    # pLDDT — the trap the gate exists for. They must be refused for that
+    # reason and not for some other one.
+    predicted = [r for r in refused if r["pdb"].startswith("AF-")]
+    assert predicted, "the AlphaFold models should be in the survey and refused"
+    for row in predicted:
+        assert "pLDDT" in row["reason"], row
 
     spearmans = np.array([r["spearman"] for r in usable])
     controls = np.array([r["control_spearman"] for r in usable])

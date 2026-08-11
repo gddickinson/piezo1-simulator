@@ -256,8 +256,12 @@ def test_the_registry_note_matches_what_the_file_contains():
     # note makes. The invertebrates are excluded: 9UOY resolves more still,
     # and it is not a PIEZO1.
     for other in load_registry():
+        # Experimental PIEZO1 entries only. The AlphaFold monomers cover the
+        # whole chain by construction — they are a prediction, not a thing
+        # anyone resolved — and the invertebrates are not PIEZO1.
         if (other.pdb == "6KG7" or not other.available
-                or other.state == "fragment" or other.protein != "PIEZO1"):
+                or other.state in ("fragment", "predicted")
+                or other.protein != "PIEZO1"):
             continue
         st = Structure.from_file(other.path)
         m = st.mask_ca() & (st.chain == st.chains[0])
