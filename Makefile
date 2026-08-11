@@ -14,7 +14,10 @@ PY := $(CONDA_RUN) python
 
 .DEFAULT_GOAL := help
 .PHONY: help env lock fetch resources test lint gui reproduce verify quick \
-        figures validate clean-derived sizes params audit
+        figures validate clean-derived sizes params audit \
+        notebooks coldclone provenance
+# `notebooks` and `coldclone` name a directory and a script; without .PHONY
+# make sees the target as already built and does nothing.
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -58,6 +61,9 @@ sizes:  ## Fail if any file exceeds the project's 500-line limit
 
 gui:  ## Launch the application
 	$(PY) -m piezo1
+
+notebooks:  ## Rebuild the example notebooks, running every cell first
+	$(PY) scripts/build_notebooks.py
 
 figures:  ## Regenerate documentation figures and screenshots
 	$(PY) scripts/make_figures.py

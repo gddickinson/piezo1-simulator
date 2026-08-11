@@ -31,6 +31,7 @@ that carries blade motion to the gate.*
 - [Installing](#installing)
 - [Running it](#running-it)
 - [Command line](#command-line)
+- [Notebooks](#notebooks)
 - [How it is built](#how-it-is-built)
 - [Residue numbering](#a-warning-about-residue-numbering)
 - [How the project checks itself](#how-the-project-checks-itself)
@@ -350,6 +351,27 @@ radius of curvature 9.3–12.5 nm, the 8IXO intermediate at 16.5 nm, and flat
 11ZC at 21.6 nm — the only one the wetting model calls conductive.
 
 See [`docs/NOTEBOOK.md`](docs/NOTEBOOK.md) for the Python API.
+
+### Notebooks
+
+Four worked examples are in [`notebooks/`](notebooks/), meant to be read in
+order:
+
+| | |
+|---|---|
+| `01_first_look` | What is in a deposited structure, how to frame it, and measuring the dome |
+| `02_gating_motion` | The elastic network model and the symmetry rule that says which motions can couple to tension |
+| `03_pore_to_current` | Is the pore open, would water stay in it, and what current would flow |
+| `04_variants_and_the_null` | The variant workflow, and the result that did not work |
+
+```bash
+pip install -e ".[notebooks]"
+jupyter lab notebooks/
+```
+
+They ship **without stored outputs** and `assert` the numbers they quote
+instead, so running one checks the science rather than only the syntax. A
+committed output is a number nobody recomputes, and it goes stale silently.
 
 ### Animations
 

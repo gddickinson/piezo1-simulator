@@ -36,7 +36,10 @@ gui = [
 ]
 figures = ["matplotlib>=3.8", "pillow>=10.0"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
-all = ["piezo1-simulator[gui,figures,dev]"]
+# Only needed to *open* the examples in notebooks/. Building and testing
+# them does not need Jupyter: the cells are executed directly.
+notebooks = ["jupyterlab>=4.0"]
+all = ["piezo1-simulator[gui,figures,dev,notebooks]"]
 
 [project.scripts]
 piezo1 = "piezo1.cli:main"

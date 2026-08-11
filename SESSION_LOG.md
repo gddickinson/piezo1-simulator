@@ -4,6 +4,61 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## The empty `notebooks/` folder — what it was, and filling it
+
+George asked what the empty `notebooks/` directory was for. The answer is
+unflattering: it was created on **the first day of the project** and never
+filled. Git does not track empty directories, so it was never in a clone at
+all — it existed only on this machine, which is why nothing ever noticed it,
+and why no audit could have. `docs/NOTEBOOK.md` took its place, documenting the
+headless API in prose.
+
+Prose is not a substitute, because prose cannot be executed. Four notebooks
+now: what is in a structure and how to frame it; the elastic network model and
+the symmetry rule; the pore through wetting to a current; and the variant
+workflow, walked to the point where it stops working.
+
+**They are generated, not hand-written.** The cell content lives in
+`scripts/notebook_content*.py` as ordinary Python so it can be reviewed and
+diffed, and `build_notebooks.py` **executes every code cell, in order, in one
+namespace, before writing anything.** That gate earned its place immediately —
+it caught six wrong API calls I had written from memory, including
+`ANM.from_structure` (does not exist), `measure_dome` missing its surface
+argument, and a dimension mismatch from building the network on one residue set
+and the displacement on another.
+
+Two of those were more than typos. The gating notebook needed the project's
+real route — resample both structures onto shared residues, `match_protomers`
+because chain labels do not encode rotational order, and Kabsch before taking
+the displacement — and every one of those steps produces a plausible wrong
+number if skipped rather than an error. They are now what the notebook teaches.
+And my frame check took "the last 200 rows" of the C-alpha array, which is the
+exact defect `test_frame` documents: the slice straddles chains, and it read
++7.7 Å where the cytosolic end must be negative.
+
+**No stored outputs.** A committed output is a number nobody recomputes; it
+goes stale silently while reading as authoritative, which is the failure this
+project spends most of its machinery avoiding. The notebooks `assert` the
+numbers they quote instead, so running one checks the science and not only the
+syntax.
+
+`tests/test_notebooks.py` executes the **committed JSON** rather than the
+content module — the builder already runs its own source, so re-running it
+would prove nothing about what a reader downloads. It also pins that a
+hand-edited `.ipynb` is caught before the next build discards it, and that
+notebook 03 puts the parameter registry back: a leaked override would poison
+every later test, and `verify_claims` refuses to run against one.
+
+Jupyter is **not** a build dependency — nbformat 4.4 is emitted directly, and
+the cells are executed in-process. `pip install -e ".[notebooks]"` adds
+JupyterLab for anyone who wants to open them. `make notebooks` rebuilds; that
+needed `.PHONY`, since the target name collides with the directory and make
+otherwise decided it was already built.
+
+Suite 1076 → 1101.
+
+---
+
 ## A documentation pass — and two claims I invented while making it clearer
 
 George asked for the docs to be reviewed and updated, the README rewritten in
