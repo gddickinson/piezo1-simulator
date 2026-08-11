@@ -156,7 +156,7 @@ def test_the_protein_field_is_measured_and_present_on_every_entry():
     The default is "unknown" for exactly that reason: the species field said
     "mouse" for PIEZO2 and that is how it slipped past the overlay guard.
     """
-    from piezo1.analysis.numbering_check import identify_numbering
+    from piezo1.core.numbering_check import identify_numbering
     from piezo1.core import Structure
 
     records = load_registry().available()

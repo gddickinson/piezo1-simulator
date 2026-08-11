@@ -30,15 +30,58 @@ import numpy as np
 
 from ..parameters import PARAMETERS as _P
 
-__all__ = ["HybridModel", "build_hybrid_model", "DEFAULT_PREDICTED_MODEL"]
+__all__ = ["HybridModel", "build_hybrid_model", "predicted_model_for",
+           "DEFAULT_PREDICTED_MODEL", "PREDICTED_MODELS"]
 
 def _plddt_confident() -> float:
     """AlphaFold's own confident/low boundary, resolved at call time."""
     return float(_P.value("hybrid.plddt_confident"))
 
-#: Human PIEZO1, the model the fetcher stores. Version discovered from the API,
-#: never guessed — see `io.fetch.fetch_alphafold`.
-DEFAULT_PREDICTED_MODEL = "AF-Q92508-F1-model_v6.cif"
+#: The AlphaFold model for each numbering, keyed by the reference
+#: :func:`piezo1.core.numbering_check.identify_numbering` returns. Versions are
+#: discovered from the API and never guessed — see `io.fetch.fetch_alphafold`.
+#:
+#: There are two, and until this mapping existed the human one was used for
+#: everything. Grafting the human prediction onto a mouse entry is not a small
+#: error: the seam is placed at the experimental structure's first resolved
+#: residue and the anchor window is matched by residue *number*, which means
+#: something different in each species. Measured on 7WLT, the seam fit is
+#: **9.42 A** with the human model and **3.50 A** with the mouse one — and the
+#: mouse model was already downloaded.
+PREDICTED_MODELS = {
+    "human": "AF-Q92508-F1-model_v6.cif",
+    "mouse": "AF-E2JF22-F1-model_v6.cif",
+}
+
+#: Kept as a name because callers and tests use it; it is the human entry.
+DEFAULT_PREDICTED_MODEL = PREDICTED_MODELS["human"]
+
+
+def predicted_model_for(experimental) -> str:
+    """Which AlphaFold model to graft onto this structure.
+
+    Decided by what the file *is* rather than by what the registry calls it —
+    the same measurement Round 83 built, and for the same reason: the registry
+    labels PIEZO2 "mouse", so a species field would have handed 6KG7 the mouse
+    Piezo1 prediction and grafted one protein onto another.
+
+    Raises for PIEZO2, because no PIEZO2 prediction is downloaded and there is
+    no honest default. A wrong graft here is not visible on screen: it is a
+    blade in roughly the right place, in the wrong sequence.
+    """
+    from ..core.numbering_check import identify_numbering
+
+    identity = identify_numbering(experimental)
+    if identity.is_piezo2:
+        raise ValueError(
+            "this is a PIEZO2 entry and no PIEZO2 AlphaFold model is "
+            "downloaded; the full-length graft is PIEZO1 only")
+    model = PREDICTED_MODELS.get(identity.reference)
+    if model is None:
+        raise ValueError(
+            f"no AlphaFold model for {identity.reference} numbering "
+            f"({identity.summary()})")
+    return model
 
 
 @dataclass
@@ -137,7 +180,10 @@ def build_hybrid_model(experimental, predicted=None, chain: str | None = None,
         chain = chains[0]
 
     if predicted is None:
-        predicted = Structure.from_file(STRUCTURE_DIR / DEFAULT_PREDICTED_MODEL)
+        predicted_name = predicted_model_for(experimental)
+        predicted = Structure.from_file(STRUCTURE_DIR / predicted_name)
+    else:
+        predicted_name = getattr(predicted, "name", "") or "caller-supplied"
 
     keep = experimental.chain == chain
     exp_res = experimental.res_seq[keep & experimental.mask_ca()]
@@ -196,7 +242,7 @@ def build_hybrid_model(experimental, predicted=None, chain: str | None = None,
         xyz=xyz, res_seq=res_seq, source=source, plddt=plddt,
         seam_residue=seam, overlap_rmsd=rmsd, global_rmsd=global_rmsd,
         meta={"experimental": getattr(experimental, "name", ""),
-              "chain": chain, "predicted_model": DEFAULT_PREDICTED_MODEL,
+              "chain": chain, "predicted_model": predicted_name,
               "anchor_window": anchor_window, "anchor_residues": len(anchor),
               "shared_residues": len(shared),
               "grafted_residues": int(len(set(predicted.res_seq[graft])))})

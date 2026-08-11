@@ -45,7 +45,7 @@ import numpy as np
 
 from ..core.structure import Structure
 from ..parameters import PARAMETERS as _P
-from .numbering_check import (PIEZO2_REFERENCES, identify_numbering,
+from ..core.numbering_check import (PIEZO2_REFERENCES, identify_numbering,
                               reference_entry as _reference)
 
 __all__ = ["DomeRow", "ModeComparison", "paralogue_map",

@@ -219,7 +219,7 @@ class OverlayController:
         covers three cases with one question: a different species, a different
         protein, and a file numbered in a splice isoform's own coordinates.
         """
-        from ..analysis.numbering_check import identify_numbering
+        from ..core.numbering_check import identify_numbering
 
         reference = identify_numbering(self.win.structure)
         moving = identify_numbering(mobile)

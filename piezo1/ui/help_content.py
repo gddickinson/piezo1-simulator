@@ -173,6 +173,28 @@ out of the calculation rather than being imposed.</p>
 <b>Animate</b> drives the structure along it. The amplitude is a visualisation
 choice and is not a physical prediction of how far the protein travels.</p>
 
+<h3>The full-length model — View &rarr; Full-length model</h3>
+<p>Cryo-EM resolves roughly residues <b>570–2521</b>; the distal blade has
+never been resolved in any PIEZO1 structure. This grafts AlphaFold's prediction
+of those <b>569 residues</b> onto the experimental core and keeps the join
+visible: the measured part is flat grey, the predicted part is coloured by
+AlphaFold's own <b>pLDDT</b> confidence bands, and the seam is marked.</p>
+<p>It is a toggle, so it draws on top of whatever else is on screen. The
+numbers behind it — the fraction of the graft clearing pLDDT 70, and how far
+the two models disagree away from the seam — are under <b>Analysis &rarr;
+Full-length model numbers</b>, and the status line carries them whenever the
+graft is drawn.</p>
+<p><b>Two populations, not one structure.</b> Only about <b>48%</b> of the
+grafted region clears pLDDT 70, and the two models differ by <b>75 Å</b> over
+the region they share even though the seam itself fits to <b>2.4 Å</b> — a good
+local fit says nothing about the rest of a long flexible arm. Every atom
+carries its source so no analysis can average across the join.</p>
+<p>The prediction used matches the entry: the human model for a human
+structure, the mouse model for a mouse one. There is no PIEZO2 prediction
+downloaded, so a PIEZO2 entry is refused rather than given a PIEZO1 blade —
+a wrong graft is not visible on screen, it is a blade in roughly the right
+place in the wrong sequence.</p>
+
 <h3>Is any of this PIEZO1? — Analysis &rarr; PIEZO2 comparison</h3>
 <p><b>PIEZO2 is the only control available</b> for the question this project
 otherwise never asks: how much of the mechanism is PIEZO1, and how much is the

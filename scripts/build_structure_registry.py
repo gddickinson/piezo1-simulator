@@ -23,7 +23,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from piezo1.config import CACHE_DIR, RESOURCE_DIR, STRUCTURE_DIR  # noqa: E402
-from piezo1.analysis.numbering_check import identify_numbering  # noqa: E402
+from piezo1.core.numbering_check import identify_numbering  # noqa: E402
 from piezo1.core.structure import Structure  # noqa: E402
 
 # Hand-declared scientific interpretation, keyed by PDB ID. Anything not listed

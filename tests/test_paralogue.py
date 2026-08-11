@@ -19,7 +19,7 @@ import pytest
 from piezo1.config import RESOURCE_DIR, STRUCTURE_DIR
 from piezo1.core import Structure
 from piezo1.parameters import PARAMETERS
-from piezo1.analysis.numbering_check import (PIEZO2_REFERENCES, REFERENCES,
+from piezo1.core.numbering_check import (PIEZO2_REFERENCES, REFERENCES,
                                              identify_numbering,
                                              mismatch_blocks)
 from piezo1.analysis.paralogue import (compare, dome_comparison,
@@ -369,7 +369,7 @@ def test_the_splice_detector_refuses_a_file_that_is_merely_wrong():
     """A partial rescue would let any badly numbered file be explained away."""
     import dataclasses
 
-    from piezo1.analysis.numbering_check import detect_splice
+    from piezo1.core.numbering_check import detect_splice
 
     st = _require("7WLT")
     mask = st.mask_ca() & (st.chain == st.chains[0])

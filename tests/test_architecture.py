@@ -79,6 +79,45 @@ def test_the_dependency_arrow_it_claims_is_the_one_the_code_has():
         "ARCHITECTURE.md claims the arrow points one way, but: " + "; ".join(offenders))
 
 
+def test_the_arrow_points_one_way_between_the_science_layers_too():
+    """`io -> core -> structure -> physics -> analysis`, not just away from ui.
+
+    The check above only forbids the science layers from importing `ui` and
+    `render`. It would not have caught `structure` importing `analysis`, which
+    is what the full-length graft needed when it had to identify which protein
+    a file is — the answer was to move `numbering_check` into `core`, where it
+    belongs beside `entities`, rather than to point the arrow backwards.
+    """
+    order = ["core", "structure", "physics", "analysis"]
+
+    def offences(source: str, later: list[str]) -> list[str]:
+        """Sibling-package imports only.
+
+        ``from .structure`` inside ``core`` is ``core/structure.py``, a module
+        with the same name as a layer — which this check flagged on its first
+        run, against three files that were perfectly correct. Only ``..`` and
+        the absolute form cross a package boundary.
+        """
+        return [name for name in later
+                if f"from ..{name}" in source or f"from piezo1.{name}" in source]
+
+    # Calibrate: the pattern must catch a real backwards import and must not
+    # catch the same-package module whose name collides with a layer.
+    assert offences("from ..analysis.numbering_check import x",
+                    ["physics", "analysis"]) == ["analysis"]
+    assert offences("from .structure import AA3TO1", ["structure"]) == []
+
+    offenders = []
+    for index, layer in enumerate(order):
+        later = order[index + 1:]
+        for path in (ROOT / "piezo1" / layer).rglob("*.py"):
+            for name in offences(path.read_text(), later):
+                offenders.append(f"{path.relative_to(ROOT)} imports {name}")
+    assert not offenders, (
+        "the dependency arrow runs " + " -> ".join(order) + ", but: "
+        + "; ".join(sorted(set(offenders))))
+
+
 def test_the_structure_of_arrays_claim_still_holds():
     """`Structure` must still be parallel arrays, not a list of atoms."""
     import numpy as np

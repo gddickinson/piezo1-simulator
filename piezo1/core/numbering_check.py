@@ -1,5 +1,11 @@
 """What protein a deposited file is, and whether we can read it by residue number.
 
+It lives in ``core`` beside :mod:`piezo1.core.entities`, which answers the
+neighbouring question of *what is in* a deposited file, and because
+``structure`` needs it: the full-length graft has to pick the AlphaFold model
+matching the entry it is grafting onto, and ``structure`` importing
+``analysis`` would point the dependency arrow backwards.
+
 Round 83 built this to keep a PIEZO1 structure from being read with PIEZO2's
 transmembrane annotation. It immediately found two things nobody was looking
 for, and both are live — this project reads domains, helices, variants and
@@ -35,8 +41,8 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from ..config import RESOURCE_DIR
-from ..core.structure import AA3TO1, Structure
 from ..parameters import PARAMETERS as _P
+from .structure import AA3TO1, Structure
 
 __all__ = ["NumberingIdentity", "SpliceShift", "MismatchBlock",
            "identify_numbering", "detect_splice", "mismatch_blocks",

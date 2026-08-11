@@ -151,7 +151,7 @@ EXEMPT = {
         "property of PIEZO1; frozen at 25 by "
         "docs/PREREGISTRATION_ROUND41.md and tested at 10 and 50 as "
         "pre-registered secondaries so no result can rest on the choice.",
-    ("analysis/numbering_check.py", "NumberingIdentity", "n_unassigned"):
+    ("core/numbering_check.py", "NumberingIdentity", "n_unassigned"):
         "counter, initialised to zero",
     ("analysis/harvest.py", "HarvestReport", "n_papers"):
         "counter, initialised to zero",

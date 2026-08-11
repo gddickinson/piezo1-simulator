@@ -141,3 +141,78 @@ def test_it_refuses_a_structure_it_cannot_graft_onto():
         entity=np.zeros(n, int))
     with pytest.raises(ValueError, match="graft onto|C-alphas"):
         build_hybrid_model(tiny)
+
+
+# --------------------------------------------------------------------------
+# Which prediction gets grafted
+# --------------------------------------------------------------------------
+
+def test_the_graft_uses_the_prediction_matching_the_entry(structure_by_id):
+    """The human model was used for everything, including mouse entries.
+
+    That is not a small error. The seam is placed at the experimental
+    structure's first resolved residue and the anchor window is matched by
+    residue *number*, which means something different in each species — so the
+    human blade was joined to a mouse core at the wrong place. Measured on
+    7WLT: 9.42 A with the human model against 3.50 A with the mouse one, which
+    was already downloaded.
+    """
+    from piezo1.structure.hybrid import (PREDICTED_MODELS, build_hybrid_model,
+                                         predicted_model_for)
+
+    human = structure_by_id("8YEZ")
+    mouse = structure_by_id("7WLT")
+    if human is None or mouse is None:
+        pytest.skip("structures not downloaded — run python -m piezo1.io.fetch")
+
+    assert predicted_model_for(human) == PREDICTED_MODELS["human"]
+    assert predicted_model_for(mouse) == PREDICTED_MODELS["mouse"]
+
+    built = build_hybrid_model(mouse)
+    assert built.meta["predicted_model"] == PREDICTED_MODELS["mouse"]
+    assert built.overlap_rmsd < 5.0, (
+        "the mouse graft should fit its own prediction; above this it is "
+        "using the wrong species again")
+
+    # ...and the human entry's recorded number has not moved.
+    assert build_hybrid_model(human).overlap_rmsd == pytest.approx(2.39, abs=0.05)
+
+
+def test_grafting_the_wrong_species_is_measurably_worse(structure_by_id):
+    """The control that makes the choice above mean something.
+
+    If both predictions fitted equally well, choosing between them would be
+    bookkeeping rather than correctness.
+    """
+    from piezo1.config import STRUCTURE_DIR
+    from piezo1.core import Structure
+    from piezo1.structure.hybrid import PREDICTED_MODELS, build_hybrid_model
+
+    mouse = structure_by_id("7WLT")
+    if mouse is None:
+        pytest.skip("7WLT not downloaded — run python -m piezo1.io.fetch")
+    right = build_hybrid_model(
+        mouse, Structure.from_file(STRUCTURE_DIR / PREDICTED_MODELS["mouse"]))
+    wrong = build_hybrid_model(
+        mouse, Structure.from_file(STRUCTURE_DIR / PREDICTED_MODELS["human"]))
+    assert wrong.overlap_rmsd > 2 * right.overlap_rmsd
+
+
+def test_a_piezo2_entry_is_refused_rather_than_given_a_piezo1_blade(
+        structure_by_id):
+    """No PIEZO2 prediction is downloaded, and there is no honest default.
+
+    A wrong graft is not visible on screen — it is a blade in roughly the right
+    place, in the wrong sequence — so this has to be a refusal rather than a
+    caveat.
+    """
+    from piezo1.analysis.report_tags import analysis_hybrid
+    from piezo1.structure.hybrid import build_hybrid_model
+
+    piezo2 = structure_by_id("6KG7")
+    if piezo2 is None:
+        pytest.skip("6KG7 not downloaded — run python -m piezo1.io.fetch")
+    with pytest.raises(ValueError, match="PIEZO2"):
+        build_hybrid_model(piezo2)
+    # ...and the report turns that into a reported error, not a traceback.
+    assert "PIEZO2" in analysis_hybrid(piezo2, "mouse")["error"]
