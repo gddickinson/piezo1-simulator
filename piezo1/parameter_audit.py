@@ -151,6 +151,8 @@ EXEMPT = {
         "property of PIEZO1; frozen at 25 by "
         "docs/PREREGISTRATION_ROUND41.md and tested at 10 and 50 as "
         "pre-registered secondaries so no result can rest on the choice.",
+    ("analysis/numbering_check.py", "NumberingIdentity", "n_unassigned"):
+        "counter, initialised to zero",
     ("analysis/harvest.py", "HarvestReport", "n_papers"):
         "counter, initialised to zero",
     ("analysis/harvest.py", "_sentence_around", "width"):
@@ -197,6 +199,13 @@ EXEMPT = {
         "paper to cite. Its value is justified in the module against all 20 "
         "downloaded entries and pinned by "
         "test_frame.test_no_downloaded_structure_loads_upside_down.",
+    ("structure/geometry.py", None, "MIN_CA_FOR_SURFACE"):
+        "how many C-alphas a chain needs before its transmembrane helices are "
+        "allowed to contribute to the dome surface. A parsing threshold for "
+        "deposited files — it keeps a bound peptide or an auxiliary subunit "
+        "out of the membrane surface — not a property of PIEZO1. Carried over "
+        "unchanged from the inline copy it replaced, so no measured number "
+        "moves with it.",
     ("structure/protomers.py", None, "MIN_CA_PER_PROTOMER"):
         "how many C-alphas a chain needs before it counts as a protomer rather "
         "than a bound peptide. A parsing threshold for deposited files, not a "

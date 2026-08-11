@@ -614,10 +614,11 @@
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
-   "note": "PIEZO2, for comparison. Resolves residues 8-823, so it is the best experimental view of the distal blade.",
+   "note": "PIEZO2 (mouse Piezo2, Q8CD54 numbering), the paralogue control. Resolves 1,817 residues from 8 to 2,822 in 16 segments - more than any PIEZO1 entry - including all 38 transmembrane helices, so it is both the best experimental view of the distal blade and the only structure that can separate PIEZO1 from the fold.",
    "recommended_for": [
     "piezo2",
-    "distal_blade"
+    "distal_blade",
+    "paralogue"
    ]
   },
   {

@@ -4,6 +4,149 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 83 — PIEZO2, and the answer that the mechanism is the fold's
+
+6KG7 has been downloaded since the beginning, entity-classified, and then
+excluded from every ensemble as a paralogue. Correct for a PIEZO1 ensemble.
+Not an answer to the question the project had never asked: **how much of this
+mechanism is PIEZO1, and how much is the fold?**
+
+### The catalogue was wrong about the entry
+
+The registry note said 6KG7 "resolves residues 8-823, so it is the best
+experimental view of the distal blade". It resolves **8 to 2822, in sixteen
+segments, 1,817 C-alphas per protomer** — *more resolved residues than any
+PIEZO1 entry in the catalogue*, which run 1,223 to 1,502 — including all 38
+transmembrane helices.
+
+Nobody had asked the file. The note reads like it was written from the paper's
+emphasis, and its effect was to make the one structure that could answer the
+generality question look like a fragment not worth loading. Corrected, and
+pinned by a test that reads the coordinates rather than the note.
+
+### Which protein, and which numbering, measured
+
+The roadmap said PIEZO2 is 2,752 aa. That is *human* PIEZO2. 6KG7 is **mouse**
+Piezo2, 2,822 aa — a third length beside mouse Piezo1's 2,547, with no constant
+offset relating any pair.
+
+Rather than trust a label, every entry is scored residue by residue against all
+four committed UniProt sequences: if a file's numbering belongs to a sequence,
+its residue *names* agree with it at every position. Each entry matches exactly
+one reference at **1.000** with the runner-up below 0.25. That is a
+known-answer measurement, and it fails as it should on a PIEZO1 entry
+renumbered by a constant — which is exactly the mistake it exists to catch.
+
+Two new committed resources, `uniprot_mouse_piezo2.json` and
+`uniprot_human_piezo2.json`, built by the same script from the same source as
+PIEZO1's, so the two dome measurements cannot differ by how their membrane
+surface was defined.
+
+### The naive comparison was a coverage artefact, and that is the result
+
+Measured directly, PIEZO2's dome looks dramatically different: 8.51 nm deep
+against 4.92, with 462 nm² of excess area against 256. I nearly had a finding.
+
+The cause is that 6KG7 resolves 38 transmembrane helices where 7WLT resolves
+22, so the two surfaces trace different amounts of blade. Restricted to the
+helices resolved in both — paired by index, a pairing the global alignment
+confirms for **37 of 38** — PIEZO2 gives 5.64 nm and R_c 10.32 against 9.72,
+inside the PIEZO1 range on every quantity.
+
+Both rows are reported, because the gap between them is a caveat on this
+project's own numbers: **dome depth and excess area scale with how much blade
+an entry resolves.** Only the radius of curvature is robust to it, which is
+fortunate, since that is the one this project has been quoting against the
+published 10.2 nm all along.
+
+### The gating coordinate is not PIEZO1's
+
+With the sites coverage-matched through the alignment (1,236 per protomer), the
+protomer correspondence **searched** rather than read off chain labels, and
+PIEZO2's mode vectors rotated into PIEZO1's frame by the same superposition
+that aligns the sites:
+
+| | |
+|---|---|
+| Overlap of PIEZO1's lowest A mode with one PIEZO2 A mode | **0.804** |
+| Fraction inside PIEZO2's symmetric subspace | **0.925** |
+| Shuffled-correspondence control | 0.190 |
+| Superposition RMSD, 3,708 C-alphas at 48% identity | 4.36 Å |
+
+The protomer order came out **(2, 0, 1)**. Chain labels would have been wrong,
+for the third time in this project's history — and across a paralogue there was
+never any reason for them to agree.
+
+So the motion identified as the candidate gating coordinate is a property of
+the PIEZO fold. That is a result about generality rather than a failure, and it
+cuts both ways: the mechanism is more general than one protein, and nothing in
+it distinguishes two proteins whose inactivation kinetics and tissue roles
+differ. With one PIEZO2 structure it says the fold *admits* the mechanism, not
+that every PIEZO uses it.
+
+### The instrument found two things nobody was looking for
+
+The identification exists to stop a PIEZO1 entry being read with PIEZO2's
+transmembrane annotation. It found two live defects on its first pass over the
+catalogue, and both matter because this project applies every annotation —
+domains, helices, variants, functional residues — **by residue number**.
+
+**6LQI is deposited in the splice isoform's own numbering.** Piezo1.1 lacks
+residues 1382–1405, and the file numbers straight across the deletion: 1.000
+agreement with canonical mouse Piezo1 before the splice site, 0.058 after, and
+1.000 again shifted by **+24**. That is 764 of its 1,301 resolved residues.
+
+**Four human entries carry a block numbered 22 low.** 8ZU3, 8YFC, 9VMX and
+8YFG score 0.932 — comfortably past any floor I would have set — and the 7%
+they are missing is not spread out. It is residues 767–857, ninety-one of
+them, every one disagreeing and every one agreeing again read +22. 8YEZ
+resolves the same region and does not have it.
+
+The second is the more instructive. A whole-file identity of 0.932 looks fine;
+runs of disagreement are what makes it visible, and reporting only the total
+would have passed four entries with a real fault in them. Both are recorded as
+Round 86 rather than fixed here, because fixing them means re-reading five
+entries everywhere and recomputing every number this project has published for
+them.
+
+**And one thing I got wrong first.** 3JAC scored 0.623 and I had it as a third
+case. Every single mismatch was a `UNK` — the depositor declining to name a
+residue rather than disagreeing about one. `AA3TO1` maps UNK to X, so
+membership in it is not the test, which is what my first filter used. Excluding
+unassigned residues, 3JAC matches at 1.000 over the 572 it names. Three
+findings became two, and the correction is in the module docstring because the
+next person to write such a filter will reach for `in AA3TO1` too.
+
+### A definition that existed twice
+
+The dome surface — one point per transmembrane helix per protomer — was defined
+inline in the report and again in the claims registry. Survivable while only
+PIEZO1 was measured; not survivable the moment a second protein had to be
+compared against the same surface, because two definitions is exactly how a
+comparison ends up measuring how each side was defined. Extracted to
+`structure.geometry.tm_surface_points`, with both callers collapsed onto it and
+the 9.72 nm claim unmoved.
+
+### And the catalogue quietly grew a HaloTag
+
+Rebuilding `structures.json` swept **6U32 — the HaloTag crystal structure** —
+into a registry documented as a catalogue of PIEZO structures, as an
+unclassified entry of "unknown" species. The build globs every `.cif` in the
+structure directory, which was harmless until Round 31 downloaded the tag for
+the fusion geometry and nobody rebuilt until now.
+
+It took two unrelated tests failing to notice: the ligand audit found the tag's
+tetramethylrhodamine and reported it as a possible undocumented PIEZO
+modulator. `fusion.load_halotag` reads 6U32 by path and never through the
+registry, so the exclusion costs nothing — and every registry entry must now be
+identifiable as a PIEZO, which the round's own instrument checks.
+
+Suite 1320 → 1344 passing (1354 collected, 10 skipped for want of
+downloaded data); 116 → 121 registered parameters. Reachable as
+`piezo1 paralogue <entry>` and under Analysis → PIEZO2 comparison.
+
+---
+
 ## Round 82 — the B-factors, read at last, and what they say about the network
 
 Every structure this project loads carries a `b_factor` for every atom and no

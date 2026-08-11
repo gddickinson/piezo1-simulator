@@ -244,6 +244,8 @@ def build_parser() -> argparse.ArgumentParser:
             ("modes", "elastic network normal modes with symmetry labels"),
             ("fluctuations", "predicted fluctuation against the deposited "
                              "B-factors, with a burial control"),
+            ("paralogue", "PIEZO1 against PIEZO2: is this mechanism the "
+                          "fold's rather than PIEZO1's?"),
             ("pockets", "alpha-sphere cavities and ligand contacts"),
             ("interactions", "hydrogen bonds, salt bridges, disulfides"),
             ("hybrid", "full-length model: experimental core plus the "

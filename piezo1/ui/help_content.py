@@ -158,6 +158,29 @@ out of the calculation rather than being imposed.</p>
 <b>Animate</b> drives the structure along it. The amplitude is a visualisation
 choice and is not a physical prediction of how far the protein travels.</p>
 
+<h3>Is any of this PIEZO1? — Analysis &rarr; PIEZO2 comparison</h3>
+<p><b>PIEZO2 is the only control available</b> for the question this project
+otherwise never asks: how much of the mechanism is PIEZO1, and how much is the
+fold? 6KG7 was downloaded, classified and then excluded from every ensemble as
+a paralogue — correct for a PIEZO1 ensemble, and not an answer.</p>
+<p><b>Read the two dome blocks together.</b> Measured naively the two proteins
+look very different — PIEZO2's dome 8.5 nm deep against 4.9. That is because
+6KG7 resolves <b>all 38</b> transmembrane helices where a PIEZO1 entry resolves
+22-26, so the two measurements trace different amounts of blade.
+Coverage-matched, PIEZO2 gives 5.6 nm and falls inside the PIEZO1 range on
+every quantity.</p>
+<p><b>The gating mode is the fold's.</b> With the sites matched through a real
+alignment and the protomer order searched rather than trusted — it is (2, 0, 1)
+here, so chain labels would have been wrong — PIEZO1's lowest symmetric mode
+overlaps a single PIEZO2 symmetric mode at <b>0.804</b>, with <b>0.925</b> of
+it inside PIEZO2's symmetric subspace, against a shuffled-correspondence
+control of 0.190. The candidate gating coordinate is not specific to
+PIEZO1.</p>
+<p>That is a result about generality, not a failure — and it cuts both ways.
+Nothing in this mechanism distinguishes two proteins whose inactivation
+kinetics and tissue roles differ. With one PIEZO2 structure it says the fold
+<i>admits</i> the mechanism, not that every PIEZO uses it.</p>
+
 <h3>Does the network describe this molecule? — Analysis &rarr; Fluctuation vs B-factor</h3>
 <p>The standard check on any elastic network, and one this project had never
 run until Round 82: does the predicted mean-square fluctuation track the

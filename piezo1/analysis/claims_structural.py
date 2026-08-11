@@ -34,23 +34,14 @@ def _blocks(structure):
 
 
 def _tm_surface(structure, species: str) -> np.ndarray:
-    import json
+    """Kept as a name because claims and tests call it; the definition moved.
 
-    from ..config import RESOURCE_DIR
-    tms = json.loads((RESOURCE_DIR / f"uniprot_{species}.json").read_text())
-    points = []
-    for chain in structure.chains:
-        mask = structure.mask_ca() & (structure.chain == chain)
-        if mask.sum() < 300:
-            continue
-        xyz, seq = structure.xyz[mask], structure.res_seq[mask]
-        for tm in tms["transmembrane"]:
-            mid = 0.5 * (tm["start"] + tm["end"])
-            half = max(2.0, (tm["end"] - tm["start"]) / 6.0)
-            sel = (seq >= mid - half) & (seq <= mid + half)
-            if sel.sum() >= 3:
-                points.append(xyz[sel].mean(axis=0))
-    return np.array(points)
+    Round 83 needed one definition of the dome surface rather than two, so
+    this delegates to :func:`piezo1.structure.geometry.tm_surface_points`.
+    """
+    from ..structure.geometry import tm_surface_points
+
+    return tm_surface_points(structure, species)[0]
 
 
 def _dome_radius() -> float:

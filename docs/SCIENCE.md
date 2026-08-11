@@ -450,6 +450,77 @@ Three further results are worth recording rather than smoothing:
   so that a change in either reopens the question. 6KG7 is PIEZO2 — the
   paralogue — where burial predicts the column at 0.55 and the network at 0.07.
 
+### PIEZO2, the only control on whether any of this is PIEZO1 (Round 83)
+
+6KG7 was fetched, entity-classified and then excluded from every ensemble as a
+paralogue. That is right for a PIEZO1 ensemble and wrong as a final answer:
+PIEZO2 is the only thing available that separates *PIEZO1 does this* from *a
+PIEZO does this*.
+
+**The registry was wrong about it.** The note said 6KG7 "resolves residues
+8-823". It resolves **8-2822 in sixteen segments, 1,817 C-alphas per
+protomer** — more than any PIEZO1 entry in the catalogue (1,223 to 1,502) —
+including all 38 transmembrane helices. Corrected, and checked by a test
+against the file itself.
+
+**Which protein and which numbering are measured, not assumed.** Every entry is
+scored residue by residue against all four committed UniProt sequences. Each
+matches exactly one at **1.000** with the runner-up below 0.25; 6KG7 matches
+**mouse Piezo2** (Q8CD54, 2,822 aa), not human PIEZO2's 2,752. Three lengths,
+no constant offset, and reading the wrong one shifts every helix silently.
+
+**The naive comparison is a coverage artefact.** Measured directly, PIEZO2's
+dome looks dramatically different. Restricted to the transmembrane helices both
+entries resolve — paired by index, a pairing the global alignment confirms for
+**37 of 38** helices — it does not:
+
+| | R_c (nm) | depth (nm) | excess area (nm²) | TM helices |
+|---|---|---|---|---|
+| PIEZO1 7WLT | 9.72 | 4.92 | 256 | 22 |
+| PIEZO2 6KG7, naive | 11.50 | 8.51 | 462 | 38 |
+| PIEZO2 6KG7, coverage-matched | **10.32** | **5.64** | **227** | 22 |
+
+The difference was in what each file contains, not in what the proteins are.
+That is a caveat on this project's own dome numbers too: depth and excess area
+scale with how much blade an entry resolves, and only the radius of curvature
+is robust to it.
+
+**Two deposited entries are not in the numbering this project reads them in.**
+The identification built for the paralogue comparison found both, and both are
+live — domains, helices, variants and functional residues are all applied by
+residue number:
+
+| Entry | What is wrong | Extent |
+|---|---|---|
+| 6LQI | deposited in the Piezo1.1 isoform's own continuous numbering across its 1382–1405 deletion; **+24** after the splice site | 764 of 1,301 resolved residues |
+| 8ZU3, 8YFC, 9VMX, 8YFG | residues **767–857 numbered 22 low**; 8YEZ resolves the same region without the fault | 91 residues each |
+
+Both are recorded as Round 86 rather than fixed here. A third apparent case was
+not one: 3JAC scored 0.623 and every single mismatch turned out to be a `UNK` —
+the depositor declining to name a residue, not disagreeing about one. Excluding
+unassigned residues it matches at 1.000 over the 572 it names.
+
+**The gating coordinate belongs to the fold.** With the sites coverage-matched
+through the alignment (1,236 per protomer), the protomer correspondence
+searched rather than read off chain labels — it is **(2, 0, 1)**, so the labels
+would have been wrong — and PIEZO2's modes rotated into PIEZO1's frame:
+
+| | |
+|---|---|
+| Overlap of PIEZO1's lowest A mode with one PIEZO2 A mode | **0.804** |
+| Fraction lying in PIEZO2's symmetric subspace | **0.925** |
+| Shuffled-correspondence control | 0.190 |
+| Superposition RMSD over 3,708 C-alphas at 48% identity | 4.36 Å |
+
+**So the motion this project identified as the candidate gating coordinate is
+not specific to PIEZO1.** PIEZO2 has it too, lower in its symmetric subspace
+and at a different place in its spectrum. That is a statement about generality
+rather than a failure — and it cuts both ways. It means the elastic-network
+mechanism is a property of the PIEZO fold, and it means nothing in that
+mechanism distinguishes the two proteins, whose inactivation kinetics and
+tissue roles differ. With one PIEZO2 structure, it says the fold *admits* the
+mechanism, not that every PIEZO uses it.
+
 ---
 
 ## 4b. The pore, measured from coordinates

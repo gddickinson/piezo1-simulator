@@ -282,6 +282,65 @@ TAG_PARAMETERS = [
                      "an input, and nothing is clipped to it.",
          description="In-pore concentration above which the model is flagged."),
 
+    # -------------------------------------------------- paralogue control ----
+    dict(key="paralogue.min_sequence_identity",
+         name="Numbering identification floor", value=0.9, unit="fraction",
+         minimum=0.5, maximum=1.0, kind="method",
+         category="Paralogue control", citation="method_choice",
+         source_note="A deposited file's residue names must agree with the "
+                     "sequence its numbering belongs to at essentially every "
+                     "position. Measured across all 21 entries the winner "
+                     "scores 1.000 and the runner-up below 0.25, so anything "
+                     "under 0.9 means the file is not in the numbering it was "
+                     "matched to and the comparison must not proceed.",
+         description="Identity below which a numbering identification is refused."),
+    dict(key="paralogue.min_identity_margin",
+         name="Numbering identification margin", value=0.5, unit="fraction",
+         minimum=0.0, maximum=1.0, kind="method",
+         category="Paralogue control", citation="method_choice",
+         source_note="A confident answer and a coin flip look identical once "
+                     "only the winner is reported. The measured margin is at "
+                     "least 0.75 on every entry, so half is a wide floor that "
+                     "would still catch a genuinely ambiguous file.",
+         description="How far the best reference must beat the second."),
+    dict(key="paralogue.tm_boundary_slack",
+         name="Transmembrane boundary slack", value=5.0, unit="residues",
+         minimum=0.0, maximum=30.0, kind="method",
+         category="Paralogue control", citation="method_choice",
+         source_note="How far outside a UniProt helix an aligned midpoint may "
+                     "land and still count as that helix. UniProt boundaries "
+                     "are predictions with a residue or two of play and the "
+                     "alignment adds its own. Measured: 37 of 38 helices "
+                     "agree, unchanged from 0 to 8 residues of slack; above "
+                     "that the count falls, and it falls because adjacent "
+                     "PIEZO2 helices sit as little as 2 residues apart, so "
+                     "wide windows overlap and the match stops being unique. "
+                     "That is a limit of the criterion, not a disagreement, "
+                     "and 5 sits in the middle of the flat range.",
+         description="Tolerance when asking which helix an aligned residue is in."),
+
+    dict(key="paralogue.max_splice_shift", name="Splice shift search range",
+         value=200.0, unit="residues", minimum=1.0, maximum=2000.0,
+         kind="method", category="Paralogue control", citation="method_choice",
+         source_note="How far a splice-isoform renumbering is searched for "
+                     "when the straight identification fails. The one case "
+                     "here is 6LQI at 24 residues; the range is wide because "
+                     "the search is only ever entered after a failure and a "
+                     "wrong answer is refused by requiring both halves to "
+                     "agree essentially perfectly.",
+         description="Largest constant renumbering searched for after a splice site."),
+
+    dict(key="paralogue.min_mismatch_block", name="Mismatch block floor",
+         value=10.0, unit="residues", minimum=2.0, maximum=200.0,
+         kind="method", category="Paralogue control", citation="method_choice",
+         source_note="How long a run of disagreeing residues must be before "
+                     "it is reported as a numbering fault rather than as real "
+                     "sequence difference. An engineered variant changes one "
+                     "residue and must not be flagged; the measured case is a "
+                     "block of 91 in four human entries, so ten is far from "
+                     "either.",
+         description="Shortest run of disagreement reported as a block."),
+
     # ---------------------------------------------- fluctuation comparison ----
     dict(key="fluctuation.min_distinct_fraction",
          name="B-factor resolution floor", value=0.10, unit="fraction",

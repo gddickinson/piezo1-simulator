@@ -27,6 +27,17 @@ from piezo1.core.structure import Structure  # noqa: E402
 
 # Hand-declared scientific interpretation, keyed by PDB ID. Anything not listed
 # is still included, but with state "unclassified".
+#: Downloaded coordinate files that are **not** PIEZO structures and must not
+#: join a catalogue documented as one. The build sweeps ``data/structures`` for
+#: every ``.cif``, which was harmless until Round 31 downloaded the HaloTag
+#: crystal structure for the fusion geometry; the next rebuild — Round 83's —
+#: swept it in as an unclassified "unknown" species, and it took two unrelated
+#: tests failing to notice. `fusion.load_halotag` reads 6U32 by path and never
+#: through the registry, so nothing needs it here.
+NOT_A_PIEZO = {
+    "6U32",   # HaloTag bound to its tetramethylrhodamine ligand
+}
+
 CURATION = {
     "8YEZ": dict(species="human", state="curved", gating="closed",
                  note="Highest-resolution apo human PIEZO1.",
@@ -93,10 +104,19 @@ CURATION = {
                  note="X-ray structure of the cap/CED at 1.45 A - by far the "
                       "highest resolution available for any part of PIEZO1.",
                  recommended_for=["cap_detail"]),
+    # The note said "resolves residues 8-823" until Round 83 measured it. It
+    # resolves 8-2822 in 16 segments, 1817 C-alphas per protomer - more than
+    # any PIEZO1 entry here - and it is in MOUSE Piezo2 numbering (Q8CD54,
+    # 2822 aa), not human PIEZO2's 2752. Both facts are checked by
+    # tests/test_paralogue.py against the file itself.
     "6KG7": dict(species="mouse", state="curved", gating="closed",
-                 note="PIEZO2, for comparison. Resolves residues 8-823, so it "
-                      "is the best experimental view of the distal blade.",
-                 recommended_for=["piezo2", "distal_blade"]),
+                 note="PIEZO2 (mouse Piezo2, Q8CD54 numbering), the paralogue "
+                      "control. Resolves 1,817 residues from 8 to 2,822 in 16 "
+                      "segments - more than any PIEZO1 entry - including all "
+                      "38 transmembrane helices, so it is both the best "
+                      "experimental view of the distal blade and the only "
+                      "structure that can separate PIEZO1 from the fold.",
+                 recommended_for=["piezo2", "distal_blade", "paralogue"]),
     "9VED": dict(species="mouse", state="curved", gating="closed",
                  note="mouse Piezo1-MDFI complex (2026).",
                  recommended_for=["mdfic_complex"]),
@@ -123,7 +143,7 @@ def main() -> int:
     entries = []
     for path in sorted(STRUCTURE_DIR.glob("*.cif")):
         pdb = path.stem.upper()
-        if pdb.startswith("AF-"):
+        if pdb.startswith("AF-") or pdb in NOT_A_PIEZO:
             continue
         info = meta.get(pdb)
         if info is None or args.refresh:

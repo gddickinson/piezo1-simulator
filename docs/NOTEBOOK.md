@@ -112,6 +112,29 @@ at all, and if it wins, the agreement is burial. A control that comes out
 **negative** means the entry's B-factor rises with burial, so the column is not
 a mobility and neither number means anything.
 
+## Is any of it PIEZO1? — the paralogue control
+
+6KG7 is PIEZO2 and the only structure that separates "PIEZO1 does this" from
+"a PIEZO does this".
+
+```python
+from piezo1.analysis.paralogue import compare, identify_numbering
+
+identify_numbering(st).summary()   # measured, not read off a label
+r = compare("7WLT", "6KG7")
+[row.summary() for row in r["dome"]["naive"]]              # very different
+[row.summary() for row in r["dome"]["coverage_matched"]]   # ...and they are not
+r["modes"].summary()               # overlap 0.804, control 0.190
+r["modes"].protomer_order          # (2, 0, 1) — not the identity
+```
+
+**The trap is the naive dome row.** 6KG7 resolves all 38 transmembrane helices
+where 7WLT resolves 22, so measuring both directly compares how much blade each
+file contains. Coverage-matched, PIEZO2's dome depth goes from 8.51 nm to
+5.64 nm and lands inside the PIEZO1 range. The same caveat applies to PIEZO1
+entries compared with each other: depth and excess area scale with coverage,
+and only the radius of curvature is robust to it.
+
 ## Pore profile
 
 ```python

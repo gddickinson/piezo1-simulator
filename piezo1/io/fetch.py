@@ -19,7 +19,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ..config import (DERIVED_DIR, HUMAN_ACC, HUMAN_PIEZO2_ACC, LIGAND_DIR,
-                      MOUSE_ACC, SEQUENCE_DIR, STRUCTURE_DIR, ensure_dirs)
+                      MOUSE_ACC, MOUSE_PIEZO2_ACC, SEQUENCE_DIR,
+                      STRUCTURE_DIR, ensure_dirs)
 
 __all__ = ["fetch_pdb", "fetch_alphafold", "fetch_uniprot", "fetch_ligand",
            "fetch_all", "fetch_chap_grid", "fetch_cds", "CDS_TRANSCRIPTS",
@@ -290,7 +291,8 @@ def fetch_all(force: bool = False, structures: bool = True,
     if sequences:
         print("UniProt sequences")
         for acc, sp in ((HUMAN_ACC, "human"), (MOUSE_ACC, "mouse"),
-                        (HUMAN_PIEZO2_ACC, "human_piezo2")):
+                        (HUMAN_PIEZO2_ACC, "human_piezo2"),
+                        (MOUSE_PIEZO2_ACC, "mouse_piezo2")):
             for r in fetch_uniprot(acc, sp, force):
                 note(f"{acc} {r.path.suffix}", r)
                 results.append(r)

@@ -241,7 +241,8 @@ def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
                "ligands": "show_ligands",
                "paired_variant": "show_paired_variant",
                "hybrid": "show_hybrid",
-               "fluctuations": "show_fluctuations"}
+               "fluctuations": "show_fluctuations",
+               "paralogue": "show_paralogue"}
 
     for name in ANALYSES:
         assert name in drawn or name in tabular, (

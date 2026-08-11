@@ -39,6 +39,13 @@ CAVEATS = {
         "at all; if it wins, the agreement is burial rather than mechanism, "
         "and if it comes out NEGATIVE this entry's column rises with burial "
         "and is not reporting mobility."),
+    "paralogue": (
+        "THE ONLY GENERALITY CONTROL AVAILABLE. Read the two dome blocks "
+        "together: measured naively the two proteins look very different, and "
+        "that is because 6KG7 resolves all 38 transmembrane helices where a "
+        "PIEZO1 entry resolves 22-26. Coverage-matched they are "
+        "indistinguishable. n = 1 PIEZO2 structure, so this says the fold "
+        "admits the mechanism, not that every PIEZO uses it."),
     "labelling": (
         "Kinetics imported unchanged from the halotag_binding_sim project and "
         "reproduced to machine precision. The linker length and the reactive "
@@ -121,6 +128,10 @@ class TabularAnalysisMixin:
     def show_permeation(self) -> None:
         self._run_registry_analysis(
             "permeation", "Ion permeation through the pore")
+
+    def show_paralogue(self) -> None:
+        self._run_registry_analysis(
+            "paralogue", "PIEZO1 against PIEZO2 — is this the fold?")
 
     def show_fluctuations(self) -> None:
         self._run_registry_analysis(

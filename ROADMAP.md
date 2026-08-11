@@ -3,8 +3,8 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: 5 open items, all in Block R.**
-Everything finished — 380 items across 82 rounds, each carrying the result it
+**Status: 7 open items, all in Block R.**
+Everything finished — 382 items across 83 rounds, each carrying the result it
 measured — is in
 [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
 
@@ -155,17 +155,35 @@ downloaded entry nothing compares.*
       with burial and is not a mobility at all.
 
 ### Round 83 — PIEZO2 is downloaded, classified, and only ever excluded
-- [ ] 6KG7 is fetched, entity-classified and then excluded from every ensemble
+- [x] 6KG7 is fetched, entity-classified and then excluded from every ensemble
       as a paralogue. That exclusion is correct for a PIEZO1 ensemble and wrong
       as a final answer. PIEZO2 is the tactile paralogue with different
       inactivation kinetics, and it is the obvious control for the question
       this project never asks: **how much of this mechanism is PIEZO1, and how
       much is the fold?**
-- [ ] *Validate:* the dome geometry and the gating-mode symmetry analysis must
+      **Done — and the registry was wrong about the entry.** Its note said
+      6KG7 "resolves residues 8-823"; it resolves **8–2822 in 16 segments,
+      1,817 C-alphas per protomer**, more than any PIEZO1 entry here and
+      including all 38 TM helices. Corrected, and pinned against the file.
+      `analysis/paralogue.py`, reachable from the CLI and the GUI.
+- [x] *Validate:* the dome geometry and the gating-mode symmetry analysis must
       run on PIEZO2 and be reported beside PIEZO1. If the two are
       indistinguishable, say so plainly — that is a result about generality,
       not a failure. Cross-species numbering must go through the alignment, and
       PIEZO2 is 2,752 aa, so a constant offset is certain to be wrong.
+      **They are indistinguishable, and saying so needed the coverage
+      matching.** Measured naively PIEZO2's dome is 8.5 nm deep against
+      PIEZO1's 4.9 — a **coverage artefact**, since 6KG7 resolves 38 helices
+      against 22. Matched to the shared helices it gives 5.6 nm and R_c
+      10.32 against 9.72, inside the PIEZO1 range on every quantity. The
+      gating mode is the fold's: overlap **0.804** with one PIEZO2 symmetric
+      mode, **0.925** of it inside PIEZO2's symmetric subspace, against a
+      shuffled-correspondence control of 0.190. Numbering is measured rather
+      than assumed — each entry matches one of four UniProt references at
+      1.000 — and 6KG7 is **mouse** Piezo2 (Q8CD54, 2,822 aa), not the human
+      2,752 the roadmap assumed. The TM-index pairing is confirmed by the
+      alignment for 37 of 38 helices, and the protomer order is **(2, 0, 1)**,
+      so chain labels would have been wrong.
 
 ### Round 84 — Nothing computed can leave the application
 - [ ] Conservation, mechanical coupling, PRS response, mode displacement and
@@ -189,3 +207,27 @@ downloaded entry nothing compares.*
       Check that the same discipline held — pre-registration where a comparison
       is involved, a calibrated instrument before any cross-check is believed,
       and a null reported as a null.
+
+### Round 86 — Two deposited entries are not in the numbering we read them in
+*Found by Round 83's identification instrument, which scores every entry's own
+residue names against the reference sequence. Both are live: this project reads
+annotation — transmembrane helices, domains, variants, functional residues — by
+residue number, and inside these regions that number points at the wrong
+residue.*
+- [ ] **6LQI** is the Piezo1.1 isoform and is deposited in the isoform's own
+      continuous numbering across its 1382–1405 deletion. Agreement with
+      canonical mouse Piezo1 is 1.000 up to the splice site, 0.058 after it,
+      and 1.000 again shifted by **+24** — for **764 of its 1,301 resolved
+      residues**.
+- [ ] **8ZU3, 8YFC, 9VMX and 8YFG** carry residues **767–857 numbered 22 low**:
+      91 residues, every one disagreeing, every one agreeing again read +22.
+      8YEZ resolves the same region without the fault, so it is a property of
+      those depositions.
+- [ ] The paralogue comparison already refuses 6LQI and reports the blocks.
+      Everything else — the dome, the pore, the feature table, the annotation
+      panel — still reads these entries by raw residue number.
+- [ ] *Validate:* a corrected read must reproduce 1.000 agreement on every
+      affected residue, and every number this project has published for these
+      five entries must be recomputed and the differences reported. If a
+      published number does not move, say so — that is a statement about which
+      quantities the numbering reaches.

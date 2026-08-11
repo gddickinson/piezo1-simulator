@@ -224,27 +224,14 @@ def _fmt(v) -> str:
 
 
 def analysis_dome(st: Structure, species: str, **kw) -> dict:
-    import json as _json
-    from ..config import RESOURCE_DIR
-    from ..structure.geometry import measure_dome
+    from ..structure.geometry import measure_dome, tm_surface_points
     blocks, _ = protomer_blocks(st)
     if not blocks:
         return {"error": "needs three well-resolved protomers"}
-    tms = _json.loads((RESOURCE_DIR / f"uniprot_{species}.json").read_text())["transmembrane"]
-    pts = []
-    for c in st.chains:
-        m = st.mask_ca() & (st.chain == c)
-        if m.sum() < 300:
-            continue
-        xyz, seq = st.xyz[m], st.res_seq[m]
-        for tm in tms:
-            mid = 0.5 * (tm["start"] + tm["end"])
-            half = max(2.0, (tm["end"] - tm["start"]) / 6.0)
-            sel = (seq >= mid - half) & (seq <= mid + half)
-            if sel.sum() >= 3:
-                pts.append(xyz[sel].mean(axis=0))
-    dome = measure_dome(blocks, np.array(pts))
-    return {"radius_of_curvature_nm": dome.radius_of_curvature / 10,
+    pts, resolved = tm_surface_points(st, species)
+    dome = measure_dome(blocks, pts)
+    return {"n_transmembrane_resolved": len(resolved),
+            "radius_of_curvature_nm": dome.radius_of_curvature / 10,
             "dome_depth_nm": dome.dome_depth / 10,
             "dome_area_nm2": dome.dome_area / 100,
             "projected_area_nm2": dome.projected_area / 100,
@@ -348,11 +335,13 @@ def analysis_interactions(st: Structure, species: str, **kw) -> dict:
 
 #: Name to function. The CLI and the report share this registry, so a new
 #: analysis becomes available in both at once.
-from .report_tags import (analysis_fluctuations, analysis_hybrid,   # noqa: E402
+from .report_tags import (analysis_hybrid,   # noqa: E402
                           analysis_fusion, analysis_labelling,
                           analysis_ligands, analysis_nanodomain,
                           analysis_paired_variant,
                           analysis_permeation, analysis_prediction_record)
+from .report_validation import (analysis_fluctuations,   # noqa: E402
+                                analysis_paralogue)
 
 ANALYSES = {
     "dome": analysis_dome,
@@ -368,6 +357,7 @@ ANALYSES = {
     "hydration": analysis_hydration,
     "modes": analysis_modes,
     "fluctuations": analysis_fluctuations,
+    "paralogue": analysis_paralogue,
     "pockets": analysis_pockets,
     "interactions": analysis_interactions,
 }

@@ -30,8 +30,13 @@ from ..parameters import PARAMETERS as _P
 
 from .superpose import SymmetryAxis, detect_c3_axis
 
-__all__ = ["fit_sphere", "SphereFit", "radial_profile", "RadialProfile",
-           "DomeGeometry", "measure_dome", "spherical_cap_area"]
+#: A chain shorter than this is a bound peptide rather than a protomer.
+#: Matches the floor the report used inline before this was extracted.
+MIN_CA_FOR_SURFACE = 300
+
+__all__ = ["tm_surface_points", "fit_sphere", "SphereFit",
+           "radial_profile", "RadialProfile", "DomeGeometry",
+           "measure_dome", "spherical_cap_area"]
 
 
 # --------------------------------------------------------------------------
@@ -241,3 +246,49 @@ def measure_dome(xyz_by_chain: list[np.ndarray], surface_xyz: np.ndarray,
         notes={"sphere_rmse": sphere.rmse, "c3_rmsd": axis.rmsd,
                "c3_angle_deg": axis.angle_deg},
     )
+
+
+def tm_surface_points(structure, reference: str, keep=None
+                      ) -> tuple[np.ndarray, set]:
+    """Mid-membrane surface points, one per transmembrane helix per protomer.
+
+    The single definition of what :func:`measure_dome` is given. It lived in
+    two places until Round 83 — inline in the report and again in the claims
+    registry — which was survivable while only PIEZO1 was measured and stopped
+    being so the moment a second protein had to be compared against the same
+    surface: two definitions is exactly how a comparison ends up measuring how
+    each side was defined.
+
+    ``reference`` names the committed UniProt resource whose transmembrane
+    features are used, so a human structure must not be read with mouse
+    numbering and a PIEZO2 structure must not be read with either.
+    ``keep`` restricts to a set of 1-based helix indices, which is how two
+    entries resolving different amounts of blade are coverage-matched.
+
+    Returns the points and the set of helix indices that contributed from all
+    three protomers, so a caller can see what it actually measured.
+    """
+    import json
+
+    from ..config import RESOURCE_DIR
+
+    helices = json.loads(
+        (RESOURCE_DIR / f"uniprot_{reference}.json").read_text())["transmembrane"]
+    points: list[np.ndarray] = []
+    contributed: dict[int, int] = {}
+    for chain in structure.chains:
+        mask = structure.mask_ca() & (structure.chain == chain)
+        if mask.sum() < MIN_CA_FOR_SURFACE:
+            continue
+        xyz, seq = structure.xyz[mask], structure.res_seq[mask]
+        for index, helix in enumerate(helices, start=1):
+            if keep is not None and index not in keep:
+                continue
+            middle = 0.5 * (helix["start"] + helix["end"])
+            half = max(2.0, (helix["end"] - helix["start"]) / 6.0)
+            selected = (seq >= middle - half) & (seq <= middle + half)
+            if selected.sum() >= 3:
+                points.append(xyz[selected].mean(axis=0))
+                contributed[index] = contributed.get(index, 0) + 1
+    resolved = {k for k, v in contributed.items() if v >= 3}
+    return np.array(points), resolved

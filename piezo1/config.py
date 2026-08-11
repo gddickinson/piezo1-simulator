@@ -56,6 +56,10 @@ HUMAN_ACC = "Q92508"
 MOUSE_ACC = "E2JF22"
 #: UniProt accession for canonical human PIEZO2 (2752 aa).
 HUMAN_PIEZO2_ACC = "Q9H5I5"
+#: UniProt accession for canonical mouse Piezo2 (2822 aa). 6KG7 is deposited in
+#: this numbering, so the paralogue comparison needs it rather than the human
+#: entry — the two differ by 70 residues and no constant offset relates them.
+MOUSE_PIEZO2_ACC = "Q8CD54"
 
 HUMAN_LENGTH = 2521
 MOUSE_LENGTH = 2547
