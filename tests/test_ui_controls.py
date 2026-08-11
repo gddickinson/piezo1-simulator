@@ -71,7 +71,19 @@ def window(app):
     app.processEvents()
     if win.structure is None:
         pytest.skip("no default structure could be loaded")
-    return win
+    yield win
+
+    # Firing every menu action starts background analyses, and nothing here
+    # waits for them. A worker still running a pore profile or an eigensolve
+    # while the next module does its own numpy work segfaults the interpreter —
+    # two threads inside the same LAPACK. The window already knows how to stop
+    # them; the fixture just never asked.
+    for controller in ("analysis", "physics", "overlay"):
+        owner = getattr(win, controller, None)
+        cleanup = getattr(owner, "cleanup", None)
+        if cleanup is not None:
+            cleanup()
+    app.processEvents()
 
 
 def menu_actions(win) -> list:

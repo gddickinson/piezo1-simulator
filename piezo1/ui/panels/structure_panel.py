@@ -4,12 +4,33 @@ from __future__ import annotations
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFormLayout, QGroupBox,
-                             QLabel, QSlider, QVBoxLayout, QWidget)
+                             QHBoxLayout, QLabel, QSlider, QVBoxLayout,
+                             QWidget)
 
 from ...io.registry import StructureRecord, load_registry
 from ...render.representations import ColorBy, Style
 
-__all__ = ["StructurePanel"]
+__all__ = ["StructurePanel", "FILTERS"]
+
+#: The catalogue is 21 entries and one combo of 21 is a list to scroll, not a
+#: choice to make. Each filter is a *field of the record*, and its options are
+#: read from the data rather than written here — a new state or a second PIEZO2
+#: entry appears in the box without anyone remembering to add it.
+#:
+#: ``protein`` is first because it is the one that changes what you are looking
+#: at rather than which view of it: PIEZO2 is a different molecule, and it was
+#: reachable only by knowing that 6KG7 is the one mouse entry that is not
+#: PIEZO1.
+FILTERS = (
+    ("protein", "Protein", "PIEZO1 or the PIEZO2 paralogue (6KG7). Measured\n"
+                           "from each file's own residue names, not curated."),
+    ("species", "Species", "Which numbering the deposited residue numbers use.\n"
+                           "The human↔mouse offset is not constant."),
+    ("state", "State", "Curved, flattened, intermediate — or a fragment of\n"
+                       "the molecule rather than the whole trimer."),
+    ("gating", "Gating", "What the pore is doing. Every deposited human entry\n"
+                         "is closed; 11ZC is the only open-like one."),
+)
 
 STYLE_LABELS = [
     ("Cartoon", Style.CARTOON),
@@ -52,18 +73,40 @@ class StructurePanel(QWidget):
         # ---------------------------------------------------------- structure
         box = QGroupBox("Structure")
         form = QFormLayout(box)
-        self.species_combo = QComboBox()
-        self.species_combo.addItems(["all", "human", "mouse"])
-        self.species_combo.currentTextChanged.connect(self._repopulate)
-        form.addRow("Species", self.species_combo)
+        # Two filters per row: four rows of one combo each would push the
+        # entry chooser off the bottom of a normally-sized dock.
+        self.filter_combos: dict[str, QComboBox] = {}
+        for left, right in zip(FILTERS[::2], FILTERS[1::2]):
+            row = QWidget()
+            line = QHBoxLayout(row)
+            line.setContentsMargins(0, 0, 0, 0)
+            line.setSpacing(6)
+            labels = []
+            for field, title, tip in (left, right):
+                combo = QComboBox()
+                combo.addItems(self._options(field))
+                combo.setToolTip(tip)
+                combo.currentTextChanged.connect(self._repopulate)
+                self.filter_combos[field] = combo
+                line.addWidget(combo, 1)
+                labels.append(title)
+            form.addRow(" / ".join(labels), row)
+
+        #: Backwards-compatible name: the species filter was the only one.
+        self.species_combo = self.filter_combos["species"]
 
         self.structure_combo = QComboBox()
         self.structure_combo.setMinimumWidth(260)
         self.structure_combo.setToolTip(
-            "21 curated PIEZO structures. Each states its gating state,\n"
-            "resolved residue range, numbering species and citation.")
+            "The curated PIEZO catalogue, narrowed by the filters above.\n"
+            "Each entry states its gating state, resolved residue range,\n"
+            "numbering species and citation.")
         self.structure_combo.currentIndexChanged.connect(self._on_structure)
         form.addRow("Entry", self.structure_combo)
+
+        self.count = QLabel("")
+        self.count.setStyleSheet("color: #7f8798; font-size: 11px;")
+        form.addRow("", self.count)
 
         self.detail = QLabel("—")
         self.detail.setWordWrap(True)
@@ -147,12 +190,27 @@ class StructurePanel(QWidget):
 
     # ------------------------------------------------------------- helpers
 
+    def _options(self, field: str) -> list[str]:
+        """The values this field actually takes, so the box cannot go stale."""
+        values = {str(getattr(r, field, "")) for r in self.registry.available()}
+        return ["all"] + sorted(v for v in values if v)
+
     def _visible_records(self) -> list[StructureRecord]:
-        species = self.species_combo.currentText()
         records = self.registry.available()
-        if species != "all":
-            records = [r for r in records if r.species == species]
+        for field, combo in self.filter_combos.items():
+            wanted = combo.currentText()
+            if wanted != "all":
+                records = [r for r in records
+                           if str(getattr(r, field, "")) == wanted]
         return records
+
+    def clear_filters(self) -> None:
+        """Put every filter back to "all", without rebuilding four times."""
+        for combo in self.filter_combos.values():
+            combo.blockSignals(True)
+            combo.setCurrentIndex(0)
+            combo.blockSignals(False)
+        self._repopulate()
 
     def _repopulate(self) -> None:
         self.structure_combo.blockSignals(True)
@@ -161,8 +219,18 @@ class StructurePanel(QWidget):
         for r in self._records:
             self.structure_combo.addItem(r.label(), r.pdb)
         self.structure_combo.blockSignals(False)
+
+        total = len(self.registry.available())
+        self.count.setText(f"{len(self._records)} of {total} downloaded entries")
         if self._records:
             self._on_structure(0)
+        else:
+            # Leaving the previous structure's details on screen under an empty
+            # chooser reads as "this is what you are looking at", and it is not.
+            self.detail.setText(
+                "<b>No entry matches these filters.</b><br>"
+                "The catalogue has one PIEZO2 entry and one fragment, so some "
+                "combinations are empty by construction.")
 
     def _on_structure(self, index: int) -> None:
         if not (0 <= index < len(self._records)):
@@ -182,8 +250,19 @@ class StructurePanel(QWidget):
         self.structure_requested.emit(rec.pdb)
 
     def select(self, pdb: str) -> None:
+        """Show ``pdb``, clearing the filters if they are hiding it.
+
+        A silent no-op here would be a trap: ``--structure 6KG7``, a restored
+        session and the morph controller all arrive through this, and with a
+        filter set they would leave whatever was already loaded on screen
+        while appearing to have honoured the request.
+        """
+        pdb = pdb.upper()
+        if not any(r.pdb == pdb for r in self._records):
+            if any(r.pdb == pdb for r in self.registry.available()):
+                self.clear_filters()
         for i, r in enumerate(self._records):
-            if r.pdb == pdb.upper():
+            if r.pdb == pdb:
                 self.structure_combo.setCurrentIndex(i)
                 return
 

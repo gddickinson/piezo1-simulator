@@ -23,6 +23,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from piezo1.config import CACHE_DIR, RESOURCE_DIR, STRUCTURE_DIR  # noqa: E402
+from piezo1.analysis.numbering_check import identify_numbering  # noqa: E402
 from piezo1.core.structure import Structure  # noqa: E402
 
 # Hand-declared scientific interpretation, keyed by PDB ID. Anything not listed
@@ -174,6 +175,16 @@ def main() -> int:
                                "last": int(st.res_seq[m].max())})
         ligands = sorted(set(st.res_name[st.mask_ligands()].tolist()))
 
+        # Which PIEZO this is, **measured** rather than curated: the file's own
+        # residue names are scored against every reference sequence, and the
+        # right one wins at 1.000 with the runner-up below 0.25. Curating it
+        # would have been a second place for the answer to be wrong, and this
+        # is the field the structure chooser filters on.
+        identity = identify_numbering(st)
+        protein = "PIEZO2" if identity.is_piezo2 else "PIEZO1"
+        if not identity.explained:
+            print(f"  ! {pdb}: numbering not identified — {identity.summary()}")
+
         cur = CURATION.get(pdb, dict(species="unknown", state="unclassified",
                                      gating="unknown", note="", recommended_for=[]))
         entries.append({
@@ -184,6 +195,7 @@ def main() -> int:
             "doi": info.get("doi"), "emdb": info.get("emdb", []),
             "n_atoms": st.n_atoms, "n_protomers": len(chains),
             "protomer_chains": chains, "ligands": ligands,
+            "protein": protein,
             **cur,
         })
 

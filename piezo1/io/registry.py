@@ -33,6 +33,12 @@ class StructureRecord:
     ligands: tuple[str, ...]
     note: str
     recommended_for: tuple[str, ...] = ()
+    #: "PIEZO1" or "PIEZO2", **measured** at build time by scoring the file's
+    #: own residue names against every reference sequence rather than curated.
+    #: Defaults to "unknown" so a stale resource is visibly stale instead of
+    #: silently claiming PIEZO1 — which is what the species field did until
+    #: Round 83, when PIEZO2 filed as "mouse" slipped past the overlay guard.
+    protein: str = "unknown"
 
     @property
     def path(self) -> Path:
@@ -48,6 +54,10 @@ class StructureRecord:
             return None
         c = self.protomer_chains[0]
         return int(c["first"]), int(c["last"])
+
+    @property
+    def is_piezo2(self) -> bool:
+        return self.protein.upper() == "PIEZO2"
 
     @property
     def numbering_species(self) -> str:
@@ -141,5 +151,6 @@ def load_registry() -> Registry:
             protomer_chains=tuple(e.get("protomer_chains", [])),
             ligands=tuple(e.get("ligands", [])), note=e.get("note", ""),
             recommended_for=tuple(e.get("recommended_for", [])),
+            protein=e.get("protein", "unknown"),
         ))
     return Registry(entries=entries)

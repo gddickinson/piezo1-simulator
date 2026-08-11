@@ -39,6 +39,7 @@
     "D12",
     "L9Q"
    ],
+   "protein": "PIEZO1",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -86,6 +87,7 @@
     "D12",
     "L9Q"
    ],
+   "protein": "PIEZO1",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -133,6 +135,7 @@
     "D12",
     "L9Q"
    ],
+   "protein": "PIEZO1",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -179,6 +182,7 @@
    "ligands": [
     "L9Q"
    ],
+   "protein": "PIEZO1",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -227,6 +231,7 @@
    "ligands": [
     "L9Q"
    ],
+   "protein": "PIEZO1",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -271,6 +276,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -294,6 +300,7 @@
    "n_protomers": 0,
    "protomer_chains": [],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "fragment",
    "gating": "n/a",
@@ -342,6 +349,7 @@
     "PEE",
     "PLX"
    ],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -387,6 +395,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -431,6 +440,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -475,6 +485,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -520,6 +531,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -564,6 +576,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -611,6 +624,7 @@
    "ligands": [
     "NAG"
    ],
+   "protein": "PIEZO2",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -657,6 +671,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -705,6 +720,7 @@
     "PEE",
     "PLX"
    ],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "intermediate",
    "gating": "intermediate",
@@ -754,6 +770,7 @@
     "PEE",
     "PLX"
    ],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -798,6 +815,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -842,6 +860,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -886,6 +905,7 @@
     }
    ],
    "ligands": [],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "flat",
    "gating": "open-like",
@@ -933,6 +953,7 @@
    "ligands": [
     "PLX"
    ],
+   "protein": "PIEZO1",
    "species": "mouse",
    "state": "flattened",
    "gating": "closed",

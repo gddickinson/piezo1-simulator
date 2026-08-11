@@ -79,6 +79,21 @@ _MODEL = """
 <p>Chooses which structure is loaded and how it is drawn.</p>
 
 <h3>Structure</h3>
+<p><b>Four filters narrow the catalogue</b> — protein, species, state and
+gating — and each box lists the values the records actually take, so a new
+entry appears in it without anyone remembering to add it. The count underneath
+says how much is hidden.</p>
+<p><b>Protein</b> is the one worth knowing about: the catalogue contains one
+PIEZO2 entry, <b>6KG7</b>, and it is filed as <i>mouse</i> like fifteen other
+entries, so before this it was reachable only by knowing which one it was. It
+is identified by measurement — each file's own residue names scored against
+every reference sequence — not by a curated label. <b>Gating</b> is the other
+useful one: every deposited human entry is closed, and 11ZC is the only
+open-like structure in the set.</p>
+<p>Filters never hide a structure something else asked for by name: opening one
+with <tt>--structure</tt>, restoring a session or starting a morph clears
+whatever filter was in the way rather than silently leaving the previous model
+on screen.</p>
 <p>Twenty-one curated PIEZO structures. Each entry states its <b>gating
 state</b>, resolution, the residue range actually resolved, its <b>numbering
 species</b>, bound ligands and the paper it came from. That matters more than it
