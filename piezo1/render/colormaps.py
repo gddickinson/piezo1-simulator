@@ -18,6 +18,7 @@ from ..config import RESOURCE_DIR
 from ..core.structure import Structure
 
 __all__ = ["hex_to_rgb", "chain_colors", "domain_colors", "bfactor_colors",
+           "plddt_band_colors",
            "plddt_colors", "value_colors", "uniform_color", "SEQUENCE_COLORS",
            "DomainPalette", "load_domain_palette", "PLDDT_BANDS"]
 
@@ -153,11 +154,25 @@ def bfactor_colors(structure: Structure) -> np.ndarray:
     return value_colors(structure.b_factor)
 
 
+def plddt_band_colors(values: np.ndarray) -> np.ndarray:
+    """AlphaFold's confidence bands for an array of pLDDT values.
+
+    The bands are **applied in ascending order**, so each value ends up with
+    the colour of the highest threshold it clears. Applying them in the order
+    `PLDDT_BANDS` declares them — highest first — makes the final pass, at
+    ``>= 0.0``, overwrite every atom with the "very low" colour. That is what
+    this function did until Round 76: "Colour by AlphaFold pLDDT" painted the
+    whole model flat orange, and a confidence colouring that shows no
+    variation is worse than none, because it reads as uniformly bad.
+    """
+    values = np.asarray(values)
+    out = np.zeros((len(values), 3), np.float32)
+    for threshold, color in sorted(PLDDT_BANDS):
+        out[values >= threshold] = color
+    return out
+
+
 def plddt_colors(structure: Structure) -> np.ndarray:
     """AlphaFold confidence colouring; ``b_factor`` holds pLDDT in AFDB files."""
-    out = np.zeros((structure.n_atoms, 3), np.float32)
-    b = structure.b_factor
-    for threshold, color in PLDDT_BANDS:
-        out[b >= threshold] = color
-    return out
+    return plddt_band_colors(structure.b_factor)
 

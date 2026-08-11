@@ -4,6 +4,44 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 76 — the full-length model reaches the GUI, and the colouring it needs was broken
+
+`structure/hybrid.py` had existed since Round 65 and nothing outside a notebook
+could build one — the same exposure gap Round 58 found for the coupling score.
+It is now reachable three ways, all through the one shared `ANALYSES` entry so
+they cannot diverge: **View → Full-length model** draws it, **Analysis →
+Full-length model numbers…** tabulates it, `python -m piezo1.cli hybrid <PDB>`
+prints it. The registry's own guard caught me when only the drawing existed —
+`test_every_shared_analysis_is_reachable_from_the_gui` failed on the entry I
+had just added, which is the mechanism working.
+
+**The validation clause was the interesting part.** Not "it draws" but *the
+seam must be visibly rendered*, because a complete-looking PIEZO1 trimer whose
+569 distal residues are AlphaFold is exactly the confident-wrong-picture failure
+the Round 50 hazard audit exists for. So the experimental core is flat grey —
+dull on purpose, and not any of the real colourings, so it reads as background —
+the graft is coloured by pLDDT in AlphaFold's own bands, the seam carries a
+marker, and the status line states the range, the 48% clearing pLDDT 70, and the
+**75 Å** the two models differ by away from a seam that fits to 2.4 Å. That last
+number is the one a good local fit hides.
+
+**And the signal the whole design leans on did not work.** `plddt_colors`
+applied the bands in the order `PLDDT_BANDS` declares them — highest first — so
+the final pass at `>= 0.0` overwrote every atom. **Colour by → AlphaFold pLDDT
+painted the entire model one flat orange**, and had since the feature was
+written; on PIEZO1's prediction, which spans 22–95 pLDDT with 2,626 atoms above
+90, every one came out "very low". A confidence colouring that shows no
+variation is worse than none, because it reads as uniformly bad.
+
+Fixed once, in a shared `plddt_band_colors` the controller reuses rather than
+copying — the copy is how I found it, since I wrote the same loop into the
+controller and the graft came out one colour. Four bands, four colours, each
+value taking the highest threshold it clears.
+
+Suite 1053 → 1065.
+
+---
+
 ## Round 75 — retiring the roadmap, and what its length was hiding
 
 `ROADMAP.md` had reached 2,702 lines, of which **96% was a record of work

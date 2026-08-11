@@ -3,8 +3,8 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: 10 open items across five rounds**, all of them Block Q.
-Everything finished — 362 items across 75 rounds, each carrying the result it
+**Status: 8 open items across four rounds**, all of them Block Q.
+Everything finished — 365 items across 76 rounds, each carrying the result it
 measured — is in
 [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
 
@@ -70,14 +70,6 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   the scientific payoff already.
 
 ## Block Q — what the last five rounds exposed (Rounds 76–80)
-
-### Round 76 — The hybrid model should be reachable
-- [ ] `structure/hybrid.py` exists and nothing in the GUI or CLI can build one.
-      It serves a stated project aim and is currently notebook-only, which is
-      the exposure gap Round 58 found for the coupling score.
-- [ ] *Validate:* the seam must be visibly rendered — a full-length model whose
-      predicted 569 residues look like the experimental ones is precisely the
-      confident-wrong-picture failure Round 50 audited for.
 
 ### Round 77 — A fetch that verifies what it downloaded
 - [ ] Round 60 found a broken CDS endpoint; Round 65 found two 127-byte error

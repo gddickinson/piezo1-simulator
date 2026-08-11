@@ -29,6 +29,12 @@ CAVEATS = {
         "Kinetics imported unchanged from the halotag_binding_sim project and "
         "reproduced to machine precision. The linker length and the reactive "
         "fraction are UNVERIFIED assumptions."),
+    "hybrid": (
+        "TWO POPULATIONS, NOT ONE STRUCTURE. Roughly 570-2521 is experimental; "
+        "the remaining 569 residues are an AlphaFold PREDICTION, only 48% of "
+        "which clears pLDDT 70. The seam fits to 2.4 A but the two models "
+        "differ by 75 A overall, so a good local fit says nothing about the "
+        "rest. Never average across the join."),
     "fusion": (
         "PLACEMENT IS A MODEL. There is no structure of the PIEZO1-HaloTag "
         "fusion; the tag body is a sphere of its radius of gyration and the "
@@ -111,6 +117,16 @@ class TabularAnalysisMixin:
 
     def show_fusion_numbers(self) -> None:
         self._run_registry_analysis("fusion", "HaloTag fusion geometry")
+
+    def show_hybrid(self) -> None:
+        """The numbers behind View -> Full-length model.
+
+        Drawn *and* tabulated: the picture shows where the graft is, and only
+        the table gives the confident fraction and the 75 A disagreement that
+        say how far to trust it.
+        """
+        self._run_registry_analysis(
+            "hybrid", "Full-length model — experimental core plus prediction")
 
     def show_nanodomain(self) -> None:
         self._run_registry_analysis(

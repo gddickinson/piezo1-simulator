@@ -240,6 +240,8 @@ def build_parser() -> argparse.ArgumentParser:
             ("modes", "elastic network normal modes with symmetry labels"),
             ("pockets", "alpha-sphere cavities and ligand contacts"),
             ("interactions", "hydrogen bonds, salt bridges, disulfides"),
+            ("hybrid", "full-length model: experimental core plus the "
+                       "predicted distal blade, kept apart"),
             ("fusion", "where a C-terminal HaloTag would sit (a model)"),
             ("labelling", "HaloTag labelling kinetics on the three sites"),
             ("permeation", "ion current through the pore (1-D PNP)"),

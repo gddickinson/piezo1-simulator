@@ -330,3 +330,44 @@ def analysis_paired_variant(st: Structure, species: str, **kw) -> dict:
                  "R2456H does. Every entry is closed, and R2456H's phenotype is "
                  "slowed inactivation, which a closed structure need not show."),
     }
+
+
+def analysis_hybrid(st: Structure, species: str, **kw) -> dict:
+    """The full-length model: experimental core plus the predicted distal blade.
+
+    Reported as two populations that must never be averaged. Cryo-EM resolves
+    roughly 570-2521; the rest is AlphaFold, and the numbers that say how much
+    to trust it — the fraction of the graft clearing pLDDT 70, and the 75 A by
+    which the two models disagree away from the seam — are returned beside the
+    atom counts rather than left for a caller to look up.
+    """
+    from ..structure.hybrid import build_hybrid_model
+
+    try:
+        model = build_hybrid_model(st)
+    except (FileNotFoundError, ValueError) as exc:
+        return {"error": str(exc)}
+
+    predicted = model.predicted
+    n_pred = int(predicted.sum())
+    confident = int(model.confident_prediction.sum())
+    residues = model.res_seq[predicted]
+    return {
+        "seam_residue": model.seam_residue,
+        "experimental_atoms": int(model.experimental_only.sum()),
+        "predicted_atoms": n_pred,
+        "predicted_residues": int(np.unique(residues).size) if n_pred else 0,
+        "predicted_range": ([int(residues.min()), int(residues.max())]
+                            if n_pred else None),
+        "confident_fraction": confident / n_pred if n_pred else float("nan"),
+        "mean_plddt": (float(np.nanmean(model.plddt[predicted]))
+                       if n_pred else float("nan")),
+        "seam_rmsd_A": model.overlap_rmsd,
+        "global_rmsd_A": model.global_rmsd,
+        "warnings": model.warnings(),
+        "summary": model.summary(),
+        "note": ("Two populations, not one structure. Every atom carries its "
+                 "source so no analysis can average across the join; the "
+                 "grafted blade is a PREDICTION and the seam-local fit says "
+                 "nothing about the rest of it."),
+    }

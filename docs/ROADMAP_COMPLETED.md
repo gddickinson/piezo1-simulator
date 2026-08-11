@@ -2646,3 +2646,27 @@ most of it. Block Q adds what these five rounds exposed.
       found stale (Round 53 was the first), and the reason both survived is the
       same: three hundred ticked boxes are not readable.
 
+## Block Q — what the last five rounds exposed (Rounds 76–80)
+
+### Round 76 — The hybrid model should be reachable
+- [x] **Done.** `structure/hybrid.py` had existed since Round 65 with no way to
+      build one outside a notebook. Now reachable three ways: **View →
+      Full-length model** draws it, **Analysis → Full-length model numbers…**
+      tabulates it, and `python -m piezo1.cli hybrid <PDB>` prints it — all
+      through the one shared `ANALYSES` entry, so they cannot diverge. The
+      registry's own guard caught the omission when only the drawing existed.
+- [x] *Validate:* **the seam is visibly rendered, and the graft cannot be
+      mistaken for measurement.** The experimental core is flat grey; the 569
+      predicted residues are coloured by pLDDT in AlphaFold's own bands; the
+      seam at residue 570 carries a marker; and the status line states the
+      range, the 48% clearing pLDDT 70, and the 75 Å by which the two models
+      disagree away from a seam that fits to 2.4 Å. Reverting any of the three
+      fails a test.
+- [x] **The signal it relies on was broken.** `plddt_colors` applied the bands
+      highest-threshold-first, so the final pass at `>= 0.0` overwrote every
+      atom: **Colour by → AlphaFold pLDDT painted the whole model flat orange**,
+      and had since the feature was written. A confidence colouring showing no
+      variation is worse than none — it reads as uniformly bad. Fixed once, in
+      the shared `plddt_band_colors`, which the controller reuses rather than
+      copying.
+

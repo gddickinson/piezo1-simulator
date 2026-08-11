@@ -27,8 +27,8 @@ PRE_SPLIT_COMMIT = "4c1c61c"
 
 #: Measured after the split, with the duplicated Round 68 merged and Round 75
 #: itself ticked. The pre-split file had 358 completed and 14 open.
-COMPLETED_AT_SPLIT = 362
-OPEN_AT_SPLIT = 10
+COMPLETED_AT_SPLIT = 365
+OPEN_AT_SPLIT = 8
 
 
 def items(text: str, mark: str) -> list[str]:
@@ -87,10 +87,10 @@ def test_every_open_item_survived_and_lives_in_the_roadmap():
     before = set(items(original, "- [ ]"))
     after = set(items(ROADMAP.read_text(), "- [ ]"))
     closed = before - after
-    assert len(closed) == 4, (
-        f"{len(closed)} open items disappeared; only four were closed — the "
-        f"duplicated Round 68's two (Round 63 had done them) and Round 75's "
-        f"own two, this round: {sorted(closed)[:5]}")
+    assert len(closed) == 6, (
+        f"{len(closed)} open items disappeared; six have been closed since the "
+        f"split — the duplicated Round 68's two (Round 63 had done them), "
+        f"Round 75's own two, and Round 76's: {sorted(closed)[:7]}")
     assert not items(ARCHIVE.read_text(), "- [ ]"), \
         "an unfinished item is filed under completed work"
 

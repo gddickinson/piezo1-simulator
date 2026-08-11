@@ -106,6 +106,14 @@ def _view_menu(win, bar) -> None:
                 "runs about a MILLIONFOLD slow and the HUD states the factor.\n"
                 "A pore the wetting model calls shut shows no ions at all.")
 
+    _action(menu, "&Full-length model", win.hybrid.show, "",
+            checkable=True, checked=False,
+            tip="Graft the AlphaFold distal blade onto the experimental core.\n"
+                "The experiment resolves ~570-2521; the other 569 residues are\n"
+                "a PREDICTION and are coloured by pLDDT so they cannot be read\n"
+                "as measured. The seam is marked, and the status line gives the\n"
+                "75 A by which the two models disagree away from it.")
+
     halotag = menu.addMenu("&HaloTag fusion")
     halotag.setToolTipsVisible(True)
     _action(halotag, "Show modelled &tags", win.fusion.show, "",
@@ -236,6 +244,11 @@ def _analysis_menu(win, bar) -> None:
             "against a 0.2 uM sensor Kd, so a BAPTA sensor is SATURATED\n"
             "whenever its own channel opens — meaning puncta brightness\n"
             "reports labelling and open probability, not calcium amplitude.")
+    _action(menu, "Full-length model &numbers…", win.show_hybrid, "",
+            "How much of the full-length model is predicted rather than\n"
+            "measured: the grafted range, the fraction clearing pLDDT 70, and\n"
+            "the 75 A by which the two models disagree away from the seam.\n"
+            "Draw it with View > Full-length model.")
     _action(menu, "HaloTag &geometry…", win.show_fusion_numbers, "",
             "Where a C-terminal HaloTag would sit: accessible volume, distance\n"
             "to the pore exit and clearance. Draw it with View > HaloTag fusion.")
