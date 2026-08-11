@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 73,
+ "n_references": 79,
  "unresolved": [],
  "references": [
   {
@@ -395,6 +395,23 @@
    "section": "Membrane mechanics"
   },
   {
+   "key": "dolinsky2004",
+   "topic": "APBS/PDB2PQR, the Poisson-Boltzmann route Figure 4c was computed with and the one our screened-Coulomb surface deliberately is not",
+   "title": "PDB2PQR: an automated pipeline for the setup of Poisson-Boltzmann electrostatics calculations",
+   "authors": "Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA.",
+   "journal": "Nucleic acids research",
+   "year": "2004",
+   "volume": "32",
+   "pages": "W665-7",
+   "pmid": "15215472",
+   "pmcid": "PMC441519",
+   "doi": "10.1093/nar/gkh381",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1093/nar/gkh381",
+   "section": "Methods"
+  },
+  {
    "key": "evans2018dooku",
    "topic": "Dooku1 antagonises Yoda1",
    "title": "Yoda1 analogue (Dooku1) which antagonizes Yoda1-evoked activation of Piezo1 and aortic relaxation",
@@ -515,7 +532,7 @@
   },
   {
    "key": "guo2017",
-   "topic": "The dome model; PDB 6BPZ",
+   "topic": "The dome model; PDB 6B3R",
    "title": "Structure-based membrane dome mechanism for Piezo mechanosensitivity",
    "authors": "Guo YR, MacKinnon R.",
    "journal": "eLife",
@@ -702,6 +719,23 @@
    "section": "Methods"
   },
   {
+   "key": "kyte1982",
+   "topic": "The Kyte-Doolittle hydropathy scale and sliding window, the method behind Figure 3-figure supplements 1-3",
+   "title": "A simple method for displaying the hydropathic character of a protein",
+   "authors": "Kyte J, Doolittle RF.",
+   "journal": "Journal of molecular biology",
+   "year": "1982",
+   "volume": "157",
+   "pages": "105-132",
+   "pmid": "7108955",
+   "pmcid": null,
+   "doi": "10.1016/0022-2836(82)90515-0",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/0022-2836(82)90515-0",
+   "section": "Methods"
+  },
+  {
    "key": "labesse1997",
    "topic": "P-SEA: secondary structure from CA geometry",
    "title": "P-SEA: a new efficient assignment of secondary structure from C alpha trace of proteins",
@@ -821,6 +855,40 @@
    "section": "Other"
   },
   {
+   "key": "pauling1951",
+   "topic": "The alpha helix: 1.5 A rise and 100 degrees of turn per residue, the geometry the cross-helix detector is calibrated against",
+   "title": "The structure of proteins; two hydrogen-bonded helical configurations of the polypeptide chain",
+   "authors": "PAULING L, COREY RB, BRANSON HR.",
+   "journal": "Proceedings of the National Academy of Sciences of the United States of America",
+   "year": "1951",
+   "volume": "37",
+   "pages": "205-211",
+   "pmid": "14816373",
+   "pmcid": "PMC1063337",
+   "doi": "10.1073/pnas.37.4.205",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1073/pnas.37.4.205",
+   "section": "Methods"
+  },
+  {
+   "key": "perozo2002",
+   "topic": "MscL's ~20 nm^2 in-plane expansion, the comparison the dome mechanism is argued against",
+   "title": "Open channel structure of MscL and the gating mechanism of mechanosensitive channels",
+   "authors": "Perozo E, Cortes DM, Sompornpisut P, Kloda A, Martinac B.",
+   "journal": "Nature",
+   "year": "2002",
+   "volume": "418",
+   "pages": "942-948",
+   "pmid": "12198539",
+   "pmcid": null,
+   "doi": "10.1038/nature00992",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1038/nature00992",
+   "section": "Membrane mechanics"
+  },
+  {
    "key": "poole2014",
    "topic": "STOML3 tunes the displacement threshold",
    "title": "Tuning Piezo ion channels to detect molecular-scale movements relevant for fine touch",
@@ -870,6 +938,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1073/pnas.1902702116",
    "section": "Methods"
+  },
+  {
+   "key": "rawicz2000",
+   "topic": "Lytic tension of a bilayer, ~3.5 k_BT/nm^2 - the scale the paper's 42 k_BT stabilisation is quoted against",
+   "title": "Effect of chain length and unsaturation on elasticity of lipid bilayers",
+   "authors": "Rawicz W, Olbrich KC, McIntosh T, Needham D, Evans E.",
+   "journal": "Biophysical journal",
+   "year": "2000",
+   "volume": "79",
+   "pages": "328-339",
+   "pmid": "10866959",
+   "pmcid": "PMC1300937",
+   "doi": "10.1016/s0006-3495(00)76295-3",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/s0006-3495(00)76295-3",
+   "section": "Membrane mechanics"
   },
   {
    "key": "ridone2020",
@@ -924,7 +1009,7 @@
   },
   {
    "key": "saotome2018",
-   "topic": "Piezo1 structure 6B3R",
+   "topic": "Piezo1 structure 6BPZ",
    "title": "Structure of the mechanically activated ion channel Piezo1",
    "authors": "Saotome K, Murthy SE, Kefauver JM, Whitwam T, Patapoutian A, Ward AB.",
    "journal": "Nature",
@@ -1107,6 +1192,23 @@
    "is_open_access": true,
    "has_pdf": false,
    "url": "https://doi.org/10.1093/nar/gkad1011",
+   "section": "Methods"
+  },
+  {
+   "key": "vonheijne1992",
+   "topic": "The positive-inside rule the paper checks its charge distribution against in Figure 4c",
+   "title": "Membrane protein structure prediction. Hydrophobicity analysis and the positive-inside rule",
+   "authors": "von Heijne G.",
+   "journal": "Journal of molecular biology",
+   "year": "1992",
+   "volume": "225",
+   "pages": "487-494",
+   "pmid": "1593632",
+   "pmcid": null,
+   "doi": "10.1016/0022-2836(92)90934-c",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/0022-2836(92)90934-c",
    "section": "Methods"
   },
   {

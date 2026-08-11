@@ -276,14 +276,11 @@ class SASAResult:
         return float(self.atom.sum())
 
 
-def _sphere_points(n: int) -> np.ndarray:
-    """Golden-spiral points on a unit sphere — even, deterministic coverage."""
-    i = np.arange(n) + 0.5
-    phi = np.arccos(1.0 - 2.0 * i / n)
-    theta = np.pi * (1.0 + 5.0 ** 0.5) * i
-    return np.stack([np.cos(theta) * np.sin(phi),
-                     np.sin(theta) * np.sin(phi),
-                     np.cos(phi)], axis=1)
+#: Moved to ``structure.geometry`` in Round 84 so that ``physics`` can use the
+#: same point set for the screened-Coulomb surface without importing
+#: ``analysis``. Re-exported under the old private name: this module's callers
+#: are unchanged and the SASA is bit-identical.
+from ..structure.geometry import sphere_points as _sphere_points  # noqa: E402
 
 
 def sasa(structure: Structure, probe: float | None = None, n_points: int | None = None,

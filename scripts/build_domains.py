@@ -73,6 +73,90 @@ LITERATURE_DOMAINS = [
         "confidence": "high",
         "color": "#d98032",
     },
+    # --- the cuff, named and given ranges by Guo & MacKinnon 2017 ----------
+    # "The channel is surrounded at the level of the inner membrane leaflet by
+    # a layered, helical cuff. The cuff consists of 'elbow' helices (residues
+    # 2116 to 2142), a 'base' helix (residues 2149 to 2175) and 'hairpin'
+    # helices (residues 2501 to 2534) from all three subunits."  Mouse
+    # numbering, stated explicitly in the paper. All three sit inside ranges
+    # this project already had — the elbow and base within the anchor, the
+    # hairpin within the CTD — so they are sub-elements rather than a
+    # re-partition, and `category` marks them as such.
+    {
+        "id": "elbow",
+        "sub_element": True,
+        "name": "Elbow helices",
+        "category": "cuff",
+        "numbering": "mouse",
+        "start": 2116, "end": 2142,
+        "description": (
+            "First layer of the helical cuff surrounding the pore at the level "
+            "of the inner leaflet. Lies inside the anchor domain; named and "
+            "delimited by Guo & MacKinnon, who argue the cuff is the part of "
+            "the structure best placed to couple blade flattening to the gate."
+        ),
+        "source": "Guo & MacKinnon eLife 2017 (PMID 29231809), Results",
+        "confidence": "high",
+        "color": "#c9a227",
+    },
+    {
+        "id": "base",
+        "sub_element": True,
+        "name": "Base helix",
+        "category": "cuff",
+        "numbering": "mouse",
+        "start": 2149, "end": 2175,
+        "description": (
+            "Second layer of the helical cuff, between the elbow and the "
+            "hairpin. Inside the anchor domain."
+        ),
+        "source": "Guo & MacKinnon eLife 2017 (PMID 29231809), Results",
+        "confidence": "high",
+        "color": "#b8860b",
+    },
+    {
+        "id": "pore_extension",
+        "sub_element": True,
+        "name": "Pore extension (PE) helix",
+        "category": "pore",
+        "numbering": "mouse",
+        "start": 2479, "end": 2500,
+        "description": (
+            "Helix continuing the conduction path below TM38 into the "
+            "cytosol. Guo & MacKinnon name it and draw it in Figure 3a and "
+            "Figure 6-figure supplement 1c,d — 'the pore, lined by TM38 and "
+            "the PE helix' — but state no residue range for it anywhere, so "
+            "this range is DERIVED, not quoted: the segment between the end of "
+            "TM38 (mouse 2478) and the start of the hairpin (mouse 2501). "
+            "The derivation is checked rather than asserted. Over that range "
+            "in 6B3R every C-alpha lies within 11 A of the three-fold axis "
+            "while descending 23 A along it, and the range contains E2487, "
+            "H2490 and M2493 — the three residues the paper itself labels as "
+            "constricting the pore there. A range that had picked up the "
+            "hairpin instead would have C-alphas out at 20-34 A."
+        ),
+        "source": ("Derived by rule from Guo & MacKinnon eLife 2017 "
+                   "(PMID 29231809): the pore-lining segment between TM38 and "
+                   "the hairpin. The paper names the helix; the boundaries are "
+                   "this project's."),
+        "confidence": "medium",
+        "color": "#d2691e",
+    },
+    {
+        "id": "hairpin",
+        "sub_element": True,
+        "name": "Hairpin helices",
+        "category": "cuff",
+        "numbering": "mouse",
+        "start": 2501, "end": 2534,
+        "description": (
+            "Innermost layer of the cuff, contributed by the C-terminal domain "
+            "of all three subunits. Inside the CTD."
+        ),
+        "source": "Guo & MacKinnon eLife 2017 (PMID 29231809), Results",
+        "confidence": "high",
+        "color": "#a0522d",
+    },
     {
         "id": "splice_1_1",
         "name": "Piezo1.1 spliced segment",
@@ -272,6 +356,13 @@ def build() -> list[dict]:
             "description": spec["description"], "source": spec["source"],
             "confidence": spec["confidence"], "color": spec["color"],
             "declared_numbering": "mouse",
+            # A named feature *inside* another domain rather than beside it.
+            # Without this flag `Annotations.domain_at` — which returns the
+            # smallest containing domain — hands back the elbow where callers
+            # expect the anchor, and the anchor fell from first to thirteenth
+            # in the allosteric-betweenness ranking the moment the cuff was
+            # added. It is a partition; these are annotations on it.
+            "sub_element": bool(spec.get("sub_element", False)),
         })
 
     domains.sort(key=lambda d: (d["human"]["start"] or 0))

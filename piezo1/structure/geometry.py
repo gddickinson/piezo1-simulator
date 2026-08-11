@@ -34,9 +34,28 @@ from .superpose import SymmetryAxis, detect_c3_axis
 #: Matches the floor the report used inline before this was extracted.
 MIN_CA_FOR_SURFACE = 300
 
-__all__ = ["tm_surface_points", "fit_sphere", "SphereFit",
+__all__ = ["tm_surface_points", "tm_surface_by_chain", "fit_sphere", "SphereFit",
            "radial_profile", "RadialProfile", "DomeGeometry",
-           "measure_dome", "spherical_cap_area"]
+           "measure_dome", "spherical_cap_area", "sphere_points"]
+
+
+def sphere_points(n: int) -> np.ndarray:
+    """Golden-spiral points on a unit sphere — even, deterministic coverage.
+
+    Lived in ``analysis.measure`` until Round 84, where it was fine while only
+    the SASA used it. The screened-Coulomb surface in ``physics.electrostatics``
+    needs the same point set — it is the same Shrake-Rupley construction, and
+    two independent copies would be two surfaces that could silently differ —
+    and ``physics`` importing ``analysis`` points the dependency arrow
+    backwards. ``analysis.measure`` re-exports it, so the SASA is unchanged
+    down to the bit.
+    """
+    i = np.arange(n) + 0.5
+    phi = np.arccos(1.0 - 2.0 * i / n)
+    theta = np.pi * (1.0 + 5.0 ** 0.5) * i
+    return np.stack([np.cos(theta) * np.sin(phi),
+                     np.sin(theta) * np.sin(phi),
+                     np.cos(phi)], axis=1)
 
 
 # --------------------------------------------------------------------------
@@ -268,19 +287,41 @@ def tm_surface_points(structure, reference: str, keep=None
     Returns the points and the set of helix indices that contributed from all
     three protomers, so a caller can see what it actually measured.
     """
+    by_chain, resolved = tm_surface_by_chain(structure, reference, keep)
+    points = [p for chain_points in by_chain.values()
+              for p in chain_points.values()]
+    return np.array(points), resolved
+
+
+def tm_surface_by_chain(structure, reference: str, keep=None
+                        ) -> tuple[dict[str, dict[int, np.ndarray]], set]:
+    """The same surface points, kept separate per protomer and per helix.
+
+    :func:`tm_surface_points` pools them, which is right for fitting one dome
+    to a trimer and wrong for any question about a *single* protomer — and
+    Guo & MacKinnon 2017 asks exactly that one in Figure 4a: a subunit taken
+    out of the trimer sits in a plane, the trimer does not. Answering it needs
+    the same surface definition applied one chain at a time, so both callers
+    share this loop rather than each writing down what "the membrane surface"
+    means.
+
+    Returns ``{chain: {helix_index: point}}`` and the set of helix indices
+    present in all three protomers.
+    """
     import json
 
     from ..config import RESOURCE_DIR
 
     helices = json.loads(
         (RESOURCE_DIR / f"uniprot_{reference}.json").read_text())["transmembrane"]
-    points: list[np.ndarray] = []
+    out: dict[str, dict[int, np.ndarray]] = {}
     contributed: dict[int, int] = {}
     for chain in structure.chains:
         mask = structure.mask_ca() & (structure.chain == chain)
         if mask.sum() < MIN_CA_FOR_SURFACE:
             continue
         xyz, seq = structure.xyz[mask], structure.res_seq[mask]
+        found: dict[int, np.ndarray] = {}
         for index, helix in enumerate(helices, start=1):
             if keep is not None and index not in keep:
                 continue
@@ -288,7 +329,9 @@ def tm_surface_points(structure, reference: str, keep=None
             half = max(2.0, (helix["end"] - helix["start"]) / 6.0)
             selected = (seq >= middle - half) & (seq <= middle + half)
             if selected.sum() >= 3:
-                points.append(xyz[selected].mean(axis=0))
+                found[index] = xyz[selected].mean(axis=0)
                 contributed[index] = contributed.get(index, 0) + 1
+        if found:
+            out[chain] = found
     resolved = {k for k, v in contributed.items() if v >= 3}
-    return np.array(points), resolved
+    return out, resolved

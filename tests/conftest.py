@@ -38,6 +38,18 @@ def flat_structure():
 
 
 @pytest.fixture(scope="session")
+def structure_6b3r():
+    """Guo & MacKinnon 2017's own entry, in mouse numbering.
+
+    The paper's figures are replicated against this one specifically, so it
+    gets a fixture of its own rather than going through ``structure_by_id``:
+    a test of the replication that silently ran on a different entry would be
+    measuring the wrong thing.
+    """
+    return Structure.from_file(_require("6B3R"))
+
+
+@pytest.fixture(scope="session")
 def open_profile():
     """Pore profile of 11ZC, the one downloaded entry with an open pore."""
     path = STRUCTURE_DIR / "11ZC.cif"

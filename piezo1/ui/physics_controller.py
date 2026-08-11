@@ -287,6 +287,13 @@ class PhysicsController:
             widget.blockSignals(True)
             widget.setChecked(False)
             widget.blockSignals(False)
+        # The electrostatic colouring is a third consumer of the same slot and
+        # lives on the View menu rather than this panel, so it is cleared here
+        # too — otherwise a lit menu item would describe a colour that has
+        # just been painted over.
+        electrostatics = getattr(self.win, "electrostatics", None)
+        if electrostatics is not None and electrostatics.visible:
+            electrostatics.show(False)
 
     def fluctuation_line(self) -> str:
         """What the colours mean, and what says whether to believe them.

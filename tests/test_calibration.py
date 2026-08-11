@@ -34,6 +34,10 @@ ROOT = Path(__file__).resolve().parent
 #: name in their ``__all__`` must appear in :data:`CALIBRATED` below.
 CHECKING_MODULES = (
     "analysis.crosscheck",
+    "analysis.hydropathy",
+    "structure.planarity",
+    "structure.architecture",
+    "structure.micelle",
     "analysis.crosscheck_methods",
     "analysis.model_error",
     "analysis.uncertainty",
@@ -155,6 +159,69 @@ CALIBRATED = {
         "test_fluctuations.py::test_a_shuffled_observation_correlates_with_nothing",
     "fluctuations.survey_fluctuations":
         "test_fluctuations.py::test_the_survey_of_every_downloaded_entry",
+
+    # hydropathy: the 4-TM repeat test is a checking instrument — it is the
+    # evidence for the nine-unit architecture the whole project is built on,
+    # including the distal blade the full-length model grafts.
+    "hydropathy.repeat_periodicity":
+        "test_hydropathy.py::test_the_repeat_test_finds_a_planted_period "
+        "and ::test_the_repeat_test_says_no_to_a_true_null",
+    "hydropathy.hydropathy_profile":
+        "test_hydropathy.py::test_a_uniform_sequence_gives_its_own_value_everywhere",
+    "hydropathy.predict_segments":
+        "test_hydropathy.py::"
+        "test_a_planted_hydrophobic_block_is_found_where_it_was_planted",
+    "hydropathy.compare_with_reference":
+        "test_hydropathy.py::"
+        "test_the_default_threshold_recovers_few_helices_and_that_is_reported",
+    "hydropathy.annotated_hydropathy":
+        "test_hydropathy.py::test_piezo1_helices_sit_below_the_conventional_membrane_cut",
+    "hydropathy.threshold_scan":
+        "test_hydropathy.py::test_the_threshold_scan_trades_recall_for_specificity_monotonically",
+    "hydropathy.load_reference":
+        "test_hydropathy.py::test_a_missing_reference_names_what_it_looked_for",
+
+    # planarity: Figure 4a's claim as residuals. A checking instrument because
+    # it decides whether a published statement about shape holds, and because
+    # its first version reported a tautology (points replicated three times)
+    # as a control.
+    "planarity.fit_plane":
+        "test_planarity.py::test_a_known_out_of_plane_displacement_is_recovered",
+    "planarity.planarity":
+        "test_planarity.py::"
+        "test_the_flattened_structure_is_the_control_that_makes_this_mean_something",
+    "planarity.blade_dependence":
+        "test_planarity.py::test_coverage_decides_the_answer_and_the_module_says_so",
+    "planarity.beam_angle":
+        "test_planarity.py::"
+        "test_the_beam_angle_opens_towards_90_when_the_channel_flattens",
+
+    # architecture: the helix detector, calibrated on analytic helices of
+    # known rise, radius and turn before it is used on coordinates.
+    "architecture.helical_windows":
+        "test_cross_helices.py::test_the_estimator_is_unbiased_on_an_ideal_helix",
+    "architecture.helical_segments":
+        "test_cross_helices.py::test_the_beam_is_found_as_one_helix_not_two",
+    "architecture.cross_helices":
+        "test_cross_helices.py::test_the_beam_is_not_reported_as_a_cross_helix",
+    "architecture.cross_helix_scan":
+        "test_cross_helices.py::"
+        "test_the_threshold_is_reported_against_a_scan_not_asserted",
+    "architecture.ideal_helix":
+        "test_cross_helices.py::test_the_ideal_helix_generator_is_what_it_claims",
+
+    # micelle: the modelled Figure 4b envelope. A measuring instrument rather
+    # than a checking one, but it produces a curvature that gets compared with
+    # a published number, so it is registered on the same terms as the rest.
+    "micelle.distance_field":
+        "test_ui_membrane_views.py::"
+        "test_the_envelope_of_one_point_is_a_sphere_of_the_offset_radius",
+    "micelle.build_micelle":
+        "test_ui_membrane_views.py::"
+        "test_the_micelle_encloses_the_belt_and_says_it_is_a_model",
+    "micelle.belt_atoms":
+        "test_ui_membrane_views.py::"
+        "test_the_belt_is_apolar_transmembrane_side_chains",
 
     # parameter_effect
     "parameter_effect.measure_effect":

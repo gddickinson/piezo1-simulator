@@ -52,6 +52,10 @@ class ColorBy(str, Enum):
     ELEMENT = "element"
     UNIFORM = "uniform"
     VALUE = "value"
+    #: Electrostatic potential, on a *fixed* diverging scale. Separate from
+    #: VALUE because VALUE auto-ranges, and an auto-ranged potential map paints
+    #: an almost-neutral surface as violently charged.
+    POTENTIAL = "potential"
 
 
 SS_COLORS = np.array([
@@ -135,6 +139,8 @@ class MolecularView:
             return colormaps.plddt_colors(st)
         if self.color_by is ColorBy.ELEMENT:
             return st.element_colors()
+        if self.color_by is ColorBy.POTENTIAL and self.values is not None:
+            return colormaps.potential_colors(self.values)
         if self.color_by is ColorBy.VALUE and self.values is not None:
             return colormaps.value_colors(self.values)
         if self.color_by is ColorBy.SECONDARY:

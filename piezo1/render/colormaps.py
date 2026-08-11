@@ -17,7 +17,7 @@ import numpy as np
 from ..config import RESOURCE_DIR
 from ..core.structure import Structure
 
-__all__ = ["hex_to_rgb", "chain_colors", "domain_colors", "bfactor_colors",
+__all__ = ["potential_colors", "hex_to_rgb", "chain_colors", "domain_colors", "bfactor_colors",
            "plddt_band_colors",
            "plddt_colors", "value_colors", "uniform_color", "SEQUENCE_COLORS",
            "DomainPalette", "load_domain_palette", "PLDDT_BANDS"]
@@ -148,6 +148,41 @@ def value_colors(values: np.ndarray, vmin: float | None = None,
     if hi <= lo:
         hi = lo + 1.0
     return _viridis((v - lo) / (hi - lo)).astype(np.float32)
+
+
+def potential_colors(values: np.ndarray, scale: float | None = None
+                     ) -> np.ndarray:
+    """Red-white-blue diverging colours for an electrostatic potential.
+
+    Negative red, neutral white, positive blue, saturating at ``+-scale`` —
+    the convention and the scale of Guo & MacKinnon 2017's Figure 4c, whose
+    colour bar runs -5 to +5 k_BT/e.
+
+    **The scale is fixed, not fitted to the data**, and that is the whole
+    reason this is a separate function rather than another call to
+    :func:`value_colors`. That one auto-ranges to the 2nd and 98th percentiles,
+    which is right for a quantity with no natural zero and badly wrong here: a
+    protein whose surface never leaves +-1 k_BT/e would be painted in full
+    saturated red and blue and would read as violently charged. A potential
+    map that rescales itself cannot be compared with a published one, or with
+    the same protein in a different state.
+
+    NaN — an atom with no accessible surface, so no potential — is painted the
+    neutral colour rather than an extreme of the scale.
+    """
+    if scale is None:
+        from ..parameters import PARAMETERS
+
+        scale = PARAMETERS.value("electrostatics.colour_scale")
+    v = np.asarray(values, dtype=np.float64)
+    t = np.clip(np.nan_to_num(v, nan=0.0) / max(float(scale), 1e-12), -1.0, 1.0)
+    out = np.empty((len(t), 3), dtype=np.float32)
+    negative = t < 0.0
+    # White at zero, saturating to red one way and blue the other.
+    out[:, 0] = np.where(negative, 1.0, 1.0 + t * (0.20 - 1.0))
+    out[:, 1] = 1.0 - np.abs(t) * (1.0 - 0.22)
+    out[:, 2] = np.where(negative, 1.0 + t * (1.0 - 0.20), 1.0)
+    return np.clip(out, 0.0, 1.0)
 
 
 def bfactor_colors(structure: Structure) -> np.ndarray:

@@ -4,6 +4,8 @@ Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
 **Status: 7 open items, all in Block R.**
+Round **84b** was added mid-block on request and completed out of order;
+Round 84 itself is still open. Its record is below.
 Everything finished — 382 items across 83 rounds, each carrying the result it
 measured — is in
 [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
@@ -199,6 +201,53 @@ downloaded entry nothing compares.*
       what is lost: unmeasured residues must be distinguishable from a genuine
       zero, which is exactly the trap `analysis_controller` already handles by
       using the map floor rather than zero.
+
+### Round 84b — Replicate Guo & MacKinnon 2017, panel by panel
+*Requested rather than planned, and done out of order: Round 84 above is still
+open. Numbered 84b rather than taking 84, because two adjacent headings with
+the same number is the exact defect the Round 75 split found in this file and
+the reason `tests/test_roadmap.py` exists.*
+
+* The dome model, the 10.2 nm radius, the 120 nm²
+and the two-state Boltzmann are all one paper's Figure 7, cited and never
+recomputed.*
+- [x] Enumerate every panel as data with what it shows, whether it reproduces,
+      and — for the ones that do not — why. **Done: 31 panels; 16 reproduce
+      from coordinates, 3 have an analogue that is a different quantity, 12
+      need experimental data this project does not hold.** The refusals are in
+      the registry because a tool that quietly covers the tractable parts of a
+      paper leaves a reader assuming the rest.
+- [x] Reproduce Figure 7 and its supplement. **Done, to the paper's own
+      rounding: 18.8 nm opening, 6.2 nm depth, 397 nm², 277 nm² projected,
+      121 nm² released, 153 k_BT bending, 42 k_BT stabilisation.** A check on
+      the arithmetic rather than a measurement of PIEZO1 — the idealised dome
+      is a shape chosen for tractability, and our measurement of 6B3R gives
+      568 nm² of surface. Both reported, neither adjusted.
+- [x] Figure 4a as residuals, with a control. **Done: arrangement term 17.2 Å
+      on 6B3R against 3.0 Å on the flattened 7WLU; beam at 55.8° against the
+      paper's "about 60".** Coverage decides it — 6BPZ looks flat only because
+      it resolves 14 helices to 6B3R's 26.
+- [x] The 4-TM repeat the nine-THU architecture rests on, measured against a
+      shuffled control. **Done: supported in both mammalian PIEZOs (z = 4.5,
+      5.0), not in PEZO-1 or dPIEZO.**
+- [x] A GUI topology diagram with selectable 4-TM groups, as in Figure 3b.
+      **Done.** Unresolved helices are dashed rather than dropped, because
+      dropping one silently renumbers every helix after it.
+- [x] The three Figure 4 views in the main window: the micelle density (4b),
+      colouring by electrostatic potential (4c), and a monomer in a planar
+      membrane (4a). **Done.** The micelle is a construction rather than the
+      density map and says so; its thickness is a parameter and only its
+      curvature (9.8 nm) is a measurement. The potential colouring needed its
+      own `ColorBy` so the scale could be held fixed at the panel's +-5
+      k_BT/e — auto-ranging paints an almost-neutral protein as violently
+      charged. The planar membrane draws the trimer fit as its own control.
+      Found `build_disc` raising on every call, which nothing had ever made.
+- [x] *Validate:* every checking instrument calibrated on a known answer before
+      it is believed. **Done, and each calibration caught something**: the
+      electrostatics constant was 10¹⁰ too large and produced a flawless
+      0.000% truncation error by comparing zero with zero; the first planarity
+      control was a tautology; the helix detector passed 41% of a random
+      walk's windows until the turn criterion was added.
 
 ### Round 85 — Review after Rounds 81–84
 - [ ] Five-round review. The standing question for this block: the project has

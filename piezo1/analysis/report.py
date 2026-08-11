@@ -325,6 +325,39 @@ def analysis_pockets(st: Structure, species: str, top: int = 5, **kw) -> dict:
             "ligand_contacts": ligand_contact_residues(st)}
 
 
+def analysis_guo2017(st: Structure, species: str, **kw) -> dict:
+    """Guo & MacKinnon 2017 panel by panel: what reproduces and what cannot.
+
+    Returns the coverage summary plus every panel that needs no structure and
+    the ones this entry supports, rather than the full ``replicate_all`` dump —
+    the report is meant to be read, and the per-panel detail is a CLI or an
+    API call away.
+    """
+    from .guo2017 import PANELS, coverage, replicate
+
+    summary = coverage()
+    results, failures = {}, {}
+    for panel in PANELS:
+        if panel.compute is None:
+            continue
+        try:
+            results[panel.key] = replicate(panel.key, structure=st,
+                                           reference=species)["result"]
+        except Exception as exc:                          # noqa: BLE001
+            failures[panel.key] = f"{type(exc).__name__}: {exc}"
+    return {
+        "paper": summary["paper"],
+        "coverage": summary["summary"],
+        "by_status": summary["by_status"],
+        "cannot_replicate": {p.key: p.reason for p in PANELS
+                             if p.status == "not_replicable"},
+        "analogue_not_the_same_quantity": {p.key: p.reason for p in PANELS
+                                           if p.status == "analogue"},
+        "panels": results,
+        "failed": failures,
+    }
+
+
 def analysis_interactions(st: Structure, species: str, **kw) -> dict:
     from .interactions import detect_interactions
     contacts = detect_interactions(st, min_sequence_separation=3)
@@ -360,6 +393,7 @@ ANALYSES = {
     "paralogue": analysis_paralogue,
     "pockets": analysis_pockets,
     "interactions": analysis_interactions,
+    "guo2017": analysis_guo2017,
 }
 
 

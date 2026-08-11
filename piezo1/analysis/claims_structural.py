@@ -208,3 +208,41 @@ def _within_position_variance() -> float:
                 positions.append(human_residue)
                 values.append(prediction.gating_cost_change)
     return variance_decomposition(positions, values).within_fraction
+
+
+# --------------------------------------------------------------------------
+# Guo & MacKinnon 2017 — the paper the dome model comes from
+# --------------------------------------------------------------------------
+
+def _guo_panel(key: str, *path):
+    """One number out of a replicated panel, measured on the paper's own entry."""
+    from .guo2017 import replicate
+
+    node = replicate(key, structure=_structure("6B3R"))["result"]
+    for step in path:
+        node = node[step]
+    return float(node)
+
+
+def _guo_beam_angle() -> float:
+    """Beam-to-pore-axis angle on 6B3R. The paper states 'about 60 degrees'."""
+    return _guo_panel("4a", "beam_angle_deg")
+
+
+def _guo_blade_share() -> float:
+    """Fraction of the trimer's non-planarity carried by the distal blade."""
+    return _guo_panel("4a", "blade", "share_of_arrangement")
+
+
+def _guo_pore_offset() -> float:
+    """How much wider our pore radii are than the published HOLE ones, A.
+
+    A methodological difference reported rather than absorbed. Zero would mean
+    the profiler had been fitted to the paper.
+    """
+    return _guo_panel("6b", "mean_offset_A")
+
+
+def _guo_patch_interaction() -> float:
+    """Screened interaction between the cap and loop charged patches, k_BT."""
+    return _guo_panel("4-S1", "interaction_kT")

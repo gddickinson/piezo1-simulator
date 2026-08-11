@@ -34,6 +34,16 @@ class Domain:
     confidence: str
     mouse_start: int | None = None
     mouse_end: int | None = None
+    #: True for an element that lies *inside* another rather than partitioning
+    #: the chain beside it. Guo & MacKinnon's cuff — the elbow and base within
+    #: the anchor, the hairpin and PE helix within the CTD — are named features
+    #: of a region this project already had, not a re-partition of it.
+    #: :meth:`Annotations.domain_at` skips them, so "which domain is this
+    #: residue in" keeps its old answer; ask :meth:`sub_elements_at` for the
+    #: finer one. Adding them without this flag silently moved the anchor from
+    #: first to thirteenth in the allosteric-betweenness ranking, because
+    #: `domain_at` returns the *smallest* containing domain.
+    sub_element: bool = False
     extra: dict = field(default_factory=dict)
 
     def contains(self, residue: int) -> bool:
@@ -127,6 +137,7 @@ class Annotations:
                     color=d["color"], description=d["description"],
                     source=d["source"], confidence=d["confidence"],
                     mouse_start=mouse.get("start"), mouse_end=mouse.get("end"),
+                    sub_element=bool(d.get("sub_element", False)),
                     extra={k: v for k, v in d.items()
                            if k in ("rule", "thu_index", "distal", "transmembrane")},
                 ))
@@ -169,9 +180,20 @@ class Annotations:
     # ------------------------------------------------------------- queries
 
     def domain_at(self, residue: int) -> Domain | None:
-        """Most specific domain containing ``residue``."""
-        hits = [d for d in self.domains if d.contains(residue)]
+        """Most specific *partitioning* domain containing ``residue``.
+
+        Sub-elements are skipped — see :attr:`Domain.sub_element`. The chain's
+        architecture is a partition and callers rely on it being one; the cuff
+        elements are named features inside two of those parts.
+        """
+        hits = [d for d in self.domains
+                if d.contains(residue) and not d.sub_element]
         return min(hits, key=lambda d: d.length) if hits else None
+
+    def sub_elements_at(self, residue: int) -> list[Domain]:
+        """Named features inside the domain this residue belongs to."""
+        return [d for d in self.domains
+                if d.sub_element and d.contains(residue)]
 
     def domains_by_category(self, category: str) -> list[Domain]:
         return [d for d in self.domains if d.category == category]

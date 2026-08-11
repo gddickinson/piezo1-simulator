@@ -59,6 +59,9 @@ EXEMPT_NAMES = {
     "n_simulations": "Monte-Carlo replicate count",
     "n_resamples": "bootstrap replicate count; changes the precision of an "
                    "interval, never the quantity being estimated",
+    "n_shuffles": "permutation replicate count; changes the precision of the "
+                  "control distribution, never its centre",
+    "n_modelled": "counter, initialised to zero",
     "n_pairs": "how many site pairs are sampled; changes the precision of the "
                "correlation, not its expected value",
     "digits": "how many decimals to print; presentation only",
@@ -126,6 +129,39 @@ EXEMPT = {
         "measured quantity that could be revised",
     ("physics/_pnp_kernels.py", None, "R_GAS"):
         "SI-definitional since the 2019 redefinition",
+    ("physics/electrostatics.py", None, "_E2_OVER_4PI_EPS0"):
+        "e^2 / 4 pi eps0 in Joule-metre. SI-definitional since the 2019 "
+        "redefinition — both the elementary charge and the vacuum permittivity "
+        "are exact — so it is a unit conversion rather than a quantity that "
+        "could be revised. It is nonetheless the number that was wrong by "
+        "10^10 in this module's first draft, which is why it carries a comment "
+        "rather than merely an exemption.",
+    ("physics/electrostatics.py", None, "_BOLTZMANN"):
+        "SI-definitional since the 2019 redefinition; it converts an energy "
+        "into k_BT and nothing else",
+    ("analysis/hydropathy.py", None, "_UNKNOWN"):
+        "hydropathy assigned to a residue that is not one of the twenty. Zero "
+        "is the only defensible value — neither hydrophobic nor hydrophilic — "
+        "and it exists so that an unknown residue does not shift the numbering "
+        "of the curve, which dropping it would.",
+    ("analysis/hydropathy.py", "repeat_periodicity", "period"):
+        "the repeat length being *tested*, not a setting. It is the hypothesis "
+        "Guo & MacKinnon state — that the helices come in fours — and the "
+        "caller varies it to test other periods; registering it would make the "
+        "hypothesis a parameter of its own test.",
+    ("analysis/projection.py", None, "_DEFAULT_Z"):
+        "atomic number used for an element not in the table. Carbon, because a "
+        "protein is mostly carbon and an unrecognised element in a cryo-EM "
+        "model is far more likely to be an unusual carbon than an unusual "
+        "metal. An element identity, not a tunable quantity.",
+    ("analysis/projection.py", "scale_bar_pixels", "nanometres"):
+        "the length of the scale bar the caller wants drawn. Figure 2's is 10 "
+        "nm, so that is the default; it describes the annotation, not the "
+        "image, and cannot change a pixel of the projection.",
+    ("analysis/topology.py", None, "MEMBRANE_HALF"):
+        "half-height of the drawn membrane in the topology diagram's own "
+        "dimensionless layout units. A renderer scales it; it is a drawing "
+        "coordinate and there is no Angstrom it corresponds to.",
     ("physics/pore_charge.py", None, "AVOGADRO"):
         "SI-definitional since the 2019 redefinition; it turns a count of "
         "elementary charges into a molar density and nothing else",

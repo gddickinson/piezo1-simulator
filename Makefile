@@ -67,6 +67,7 @@ notebooks:  ## Rebuild the example notebooks, running every cell first
 
 figures:  ## Regenerate documentation figures and screenshots
 	$(PY) scripts/make_figures.py
+	$(PY) scripts/make_guo2017_figures.py
 	$(PY) scripts/screenshot_app.py --structure 8YEZ --analysis
 
 validate:  ## Re-run both pre-registered variant tests

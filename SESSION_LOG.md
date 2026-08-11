@@ -4,6 +4,249 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 84b — Reproducing the paper the whole project rests on
+
+The dome model is Guo & MacKinnon 2017. The 10.2 nm radius in `parameters.json`,
+the 120 nm² in `PUBLISHED_AREA_ESTIMATES`, the two-state Boltzmann in
+`physics/dome.py` — all of it is that paper's Figure 7, cited and never
+recomputed. The ask was to be able to replicate all parts of its figures from
+our own structures. Doing that turned out to be less about drawing pictures than
+about being honest, panel by panel, about which ones we can actually make.
+
+### The registry is the deliverable, and its refusals are half of it
+
+`analysis/guo2017.py` holds all **31 panels** as data: what each shows, whether
+it reproduces, and — for the ones that do not — why not. **16 reproduce, 3 have
+an analogue that is a different quantity, 12 need experimental data we do not
+hold.**
+
+The 12 could simply have been left out of a module called "replicate the
+figures". They are in it because a tool that quietly covers the tractable parts
+of a paper leaves a reader assuming the rest. An FSC curve needs two half maps.
+A local-resolution map needs the map. Four panels are micrographs of
+proteoliposomes. One needs P2X and ASIC coordinates, which are *deliberately*
+absent: the structure catalogue, the numbering checks and the entity classifier
+all assume a PIEZO, and admitting two unrelated channels to make one panel would
+weaken every one of those guards. That is a real gap and it is recorded as one.
+
+The three analogues are the dangerous entries, because they produce a picture
+that can sit beside the original. A projection of an atomic model is **not** a
+2D class average — no CTF, no solvent, and no detergent micelle, which is most
+of what Figure 2b's envelope actually is. A screened-Coulomb surface is **not**
+APBS. Both carry the caveat structurally rather than in a docstring, and a test
+asserts that no path shows either without it.
+
+### Figure 7 reproduces exactly, and that is a check on arithmetic, not on PIEZO1
+
+Every number in Figure 7 and its supplement falls out of two lengths by
+closed-form spherical-cap geometry — an 18.8 nm opening, a 6.2 nm depth,
+397 nm² of surface, 277 nm² projected, 121 nm² released, 153 k_BT of bending,
+42 k_BT of stabilisation. That is a good calibration precisely *because* it is
+not a measurement: the answers are known independently of any code here, so an
+implementation that reproduces them is doing cap geometry correctly, and one
+that does not is broken in a way a real structure would have hidden.
+
+Our own measurement of 6B3R's dome does **not** match it — 568 nm² of surface
+against 397 — and `compare_with_measured` reports both and adjusts neither. The
+idealised dome is a shape the authors chose to make the energetics tractable
+and they say so; the gap between an idealisation and a measurement is a result.
+
+Making Figure 7c quantitative — flattening at constant membrane area — surfaced
+something the paper does not spell out. Complete flattening releases the *whole*
+152.8 k_BT of bending energy as well as the whole 120.8 nm² of projected area.
+With the paper's own (ΔG_prot + ΔG_bend) of 20–40 k_BT, that puts ΔG_prot near
+**+180 k_BT**.
+
+### Three instruments, and what each calibration caught
+
+**Electrostatics.** `e²/4πε₀` was written in Joule-Angstrom and then converted
+from metres a second time. The Bjerrum length came out at 7×10¹⁰ Å, the Debye
+length underflowed to zero, every potential was exactly zero — and the
+truncation-error check reported a flawless 0.000% because it was comparing zero
+with zero. Nothing raised, and a "coloured surface" would have been uniformly
+one colour and might well have been shipped. The single-point-charge case is
+what said no. The cutoff's documented error was wrong too: I wrote "under 0.2%"
+from the analytic falloff, which bounds *one* charge and not 804; measured on
+6B3R's own surface it is 2.2%.
+
+**Planarity.** My first control was one protomer's points replicated three
+times — same point count as the trimer, same shape as a protomer. It agreed
+with the protomer RMSD to every digit on every structure, because replication
+leaves a least-squares plane exactly unchanged. A tautology dressed as evidence.
+Replaced with a decomposition that can fail, and checked for closure.
+
+**The helix detector.** Rise and radius alone passed **41%** of the windows of a
+synthetic random walk — a walk with a fixed step length looks locally like a
+helix on both. The turn criterion, applied to the worst step rather than the
+mean, takes that under 5% while admitting every window of an ideal helix. And
+using the window's own principal axis biased the estimator to 1.63 Å rise
+against the textbook 1.50; sub-window centroids fixed it, which matters because
+otherwise the tolerances would have been absorbing a systematic error as well
+as a real spread.
+
+### Coverage, again, in a new place
+
+Measured on whatever each entry resolves, 6B3R's non-planarity is 17.2 Å and
+6BPZ's is 4.7 Å. Two structures of the same protein apparently disagreeing about
+whether it is curved. They do not: 6BPZ resolves 14 transmembrane helices and
+6B3R resolves 26, and coverage-matched both give ~4.6 Å. The non-planarity lives
+almost entirely in the distal blade.
+
+This is exactly the trap `analysis/paralogue.py` was written after in Round 83,
+in a completely different place, and I walked into it again — which is the
+argument for `blade_dependence` measuring the split on **one** entry, where no
+second entry's coverage can confound it.
+
+### The 4-TM repeat, measured rather than cited
+
+The paper extends six visible units to nine on the strength of hydropathy. That
+inference is load-bearing for *this* project — it is why `domains.json` has nine
+THUs and why the full-length model grafts a distal blade — so it is now measured
+against a shuffled control. Supported in both mammalian PIEZOs (z = 4.5, 5.0),
+**not** in PEZO-1 or dPIEZO.
+
+The control has to be **register-maximised** like the statistic. Taking the best
+of four registers and comparing against an unmaximised null moved the control
+mean from 38 to 0 and would have manufactured about a standard deviation of
+significance from nothing.
+
+Separately: PIEZO1's transmembrane helices average +1.22 on the Kyte-Doolittle
+scale, below the conventional +1.6 cut, so a threshold call recovers 6 of 38.
+The threshold is left at the published value and the whole recall curve is
+reported. Tuning it to this protein would have made the agreement a statement
+about the tuning.
+
+### The topology diagram, and the one thing it must never do
+
+Asked for as a GUI feature: a monomer's topology in a membrane, with selectable
+groups of TMs as in Figure 3b's boxes. `analysis/topology.py` builds it as data
+and `ui/topology_view.py` paints it, so the widget, a script and a test all draw
+the same diagram and it cannot disagree with an analysis of the same
+architecture.
+
+A helix the entry does not model is drawn **dashed, never dropped**. Dropping
+one would put TM13 where TM1 belongs and silently renumber every helix after it,
+on a picture that still looked entirely reasonable — the single worst thing a
+topology figure can do. 6B3R greys out TM1–12 and 7WLT greys out TM1–16, both
+read from the coordinates rather than written down.
+
+The boxes are a *selection*, not an annotation: ticking a unit lights the same
+residues on the 3-D model. When the ticked units are not adjacent the model
+highlights the whole span between the first and last, and the status line says
+so rather than letting the picture imply otherwise.
+
+### The three Figure 4 views, and what each could be mistaken for
+
+Asked for after the topology diagram: the micelle density (4b), electrostatic
+colouring (4c) and a monomer in a planar membrane (4a), all in the main window.
+Each is a picture that can be read as a measurement it is not, so each is built
+around the specific thing it could be mistaken for.
+
+**The micelle is the hardest case**, because Figure 4b's envelope is *evidence*
+— it is a measurement of the detergent, and it is the paper's direct
+demonstration that PIEZO1 bends its surroundings. We have no map. What is drawn
+is the iso-surface of the distance to the hydrophobic belt, which has two
+properties that make it worth drawing at all: it is calibratable (one atom
+gives a sphere of exactly the offset radius, a line a capsule, both checked),
+and it has **no free shape parameters**. That second point is what lets the
+status line divide the picture honestly: the shell *thickness* is a registered
+parameter and carries no information, because an offset surface around a sphere
+is a sphere with the radius increased by exactly the offset — measured, not
+argued, by building it at 7 Å and 13 Å and checking the fitted curvature is
+identical to floating point. The *curvature* is a fit to the belt atoms
+themselves, and comes out at 9.8 nm against the paper's 10.2 nm idealisation
+and our own 10.8 nm dome fit.
+
+**The potential colouring needed a new ColorBy.** The obvious route was to
+reuse `ColorBy.VALUE`, which already carries a per-atom array. It auto-ranges
+to the 2nd and 98th percentiles, and for a potential that is not a cosmetic
+difference: 6B3R's surface never leaves ±2 k_BT/e, so an auto-ranged map would
+paint an almost-neutral protein in full saturated red and blue, and it could
+not be compared with Figure 4c or with the same protein in another state.
+`ColorBy.POTENTIAL` exists to hold the scale fixed at the panel's own ±5.
+
+**The planar membrane draws its own control.** Any point set has a best-fit
+plane, so drawing one proves nothing; `use_trimer` draws the same construction
+on the assembly, where the paper says it fails, and the status line reports the
+slab each would need — 42 Å for a protomer, 60 Å for the trimer, against a real
+bilayer's 36 Å.
+
+### The caveats were making the application unusable
+
+Reported from use: running an analysis grew the window past the edge of the
+monitor. The cause is this project's own discipline. Long status text goes into
+a plain `QLabel`; a non-wrapping label reports its **full text width** as a size
+hint, `QStatusBar` passes that up as a minimum, and `QMainWindow` honours it. So
+the window widened in proportion to how careful the caveat was, and the worst
+offenders are the newest — the micelle's "not the observed density", the pore
+surface's two sentences about what a probe sphere is not.
+
+Measured rather than described, because the fix needed a reason: a plain label
+demands a **12,566-pixel** window for a 1500-character message, and 1,698 px for
+200. The replacement demands the same width at 0 characters as at 4,000.
+
+The fix separates the display from the text, and the second half is the part
+that matters. `StatusMessage.text()` returns the **whole** message — every
+guard in the suite that asserts a caveat cannot be omitted reads exactly that,
+and had elision reached it, all of them would have started passing vacuously
+while the user saw less. What is *painted* is elided; the rest is in the
+tooltip and in a scrollable history behind a **⋯** button.
+
+The history was not in the ask and is the part I would keep if only one
+survived: several controllers set a status while they work and another when
+they finish, so the first was previously lost with no way back to it.
+
+### Two defects found on the way
+
+**The bibliography had 6B3R and 6BPZ swapped.** `guo2017` was recorded against
+PDB 6BPZ and `saotome2018` against 6B3R. Both PMIDs were right, so nothing
+resolved wrongly and no test could see it; the deposited entries themselves say
+which is which. This matters more than a typo, because 6B3R is the entry every
+Figure 7 number is measured against.
+
+**Adding the cuff broke the anchor.** Guo & MacKinnon give ranges for the elbow,
+base and hairpin, and all three sit *inside* domains the project already had.
+`Annotations.domain_at` returns the **smallest** containing domain, so adding
+them moved the anchor from first to thirteenth in the allosteric-betweenness
+ranking and broke the conservation ranking too. The fix is a `sub_element` flag:
+the chain's architecture is a partition and callers rely on it being one; these
+are named features inside two of its parts. Two existing tests caught it, which
+is what they are for.
+
+**`build_disc` had never worked and nothing had ever called it.** It builds a
+flat disc through `build_membrane_mesh` with `n_radial=2`, and that function
+takes the normals from `np.gradient(..., edge_order=2)`, which needs three
+samples. Every call raised. The dome controller draws its flat projection
+through `build_membrane_mesh` directly, so nothing had exercised it; the Figure
+4a planes are its first caller. Found by a test that renders to a framebuffer
+and counts lit pixels — the same assertion that caught the invisible cylinders,
+for the same reason.
+
+The pore-extension helix is the one range the paper never states. It is derived
+— the pore-lining segment between TM38 and the hairpin, mouse 2479–2500 — and
+the derivation is checked rather than asserted: over that range every C-alpha
+sits within 11 Å of the three-fold axis, and it contains E2487, H2490 and M2493,
+the three residues the paper itself labels as constricting there. Marked medium
+confidence, and the description says the boundaries are ours.
+
+### Where the numbers disagree, and why that is left alone
+
+Our pore radii are 0.62 Å wider than the published HOLE ones at all three named
+residues. Same constrictions, same order, same closed verdict. Two independent
+pore algorithms differing systematically is expected; the offset is pinned in
+**both** directions, because zero would mean the profiler had been fitted to the
+paper.
+
+Figure 4—supplement 1 names two salt bridges. E2257–R1762 is reproduced by both
+conventions, in all three protomers, entirely domain-swapped — the paper's
+actual claim, and `patch_interaction` puts it at −6.18 k_BT with a same-chain
+term of −0.001. D2264–R1761 is **not** found: 6.43 Å charge-centroid separation
+against a 5.5 Å cutoff, though its closest atoms are 4.58 Å apart. The two
+conventions disagree about that contact and the paper does not say which it
+used, so neither is called wrong.
+
+---
+
 ## Round 83 — PIEZO2, and the answer that the mechanism is the fold's
 
 6KG7 has been downloaded since the beginning, entity-classified, and then

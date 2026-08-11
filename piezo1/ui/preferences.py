@@ -134,6 +134,37 @@ class PreferencesMixin:
         self._sequence_window.raise_()
         self._sequence_window.activateWindow()
 
+    def _show_topology(self) -> None:
+        """Open the monomer topology diagram, creating it on first use.
+
+        The reference passed is the structure's **own** numbering, not mouse:
+        the diagram places helices by residue number, so reading a human entry
+        with the mouse transmembrane table would shift every one of them by up
+        to 26 residues and the picture would look entirely reasonable.
+        """
+        from .topology_window import TopologyWindow
+        if self._topology_window is None:
+            self._topology_window = TopologyWindow(self)
+            self._topology_window.residues_selected.connect(
+                self._highlight_topology_range)
+        if self.structure is not None:
+            species = (self.record.numbering_species if self.record else "human")
+            self._topology_window.set_structure(self.structure, species)
+        self._topology_window.show()
+        self._topology_window.raise_()
+        self._topology_window.activateWindow()
+
+    def _highlight_topology_range(self, lo: int, hi: int,
+                                  numbering: str) -> None:
+        """Select a residue range from the topology diagram on the model.
+
+        All three protomers, because a topology diagram is of *a* protomer and
+        the number it gives is a residue number rather than one copy of it —
+        the same rule an annotation click follows.
+        """
+        self._highlight(list(range(int(lo), int(hi) + 1)),
+                        f"topology {lo}-{hi} ({numbering})")
+
     def _show_parameters(self) -> None:
         """Open the parameter registry editor."""
         from ..parameters import PARAMETERS

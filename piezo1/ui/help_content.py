@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from .help_topics_physics import PHYSICS
 from .help_topics_tags import TAGS_AND_CURRENT
+from .help_topics_paper import PAPER
 from .help_topics_views import VIEWS
 
 __all__ = ["TOPICS", "DOC_LINKS", "SHORTCUTS", "topic_html"]
@@ -67,6 +68,7 @@ SHORTCUTS = [
     ("Ctrl+S / Ctrl+L", "Save / load a session"),
     ("Ctrl+E", "Export an analysis report"),
     ("Ctrl+Shift+S", "Sequence window"),
+    ("Ctrl+Shift+T", "Topology diagram — Figure 3 for this entry"),
     ("Ctrl+D", "Display options — what the overlay shows"),
     ("Ctrl+P", "Parameters — every registered number, with its source"),
     ("Ctrl+R", "Reset the panel layout"),
@@ -394,6 +396,7 @@ TOPICS: list[tuple[str, str]] = [
     ("Measure panel — selecting atoms", _MEASURE),
     ("Drawing what was measured", VIEWS),
     ("HaloTag and ion current", TAGS_AND_CURRENT),
+    ("Reproducing Guo & MacKinnon 2017", PAPER),
     ("Framing and multiple structures", _FRAMING),
     ("Limits and honesty", _HONESTY),
     ("Wrong numbers, and what stops them", _hazards_topic()),

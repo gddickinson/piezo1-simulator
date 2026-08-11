@@ -242,7 +242,8 @@ def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
                "paired_variant": "show_paired_variant",
                "hybrid": "show_hybrid",
                "fluctuations": "show_fluctuations",
-               "paralogue": "show_paralogue"}
+               "paralogue": "show_paralogue",
+               "guo2017": "show_guo2017"}
 
     for name in ANALYSES:
         assert name in drawn or name in tabular, (

@@ -211,7 +211,8 @@
    "source": "Zhao et al. Nature 2018 (PMID 30089899); Wang et al. Nat Commun 2018 (PMID 29610524)",
    "confidence": "medium",
    "color": "#f2a541",
-   "declared_numbering": "mouse"
+   "declared_numbering": "mouse",
+   "sub_element": false
   },
   {
    "id": "coiled_coil",
@@ -229,7 +230,8 @@
    "source": "UniProt Q92508/E2JF22 coiled-coil feature",
    "confidence": "high",
    "color": "#d98032",
-   "declared_numbering": "mouse"
+   "declared_numbering": "mouse",
+   "sub_element": false
   },
   {
    "id": "splice_1_1",
@@ -247,7 +249,8 @@
    "source": "Geng et al. Neuron 2020, PDB 6LQI",
    "confidence": "high",
    "color": "#9d7bd8",
-   "declared_numbering": "mouse"
+   "declared_numbering": "mouse",
+   "sub_element": false
   },
   {
    "id": "thu8",
@@ -318,6 +321,44 @@
    "confidence": "high",
    "color": "#4fc3c7",
    "rule": "cytoplasmic topological domain between TM36 and TM37"
+  },
+  {
+   "id": "elbow",
+   "name": "Elbow helices",
+   "category": "cuff",
+   "human": {
+    "start": 2100,
+    "end": 2126
+   },
+   "mouse": {
+    "start": 2116,
+    "end": 2142
+   },
+   "description": "First layer of the helical cuff surrounding the pore at the level of the inner leaflet. Lies inside the anchor domain; named and delimited by Guo & MacKinnon, who argue the cuff is the part of the structure best placed to couple blade flattening to the gate.",
+   "source": "Guo & MacKinnon eLife 2017 (PMID 29231809), Results",
+   "confidence": "high",
+   "color": "#c9a227",
+   "declared_numbering": "mouse",
+   "sub_element": true
+  },
+  {
+   "id": "base",
+   "name": "Base helix",
+   "category": "cuff",
+   "human": {
+    "start": 2133,
+    "end": 2159
+   },
+   "mouse": {
+    "start": 2149,
+    "end": 2175
+   },
+   "description": "Second layer of the helical cuff, between the elbow and the hairpin. Inside the anchor domain.",
+   "source": "Guo & MacKinnon eLife 2017 (PMID 29231809), Results",
+   "confidence": "high",
+   "color": "#b8860b",
+   "declared_numbering": "mouse",
+   "sub_element": true
   },
   {
    "id": "outer_helix",
@@ -396,6 +437,44 @@
    "confidence": "high",
    "color": "#e8556d",
    "rule": "cytoplasmic topological domain after TM38"
+  },
+  {
+   "id": "pore_extension",
+   "name": "Pore extension (PE) helix",
+   "category": "pore",
+   "human": {
+    "start": 2453,
+    "end": 2474
+   },
+   "mouse": {
+    "start": 2479,
+    "end": 2500
+   },
+   "description": "Helix continuing the conduction path below TM38 into the cytosol. Guo & MacKinnon name it and draw it in Figure 3a and Figure 6-figure supplement 1c,d \u2014 'the pore, lined by TM38 and the PE helix' \u2014 but state no residue range for it anywhere, so this range is DERIVED, not quoted: the segment between the end of TM38 (mouse 2478) and the start of the hairpin (mouse 2501). The derivation is checked rather than asserted. Over that range in 6B3R every C-alpha lies within 11 A of the three-fold axis while descending 23 A along it, and the range contains E2487, H2490 and M2493 \u2014 the three residues the paper itself labels as constricting the pore there. A range that had picked up the hairpin instead would have C-alphas out at 20-34 A.",
+   "source": "Derived by rule from Guo & MacKinnon eLife 2017 (PMID 29231809): the pore-lining segment between TM38 and the hairpin. The paper names the helix; the boundaries are this project's.",
+   "confidence": "medium",
+   "color": "#d2691e",
+   "declared_numbering": "mouse",
+   "sub_element": true
+  },
+  {
+   "id": "hairpin",
+   "name": "Hairpin helices",
+   "category": "cuff",
+   "human": {
+    "start": 2475,
+    "end": 2508
+   },
+   "mouse": {
+    "start": 2501,
+    "end": 2534
+   },
+   "description": "Innermost layer of the cuff, contributed by the C-terminal domain of all three subunits. Inside the CTD.",
+   "source": "Guo & MacKinnon eLife 2017 (PMID 29231809), Results",
+   "confidence": "high",
+   "color": "#a0522d",
+   "declared_numbering": "mouse",
+   "sub_element": true
   }
  ]
 }

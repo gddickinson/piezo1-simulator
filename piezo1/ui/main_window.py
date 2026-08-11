@@ -34,9 +34,12 @@ from .dome_controller import DomeController
 from .hybrid_controller import HybridController
 from .interaction_controller import InteractionController
 from .ion_flux_controller import IonFluxController
+from .micelle_controller import MicelleController
 from .nanodomain_controller import NanodomainController
 from .path_controller import AllostericPathController
 from .pocket_controller import PocketController
+from .planar_membrane_controller import PlanarMembraneController
+from .potential_controller import ElectrostaticColourController
 from .pore_controller import PoreSurfaceController
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
@@ -46,6 +49,7 @@ from .selection import PICK_HINTS, SelectionMixin
 from ..structure.protomers import modelled_residues, protomer_blocks
 from .morph_controller import MorphController
 from .physics_controller import PhysicsController
+from . import status_bar
 from .session_controller import SessionController
 from .overlay_controller import OverlayController
 from .panels.analysis_panel import AnalysisPanel
@@ -74,6 +78,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.settings = make_settings()
         self._help = None
         self._sequence_window = None
+        self._topology_window = None
         self.registry = load_registry()
         self.annotations = load_annotations("human")
         self.structure: Structure | None = None
@@ -121,6 +126,9 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.pocket_view = PocketController(self)
         self.path = AllostericPathController(self)
         self.nanodomain = NanodomainController(self)
+        self.micelle = MicelleController(self)
+        self.planar_membrane = PlanarMembraneController(self)
+        self.electrostatics = ElectrostaticColourController(self)
         self.session = SessionController(self)
         self.presentation = PresentationController(self)
         self._build_menu()
@@ -135,8 +143,12 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
 
         bar = QStatusBar()
         self.setStatusBar(bar)
-        self.status_label = QLabel("Starting…")
-        bar.addWidget(self.status_label, 1)
+        # A plain QLabel here reports its full text width as a size hint,
+        # which QStatusBar passes up as a minimum and QMainWindow honours — so
+        # a long caveat widened the window, in the worst cases past the edge of
+        # the screen. `StatusMessage` keeps the whole text and displays an
+        # elided one; the "..." button opens the scrollable history.
+        self.status_label = status_bar.install(self, bar)
         self.hint_label = QLabel("drag rotate · shift+drag pan · wheel zoom · "
                                  "R reset · space spin · click to identify")
         self.hint_label.setStyleSheet("color:#6f7684;")
@@ -418,6 +430,8 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.overlay_panel.set_choices(self.registry.entries, exclude=rec.pdb)
         if self._sequence_window is not None:
             self._sequence_window.set_structure(st, rec.numbering_species)
+        if self._topology_window is not None:
+            self._topology_window.set_structure(st, rec.numbering_species)
         # Atom indices are per-structure, so measurements taken on the previous
         # one would silently point at different atoms.
         self.measure_panel.set.clear()

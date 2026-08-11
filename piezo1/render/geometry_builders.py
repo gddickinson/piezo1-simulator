@@ -289,7 +289,16 @@ def build_disc(radius: float, n_angular: int = 128,
                color: tuple[float, float, float] = (0.3, 0.4, 0.6),
                axis: np.ndarray | None = None,
                origin: np.ndarray | None = None) -> Mesh:
-    """A flat disc, used as the undeformed reference membrane plane."""
+    """A flat disc, used as the undeformed reference membrane plane.
+
+    ``n_radial=3``, not 2. The normals of a surface of revolution come from
+    ``np.gradient(..., edge_order=2)``, which needs three samples; at two this
+    raised "Shape of array too small to calculate a numerical gradient" for
+    every call. Nothing had ever called it — the dome controller builds its
+    flat projection through :func:`build_membrane_mesh` directly — so the fault
+    survived until Round 84b needed a plane for Figure 4a. A flat disc needs no
+    radial resolution at all, and the third ring costs `n_angular` vertices.
+    """
     return build_membrane_mesh(lambda r: np.zeros_like(r), radius,
-                               n_radial=2, n_angular=n_angular,
+                               n_radial=3, n_angular=n_angular,
                                color=color, axis=axis, origin=origin)

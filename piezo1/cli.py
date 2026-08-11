@@ -100,6 +100,40 @@ def cmd_analysis(args) -> int:
     return 0 if "error" not in result else 1
 
 
+def cmd_guo2017(args) -> int:
+    """Replicate Guo & MacKinnon 2017 panel by panel."""
+    from .analysis.guo2017 import (PANELS, coverage, panel_by_key, replicate,
+                                   replicate_all)
+
+    if args.coverage:
+        report = coverage()
+        if args.json:
+            _emit(report, True)
+            return 0
+        print(report["summary"])
+        print()
+        for panel in PANELS:
+            mark = {"replicated": "yes", "analogue": "~  ",
+                    "not_replicable": "no "}[panel.status]
+            print(f"  {mark} {panel.label:22s} {panel.title}")
+            if panel.status != "replicated":
+                print(f"        {panel.reason.split('.')[0]}.")
+        return 0
+
+    structure = None
+    needed = ([panel_by_key(args.panel)] if args.panel else PANELS)
+    if any(p.needs_structure and p.compute is not None for p in needed):
+        structure = _load(args.structure)
+
+    if args.panel:
+        result = replicate(args.panel, structure=structure,
+                           reference=args.species)
+    else:
+        result = replicate_all(structure=structure)
+    _emit(result, args.json)
+    return 0
+
+
 def cmd_variants(args) -> int:
     ann = load_annotations("human")
     rows = [v for v in ann.variants
@@ -264,6 +298,17 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--n-modes", dest="n_modes", type=int)
         p.add_argument("--top", type=int)
         p.set_defaults(func=cmd_analysis)
+
+    p = sub.add_parser("guo2017", parents=[common],
+                       help="replicate the figures of Guo & MacKinnon 2017, "
+                            "the paper the dome model comes from")
+    p.add_argument("structure", nargs="?", default="6B3R",
+                   help="entry to measure on (default 6B3R, the paper's own)")
+    p.add_argument("--panel", help="one panel key, e.g. 7-S1; omit for all")
+    p.add_argument("--species", choices=["human", "mouse"])
+    p.add_argument("--coverage", action="store_true",
+                   help="only report how much of the paper is reachable")
+    p.set_defaults(func=cmd_guo2017)
 
     p = sub.add_parser("variants", parents=[common], help="the curated variant table")
     p.add_argument("--classification")

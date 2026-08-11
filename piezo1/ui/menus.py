@@ -119,6 +119,39 @@ def _view_menu(win, bar) -> None:
                 "Criteria are heavy-atom based: no deposited entry has\n"
                 "hydrogens, so a drawn hydrogen bond is geometry rather than\n"
                 "an observed proton.")
+    _action(menu, "Colour by &electrostatics", win.electrostatics.show, "",
+            checkable=True, checked=False,
+            tip="Figure 4c's surface potential, on the SAME FIXED SCALE:\n"
+                "red at -5 k_BT/e, white at zero, blue at +5. Fixed, not\n"
+                "auto-ranged - an auto-ranged potential map paints an almost\n"
+                "neutral protein in full red and blue and cannot be compared\n"
+                "with a published surface.\n"
+                "NOT APBS. Screened Coulomb from formal charges through a\n"
+                "uniform dielectric: no dielectric boundary, no ion-exclusion\n"
+                "layer, no partial charges. All three under-estimate the\n"
+                "magnitude, and on 6B3R nothing reaches the saturation the\n"
+                "published panel visibly reaches. Read the sign and the\n"
+                "pattern, not the value.")
+    _action(menu, "&Micelle density (modelled)", win.micelle.show, "",
+            checkable=True, checked=False,
+            tip="Figure 4b's detergent envelope, MODELLED rather than\n"
+                "observed. The published panel is the unsharpened cryo-EM map\n"
+                "at 6 sigma; this project holds no map, so what is drawn is\n"
+                "the surface a fixed distance outside the hydrophobic\n"
+                "transmembrane belt. The SHELL THICKNESS is a parameter and\n"
+                "carries no information. The CURVATURE is a sphere fitted to\n"
+                "the belt atoms themselves and is a measurement of the\n"
+                "protein: 9.8 nm on 6B3R against the paper's 10.2 nm\n"
+                "idealisation. The status line says which is which.")
+    _action(menu, "Planar &membrane (one protomer)",
+            win.planar_membrane.show, "", checkable=True, checked=False,
+            tip="Figure 4a: a single subunit with the two planar membrane\n"
+                "interfaces drawn across it. The paper's point is the\n"
+                "CONTRAST — a protomer sits in a plane and the trimer does\n"
+                "not — so the status line reports both residuals and the slab\n"
+                "thickness each would need against a real 36 A bilayer.\n"
+                "Every point set has a best-fit plane, so read the residual\n"
+                "rather than the lines.")
     _action(menu, "&Dome surface", win.dome_surface.show, "",
             checkable=True, checked=False,
             tip="Draw the membrane dome that the Physics panel measures.\n"
@@ -312,6 +345,13 @@ def _analysis_menu(win, bar) -> None:
             "only one of four variant entries resolves its own mutation, and\n"
             "three of them share one set of coordinates.")
     menu.addSeparator()
+    _action(menu, "&Guo && MacKinnon 2017 figures…", win.show_guo2017, "",
+            "Replicate the paper the dome model comes from, panel by panel.\n"
+            "Sixteen of its thirty-one panels reproduce from coordinates,\n"
+            "including every number in Figure 7 and its supplement. Three\n"
+            "have only an analogue that is a different quantity, and twelve\n"
+            "need the cryo-EM map or the micrographs; each says which.")
+    menu.addSeparator()
     _action(menu, "HaloTag &labelling…", win.show_labelling, "",
             "Per-site and whole-channel labelling over time, and the\n"
             "1:2:3-dye mixture. Kinetics imported from halotag_binding_sim.")
@@ -331,6 +371,13 @@ def _analysis_menu(win, bar) -> None:
             "to the pore exit and clearance. Draw it with View > HaloTag fusion.")
 
     menu.addSeparator()
+    _action(menu, "&Topology diagram…", win._show_topology, "Ctrl+Shift+T",
+            "One protomer's membrane topology, after Guo & MacKinnon 2017\n"
+            "Figure 3: 38 transmembrane helices in nine 4-TM units, the cap,\n"
+            "the beam and the cuff. Helices this entry does not model are\n"
+            "drawn dashed rather than dropped, so the numbering cannot shift.\n"
+            "Tick a unit to box it as Figure 3b does and select it on the\n"
+            "model; shift-click a helix to do the same in one step.")
     _action(menu, "&Sequences…", win._show_sequences, "Ctrl+Shift+S",
             "Browse the protein and coding sequences, select onto the model, "
             "and compare sequences with alignment options")

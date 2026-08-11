@@ -23,7 +23,8 @@ from dataclasses import dataclass, field
 from typing import Callable
 
 from .claims_structural import (  # noqa: F401  (the registry calls them)
-    _blocks, _dome_radius, _gating_overlap, _pore_bottleneck,
+    _blocks, _dome_radius, _gating_overlap, _guo_beam_angle, _guo_blade_share,
+    _guo_patch_interaction, _guo_pore_offset, _pore_bottleneck,
     _selectivity, _structure, _tm_surface, _wetting_score,
     _within_position_variance)
 
@@ -248,6 +249,54 @@ CLAIMS: list[Claim] = [
     Claim("sequence.cds_identity",
           "Human CDS translation against UniProt Q92508",
           1.0, 1e-9, "fraction", "SESSION_LOG.md", _cds_identity, "fast"),
+
+    # --- Guo & MacKinnon 2017, the paper the dome model comes from ---------
+    Claim("guo2017.dome_area", "Idealised dome mid-plane area (Fig 7-S1)",
+          397.35, 0.5, "nm^2", "docs/SCIENCE.md",
+          lambda: __import__(
+              "piezo1.physics.dome_idealised", fromlist=["guo2017_dome"]
+          ).guo2017_dome().area,
+          "fast", published="400 nm^2 (Guo & MacKinnon 2017)"),
+    Claim("guo2017.projected_area", "Idealised dome projected area (Fig 7-S1)",
+          276.59, 0.5, "nm^2", "docs/SCIENCE.md",
+          lambda: __import__(
+              "piezo1.physics.dome_idealised", fromlist=["guo2017_dome"]
+          ).guo2017_dome().projected_area,
+          "fast", published="280 nm^2 (Guo & MacKinnon 2017)"),
+    Claim("guo2017.delta_area", "Area released on complete flattening",
+          120.76, 0.5, "nm^2", "docs/SCIENCE.md",
+          lambda: __import__(
+              "piezo1.physics.dome_idealised", fromlist=["guo2017_dome"]
+          ).guo2017_dome().excess_area,
+          "fast", published="120 nm^2 (Guo & MacKinnon 2017)"),
+    Claim("guo2017.bending_energy", "Helfrich bending energy of the cap",
+          152.77, 1.0, "k_BT", "docs/SCIENCE.md",
+          lambda: __import__(
+              "piezo1.physics.dome_idealised", fromlist=["guo2017_dome"]
+          ).guo2017_dome().bending_energy,
+          "fast", published="~150 k_BT (Guo & MacKinnon 2017)"),
+    Claim("guo2017.repeat_z", "4-TM repeat against its shuffled control",
+          4.47, 0.30, "sigma", "docs/SCIENCE.md",
+          lambda: __import__(
+              "piezo1.analysis.hydropathy", fromlist=["repeat_periodicity"]
+          ).repeat_periodicity().z,
+          "fast", published="the paper infers nine 4-TM units from hydropathy"),
+    Claim("guo2017.beam_angle", "Beam-to-pore-axis angle on 6B3R",
+          55.79, 1.0, "degrees", "docs/SCIENCE.md", _guo_beam_angle, "medium",
+          published="'about 60 degrees' (Guo & MacKinnon 2017)"),
+    Claim("guo2017.blade_share",
+          "Share of the trimer's non-planarity carried by the blade",
+          0.737, 0.05, "fraction", "docs/SCIENCE.md", _guo_blade_share,
+          "medium", published="measured here; the paper states it in words"),
+    Claim("guo2017.pore_offset",
+          "How much wider our pore radii are than the published HOLE ones",
+          0.620, 0.06, "A", "docs/SCIENCE.md", _guo_pore_offset, "medium",
+          published="0 would mean the profiler was fitted to the paper"),
+    Claim("guo2017.patch_interaction",
+          "Cap-to-loop charged patch interaction, screened Coulomb",
+          -6.18, 0.50, "k_BT", "docs/SCIENCE.md", _guo_patch_interaction,
+          "medium",
+          published="Fig 4-S1 states the contacts are domain-swapped"),
 
     # --- recorded results, never to be silently revised --------------------
     Claim("round7.p_value", "Round 7 blind test p-value",

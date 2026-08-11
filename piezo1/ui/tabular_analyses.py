@@ -82,6 +82,16 @@ CAVEATS = {
         "n = 1. Only one deposited variant entry resolves its own mutation, so "
         "this is the single structural comparison available. It says what the "
         "structures show, not what R2456H does."),
+    "guo2017": (
+        "A REPLICATION AUDIT, not a result about PIEZO1. It reports how much "
+        "of the paper this project can reproduce from coordinates and, just "
+        "as importantly, what it cannot: twelve panels need the cryo-EM map, "
+        "the micrographs or two structures from other channel families, and "
+        "three more have only an ANALOGUE that is a different quantity — a "
+        "projection of a model is not a 2D class average, and a "
+        "screened-Coulomb surface is not APBS. Read the reason beside any "
+        "panel that is not marked replicated before putting it beside the "
+        "original."),
     "variant_structures": (
         "A null result, reported rather than worked around: every deposited "
         "human PIEZO1 structure is closed, so no difference in conductance can "
@@ -186,6 +196,11 @@ class TabularAnalysisMixin:
     def show_paired_variant(self) -> None:
         self._run_registry_analysis(
             "paired_variant", "R2456H against wild type — the one pair")
+
+    def show_guo2017(self) -> None:
+        """Every panel of the paper the dome model comes from."""
+        self._run_registry_analysis(
+            "guo2017", "Guo & MacKinnon 2017 — what reproduces, and what cannot")
 
     def show_variant_structures(self) -> None:
         """What the deposited variant structures can actually support."""

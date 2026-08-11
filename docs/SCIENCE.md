@@ -1596,6 +1596,163 @@ Stated so nobody has to rediscover them:
 
 ---
 
+## 8n. Reproducing Guo & MacKinnon 2017, panel by panel (Round 84)
+
+The dome model this project is built around comes from one paper — Guo &
+MacKinnon, *eLife* 2017;6:e33660, PDB **6B3R**, mouse numbering throughout.
+Round 84 asked how much of it this codebase can actually reproduce from
+deposited coordinates, and recorded the answer as data rather than prose:
+`piezo1/analysis/guo2017.py` holds all **31 panels**, each with what it shows,
+whether it reproduces, and — for the ones that do not — why.
+
+**16 reproduce, 3 have an analogue that is a different quantity, 12 need
+experimental data this project does not hold.**
+
+### Figure 7 and its supplement: exact
+
+Every number in the paper's central figure follows from two lengths by
+closed-form spherical-cap geometry — a mid-plane sphere of radius 10.2 nm
+centred 4.0 nm above the plane the membrane returns to:
+
+| quantity | published | this project |
+|---|---|---|
+| dome opening diameter | "about 18 nm" | 18.77 nm |
+| dome depth | "about 6 nm" | 6.20 nm |
+| mid-plane surface area | 400 nm² | 397.35 nm² |
+| projected area | 280 nm² | 276.59 nm² |
+| area released on complete flattening | 120 nm² | 120.76 nm² |
+| Helfrich bending energy of the cap | "~150 k_BT" | 152.77 k_BT |
+| open-state stabilisation at 0.1× lytic tension | 42 k_BT | 42.27 k_BT |
+
+That table is a check on the arithmetic, **not** a measurement of PIEZO1. The
+idealised dome is a shape chosen to make the energetics tractable and the
+authors say so; our own measurement of 6B3R gives 568 nm² of surface against
+300 nm² projected, because it integrates the real radial profile out to the
+outermost resolved helix. Both are reported side by side and neither is
+adjusted towards the other.
+
+`flattening_series` makes Figure 7c — a schematic in the paper — quantitative,
+by flattening the cap at constant membrane area. One consequence the paper does
+not spell out: complete flattening releases the **whole** 152.8 k_BT of bending
+energy as well as the whole 120.8 nm² of projected area. Taken with the paper's
+own (ΔG_prot + ΔG_bend) of 20–40 k_BT, that puts ΔG_prot at roughly **+170 to
++190 k_BT** — a large intrinsic cost for the protein to pay.
+
+### Figure 4a: a protomer fits a plane, the trimer does not
+
+Measured as plane-fit residuals, decomposed into a within-protomer term and an
+*arrangement* term — what is left when each protomer is made exactly planar and
+the three are left where the symmetry puts them.
+
+| entry | state | within (Å) | arrangement (Å) | blade's share |
+|---|---|---|---|---|
+| 6B3R | curved | 7.0 | 17.2 | 74% |
+| 7WLT | curved | 7.6 | 16.8 | 66% |
+| 8YEZ | curved | 7.1 | 18.4 | 79% |
+| 7WLU | flattened | 6.7 | 3.0 | — |
+| 11ZC | flat | 6.3 | 7.2 | ~0% |
+
+The flattened structures are the control that makes this a measurement of
+curvature rather than of trimers. **And coverage decides the answer**: 6BPZ
+resolves 14 transmembrane helices where 6B3R resolves 26, and comparing them
+naively suggests two structures of the same protein disagreeing about whether it
+is curved. Coverage-matched to the 14 they share, both give ~4.6 Å. The
+non-planarity is carried almost entirely by the distal blade — the same trap
+`analysis/paralogue.py` was written after, in a different place.
+
+The beam comes out at **55.8°** against the paper's "about 60°", and the arms
+34° out of plane against "approximately 30°". On the flattened 7WLU the beam
+opens to 71°, towards the 90° the paper says a flat membrane would require.
+
+### Figure 4—supplement 1: the cap-to-loop interface
+
+Reproduced, including the part that is the actual claim. The acidic patch
+(E2257, E2258, D2264) and the basic patch (R1761, R1762, R1269) attract at
+**−6.18 k_BT**, and essentially all of it is cross-chain: the same-chain term is
+−0.001 k_BT. Every contact found is domain-swapped, which is what the paper
+states. E2257–R1762 is reproduced by both a closest-atom and a charge-centroid
+criterion; **D2264–R1761 is not** — 6.43 Å centroid-to-centroid against a 5.5 Å
+cutoff, though its closest atoms are 4.58 Å apart. The two conventions disagree
+about that contact and the paper does not say which it used.
+
+### Figures 3 and 3—S1 to S3: the 4-TM repeat
+
+The paper infers nine 4-TM units, including twelve N-terminal helices nobody has
+seen, from hydropathy. That inference is load-bearing for this project too — it
+is why `domains.json` defines nine THUs and why the full-length model grafts a
+distal blade at all — so it is now measured rather than cited. Loops between
+units are systematically longer than loops inside one, against a register-
+maximised shuffled control:
+
+| protein | long-loop phase | contrast | control | z | supported |
+|---|---|---|---|---|---|
+| mouse PIEZO1 | 3 | 97 res | 38 ± 13 | 4.5 | yes |
+| human PIEZO1 | 3 | 95 res | 37 ± 13 | 4.5 | yes |
+| mouse PIEZO2 | 3 | 137 res | 58 ± 16 | 5.0 | yes |
+| *C. elegans* PEZO-1 | 2 | 60 res | 35 ± 17 | 1.5 | **no** |
+| *Drosophila* PIEZO | 0 | 36 res | 40 ± 16 | −0.3 | **no** |
+
+The repeat holds in both mammalian PIEZOs and not in the two invertebrate ones,
+which do not share the 38-helix architecture either.
+
+A separate measurement explains why the paper reads the hydropathy curve
+qualitatively rather than thresholding it: **PIEZO1's transmembrane helices
+average +1.22 on the Kyte-Doolittle scale**, below the conventional +1.6
+membrane-spanning cut, though 1.64 above their surroundings. At Kyte &
+Doolittle's own threshold a window average recovers 6 of 38 helices. The
+threshold is left at the published value and the whole recall curve is reported,
+because tuning it to this protein would make the agreement a statement about the
+tuning.
+
+### Figure 6b: the same constrictions, systematically wider
+
+The three residues the paper names constrict in the same order and the closed
+verdict agrees, but our radii are **0.62 Å wider on average**:
+
+| residue (mouse) | published (HOLE) | this project |
+|---|---|---|
+| M2493 | 0.3 Å | 0.83 Å |
+| P2536 | 0.4 Å | 1.02 Å |
+| E2537 | 0.1 Å | 0.82 Å |
+
+Guo & MacKinnon used HOLE; this project's profiler is an independent
+Apollonius implementation. A systematic offset between two pore algorithms is
+expected and is reported rather than absorbed — if it ever became zero, the
+profiler would have been fitted to the paper.
+
+### The three analogues, which are not the same quantity
+
+- **Figure 2a,b** are 2D class averages. What `analysis/projection.py` computes
+  is the projection of the atomic model — the quantity a class average
+  *estimates* — with no CTF, no defocus, no solvent and no detergent micelle.
+  Figure 2b's envelope is substantially micelle.
+- **Figure 4b** shows that micelle from the unsharpened map.
+- **Figure 4c** was computed with APBS. Ours is linear-superposition
+  Debye–Hückel through a **uniform** solvent dielectric, with formal charges:
+  no dielectric boundary, no ion-exclusion layer, no partial-charge dipoles.
+  All three omissions push the same way, and the measured consequence is that
+  nothing on 6B3R's surface reaches the panel's ±5 k_BT/e saturation where the
+  published surface visibly saturates. The Bjerrum and Debye lengths are exact
+  (7.140 Å and 7.855 Å); the surface potential is a lower bound on |φ|.
+
+### What cannot be reproduced, and why that is recorded
+
+Six panels need the cryo-EM map or the half maps; four need micrographs of
+proteoliposomes; one needs P2X and ASIC coordinates, deliberately absent because
+the structure catalogue, the numbering checks and the entity classifier all
+assume a PIEZO. Figure 1 is a drawing. Each is listed with its reason in
+`PANELS`, because a tool that quietly covered the tractable parts of a paper
+would leave a reader assuming the rest.
+
+### A defect this found
+
+The project's bibliography seed attributed PDB **6BPZ** to Guo & MacKinnon and
+**6B3R** to Saotome et al. Both PMIDs were correct, so nothing resolved wrongly
+and no test could see it; the deposited entries themselves say which is which.
+Corrected in `scripts/build_references.py`.
+
+---
+
 ## Key references
 
 Full bibliographies with PMIDs are in `ref/research/`.

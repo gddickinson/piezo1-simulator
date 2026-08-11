@@ -163,6 +163,65 @@ room there is.
 The software also predicts labelling kinetics and the calcium concentration a
 dye on the tag would see when the channel opens.
 
+### Replicate the paper the dome model comes from
+
+The membrane dome mechanism is Guo & MacKinnon, *eLife* 2017 — PDB 6B3R. Its
+figures are enumerated panel by panel, with what each shows and whether this
+project can reproduce it:
+
+```bash
+python -m piezo1.cli guo2017 --coverage
+```
+
+> 16 of 31 panels reproduce from deposited coordinates, 3 have an analogue that
+> is not the same quantity, and 12 need experimental data this project does not
+> hold.
+
+Every number in Figure 7 and its supplement comes out to the paper's own
+rounding. The twelve that cannot be reproduced are **in** the registry with the
+reason — a Fourier shell correlation needs two half maps, four panels are
+micrographs of proteoliposomes — because a tool that quietly covered the
+tractable parts of a paper would leave a reader assuming the rest. The three
+analogues carry their caveat structurally: a projection of an atomic model is
+not a 2D class average, and a screened-Coulomb surface is not APBS.
+
+### Reading the status line
+
+The status bar carries the caveats, and several are long. It **shortens them to
+fit** rather than resizing the window — a plain label demands a 12,566-pixel
+window for a 1500-character message, which is how the window used to end up
+wider than the monitor. Hover for the whole message, or click **⋯** for the
+full text and a scrollable history of everything the session has reported.
+
+### Draw what Figure 4 shows
+
+Three views in the main window, each labelled with what it is not:
+
+- **View → Micelle density (modelled)** — the detergent envelope of Figure 4b.
+  Built as the surface a fixed distance outside the hydrophobic belt, because
+  this project holds no cryo-EM map. The shell thickness is a parameter and
+  carries no information; the **curvature** is a fit to the belt itself and
+  comes out at 9.8 nm against the paper's 10.2 nm idealisation.
+- **View → Colour by electrostatics** — Figure 4c's surface potential on the
+  same fixed ±5 k_BT/e scale. Not APBS: screened Coulomb through a uniform
+  dielectric, which gets the sign and pattern right and under-estimates the
+  magnitude.
+- **View → Planar membrane** — Figure 4a's two grey rules across one protomer,
+  with the trimer fit available as the control that makes it a claim.
+
+### See a monomer's topology in the membrane
+
+**Analysis → Topology diagram** (Ctrl+Shift+T) draws Figure 3a for whichever
+entry is loaded: 38 transmembrane helices in a membrane band, grouped into the
+nine 4-TM units, with the cap above and the beam and cuff below. Tick a unit to
+box it as Figure 3b does — the box is a *selection*, so the same residues light
+up on the 3-D model.
+
+Helices the entry does not resolve are drawn **dashed, never dropped**. Dropping
+one would put TM13 where TM1 belongs and silently renumber every helix after it.
+6B3R greys out TM1–12; 7WLT greys out TM1–16; both are read from the
+coordinates.
+
 ### Build the full-length model
 
 Cryo-EM resolves roughly residues 570–2521. The remaining 569 residues of the
@@ -197,6 +256,11 @@ the published values. If one drifts, the suite fails.
 | Pore bottleneck, closed (8YEZ) | **0.95 Å** | closed | Rao et al. 2019 criterion |
 | Pore bottleneck, open-like (11ZC) | **3.3 Å** | conducting | Vaisey & MacKinnon 2026 |
 | Single-channel conductance | 41 pS | 25–30 pS | Coste et al. 2010; Shi et al. 2020 |
+| Idealised dome mid-plane area | **397 nm²** | 400 nm² | Guo & MacKinnon 2017, Fig 7—S1 |
+| Idealised dome projected area | **277 nm²** | 280 nm² | Guo & MacKinnon 2017, Fig 7—S1 |
+| Area released on complete flattening | **121 nm²** | 120 nm² | Guo & MacKinnon 2017 |
+| Bending energy of the dome | **153 k_BT** | ~150 k_BT | Guo & MacKinnon 2017, Fig 7—S1 |
+| Beam-to-pore-axis angle (6B3R) | **55.8°** | "about 60°" | Guo & MacKinnon 2017 |
 
 The conductance is the one that does **not** agree, and it is reported that way
 rather than tuned. Two of its inputs — the in-pore diffusivity and the
@@ -361,6 +425,8 @@ python -m piezo1.cli modes 8YEZ --n-modes 30     # modes with symmetry labels
 python -m piezo1.cli permeation 11ZC             # ion current through the pore
 python -m piezo1.cli hybrid 8YEZ                 # full-length model
 python -m piezo1.cli fusion 8YEZ                 # HaloTag fusion geometry
+python -m piezo1.cli guo2017 --coverage          # Guo & MacKinnon 2017, panel by panel
+python -m piezo1.cli guo2017 --panel 7-S1        # one panel against its published numbers
 python -m piezo1.cli report 8YEZ -o report.md    # everything, with provenance
 python -m piezo1.cli batch --analyses dome pore  # across every structure
 ```

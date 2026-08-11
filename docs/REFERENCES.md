@@ -9,7 +9,7 @@ Open-access full texts are downloaded to `ref/papers/` with
 git-ignored: the papers are other people's copyright, and the
 bibliography here is enough to retrieve them.
 
-**73 references.** 39 are open access.
+**79 references.** 39 are open access.
 
 ## Structure
 
@@ -18,9 +18,9 @@ bibliography here is enough to retrieve them.
 - **`ge2015`** — Ge J, Li W, Zhao Q, Li N, Chen M, Zhi P, Li R, Gao N, Xiao B, Yang M. *Architecture of the mammalian mechanosensitive Piezo1 channel.* Nature 2015;527:64-69. [PMID 26390154](https://pubmed.ncbi.nlm.nih.gov/26390154/) · [doi:10.1038/nature15247](https://doi.org/10.1038/nature15247)  
   <sub>Used for: First Piezo1 cryo-EM structure (3JAC)</sub>
 - **`guo2017`** — Guo YR, MacKinnon R. *Structure-based membrane dome mechanism for Piezo mechanosensitivity.* eLife 2017;6:e33660. [PMID 29231809](https://pubmed.ncbi.nlm.nih.gov/29231809/) · [doi:10.7554/elife.33660](https://doi.org/10.7554/elife.33660) · **OA**  
-  <sub>Used for: The dome model; PDB 6BPZ</sub>
+  <sub>Used for: The dome model; PDB 6B3R</sub>
 - **`saotome2018`** — Saotome K, Murthy SE, Kefauver JM, Whitwam T, Patapoutian A, Ward AB. *Structure of the mechanically activated ion channel Piezo1.* Nature 2018;554:481-486. [PMID 29261642](https://pubmed.ncbi.nlm.nih.gov/29261642/) · [doi:10.1038/nature25453](https://doi.org/10.1038/nature25453)  
-  <sub>Used for: Piezo1 structure 6B3R</sub>
+  <sub>Used for: Piezo1 structure 6BPZ</sub>
 - **`zhao2018`** — Zhao Q, Zhou H, Chi S, Wang Y, Wang J, Geng J, Wu K, Liu W, Zhang T, Dong MQ, Wang J, Li X, Xiao B. *Structure and mechanogating mechanism of the Piezo1 channel.* Nature 2018;554:487-492. [PMID 29469092](https://pubmed.ncbi.nlm.nih.gov/29469092/) · [doi:10.1038/nature25743](https://doi.org/10.1038/nature25743)  
   <sub>Used for: Lever-like transduction; PDB 5Z10</sub>
 - **`wang2019piezo2`** — Wang L, Zhou H, Zhang M, Liu W, Deng T, Zhao Q, Li Y, Lei J, Li X, Xiao B. *Structure and mechanogating of the mammalian tactile channel PIEZO2.* Nature 2019;573:225-229. [PMID 31435011](https://pubmed.ncbi.nlm.nih.gov/31435011/) · [doi:10.1038/s41586-019-1505-8](https://doi.org/10.1038/s41586-019-1505-8)  
@@ -36,6 +36,10 @@ bibliography here is enough to retrieve them.
 
 ## Membrane mechanics
 
+- **`rawicz2000`** — Rawicz W, Olbrich KC, McIntosh T, Needham D, Evans E. *Effect of chain length and unsaturation on elasticity of lipid bilayers.* Biophysical journal 2000;79:328-339. [PMID 10866959](https://pubmed.ncbi.nlm.nih.gov/10866959/) · [doi:10.1016/s0006-3495(00)76295-3](https://doi.org/10.1016/s0006-3495(00)76295-3)  
+  <sub>Used for: Lytic tension of a bilayer, ~3.5 k_BT/nm^2 - the scale the paper's 42 k_BT stabilisation is quoted against</sub>
+- **`perozo2002`** — Perozo E, Cortes DM, Sompornpisut P, Kloda A, Martinac B. *Open channel structure of MscL and the gating mechanism of mechanosensitive channels.* Nature 2002;418:942-948. [PMID 12198539](https://pubmed.ncbi.nlm.nih.gov/12198539/) · [doi:10.1038/nature00992](https://doi.org/10.1038/nature00992)  
+  <sub>Used for: MscL's ~20 nm^2 in-plane expansion, the comparison the dome mechanism is argued against</sub>
 - **`haselwandter2018`** — Haselwandter CA, MacKinnon R. *Piezo's membrane footprint and its contribution to mechanosensitivity.* eLife 2018;7:e41968. [PMID 30480546](https://pubmed.ncbi.nlm.nih.gov/30480546/) · [doi:10.7554/elife.41968](https://doi.org/10.7554/elife.41968) · **OA**  
   <sub>Used for: Membrane footprint; R_c 10.2 nm, lambda 14 nm</sub>
 - **`chong2021`** — Chong J, De Vecchis D, Hyman AJ, Povstyan OV, Ludlow MJ, Shi J, Beech DJ, Kalli AC. *Modeling of full-length Piezo1 suggests importance of the proximal N-terminus for dome structure.* Biophysical journal 2021;120:1343-1356. [PMID 33582137](https://pubmed.ncbi.nlm.nih.gov/33582137/) · [doi:10.1016/j.bpj.2021.02.003](https://doi.org/10.1016/j.bpj.2021.02.003) · **OA**  
@@ -116,10 +120,16 @@ bibliography here is enough to retrieve them.
 
 ## Methods
 
+- **`pauling1951`** — PAULING L, COREY RB, BRANSON HR. *The structure of proteins; two hydrogen-bonded helical configurations of the polypeptide chain.* Proceedings of the National Academy of Sciences of the United States of America 1951;37:205-211. [PMID 14816373](https://pubmed.ncbi.nlm.nih.gov/14816373/) · [doi:10.1073/pnas.37.4.205](https://doi.org/10.1073/pnas.37.4.205)  
+  <sub>Used for: The alpha helix: 1.5 A rise and 100 degrees of turn per residue, the geometry the cross-helix detector is calibrated against</sub>
 - **`shrake1973`** — Shrake A, Rupley JA. *Environment and exposure to solvent of protein atoms. Lysozyme and insulin.* Journal of molecular biology 1973;79:351-371. [PMID 4760134](https://pubmed.ncbi.nlm.nih.gov/4760134/) · [doi:10.1016/0022-2836(73)90011-9](https://doi.org/10.1016/0022-2836(73)90011-9)  
   <sub>Used for: Shrake-Rupley numerical SASA; source of the 1.4 A water probe</sub>
 - **`kabsch1976`** — Kabsch W. *A solution for the best rotation to relate two sets of vectors.* Acta Crystallographica Section A 1976;32:922-923. [doi:10.1107/S0567739476001873](https://doi.org/10.1107/S0567739476001873)  
   <sub>Used for: Optimal rotation superposition</sub>
+- **`kyte1982`** — Kyte J, Doolittle RF. *A simple method for displaying the hydropathic character of a protein.* Journal of molecular biology 1982;157:105-132. [PMID 7108955](https://pubmed.ncbi.nlm.nih.gov/7108955/) · [doi:10.1016/0022-2836(82)90515-0](https://doi.org/10.1016/0022-2836(82)90515-0)  
+  <sub>Used for: The Kyte-Doolittle hydropathy scale and sliding window, the method behind Figure 3-figure supplements 1-3</sub>
+- **`vonheijne1992`** — von Heijne G. *Membrane protein structure prediction. Hydrophobicity analysis and the positive-inside rule.* Journal of molecular biology 1992;225:487-494. [PMID 1593632](https://pubmed.ncbi.nlm.nih.gov/1593632/) · [doi:10.1016/0022-2836(92)90934-c](https://doi.org/10.1016/0022-2836(92)90934-c)  
+  <sub>Used for: The positive-inside rule the paper checks its charge distribution against in Figure 4c</sub>
 - **`smart1996hole`** — Smart OS, Neduvelil JG, Wang X, Wallace BA, Sansom MS. *HOLE: a program for the analysis of the pore dimensions of ion channel structural models.* Journal of molecular graphics 1996;14:354-60, 376. [PMID 9195488](https://pubmed.ncbi.nlm.nih.gov/9195488/) · [doi:10.1016/s0263-7855(97)00009-x](https://doi.org/10.1016/s0263-7855(97)00009-x)  
   <sub>Used for: HOLE pore-radius algorithm</sub>
 - **`labesse1997`** — Labesse G, Colloc'h N, Pothier J, Mornon JP. *P-SEA: a new efficient assignment of secondary structure from C alpha trace of proteins.* Computer applications in the biosciences : CABIOS 1997;13:291-295. [PMID 9183534](https://pubmed.ncbi.nlm.nih.gov/9183534/) · [doi:10.1093/bioinformatics/13.3.291](https://doi.org/10.1093/bioinformatics/13.3.291)  
@@ -128,6 +138,8 @@ bibliography here is enough to retrieve them.
   <sub>Used for: Anisotropic network model</sub>
 - **`beckstein2003`** — Beckstein O, Sansom MS. *Liquid-vapor oscillations of water in hydrophobic nanopores.* Proceedings of the National Academy of Sciences of the United States of America 2003;100:7063-7068. [PMID 12740433](https://pubmed.ncbi.nlm.nih.gov/12740433/) · [doi:10.1073/pnas.1136844100](https://doi.org/10.1073/pnas.1136844100)  
   <sub>Used for: Liquid-vapour oscillations of water in hydrophobic nanopores</sub>
+- **`dolinsky2004`** — Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. *PDB2PQR: an automated pipeline for the setup of Poisson-Boltzmann electrostatics calculations.* Nucleic acids research 2004;32:W665-7. [PMID 15215472](https://pubmed.ncbi.nlm.nih.gov/15215472/) · [doi:10.1093/nar/gkh381](https://doi.org/10.1093/nar/gkh381)  
+  <sub>Used for: APBS/PDB2PQR, the Poisson-Boltzmann route Figure 4c was computed with and the one our screened-Coulomb surface deliberately is not</sub>
 - **`schymkowitz2005foldx`** — Schymkowitz J, Borg J, Stricher F, Nys R, Rousseau F, Serrano L. *The FoldX web server: an online force field.* Nucleic acids research 2005;33:W382-8. [PMID 15980494](https://pubmed.ncbi.nlm.nih.gov/15980494/) · [doi:10.1093/nar/gki387](https://doi.org/10.1093/nar/gki387) · **OA**  
   <sub>Used for: FoldX force field - source of the precomputed ddG</sub>
 - **`leguilloux2009`** — Le Guilloux V, Schmidtke P, Tuffery P. *Fpocket: an open source platform for ligand pocket detection.* BMC bioinformatics 2009;10:168. [PMID 19486540](https://pubmed.ncbi.nlm.nih.gov/19486540/) · [doi:10.1186/1471-2105-10-168](https://doi.org/10.1186/1471-2105-10-168) · **OA**  

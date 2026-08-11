@@ -15,6 +15,7 @@ from __future__ import annotations
 
 __all__ = ["P"]
 
+from parameter_table_figures import FIGURE_PARAMETERS
 from parameter_table_tags import TAG_PARAMETERS
 
 #: kind: physical | empirical | method | convention
@@ -430,3 +431,4 @@ P = [
 ]
 
 P += TAG_PARAMETERS
+P += FIGURE_PARAMETERS

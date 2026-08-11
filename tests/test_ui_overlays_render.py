@@ -59,10 +59,10 @@ class _Window:
     """A window stub carrying a real scene, so drawing really happens."""
 
     def __init__(self, scene, structure=None, pore=None, pockets=(),
-                 hydration=None):
+                 hydration=None, numbering="human"):
         self.structure = structure
         self.record = type("R", (), {"protein": "PIEZO1",
-                                     "numbering_species": "human"})()
+                                     "numbering_species": numbering})()
         self.modes = object()
         self.analysis = type("A", (), {
             "pore": pore, "hydration": hydration, "pockets": list(pockets),
@@ -204,3 +204,76 @@ def test_the_nanodomain_shells_are_visible_and_translucent(context, scene,
     protein_only = _lit(context, scene)
     assert with_protein >= protein_only, \
         "adding translucent shells removed lit pixels from the protein"
+
+
+# --------------------------------------------------------------------------
+# Round 84b's Figure 4 overlays
+# --------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def framed_6b3r():
+    path = STRUCTURE_DIR / "6B3R.cif"
+    if not path.exists():
+        pytest.skip("6B3R.cif not downloaded — run python -m piezo1.io.fetch")
+    from piezo1.core import Structure
+    from piezo1.structure.frame import apply_frame, canonical_transform
+
+    st = Structure.from_file(path)
+    return apply_frame(st, canonical_transform(st))
+
+
+def test_the_micelle_envelope_is_visible(context, scene, framed_6b3r):
+    """A translucent closed surface is the easiest thing to upload and not see.
+
+    It encloses the protein, so a back-face cull would hide the near half and
+    a front-face cull the far half; either leaves a batch with the right
+    triangle count and a picture that is wrong.
+    """
+    from piezo1.ui.micelle_controller import MicelleController
+
+    controller = MicelleController(
+        _Window(scene, framed_6b3r, numbering="mouse"))
+    _frame_on(scene, framed_6b3r.xyz[framed_6b3r.mask_ca()], pad=25.0)
+    empty = _lit(context, scene)
+    controller._build()
+    assert controller.envelope is not None, controller.win.status
+    drawn = _lit(context, scene)
+    assert drawn > empty + 2000, (
+        f"the micelle drew {drawn - empty} extra lit pixels")
+
+    controller.clear()
+    assert _lit(context, scene) == empty
+
+
+def test_the_planar_membrane_is_visible(context, scene, framed_6b3r):
+    from piezo1.ui.planar_membrane_controller import PlanarMembraneController
+
+    controller = PlanarMembraneController(
+        _Window(scene, framed_6b3r, numbering="mouse"))
+    _frame_on(scene, framed_6b3r.xyz[framed_6b3r.mask_ca()], pad=25.0)
+    empty = _lit(context, scene)
+    controller._build()
+    assert controller.comparison is not None, controller.win.status
+    drawn = _lit(context, scene)
+    assert drawn > empty + 2000, (
+        f"the membrane planes drew {drawn - empty} extra lit pixels")
+
+    controller.clear()
+    assert _lit(context, scene) == empty
+
+
+def test_fitting_the_planes_to_the_trimer_moves_them(context, scene,
+                                                     framed_6b3r):
+    """The control that makes Figure 4a a claim: the same construction on the
+    assembly, where the paper says it does not work."""
+    from piezo1.ui.planar_membrane_controller import PlanarMembraneController
+
+    controller = PlanarMembraneController(
+        _Window(scene, framed_6b3r, numbering="mouse"))
+    controller._build()
+    protomer = controller.status_line()
+    controller.use_trimer(True)
+    trimer = controller.status_line()
+    assert protomer != trimer
+    assert "all three protomers" in trimer
+    controller.clear()
