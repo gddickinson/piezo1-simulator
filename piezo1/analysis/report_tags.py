@@ -13,7 +13,7 @@ from ..parameters import PARAMETERS as _P
 
 from ..core.structure import Structure
 from ..parameters import PARAMETERS
-from .report import _protomer_blocks
+from ..structure.protomers import protomer_blocks
 
 __all__ = ["analysis_fusion", "analysis_labelling", "analysis_permeation",
            "analysis_nanodomain", "analysis_prediction_record",
@@ -126,8 +126,8 @@ def analysis_permeation(st: Structure, species: str, step: float | None = None,
     from ..structure.superpose import detect_c3_axis
     from .hydration import load_grid, predict_wetting
 
-    blocks, _ = _protomer_blocks(st)
-    if blocks is None:
+    blocks, _ = protomer_blocks(st)
+    if not blocks:
         return {"error": "needs three well-resolved protomers"}
 
     profile = pore_profile(st, detect_c3_axis(blocks), step=step)
@@ -188,8 +188,8 @@ def analysis_nanodomain(st: Structure, species: str, step: float | None = None,
     # Detecting it on the unframed structure and applying it to the framed one
     # measured the pore along a line that misses the pore, and reported the
     # closed 8YEZ as carrying 32 pA.
-    blocks, _ = _protomer_blocks(framed)
-    if blocks is None:
+    blocks, _ = protomer_blocks(framed)
+    if not blocks:
         return {"error": "needs three well-resolved protomers"}
     profile = pore_profile(framed, detect_c3_axis(blocks), step=step)
     wetting = predict_wetting(framed, profile, grid) if grid.available else None
@@ -207,7 +207,7 @@ def analysis_nanodomain(st: Structure, species: str, step: float | None = None,
                              "downloaded to supply an open-state current"}
         open_st = Structure.from_file(record.path)
         open_framed = apply_frame(open_st, canonical_transform(open_st))
-        open_blocks, _ = _protomer_blocks(open_framed)
+        open_blocks, _ = protomer_blocks(open_framed)
         open_profile = pore_profile(open_framed, detect_c3_axis(open_blocks),
                                     step=step)
         open_wetting = (predict_wetting(open_framed, open_profile, grid)

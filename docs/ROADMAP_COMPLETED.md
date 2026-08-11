@@ -2692,3 +2692,52 @@ most of it. Block Q adds what these five rounds exposed.
       mid-transfer otherwise leaves a file that opens, parses, and contains a
       fraction of the molecule. Pinned as its own test.
 
+### Round 78 — Retire `HALOTAG_CALCIUM_PLAN.md`
+- [x] **Done.** Deleted; Rounds 29–32 implemented all of it, and the INTERFACE
+      row went with it.
+- [x] *Validate:* **two of its five recorded risks were not carried anywhere
+      and moved to `SCIENCE.md` §8f first.** That PNP is a mean-field theory in
+      a pore two ions wide — good for a conductance, not for single-ion
+      energetics — and that using the wetting heuristic as an on/off switch is
+      a stronger claim than AUROC 0.91 over ~200 channels was validated for.
+      The other three were already carried: the 2–20 nm sweep in `SCIENCE.md`,
+      the coverage null in `variant_structures`, and the animation discipline
+      in `render/flux`.
+- [x] **A duplicate and an import cycle, found on the way.** `report.py` had a
+      private `_protomer_blocks` that was a copy of
+      `structure.protomers.protomer_blocks` — identical output on every trimer,
+      differing only in its non-trimer sentinel and in hardcoding the
+      300-C-alpha floor instead of using `well_resolved_chains`. It also made
+      `import piezo1.analysis.report_tags` fail in a fresh interpreter, which
+      the suite never noticed because something always imported `report` first.
+      Deleted; `tests/test_imports.py` now imports all 133 modules alone.
+
+### Round 79 — `ARCHITECTURE.md`, or the row goes
+- [x] **Written**, and it is the *why*: each section states the constraint that
+      forced a decision and names the incident that exposed it — the one-way
+      dependency arrow (and the `model_utils` import that broke it),
+      structure-of-arrays, impostor rendering, the parameter registry (and the
+      26 parameters nothing read), the calibration rule, compute-time
+      provenance, verified downloads (the 127-byte error pages), generated
+      documents, and splitting at seams rather than at a line count.
+- [x] *Validate:* it must not restate INTERFACE, and a test caps module-shaped
+      rows at fewer than five. More usefully, `tests/test_architecture.py`
+      checks the architecture it *describes* is the one the code still has —
+      the dependency arrow is verified against real imports, not asserted — and
+      that no `📋` rows remain on the documents table.
+
+### Round 80 — What a reader should be told first, measured
+- [x] **Measured, and four of seven entry points failed.** `docs/SCIENCE.md`,
+      the guided tour's own closing step, the command line and the notebooks
+      index could not reach `CONCLUSION.md` in one step. The roadmap's clause
+      is that the surface is wrong rather than the reader, so all four were
+      fixed: a callout at the top of SCIENCE, a closing line in the tour, an
+      argparse epilog on the CLI, and a section in the notebooks index.
+      `ROADMAP.md` was the fifth, found by the test itself.
+- [x] *Validate:* **one step from every entry point**, enforced over seven of
+      them, and the count-agreement guard extended from Round 59's three
+      surfaces to all five. Two of my own checks were wrong first: reading the
+      tour's static body missed the count because the tour *computes* it from
+      the record, and the wrong-count check was too narrow to catch a surface
+      drifting to a different number.
+

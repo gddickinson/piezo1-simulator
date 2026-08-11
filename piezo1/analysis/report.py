@@ -27,6 +27,7 @@ from .. import __version__
 from ..core.structure import Structure
 from ..io.registry import load_registry
 from ..parameters import PARAMETERS
+from ..structure.protomers import protomer_blocks
 
 __all__ = ["Provenance", "AnalysisReport", "collect_provenance",
            "build_report", "ANALYSES"]
@@ -212,28 +213,22 @@ def _fmt(v) -> str:
 # The analyses
 # --------------------------------------------------------------------------
 
-def _protomer_blocks(st: Structure):
-    chains = []
-    for c in st.chains:
-        m = st.mask_ca() & (st.chain == c)
-        if m.sum() > 300:
-            chains.append((st.xyz[m], st.res_seq[m]))
-    if len(chains) < 3:
-        return None, None
-    common = set(chains[0][1].tolist())
-    for _, seq in chains[1:3]:
-        common &= set(seq.tolist())
-    arr = np.array(sorted(common))
-    return ([x[np.searchsorted(s, arr)].astype(float) for x, s in chains[:3]],
-            arr)
+# `_protomer_blocks` lived here until Round 78 and was a duplicate of
+# `structure.protomers.protomer_blocks` — identical output on every trimer
+# tested, differing only in its sentinel for a non-trimer and in hardcoding the
+# 300-C-alpha floor instead of using `well_resolved_chains`. Removing it also
+# broke a real import cycle: `report_tags` imported it from here while this
+# module imports `report_tags` at the bottom, so `import report_tags` failed in
+# a fresh interpreter and only ever worked because something imported `report`
+# first.
 
 
 def analysis_dome(st: Structure, species: str, **kw) -> dict:
     import json as _json
     from ..config import RESOURCE_DIR
     from ..structure.geometry import measure_dome
-    blocks, _ = _protomer_blocks(st)
-    if blocks is None:
+    blocks, _ = protomer_blocks(st)
+    if not blocks:
         return {"error": "needs three well-resolved protomers"}
     tms = _json.loads((RESOURCE_DIR / f"uniprot_{species}.json").read_text())["transmembrane"]
     pts = []
@@ -266,8 +261,8 @@ def analysis_pore(st: Structure, species: str, step: float | None = None,
         step = _P.value("pore.step")
     from ..structure.pore import pore_profile
     from ..structure.superpose import detect_c3_axis
-    blocks, _ = _protomer_blocks(st)
-    if blocks is None:
+    blocks, _ = protomer_blocks(st)
+    if not blocks:
         return {"error": "needs three well-resolved protomers"}
     prof = pore_profile(st, detect_c3_axis(blocks), step=step)
     return {"bottleneck_radius_A": prof.bottleneck_radius,
@@ -288,8 +283,8 @@ def analysis_hydration(st: Structure, species: str, step: float | None = None,
     from .hydration import load_grid, predict_wetting
     from ..structure.pore import pore_profile
     from ..structure.superpose import detect_c3_axis
-    blocks, _ = _protomer_blocks(st)
-    if blocks is None:
+    blocks, _ = protomer_blocks(st)
+    if not blocks:
         return {"error": "needs three well-resolved protomers"}
     grid = load_grid()
     if not grid.available:
@@ -314,8 +309,8 @@ def analysis_hydration(st: Structure, species: str, step: float | None = None,
 
 def analysis_modes(st: Structure, species: str, n_modes: int = 20, **kw) -> dict:
     from ..physics.anm import ANM
-    blocks, _ = _protomer_blocks(st)
-    if blocks is None:
+    blocks, _ = protomer_blocks(st)
+    if not blocks:
         return {"error": "needs three well-resolved protomers"}
     anm = ANM.from_trimer(blocks, cutoff=15.0).build()
     modes = anm.calc_modes(n_modes=n_modes)

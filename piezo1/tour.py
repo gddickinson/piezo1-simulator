@@ -395,6 +395,7 @@ one.</p>"""),
         measure=_limits, cites=("stats.alpha", "stats.target_power"),
         body="""
 <p>Two last things, so that nothing here is read as more certain than it is.</p>
+<p>The whole of it is on one page in <b>docs/CONCLUSION.md</b>, with every number traceable to the code that produced it — Help &rarr; <i>What was established</i> opens it.</p>
 <p><b>The measurements that worked still carry model uncertainty.</b> The dome
 radius quoted in step 3 has a bootstrap interval of about ±0.9 nm — but fit an
 oblate spheroid to the same surface points instead of a sphere and the radius of

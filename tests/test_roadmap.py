@@ -29,8 +29,8 @@ PRE_SPLIT_COMMIT = "4c1c61c"
 #: to 77 ticked. The pre-split file had 358 completed and 14 open. `OPEN` rose
 #: when Block R was appended, which is what a roadmap is for; the ratchet below
 #: is on the *completed* count, which only ever grows.
-COMPLETED_AT_SPLIT = 368
-OPEN_AT_SPLIT = 16
+COMPLETED_AT_SPLIT = 375
+OPEN_AT_SPLIT = 10
 
 
 def items(text: str, mark: str) -> list[str]:
@@ -89,10 +89,10 @@ def test_every_open_item_survived_and_lives_in_the_roadmap():
     before = set(items(original, "- [ ]"))
     after = set(items(ROADMAP.read_text(), "- [ ]"))
     closed = before - after
-    assert len(closed) == 8, (
-        f"{len(closed)} open items disappeared; eight have been closed since "
-        f"the split — the duplicated Round 68's two (Round 63 had done them), "
-        f"and Rounds 75, 76 and 77's two each: {sorted(closed)[:9]}")
+    assert len(closed) == 14, (
+        f"{len(closed)} open items disappeared; fourteen have been closed "
+        f"since the split — the duplicated Round 68's two (Round 63 had done "
+        f"them) and Rounds 75-80's two each: {sorted(closed)[:9]}")
     assert not items(ARCHIVE.read_text(), "- [ ]"), \
         "an unfinished item is filed under completed work"
 

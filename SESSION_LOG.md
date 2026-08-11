@@ -4,6 +4,65 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Rounds 78–80 — three documentation rounds that found three code defects
+
+Block Q's remaining items were all documentation. Each turned up something in
+the code on the way, which is the argument for doing them rather than declaring
+them cosmetic.
+
+**Round 78 — retiring `HALOTAG_CALCIUM_PLAN.md`.** Rounds 29–32 implemented all
+of it. The validation clause was that nothing may be lost, and **two of its five
+recorded risks were carried nowhere**: that PNP is a mean-field theory applied
+to a pore two ions wide — good for a conductance, useless for single-ion
+energetics — and that using the wetting heuristic as an on/off switch is a
+stronger claim than AUROC 0.91 over ~200 channels was validated for. Both are
+about over-claiming, which is what this project exists to guard, so both moved
+to `SCIENCE.md` §8f before the file went.
+
+Checking one of those claims — *is* the wetting verdict reported beside the
+conductance rather than multiplied into it? — I could not import
+`analysis.report_tags` at all. It imported a helper from `report`, and `report`
+imports `report_tags` at the bottom, so a fresh interpreter got a
+half-initialised module. The suite never noticed because something always
+imports `report` first; a cycle only bites the person who reaches for one
+module directly, which is a notebook user. The helper turned out to be a
+**duplicate** of `structure.protomers.protomer_blocks` — identical output on
+every trimer, differing only in its non-trimer sentinel and in hardcoding the
+300-C-alpha floor instead of using `well_resolved_chains`. Deleting it fixed
+both.
+
+**And then my own checker broke seven unrelated tests.** `test_imports.py`
+clears `sys.modules` to reproduce a fresh interpreter, which is right, and my
+first version restored nothing. `PARAMETERS` is a singleton: other test modules
+bind it at import time, so leaving fresh module objects behind made the rest of
+the session resolve a *different* registry, and overrides silently stopped
+taking effect. The failures looked like parameter-wiring bugs and were nothing
+of the kind. The restore now saves and replaces the original objects **by
+identity**, and two tests pin that.
+
+**Round 79 — `ARCHITECTURE.md`, written rather than deleted.** The easy way to
+close it would have been a summary of the module layout, which is what
+`INTERFACE.md` already is; a second copy would go stale differently and settle
+nothing. So it is organised around constraints, and each section names the
+incident that exposed one. The test caps module-shaped rows at fewer than five,
+and — more useful — checks the architecture it *describes* is the one the code
+still has: the one-way dependency arrow is verified against real imports rather
+than asserted.
+
+**Round 80 — how far is the conclusion from where a reader starts?** Measured:
+**four of seven entry points could not reach it in one step** — `SCIENCE.md`,
+the guided tour's own closing step, the command line, and the notebooks index.
+`ROADMAP.md` was a fifth, found by the test itself. The roadmap's clause is that
+the surface is wrong rather than the reader, so all five were fixed.
+
+Two of my checks were wrong before the things they checked, again. Reading the
+tour's static body missed the count because the tour **computes** it from the
+validation record — which is the better design and the reason it cannot go
+stale. And the wrong-count guard was too narrow to catch a surface drifting to
+a different number, which I found only by mutating one.
+
+Suite 1116 → 1271.
+
 ## Round 77, and a codebase review against comparable software
 
 **Round 77 — a fetch that verifies what arrived.** The size floor has been

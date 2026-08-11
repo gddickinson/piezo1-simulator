@@ -3,6 +3,11 @@
 What this application models, what the numbers mean, and where each came from.
 Full literature dossiers live in `ref/research/` (git-ignored; regenerable).
 
+> **What the project established, and what it could not:**
+> [`CONCLUSION.md`](CONCLUSION.md) — one page. The structural machinery
+> reproduces the literature; the variant-effect prediction it was built for
+> does not work, and five pre-registered tests returned five nulls.
+
 ---
 
 ## 1. The molecule
@@ -1058,6 +1063,26 @@ diffusivity and the ion radius used for steric exclusion — moves it from 16 to
 94 pS, straddling the measurement. The model can be made to agree by choosing
 values nobody has measured, which is tuning rather than prediction. Both are
 registered `unverified`.
+
+**Two limits on what this model is entitled to claim**, recorded in the Round 29
+plan before any of it was written and moved here in Round 78 when that plan was
+retired. Neither is fixed by anything since, so both still stand.
+
+*PNP is a mean-field theory, applied to a pore about two ions wide.* It treats
+each species as a continuous charge density in an averaged potential, which is
+a reasonable way to get a conductance and **not** a way to resolve single-ion
+energetics — no barrier, no binding site, no knock-on. Reproducing 25–30 pS
+would be encouraging; it would not make this a mechanism of permeation. The
+Debye-overlap diagnostic already reports the related failure of assumption: at
+5.7–8.1 Å screening against a 3.3 Å radius, the pore is not well screened, and
+the solver drops to the electroneutral limit and says so.
+
+*Using the wetting heuristic as an on/off switch is a stronger claim than it was
+validated for.* Rao et al. report AUROC 0.91 over roughly 200 channels — a good
+classifier, not a gate function. Gating the current on it converts a probability
+into a certainty. It is reported as a separate verdict beside the conductance
+rather than multiplied into it, so a reader can disagree with the switch without
+having to recompute the current.
 
 ## 8g. What the deposited variant structures can support
 

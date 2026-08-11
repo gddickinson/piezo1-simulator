@@ -225,7 +225,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     ap = argparse.ArgumentParser(
         prog="python -m piezo1.cli", parents=[common],
-        description="Headless PIEZO1 structural and physical analysis.")
+        description="Headless PIEZO1 structural and physical analysis.",
+        epilog="What this project established, and what it could not: "
+               "docs/CONCLUSION.md — one page, every number traceable "
+               "to the code. The variant-effect prediction it was built "
+               "for does not work; five pre-registered tests, five nulls.")
     sub = ap.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("list", help="available structures", parents=[common])

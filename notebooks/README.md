@@ -52,6 +52,13 @@ Editing a `.ipynb` here directly will be overwritten. Edit the content module.
 `tests/test_notebooks.py` executes the committed files, which is what a reader
 actually runs, and checks they have not drifted from the content modules.
 
+## Before you build on this
+
+Notebook 04 walks the variant workflow to the point where it stops working.
+The one-page account is [`../docs/CONCLUSION.md`](../docs/CONCLUSION.md): the
+structural machinery reproduces the literature, the variant-effect prediction
+does not work, and five pre-registered tests returned five nulls.
+
 ## See also
 
 `docs/NOTEBOOK.md` is the full API reference, including a table of the things

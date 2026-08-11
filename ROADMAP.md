@@ -3,8 +3,8 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: 6 open items in Block Q, plus a new Block R.**
-Everything finished — 368 items across 77 rounds, each carrying the result it
+**Status: 10 open items, all in Block R.**
+Everything finished — 375 items across 80 rounds, each carrying the result it
 measured — is in
 [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
 
@@ -20,6 +20,12 @@ rather than tidied away.
 Nothing was lost in the split, and that is checked rather than asserted:
 `tests/test_roadmap.py` compares both files against the pre-split original in
 git, item by item.
+
+**Before adding to this list, read [`docs/CONCLUSION.md`](docs/CONCLUSION.md).**
+The variant-effect prediction this project was built for does not work — five
+pre-registered tests, five nulls — and a sixth on the same variant set should
+not be run whatever predictor goes into it. Items that would reopen that
+question need the feasibility argument answered first, not a new predictor.
 
 ---
 
@@ -70,28 +76,6 @@ measured P50 and inactivation kinetics.** Each round closes one link.
   the scientific payoff already.
 
 ## Block Q — what the last five rounds exposed (Rounds 76–80)
-
-### Round 78 — Retire `HALOTAG_CALCIUM_PLAN.md`
-- [ ] It is marked 📋 and describes work Rounds 29–32 completed. A plan document
-      that outlived its execution is the documentation equivalent of the four
-      module rows Round 65 deleted.
-- [ ] *Validate:* nothing may be lost — anything in it not carried by the
-      implemented modules must move to `SCIENCE.md` first.
-
-### Round 79 — `ARCHITECTURE.md`, or the row goes
-- [ ] The last 📋 in INTERFACE. Either write why the code is shaped this way —
-      the dependency arrow, the impostor rendering, structure-of-arrays — or
-      delete the promise as Round 65 deleted four others.
-- [ ] *Validate:* if written, it must not restate INTERFACE; it is the *why*,
-      and a test should check it cites the constraints rather than the contents.
-
-### Round 80 — What a reader should be told first, measured
-- [ ] Five surfaces now state the record (README, CONCLUSION, tour, help,
-      SCIENCE). Round 59 linked three by a test. Extend it to all five, and
-      measure how many clicks or scrolls a new reader needs to reach the
-      conclusion from each entry point.
-- [ ] *Validate:* the answer must be one step from every entry point, or the
-      surface is wrong rather than the reader.
 
 ---
 
