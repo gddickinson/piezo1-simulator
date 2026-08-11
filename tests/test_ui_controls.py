@@ -352,3 +352,144 @@ def test_the_mouse_bindings_are_documented():
     for binding in ("drag", "shift + drag", "middle-drag", "right-drag",
                     "right-click", "wheel", "click"):
         assert binding in documented, f"{binding} is not in the shortcut list"
+
+
+# --------------------------------------------------------------------------
+# Full-length models: obvious, and reaching every analysis
+# --------------------------------------------------------------------------
+
+def test_a_spliced_model_is_obvious_in_three_places_at_once(window, app):
+    """A name, a status line and a banner in the viewport.
+
+    One is not enough. The name is a label a user stops reading; the status
+    line can be scrolled past; the HUD banner is where they are actually
+    looking. The banner is deliberately not in the display-options dialog with
+    the other readouts, because it is not a preference.
+    """
+    panel = window.structure_panel
+    try:
+        panel.set_fill("full")
+        window.load_structure(window.record.pdb)
+        app.processEvents()
+
+        assert window.full_length is not None
+        assert "+AF" in window.structure.name
+        assert "PART PREDICTED" in window.status_label.text()
+        assert "PREDICTION" in window.viewport.hud.provenance
+
+        panel.set_fill("none")
+        window.load_structure(window.record.pdb)
+        app.processEvents()
+        assert window.full_length is None
+        assert "+AF" not in window.structure.name
+        assert window.status_label.text().startswith("DEPOSITED")
+        assert window.viewport.hud.provenance == ""
+    finally:
+        panel.set_fill("none")
+        window.load_structure(window.record.pdb)
+        app.processEvents()
+
+
+def test_every_result_window_says_it_was_computed_on_a_model(window, app):
+    """The caveat has to reach the result, not just the title bar."""
+    panel = window.structure_panel
+    try:
+        panel.set_fill("blade")
+        window.load_structure(window.record.pdb)
+        app.processEvents()
+        window.show_fluctuations()
+        app.processEvents()
+        dialog = window._result_dialogs[-1]
+        texts = [w.text() for w in dialog.findChildren(object)
+                 if hasattr(w, "text") and isinstance(w.text(), str)]
+        assert any("PART-PREDICTED" in t for t in texts), (
+            "a number computed on a spliced model must say so where the "
+            "number is, not only in the panel that built it")
+        dialog.close()
+    finally:
+        panel.set_fill("none")
+        window.load_structure(window.record.pdb)
+        app.processEvents()
+
+
+def test_a_refusal_puts_the_selector_back(window, app):
+    """6KG7 is PIEZO2 and there is no PIEZO2 prediction.
+
+    Loading it with a fill selected must not leave the selector claiming a
+    full-length model while showing deposited coordinates.
+    """
+    from piezo1.config import STRUCTURE_DIR
+
+    if not (STRUCTURE_DIR / "6KG7.cif").exists():
+        pytest.skip("6KG7 not downloaded")
+    panel = window.structure_panel
+    # `window` is module-scoped, so the entry has to be put back by name —
+    # `window.record` is 6KG7 by the time the teardown runs, and restoring
+    # *that* leaves the paralogue loaded for every test after this one.
+    started_on = window.record.pdb
+    try:
+        panel.set_fill("full")
+        window.load_structure("6KG7")
+        app.processEvents()
+        assert window.full_length is None
+        assert panel.current_fill() == "none"
+        assert "cannot build" in window.status_label.text()
+    finally:
+        panel.set_fill("none")
+        window.load_structure(started_on)
+        app.processEvents()
+
+
+def test_physics_runs_on_a_spliced_model_through_the_gui(window, app):
+    """The request was that everything works on a full-length model.
+
+    Normal modes are the expensive one and the one that needs three identically
+    ordered protomer blocks, so if anything is going to break on a model built
+    by concatenation it is this. Roughly twice the sites and roughly three
+    times the wall clock — slower, not impossible.
+    """
+    import time
+
+    panel = window.structure_panel
+    # The window is module-scoped and an earlier test fires every menu action,
+    # one of which starts a mode calculation. `compute_modes` returns early
+    # while a thread is in flight, so without this the request is silently
+    # dropped and the assertion below blames the feature.
+    window.physics.cleanup()
+    window.modes = None
+    try:
+        panel.set_fill("full")
+        window.load_structure(window.record.pdb)
+        app.processEvents()
+        assert window.full_length is not None
+        assert len(window._mode_blocks) == 3
+        window.physics_panel.compute_modes_requested.emit(
+            {"n_modes": 4, "cutoff": 15.0, "spring": "inverse_square",
+             "gamma": 1.0, "d0": 7.5})
+        deadline = time.time() + 300
+        while window.modes is None and time.time() < deadline:
+            app.processEvents()
+            time.sleep(0.05)
+
+        assert window.modes is not None, (
+            f"status was {window.status_label.text()!r}")
+        assert window.modes.n_sites == len(window._mode_blocks[0]) * 3
+        assert window.modes.n_sites > 6000, (
+            "a full-length trimer is about twice the deposited site count")
+        assert set(window.modes.symmetry) <= {"A", "E"}, (
+            "symmetry labelling needs the blocks contiguous and identically "
+            "ordered, which is what the build has to preserve")
+
+        # ...and the motion can be driven and coloured like any other model.
+        window.physics.select_mode(0)
+        window.physics.animate_mode(True)
+        app.processEvents()
+        window.physics.animate_mode(False)
+        window.physics.color_by_mode(True)
+        app.processEvents()
+    finally:
+        window.physics.cleanup()
+        window.modes = None
+        panel.set_fill("none")
+        window.load_structure(window.record.pdb)
+        app.processEvents()

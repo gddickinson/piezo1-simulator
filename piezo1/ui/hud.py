@@ -79,6 +79,9 @@ class HudOverlay(QWidget):
         self.settings = HudSettings()
         self.readouts: dict[str, str] = {}
         self.structure_name = ""
+        #: Set when part of what is drawn is prediction rather than experiment.
+        #: Deliberately not a member of `HudSettings`: it is not a preference.
+        self.provenance = ""
         self.clock_text = ""
         self.clock_note = ""
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
@@ -145,6 +148,8 @@ class HudOverlay(QWidget):
             self._draw_scale_bar(painter, base)
         if self.settings.orientation_axes:
             self._draw_axes(painter, base)
+        if self.provenance:
+            self._draw_provenance(painter, base)
         painter.end()
 
     def _shadowed(self, painter: QPainter, rect: QRectF, flags, text: str,
@@ -154,6 +159,27 @@ class HudOverlay(QWidget):
         painter.drawText(rect.translated(1.0, 1.0), flags, text)
         painter.setPen(QPen(QColor(colour)))
         painter.drawText(rect, flags, text)
+
+    def _draw_provenance(self, painter: QPainter, base: int) -> None:
+        """An amber banner whenever part of what is drawn is a prediction.
+
+        Not switchable, and not in the display-options dialog with the other
+        readouts. Every other element of this overlay is a convenience; this
+        one is the difference between a measurement and a model, and a user who
+        has turned the title off and come back to the window an hour later has
+        no other way to tell. It is the same reasoning as the HaloTag fold's
+        status line, which also cannot be suppressed.
+        """
+        font = painter.font()
+        font.setBold(True)
+        painter.setFont(font)
+        rect = QRectF(self.MARGIN, self.height() - self.MARGIN - base * 2.4,
+                      self.width() - 2 * self.MARGIN, base * 2.0)
+        self._shadowed(painter, rect,
+                       Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom,
+                       self.provenance, colour="#ffb454")
+        font.setBold(False)
+        painter.setFont(font)
 
     def _draw_title(self, painter: QPainter, base: int) -> None:
         font = painter.font()

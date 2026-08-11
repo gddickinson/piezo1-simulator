@@ -98,7 +98,20 @@ class TabularAnalysisMixin:
         # analyses always use the primary whatever else is drawn.
         name = getattr(self.structure, "name", "") if self.structure else ""
         species = self.record.numbering_species if self.record else ""
-        dialog = ResultDialog(title, data, CAVEATS.get(key, ""), self,
+        # A result computed on a spliced model must say so *before* its own
+        # caveat, because the reader's first question is what the numbers were
+        # measured on. The structure name already carries the suffix, but a
+        # name is a label and this is a sentence.
+        caveat = CAVEATS.get(key, "")
+        model = getattr(self, "full_length", None)
+        if model is not None:
+            caveat = (f"COMPUTED ON A PART-PREDICTED MODEL. "
+                      f"{model.n_predicted_residues} residues here are "
+                      f"AlphaFold, not experiment "
+                      f"({model.confident_fraction:.0%} above pLDDT 70). "
+                      f"Switch Completeness to 'Deposited only' in the Model "
+                      f"panel for experiment alone.\n\n") + caveat
+        dialog = ResultDialog(title, data, caveat, self,
                               structure_name=name, species=species)
         # Held on the window so it is not garbage-collected while open.
         if not hasattr(self, "_result_dialogs"):

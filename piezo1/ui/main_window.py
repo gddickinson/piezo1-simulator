@@ -74,6 +74,12 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.view: MolecularView | None = None
         self.record = None
         self.modes = None
+        #: The spliced model on screen, or None when the deposited
+        #: coordinates are being shown unaltered. Read by the status
+        #: line and by every result window, so the two can never
+        #: disagree about which is loaded.
+        self.full_length = None
+        self._fill_refusal = ""
         # How freshly loaded structures are framed, and what they are framed
         # against. The reference is the first structure aligned this session, so
         # everything after it lands in the same place.
@@ -151,6 +157,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
     def _build_docks(self) -> None:
         self.structure_panel = StructurePanel()
         self.structure_panel.structure_requested.connect(self.load_structure)
+        self.structure_panel.fill_changed.connect(self._reload_for_fill)
         self.structure_panel.style_changed.connect(self._set_style)
         self.structure_panel.color_changed.connect(self._set_color)
         self.structure_panel.ligands_toggled.connect(self._set_ligands)
@@ -267,6 +274,60 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         else:
             self._set_status("No structures found — run scripts/fetch_data.py")
 
+    def _show_provenance(self) -> None:
+        """Put the amber banner up, or take it down, to match what is loaded."""
+        hud = getattr(self.viewport, "hud", None)
+        if hud is None:
+            return
+        model = getattr(self, "full_length", None)
+        hud.provenance = ("" if model is None else
+                          f"⚠ {model.n_predicted_residues} residues are "
+                          f"ALPHAFOLD PREDICTION, not experiment")
+        hud.update()
+
+    def _provenance_prefix(self) -> str:
+        """What every status line about the loaded model begins with."""
+        model = getattr(self, "full_length", None)
+        if model is None:
+            refusal = getattr(self, "_fill_refusal", "")
+            return f"DEPOSITED ({refusal}) · " if refusal else "DEPOSITED · "
+        return (f"PART PREDICTED ({model.n_predicted_residues} residues, "
+                f"{model.confident_fraction:.0%} above pLDDT 70) · ")
+
+    def _apply_fill(self, st):
+        """Splice in whatever the Completeness selector asks for.
+
+        Returns ``(structure, model_or_None)``. A refusal — a PIEZO2 entry, a
+        fragment — puts the selector back to deposited-only and says why,
+        rather than loading something the user did not ask for under a name
+        that says they did.
+        """
+        from .panels.structure_panel import FILL_MODES
+
+        self._fill_refusal = ""
+        mode = self.structure_panel.current_fill()
+        if mode == "none":
+            return st, None
+        from ..structure.full_length import build_full_length
+        try:
+            model = build_full_length(st, mode)
+        except (ValueError, FileNotFoundError) as exc:
+            # Kept on the window rather than only set as the status, because
+            # the load finishes by writing its own status over this one — and
+            # a refusal the user never sees is a selector that silently
+            # disagrees with what is on screen.
+            self.structure_panel.set_fill("none")
+            self._fill_refusal = f"cannot build a full-length model — {exc}"
+            return st, None
+        label = dict((k, v) for k, v, _ in FILL_MODES)[mode]
+        self._set_status(f"{model.structure.name}: {label} — {model.summary()}")
+        return model.structure, model
+
+    def _reload_for_fill(self, _mode: str) -> None:
+        """Rebuild the current entry at the newly chosen completeness."""
+        if self.record is not None:
+            self.load_structure(self.record.pdb)
+
     def _set_status(self, text: str) -> None:
         self.status_label.setText(text)
 
@@ -285,6 +346,8 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         except Exception as exc:
             QMessageBox.warning(self, "Load failed", f"{rec.path}\n\n{exc}")
             return
+
+        st, self.full_length = self._apply_fill(st)
 
         st, frame = self._standardise(st, rec)
 
@@ -313,7 +376,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.analysis.reset()
         self.fusion.clear()
 
-        self.view = MolecularView(self.viewport.scene, st, name=rec.pdb)
+        self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.set_species(rec.numbering_species)
         self.view.style = self._current_style()
         self.view.color_by = self._current_color()
@@ -321,7 +384,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
 
         self.viewport.set_pick_source(st.xyz)
         self.structure_panel.set_entities(self.view.entity_map())
-        self._set_status(f"{rec.pdb}: {self.view.entity_map().summary()}")
+        self._show_provenance()
         self.presentation.refresh()
         self.overlay_panel.set_choices(self.registry.entries, exclude=rec.pdb)
         if self._sequence_window is not None:
@@ -336,10 +399,13 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.annotation_panel.set_structure_context(rec.pdb, modelled)
         self._mode_blocks, self._mode_residues = protomer_blocks(st)
 
+        # The provenance goes FIRST and in capitals. It used to be appended,
+        # and a status line is read left to right and truncated on the right.
         self._set_status(
-            f"{rec.pdb}: {st.n_atoms:,} atoms, {st.n_residues:,} residues, "
-            f"{len(self._mode_blocks)} protomers · loaded in "
-            f"{time.time() - t0:.2f} s · {rec.numbering_species} numbering"
+            f"{self._provenance_prefix()}{st.name}: {st.n_atoms:,} atoms, "
+            f"{st.n_residues:,} residues, {len(self._mode_blocks)} protomers "
+            f"· loaded in {time.time() - t0:.2f} s · {rec.numbering_species} "
+            f"numbering"
             + (f" · {frame.summary()}" if not frame.is_identity else ""))
         self._refresh_displayed()
         self.viewport.update()

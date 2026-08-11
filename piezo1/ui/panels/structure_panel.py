@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFormLayout, QGroupBox,
                              QWidget)
 
 from ...io.registry import StructureRecord, load_registry
+from ...structure.full_length import FILL_MODES
 from ...render.representations import ColorBy, Style
 
 __all__ = ["StructurePanel", "FILTERS"]
@@ -56,6 +57,7 @@ class StructurePanel(QWidget):
     """Pick a structure and control how it is drawn."""
 
     structure_requested = pyqtSignal(str)
+    fill_changed = pyqtSignal(str)              # which prediction to splice in
     style_changed = pyqtSignal(object)
     color_changed = pyqtSignal(object)
     ligands_toggled = pyqtSignal(bool)
@@ -107,6 +109,19 @@ class StructurePanel(QWidget):
         self.count = QLabel("")
         self.count.setStyleSheet("color: #7f8798; font-size: 11px;")
         form.addRow("", self.count)
+
+        # Which model to build from the chosen entry. It sits with the entry
+        # rather than under View because it decides *what is loaded*, not how
+        # it is drawn — every analysis, animation and measurement then runs on
+        # whatever this says, and none of them has to know about it.
+        self.fill_combo = QComboBox()
+        for _key, label, _tip in FILL_MODES:
+            self.fill_combo.addItem(label)
+        self.fill_combo.setToolTip(
+            "\n\n".join(f"{label}: {tip}" for _k, label, tip in FILL_MODES))
+        self.fill_combo.currentIndexChanged.connect(
+            lambda _i: self.fill_changed.emit(self.current_fill()))
+        form.addRow("Completeness", self.fill_combo)
 
         self.detail = QLabel("—")
         self.detail.setWordWrap(True)
@@ -264,6 +279,18 @@ class StructurePanel(QWidget):
         for i, r in enumerate(self._records):
             if r.pdb == pdb:
                 self.structure_combo.setCurrentIndex(i)
+                return
+
+    def current_fill(self) -> str:
+        return FILL_MODES[max(self.fill_combo.currentIndex(), 0)][0]
+
+    def set_fill(self, mode: str) -> None:
+        """Set the completeness without asking for a reload."""
+        for index, (key, _label, _tip) in enumerate(FILL_MODES):
+            if key == mode:
+                self.fill_combo.blockSignals(True)
+                self.fill_combo.setCurrentIndex(index)
+                self.fill_combo.blockSignals(False)
                 return
 
     def current_record(self) -> StructureRecord | None:

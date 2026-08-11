@@ -282,6 +282,27 @@ TAG_PARAMETERS = [
                      "an input, and nothing is clipped to it.",
          description="In-pore concentration above which the model is flagged."),
 
+    # ------------------------------------------------------- full-length model ----
+    dict(key="full_length.gap_anchor_window", name="Gap anchor window",
+         value=25.0, unit="residues", minimum=3.0, maximum=200.0,
+         kind="method", category="Full-length model", citation="method_choice",
+         source_note="How many resolved residues either side of an "
+                     "unresolved stretch are used to place the prediction "
+                     "into it. Both flanks are required, so the fill is "
+                     "interpolated rather than cantilevered like the blade; "
+                     "the flank RMSD is reported so a bad fit is visible "
+                     "rather than absorbed.",
+         description="Resolved residues each side of a gap used to anchor its fill."),
+    dict(key="full_length.max_gap", name="Longest gap filled",
+         value=120.0, unit="residues", minimum=1.0, maximum=2000.0,
+         kind="method", category="Full-length model", citation="method_choice",
+         source_note="A local fit at two flanks says nothing about what a very "
+                     "long insert does in between, and a 400-residue loop "
+                     "placed that way would look like structure. Gaps longer "
+                     "than this are left empty and counted, so the model "
+                     "reports what it did not fill.",
+         description="Gaps longer than this are reported rather than filled."),
+
     # -------------------------------------------------- paralogue control ----
     dict(key="paralogue.min_sequence_identity",
          name="Numbering identification floor", value=0.9, unit="fraction",

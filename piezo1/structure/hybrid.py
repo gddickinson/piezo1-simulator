@@ -245,4 +245,9 @@ def build_hybrid_model(experimental, predicted=None, chain: str | None = None,
               "chain": chain, "predicted_model": predicted_name,
               "anchor_window": anchor_window, "anchor_residues": len(anchor),
               "shared_residues": len(shared),
-              "grafted_residues": int(len(set(predicted.res_seq[graft])))})
+              "grafted_residues": int(len(set(predicted.res_seq[graft]))),
+              # The rigid motion that placed the blade, kept so a caller can
+              # apply it to the prediction's *atoms* rather than only receive
+              # its coordinates — which is what building a full-length
+              # Structure needs.
+              "transform": (rotation, translation, centroid)})

@@ -168,3 +168,47 @@ def test_the_protein_field_is_measured_and_present_on_every_entry():
             f"{record.pdb}: registry says {record.protein}, the coordinates "
             f"say {measured.reference}")
     assert sum(r.is_piezo2 for r in records) == 1
+
+
+# ------------------------------------------- the completeness selector
+
+def test_the_completeness_selector_offers_every_fill_mode(panel):
+    """Full-length models are chosen in the structure selector, not under View.
+
+    It decides *what is loaded*, so every analysis, animation and measurement
+    then runs on it without any of them knowing this feature exists.
+    """
+    from piezo1.structure.full_length import FILL_MODES
+
+    labels = [panel.fill_combo.itemText(i)
+              for i in range(panel.fill_combo.count())]
+    assert labels == [label for _key, label, _tip in FILL_MODES]
+    assert panel.current_fill() == "none", "deposited only must be the default"
+
+
+def test_choosing_a_completeness_asks_for_a_reload(panel):
+    seen = []
+    panel.fill_changed.connect(seen.append)
+    panel.fill_combo.setCurrentIndex(3)
+    assert panel.current_fill() == "full"
+    assert seen == ["full"], "the window has to rebuild the entry to apply it"
+
+
+def test_set_fill_does_not_ask_for_a_reload(panel):
+    """Used to put the selector back after a refusal, which must not recurse."""
+    seen = []
+    panel.fill_changed.connect(seen.append)
+    panel.set_fill("blade")
+    assert panel.current_fill() == "blade"
+    assert seen == []
+
+
+def test_the_selector_explains_what_each_mode_does(panel):
+    """The difference between the two halves is a scientific one.
+
+    An internal gap is bracketed by resolved residues at both ends; the blade
+    is anchored at one end only. A user choosing between them needs that, and
+    it is not inferable from the labels.
+    """
+    tip = panel.fill_combo.toolTip()
+    assert "interpolated" in tip and "extrapolated" in tip

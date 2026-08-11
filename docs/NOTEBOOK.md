@@ -88,6 +88,38 @@ modes.collectivity(0)
 contiguous and identically ordered, which is what makes the symmetry labelling
 valid.
 
+## Full-length models
+
+`hybrid` grafts onto one protomer and returns coordinates. `full_length`
+returns a real `Structure`, which is what every analysis takes — so once it
+exists, nothing else needs changing.
+
+```python
+from piezo1.structure.full_length import build_full_length, predicted_mask
+
+m = build_full_length(st, "full")      # "none" | "gaps" | "blade" | "full"
+m.structure.name                        # '7WLT+AF-full'
+m.n_predicted_residues                  # 3165 of 7224
+m.confident_fraction                    # 0.53 above pLDDT 70
+m.blade_c3_deviation                    # 0.0 A — a measurement, not an input
+m.warnings()                            # what must reach a user first
+predicted_mask(m.structure)             # derived, so a subset cannot stale it
+
+blocks, residues = protomer_blocks(m.structure)   # 3 x 2408, not 3 x 1353
+```
+
+**What changes when you use one.** The dome sees **38** transmembrane helices
+instead of 22, which moves R_c on 7WLT from 9.72 to 8.63 nm — that is the
+coverage effect Round 83 measured, now deliberate rather than accidental. The
+elastic network takes about 7 s instead of 3. And roughly half the residues are
+prediction, so every number carries that.
+
+**`gaps` and `blade` are different claims.** A gap is bracketed by resolved
+residues at both ends and is interpolated; the blade is anchored at one end and
+is extrapolated. Gaps longer than `full_length.max_gap` are left empty and
+counted rather than invented, and `meta["gap_flank_rmsd_max"]` says how well
+the fills that were made are anchored.
+
 ## Does the network describe the molecule?
 
 The standard check, and the one to run before quoting any mode: correlate the
