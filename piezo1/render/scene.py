@@ -148,8 +148,16 @@ class Scene:
         for name in opaque:
             batch = self.batches[name]
             if batch.visible and batch.count:
+                # Impostor batches declare `cull = False`: their bounding quad
+                # is oriented by the geometry rather than by the camera, so
+                # culling discards it outright. See `CylinderBatch`.
+                if getattr(batch, "cull", True):
+                    self.ctx.enable(moderngl.CULL_FACE)
+                else:
+                    self.ctx.disable(moderngl.CULL_FACE)
                 batch.set_uniforms(uniforms)
                 batch.render()
+        self.ctx.enable(moderngl.CULL_FACE)
 
         if transparent:
             self.ctx.enable(moderngl.BLEND)

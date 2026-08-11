@@ -106,6 +106,19 @@ def _view_menu(win, bar) -> None:
                 "runs about a MILLIONFOLD slow and the HUD states the factor.\n"
                 "A pore the wetting model calls shut shows no ions at all.")
 
+    _action(menu, "&Contacts", win.contacts.show, "",
+            checkable=True, checked=False,
+            tip="Draw the contacts the interaction analysis finds, between the\n"
+                "atoms it found them between — same cutoffs, same geometry, no\n"
+                "second implementation. Colour by kind, because they are not\n"
+                "the same evidence: a disulfide is a covalent bond the map\n"
+                "resolved, a salt bridge is two charged groups inside a\n"
+                "published cutoff, a hydrophobic contact is two carbons near\n"
+                "each other. Hydrophobic contacts are OFF by default; they\n"
+                "outnumber the rest several times over and would bury them.\n"
+                "Criteria are heavy-atom based: no deposited entry has\n"
+                "hydrogens, so a drawn hydrogen bond is geometry rather than\n"
+                "an observed proton.")
     _action(menu, "&Dome surface", win.dome_surface.show, "",
             checkable=True, checked=False,
             tip="Draw the membrane dome that the Physics panel measures.\n"

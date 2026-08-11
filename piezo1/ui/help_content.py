@@ -108,10 +108,24 @@ real alignment, never by adding a constant.</p>
 <li><b>Cartoon</b> — secondary structure ribbons. Helices and strands are
 assigned from C-alpha geometry (P-SEA), because most of these entries are
 C-alpha traces without the backbone atoms DSSP needs.</li>
-<li><b>Spheres / sticks / ball-and-stick</b> — atomic detail. Drawn as ray-cast
-impostors, so the spheres are mathematically exact rather than tessellated.</li>
+<li><b>Spheres</b> — every atom at its van der Waals radius.</li>
+<li><b>Balls</b> — the same atoms drawn small, so the shape of the chain shows
+through.</li>
+<li><b>Sticks</b> — bonds only, no atom spheres. The clearest view of a side
+chain's geometry.</li>
+<li><b>Ball and stick</b> — both, the usual chemical drawing.</li>
 <li><b>Backbone</b> — a fast trace for orientation on a 120,000-atom trimer.</li>
 </ul>
+<p>The four atomic styles are ray-cast impostors: each atom is a screen-space quad whose
+fragment shader solves the ray–sphere intersection, so the spheres are
+mathematically exact at any zoom rather than tessellated. <b>The bonds were never
+drawn at all.</b> The cylinder shader had a sign error that negated
+both roots of its quadratic, putting every near hit behind the eye, and the
+depth guard then discarded the fragment — so <i>Ball and stick</i> drew balls
+only, and the HaloTag linker seam drew nothing at all, for the whole life of
+the renderer. This help page listed sticks as available throughout. A test now
+renders each style to a framebuffer and counts lit pixels, which is the only
+check that would have caught it.</p>
 
 <h3>Colour by</h3>
 <ul>

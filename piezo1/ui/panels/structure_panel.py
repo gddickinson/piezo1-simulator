@@ -38,6 +38,8 @@ STYLE_LABELS = [
     ("Tube", Style.TUBE),
     ("Backbone trace", Style.BACKBONE),
     ("Spheres (van der Waals)", Style.SPHERES),
+    ("Balls", Style.BALLS),
+    ("Sticks", Style.STICKS),
     ("Ball and stick", Style.BALL_AND_STICK),
 ]
 

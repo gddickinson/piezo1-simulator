@@ -5357,3 +5357,71 @@ error this round is about.
 
 Suite 507 → 518 passing. Block I appended after the thirty-round review,
 numbered from 36 since Block H already claims 31–35.
+
+---
+
+## Contacts on the model, and the bonds that had never been drawn
+
+Two requests in one: draw the interaction inventory, and fix ball-and-stick,
+which was showing balls only.
+
+### The second one was not a missing feature
+
+`Style.BALL_AND_STICK` built its cylinder batch correctly, uploaded it, and drew
+nothing. Two independent faults, either of which alone was fatal:
+
+**A sign error in `cylinder.frag`.** The ray–cylinder quadratic used `-oc` where
+it needed `oc` when forming the perpendicular component. That negates B, which
+negates both roots, so the near hit came out *behind the eye* and the `t < 0`
+guard discarded every fragment. **No cylinder has ever been drawn by this
+renderer.** Ball-and-stick has drawn balls only since the day it was written,
+and the HaloTag linker seam — a feature with its own controller, its own tests
+and its own paragraph in `INTERFACE.md` — has drawn nothing at all.
+
+**Face culling.** `Scene.render` enabled `CULL_FACE` once at setup. That is
+right for meshes and wrong for impostors: an impostor quad is oriented by the
+geometry it stands for, not by the camera, so roughly half of them are
+back-facing and were discarded. `render()` now reads a per-batch `cull` flag.
+
+### Why the test suite did not catch it
+
+Because nothing rendered. Every existing renderer test checked that a batch was
+built, that it had the right vertex count, that the style switch changed state.
+All of that passed on a shader that emitted no fragments. `test_render_impostors`
+now renders to a framebuffer and **counts lit pixels**, which is the only check
+that could have failed. Both faults are pinned separately, because fixing one
+without the other still gives an empty picture and would have looked like the
+fix not working.
+
+Three new styles came out of it — Balls, Sticks and the corrected Ball and
+stick. The help page had listed sticks as available throughout.
+
+### The contacts: getting the default wrong first
+
+`interaction_controller` draws each contact as a cylinder between the two atoms
+`detect_interactions` found it between. It calls the analysis rather than
+reimplementing it, so if the picture and the table ever disagree the picture is
+wrong.
+
+Two mistakes, both caught by looking at the screenshot rather than the tests:
+
+**Keyed on the wrong strings.** `KIND_COLORS` used `hbond`; the analysis emits
+`hydrogen_bond`. So 7,984 of 9,863 contacts — five sixths of everything found —
+silently did not draw, while the status line cheerfully reported the rest. The
+test now takes the kinds from `detect_interactions`'s own output rather than a
+list copied into the test, which is the only version that catches a rename.
+
+**Then it drew them, and that was worse.** With the key fixed the picture was
+eight thousand green lines and unreadable. The instinct is to call that "too
+many", but the real reason is better than that: most of those hydrogen bonds are
+backbone *i*→*i*+4 — they **are** the secondary structure, and the cartoon was
+already drawing it. So the default is now the specific contacts only:
+disulfides, salt bridges, cation–π, π-stacks. 270 cylinders on 8YEZ, each saying
+something the ribbon does not — and the blue salt bridges land exactly where
+they should, at the pore and along the beam. What is hidden is counted on the
+status line rather than dropped.
+
+The status line carries two caveats that cannot be omitted, the same two the
+table carries: no deposited PIEZO entry has hydrogens, so every criterion is
+heavy-atom geometry and a drawn hydrogen bond is an inference; and a contact
+belongs to *this* structure in *this* state.

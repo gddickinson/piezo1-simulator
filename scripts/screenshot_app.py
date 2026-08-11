@@ -83,6 +83,22 @@ def main() -> int:
         shot("dome_surface")
         win.dome_surface.show(False)
 
+    def step_contacts() -> None:
+        """Draw the contacts and photograph them.
+
+        A picture is the check that catches a whole kind failing to draw: the
+        first version lost 7,984 hydrogen bonds to a name mismatch and the
+        status line reported the remainder without complaint.
+        """
+        win.contacts.show(True)
+        app.processEvents()
+        if not win.contacts.visible:
+            failures.append("contacts drew nothing")
+            return
+        print("contacts:", win.status_label.text()[:150])
+        shot("contacts")
+        win.contacts.show(False)
+
     def step_shot_dome() -> None:
         # A dome needs three protomers. 4RAX is a single isolated domain and
         # the AlphaFold models are monomers; reporting that as a failure would
@@ -264,7 +280,7 @@ def main() -> int:
               f"analyses {sorted(restored.analyses)}")
 
     steps += [step_select, step_shot_overview, step_dome, step_shot_dome,
-              step_dome_surface, step_variant, step_shot_variant, step_measure]
+              step_dome_surface, step_contacts, step_variant, step_shot_variant, step_measure]
     if args.analysis:
         steps += [step_pore, None, None, None, None, None, step_shot_pore,
                   step_focus_mode, step_layout, step_tour, step_session]

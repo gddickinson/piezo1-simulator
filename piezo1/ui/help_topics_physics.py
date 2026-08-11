@@ -108,6 +108,32 @@ Helfrich theory is a small-slope expansion: continued from that rim it plunges
 158 Å over a 526 Å skirt and overestimates the real footprint <b>3.65×</b>. The
 footprint radius is given as a number instead.</p>
 
+<h3>Seeing the contacts — View &rarr; Contacts</h3>
+<p>The interaction inventory has existed since Round 21 and only ever as a
+table. A table can tell you that the R2456–E2117 salt bridge exists; it cannot
+tell you that it joins <i>two different protomers</i> at the pore, which is the
+part that matters. This draws each contact as a cylinder between the two atoms
+the analysis actually found it between, coloured by kind — gold disulfides,
+blue salt bridges, green hydrogen bonds, purple π-stacks, pink cation–π, grey
+hydrophobic.</p>
+<p><b>Two kinds are off until you ask for them, and not because there are a lot
+of them.</b> 8YEZ yields 9,863 contacts, of which 7,984 are hydrogen bonds —
+and most of those are backbone <i>i</i> to <i>i</i>+4, which <i>are</i> the
+secondary structure the cartoon is already drawing. Turning them on repeats the
+ribbon in eight thousand green lines. Hydrophobic contacts are off because two
+carbons near each other is the weakest claim in the set. What is left is 270
+cylinders, each saying something the ribbon does not. Whatever is hidden is
+counted on the status line rather than dropped.</p>
+<p><b>Two things the picture must not be read as.</b> No deposited PIEZO entry
+has hydrogens, so every criterion here is heavy-atom geometry — a drawn hydrogen
+bond is an inference, not an observed proton. And a contact belongs to
+<i>this</i> structure in <i>this</i> state: a closed entry does not show the
+open state's salt bridges, and a residue whose side chain was never resolved
+cannot contribute one at all. Both are on the status line whenever contacts are
+drawn. Nothing here is a new measurement — it calls the same
+<tt>detect_interactions</tt> the table does, so if the two ever disagree the
+picture is wrong.</p>
+
 <h3>Is any of this PIEZO1? — Analysis &rarr; PIEZO2 comparison</h3>
 <p><b>The catalogue now holds four PIEZOs.</b> PIEZO1 (human and mouse),
 PIEZO2 (<b>human</b> and mouse), <i>C. elegans</i> PEZO-1 and <i>Drosophila</i>

@@ -22,11 +22,23 @@ from .spline import assign_secondary_structure
 __all__ = ["Style", "ColorBy", "MolecularView"]
 
 
+#: Ball radius in ball-and-stick, Angstrom. Roughly a quarter of a carbon's
+#: van der Waals radius, the usual convention.
+BALL_RADIUS = 0.42
+#: Bond cylinder radius in ball-and-stick, Angstrom.
+BOND_RADIUS = 0.20
+#: Radius for the sticks-only style, used for both the bonds and the joint
+#: spheres at each atom so the two are indistinguishable.
+STICK_RADIUS = 0.28
+
+
 class Style(str, Enum):
     CARTOON = "cartoon"
     TUBE = "tube"
     BACKBONE = "backbone"
     SPHERES = "spheres"
+    BALLS = "balls"
+    STICKS = "sticks"
     BALL_AND_STICK = "ball_and_stick"
     SURFACE_POINTS = "surface_points"
 
@@ -144,8 +156,8 @@ class MolecularView:
         colors = self.atom_colors()
         if self.style in (Style.CARTOON, Style.TUBE, Style.BACKBONE):
             self._build_ribbons(colors)
-        if self.style in (Style.SPHERES, Style.BALL_AND_STICK,
-                          Style.SURFACE_POINTS):
+        if self.style in (Style.SPHERES, Style.BALLS, Style.STICKS,
+                          Style.BALL_AND_STICK, Style.SURFACE_POINTS):
             self._build_atoms(colors)
         if self.ligands_as_spheres:
             self._build_ligands()
@@ -185,18 +197,34 @@ class MolecularView:
             radii = st.vdw_radii()
         else:
             mask = np.ones(st.n_atoms, dtype=bool)
-            radii = np.full(st.n_atoms, 0.42, dtype=np.float32)
+            radii = np.full(st.n_atoms, BALL_RADIUS, dtype=np.float32)
         mask = self._entity_filter(mask)
         flags = np.zeros(st.n_atoms, dtype=np.float32)
         if self.highlight is not None:
             flags[self.highlight] = 1.0
+
+        if self.style is Style.STICKS:
+            # Sticks still need a sphere at every atom, or each bond ends in a
+            # flat disc and a branch point shows the seam between two of them.
+            # They are drawn at the stick's own radius so they read as joints
+            # rather than as balls, which is the whole difference between this
+            # style and ball-and-stick.
+            radii = np.full(st.n_atoms, STICK_RADIUS, dtype=np.float32)
+
         batch = self.scene.spheres(f"{self.name}:atoms")
         batch.upload(st.xyz[mask], radii[mask], colors[mask], flags[mask])
 
-        if self.style is Style.BALL_AND_STICK:
-            self._build_bonds(colors)
+        if self.style in (Style.STICKS, Style.BALL_AND_STICK):
+            self._build_bonds(colors, mask=mask)
 
-    def _build_bonds(self, colors: np.ndarray, cutoff: float = 1.95) -> None:
+    def _build_bonds(self, colors: np.ndarray, cutoff: float = 1.95,
+                     mask: np.ndarray | None = None) -> None:
+        """Covalent bonds as cylinders, coloured from each end's atom.
+
+        ``mask`` is the atom selection actually drawn. Bonds used to be built
+        from every atom regardless, so switching a category off in the Model
+        panel hid its spheres and left its bonds hanging in space.
+        """
         from scipy.spatial import cKDTree
         st = self.structure
         tree = cKDTree(st.xyz)
@@ -205,12 +233,15 @@ class MolecularView:
             return
         # Skip anything that would bond across chains at this distance.
         keep = st.chain[pairs[:, 0]] == st.chain[pairs[:, 1]]
+        if mask is not None:
+            keep &= mask[pairs[:, 0]] & mask[pairs[:, 1]]
         pairs = pairs[keep]
         if len(pairs) == 0:
             return
+        radius = STICK_RADIUS if self.style is Style.STICKS else BOND_RADIUS
         batch = self.scene.cylinders(f"{self.name}:bonds")
         batch.upload(st.xyz[pairs[:, 0]], st.xyz[pairs[:, 1]],
-                     np.full(len(pairs), 0.20, np.float32),
+                     np.full(len(pairs), radius, np.float32),
                      colors[pairs[:, 0]], colors[pairs[:, 1]])
 
     def entity_map(self):

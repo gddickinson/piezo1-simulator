@@ -148,7 +148,19 @@ class SphereBatch(Batch):
 # --------------------------------------------------------------------------
 
 class CylinderBatch(Batch):
-    """Instanced cylinder impostors with per-end colours."""
+    """Instanced cylinder impostors with per-end colours.
+
+    **Never culled.** The bounding quad is built around the cylinder's own axis,
+    so which way it faces depends on the direction of the bond rather than on
+    the camera — and with back-face culling on, the whole quad is thrown away
+    before the fragment stage ever runs. That is why ball-and-stick drew balls
+    only and the HaloTag seam drew nothing: the impostors were being culled,
+    not mis-shaded. Culling is meaningless for an impostor in any case, because
+    the fragment shader ray-casts the real surface and writes its own depth.
+    """
+
+    #: Read by :meth:`piezo1.render.scene.Scene.render`.
+    cull = False
 
     DTYPE = np.dtype([("start", "f4", 3), ("end", "f4", 3), ("radius", "f4"),
                       ("color_a", "f4", 3), ("color_b", "f4", 3)])

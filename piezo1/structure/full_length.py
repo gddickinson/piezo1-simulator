@@ -182,8 +182,8 @@ def resolved_gaps(structure: Structure, chain: str) -> list:
     """Unresolved stretches inside one chain's resolved range, as (first, last).
 
     Every deposited PIEZO structure has them — 7WLT resolves 1,353 residues
-    across a 784-2547 span in twelve pieces — and until Round 84 nothing could
-    see them. They are the safer half of the model to fill, because unlike the
+    across a 784-2547 span in twelve pieces — and nothing could see them until
+    the gap filling needed them. They are the safer half of the model to fill, because unlike the
     blade they have resolved residues on both sides to be anchored against.
     """
     mask = structure.mask_ca() & (structure.chain == chain)

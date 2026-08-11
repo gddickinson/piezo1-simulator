@@ -27,10 +27,16 @@ void main()
     if (height < 1e-6) discard;
     vec3 dir = axis / height;
 
-    vec3 oc = -v_start_view;                       // eye (origin) minus base
+    // The eye is the origin in view space, so (eye - base) is just -base.
+    vec3 oc = -v_start_view;
     // Components perpendicular to the cylinder axis.
     vec3 rp = ray - dir * dot(ray, dir);
-    vec3 op = -oc - dir * dot(-oc, dir);           // base-to-eye, perpendicular
+    // This used `-oc`, which negates B and therefore negates both roots of the
+    // quadratic — so the near hit came out behind the eye and the `t < 0`
+    // guard below discarded every fragment. Cylinders have been invisible
+    // since the renderer was written: ball-and-stick drew balls only, and the
+    // HaloTag seam drew nothing.
+    vec3 op = oc - dir * dot(oc, dir);
 
     float A = dot(rp, rp);
     if (A < 1e-9) discard;
