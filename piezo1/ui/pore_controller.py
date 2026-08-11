@@ -41,9 +41,10 @@ import numpy as np
 
 from ..parameters import PARAMETERS as _P
 
-__all__ = ["PoreSurfaceController", "radius_colors", "band_index", "NAME",
-           "NARROW_COLOR", "TIGHT_COLOR", "OPEN_COLOR", "BAND_COLORS",
-           "BAND_NAMES", "LINING_COLOR", "LINING_RADIUS"]
+__all__ = ["PoreSurfaceController", "radius_colors", "band_index",
+           "drawn_slice_mask", "NAME", "NARROW_COLOR", "TIGHT_COLOR",
+           "OPEN_COLOR", "BAND_COLORS", "BAND_NAMES", "LINING_COLOR",
+           "LINING_RADIUS"]
 
 NAME = "pore_surface"
 
@@ -97,6 +98,52 @@ def radius_colors(radius, ion_radius: float | None = None,
     """One colour per slice, from the two registered pore thresholds."""
     bands = band_index(radius, ion_radius, threshold)
     return np.asarray(BAND_COLORS, dtype=np.float32)[bands]
+
+
+def drawn_slice_mask(radius, leash: float | None = None) -> np.ndarray:
+    """Which slices are inside the protein, and so worth drawing.
+
+    **Why anything is dropped at all.** The clearance function has no interior
+    maximum: a free probe leaves the pore sideways and grows without bound —
+    6188 Å on real coordinates, which is the bulk solvent outside the protein.
+    `pore_profile` stops that by tethering the probe centre within `pore.leash`
+    of the axis, and that is what makes the number mean "radius of *the pore*".
+    Past the last atom the tether is the only thing left bounding it, so the
+    profile keeps returning numbers that are really "how much empty space is
+    near the axis here" — on 11ZC, five spheres up to 12.2 Å across, drawn as a
+    bulb hanging below the channel.
+
+    **The criterion is the method's own parameter.** Once the probe's *radius*
+    exceeds the leash, the tether has stopped localising anything: a sphere
+    that large centred anywhere in the tethered region swallows the axis and
+    its whole neighbourhood. That is the point past which the profile is not
+    reporting a lumen, and it needs no new measurement to detect.
+
+    **Only the ends are trimmed, and that distinction is the whole design.**
+    An over-leash slice in the *middle* is a genuine wide vestibule with
+    protein on both sides of it — 11ZC has 43 of them, and the first version of
+    this rule (keep the contiguous run around the bottleneck) cut 71 slices off
+    the upper vestibule to get rid of 5 at the bottom. So the leading and
+    trailing runs are dropped and nothing else is.
+
+    **This is display only.** The profile object, the bottleneck, the plot and
+    every reported number are untouched — a trimmed slice is wider than the
+    leash and so can never have been the minimum, unless the whole profile is,
+    in which case nothing is trimmed at all.
+    """
+    if leash is None:
+        leash = _P.value("pore.leash")
+    radius = np.asarray(radius, dtype=float)
+    inside = radius <= leash
+    mask = np.ones(radius.shape, dtype=bool)
+    if not inside.any():
+        # Every slice is over the leash, so there is no end to trim towards:
+        # drawing all of it and saying so beats drawing nothing.
+        return mask
+    first, last = int(np.argmax(inside)), int(len(inside) - 1 - np.argmax(inside[::-1]))
+    mask[:first] = False
+    mask[last + 1:] = False
+    return mask
 
 
 class PoreSurfaceController:
@@ -156,12 +203,20 @@ class PoreSurfaceController:
 
     # -------------------------------------------------------------- building
 
+    def drawn_mask(self) -> np.ndarray:
+        """The slices this controller draws: the profile minus its escaped ends."""
+        profile = self.profile
+        if profile is None:
+            return np.zeros(0, dtype=bool)
+        return drawn_slice_mask(profile.radius)
+
     def _draw(self) -> None:
         self.clear()
         profile = self.profile
         scene = self.win.viewport.scene
-        centers = np.asarray(profile.centers, dtype=np.float32)
-        radii = np.asarray(profile.radius, dtype=np.float32)
+        keep = self.drawn_mask()
+        centers = np.asarray(profile.centers, dtype=np.float32)[keep]
+        radii = np.asarray(profile.radius, dtype=np.float32)[keep]
 
         batch = scene.spheres(f"{NAME}:probe")
         batch.upload(centers, radii, radius_colors(radii).astype(np.float32))
@@ -209,7 +264,7 @@ class PoreSurfaceController:
         profile = self.profile
         if profile is None:
             return {}
-        bands = band_index(profile.radius)
+        bands = band_index(profile.radius)[self.drawn_mask()]
         return {name: int((bands == i).sum())
                 for i, name in enumerate(BAND_NAMES)}
 
@@ -237,9 +292,16 @@ class PoreSurfaceController:
             verdict = (" · radius alone does not say conducting: a wide "
                        "hydrophobic lumen dewets, and the wetting model is "
                        "what answers that here")
-        return (f"pore surface: {len(profile.z)} probe spheres, bottleneck "
-                f"{profile.bottleneck_radius:.2f} A at z = "
-                f"{profile.bottleneck_z:.1f} A{where} · "
+        keep = self.drawn_mask()
+        dropped = int((~keep).sum())
+        trimmed = (f" · {dropped} slices past each end NOT drawn: wider than "
+                   f"the {_P.value('pore.leash'):.0f} A leash, so the tether "
+                   f"rather than the protein is bounding them and they are "
+                   f"bulk solvent — the profile and the bottleneck are "
+                   f"unchanged" if dropped else "")
+        return (f"pore surface: {int(keep.sum())} of {len(profile.z)} probe "
+                f"spheres, bottleneck {profile.bottleneck_radius:.2f} A at "
+                f"z = {profile.bottleneck_z:.1f} A{where}{trimmed} · "
                 f"{counts.get('narrow', 0)} red below the {ion:.1f} A ion, "
                 f"{counts.get('tight', 0)} amber below the {threshold:.1f} A "
                 f"hydrated cut, {counts.get('open', 0)} blue above it · these "

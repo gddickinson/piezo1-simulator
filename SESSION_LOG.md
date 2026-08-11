@@ -5540,4 +5540,41 @@ foreshortens 122 Å into a blob.
   is a real seam — every other topic explains part of the model, this one
   explains the seven things drawn on top of it, and they share a failure mode.
 
-Suite 1399 → 1469 passing, 10 skipped.
+Suite 1399 → 1478 passing, 10 skipped.
+
+### Follow-up: trimming the pore's escaped ends
+
+The drawn pore included the slices past each mouth, where the probe balloons
+into bulk solvent — on 11ZC, five spheres up to 12.2 Å across hanging under the
+channel like a bulb. Faithful to the profile and misleading as a picture,
+because it reads as the pore being longer and wider than it is.
+
+**The first instrument I reached for was the wrong one.** Radial enclosure —
+cast rays perpendicular to the axis, keep slices where most of them hit protein
+— gives 8YEZ a median of 1.00 and 11ZC 0.75. That difference is almost entirely
+that **11ZC is backbone-only**: with no side chains the rays slip between atoms.
+It would have trimmed the one open structure hardest, for a reason that has
+nothing to do with its pore. Not used.
+
+The criterion that works needs no new measurement at all: it is the method's own
+parameter. `pore_profile` tethers the probe centre within `pore.leash` of the
+axis, and that tether is what makes the number mean "radius of *the pore*" —
+unconstrained the probe escapes to R ≈ 6188 Å. Once the probe's *radius* exceeds
+the leash, the tether has stopped localising anything, and that is exactly where
+the profile stops describing a lumen.
+
+**Only the ends, and that distinction is the whole design.** My first version
+kept the contiguous in-leash run around the bottleneck. On 11ZC that removed the
+5 bad slices at the bottom and **71 good ones off the top** — the upper vestibule
+through the CED is genuinely over-leash in places and genuinely surrounded by
+protein. A wide slice with protein on both sides is a vestibule, not an escape;
+the profile alone cannot tell them apart, but their position can. So the leading
+and trailing runs go and nothing else does. Measured: 5 slices on 11ZC, 4 on
+7WLU, **0 on every closed entry** — 8YEZ, 7WLT and 8ZU3 never escape at all,
+which is the check that the rule is not just shortening every pore it meets.
+
+Display only. A trimmed slice is wider than the leash, so it can never have been
+the minimum — driven over 200 random profiles rather than argued, because that
+is the kind of argument that stays right until the rule changes. The profile
+object, the plot and the bottleneck are untouched, and the status line says how
+many slices went and that nothing moved.

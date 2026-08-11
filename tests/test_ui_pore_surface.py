@@ -30,7 +30,81 @@ from piezo1.parameters import PARAMETERS as _P  # noqa: E402
 from piezo1.ui.pore_controller import (BAND_COLORS, BAND_NAMES,  # noqa: E402
                                        LINING_COLOR, NARROW_COLOR,
                                        OPEN_COLOR, PoreSurfaceController,
-                                       TIGHT_COLOR, band_index, radius_colors)
+                                       TIGHT_COLOR, band_index,
+                                       drawn_slice_mask, radius_colors)
+
+
+# --------------------------------------------------------------------------
+# The trim, calibrated on profiles whose right answer is known by construction
+# --------------------------------------------------------------------------
+
+def _leash() -> float:
+    return _P.value("pore.leash")
+
+
+def test_the_escaped_ends_are_trimmed_and_only_the_ends():
+    """The shape the real profiles have: a lumen with the probe ballooning
+    out of both mouths once nothing but the tether is bounding it."""
+    leash = _leash()
+    radius = np.array([3 * leash, 2 * leash] + [2.0] * 10 + [2 * leash])
+    mask = drawn_slice_mask(radius)
+    assert list(mask) == [False, False] + [True] * 10 + [False]
+
+
+def test_a_wide_interior_is_kept():
+    """The case that killed the first version of this rule.
+
+    Keeping the contiguous in-leash run around the bottleneck cut **71**
+    slices off 11ZC's upper vestibule to remove 5 at the bottom. A wide slice
+    with protein on both sides of it is a vestibule, not an escape, and the
+    profile alone cannot tell them apart — but their *position* can.
+    """
+    leash = _leash()
+    radius = np.array([3 * leash] + [2.0] * 4 + [2 * leash] * 6 + [2.0] * 4)
+    mask = drawn_slice_mask(radius)
+    assert not mask[0]
+    assert mask[1:].all(), "an over-leash vestibule in the middle was trimmed"
+
+
+def test_a_profile_that_never_escapes_is_drawn_whole():
+    """Every closed entry is like this, so the trim must be able to do nothing."""
+    radius = np.full(40, 2.0)
+    assert drawn_slice_mask(radius).all()
+
+
+def test_a_profile_that_is_entirely_escaped_is_drawn_whole_rather_than_emptied():
+    """There is no end to trim towards, and an empty picture with no
+    explanation is worse than a wide one with a caption."""
+    assert drawn_slice_mask(np.full(20, 5 * _leash())).all()
+
+
+def test_the_bottleneck_can_never_be_trimmed_away():
+    """The invariant that makes this display-only.
+
+    A trimmed slice is wider than the leash, so it cannot be the minimum
+    unless every slice is — and then nothing is trimmed. Driven over random
+    profiles rather than argued, because the argument is the kind that is
+    right until the rule changes.
+    """
+    rng = np.random.default_rng(11)
+    leash = _leash()
+    for _ in range(200):
+        radius = rng.uniform(0.5, 3 * leash, size=rng.integers(5, 60))
+        mask = drawn_slice_mask(radius)
+        assert mask[int(np.argmin(radius))], \
+            "the narrowest slice — the whole answer — was trimmed off"
+
+
+def test_the_trim_follows_the_registry():
+    radius = np.array([_leash() * 1.5] + [1.0] * 5)
+    assert not drawn_slice_mask(radius)[0]
+    original = _P.value("pore.leash")
+    try:
+        _P.set_value("pore.leash", original * 2.0)
+        assert drawn_slice_mask(radius).all(), \
+            "doubling the leash did not bring the escaped end back inside it"
+    finally:
+        _P.reset()
 
 
 # --------------------------------------------------------------------------
@@ -206,7 +280,10 @@ def test_the_lining_marker_is_the_bottleneck_residues_in_every_protomer(controll
 
 def test_the_counts_on_the_status_line_come_from_the_drawn_colours(controller):
     counts = controller.band_counts()
-    colours = radius_colors(controller.profile.radius)
+    keep = controller.drawn_mask()
+    # The colours of the spheres that reach the screen, which is what the
+    # caption is describing — the trimmed ends are neither drawn nor counted.
+    colours = radius_colors(np.asarray(controller.profile.radius)[keep])
     for i, name in enumerate(BAND_NAMES):
         drawn = int(np.all(np.isclose(colours, np.asarray(BAND_COLORS[i],
                                                           np.float32)),
@@ -214,7 +291,60 @@ def test_the_counts_on_the_status_line_come_from_the_drawn_colours(controller):
         assert counts[name] == drawn, \
             f"the caption says {counts[name]} {name} slices and {drawn} are " \
             f"drawn that colour"
-    assert sum(counts.values()) == len(controller.profile.radius)
+    assert sum(counts.values()) == int(keep.sum())
+
+
+def test_the_open_entry_loses_its_bulb_and_keeps_its_vestibule(controller):
+    """The measurement on the entry the trim was written for.
+
+    11ZC's probe balloons to 12.2 A below the channel — a bulb hanging under
+    the protein — while the wide part *above* the gate is a real vestibule
+    with protein around it. Both facts are pinned, because a rule that
+    removed the second to remove the first would be worse than no rule.
+    """
+    profile = controller.profile
+    keep = controller.drawn_mask()
+    radius = np.asarray(profile.radius)
+    dropped = ~keep
+    if not dropped.any():
+        pytest.skip("this profile never escapes; nothing to say about trimming")
+
+    assert radius[dropped].min() > _P.value("pore.leash")
+    assert dropped.sum() < 0.25 * len(radius), (
+        f"{int(dropped.sum())} of {len(radius)} slices were trimmed; that is "
+        f"a rule removing the pore rather than its escaped ends")
+    # Only the ends: the kept slices must be one contiguous block.
+    kept = np.flatnonzero(keep)
+    assert np.array_equal(kept, np.arange(kept[0], kept[-1] + 1))
+    # And the wide interior survives.
+    interior = radius[kept] > _P.value("pore.leash")
+    assert interior.sum() > 0, (
+        "no over-leash slice survived, so this test cannot tell the "
+        "end-trimming rule from the contiguous-run rule it replaced")
+
+
+def test_trimming_does_not_touch_the_measurement(controller):
+    """Display only. The profile is the Analysis panel's object and the plot
+    is drawn from it, so a trim that mutated it would silently change the
+    number the picture is meant to illustrate."""
+    profile = controller.profile
+    before = (profile.bottleneck_radius, profile.bottleneck_z,
+              len(profile.z), float(np.asarray(profile.radius).sum()))
+    controller.drawn_mask()
+    controller.status_line()
+    after = (profile.bottleneck_radius, profile.bottleneck_z,
+             len(profile.z), float(np.asarray(profile.radius).sum()))
+    assert before == after
+
+
+def test_the_status_line_says_what_was_trimmed_and_that_it_changed_nothing(
+        controller):
+    line = controller.status_line()
+    if (~controller.drawn_mask()).any():
+        assert "NOT drawn" in line
+        assert "bulk solvent" in line
+        assert "bottleneck are unchanged" in line
+        assert f"of {len(controller.profile.z)} probe spheres" in line
 
 
 def test_the_status_line_refuses_to_let_a_radius_stand_for_a_verdict(controller):
