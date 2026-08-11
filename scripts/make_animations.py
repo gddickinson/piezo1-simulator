@@ -100,8 +100,15 @@ def atom_site_map(st: Structure, common: np.ndarray) -> np.ndarray:
 # Animations
 # --------------------------------------------------------------------------
 
-def anim_gating_morph(fmt: str = "gif") -> Path:
-    """The gating transition: curved dome flattening under tension."""
+def anim_gating_morph(fmt: str = "gif", size=(960, 720),
+                      out: Path | None = None) -> Path:
+    """The gating transition: curved dome flattening under tension.
+
+    ``size`` and ``out`` exist so the README's smaller copy comes from here
+    rather than from someone downscaling a file by hand. It is committed —
+    `docs/anim/` is git-ignored, so a GitHub reader would otherwise see a
+    broken image — and a committed figure no script can rebuild is a fossil.
+    """
     a, b = load("7WLT"), load("7WLU")
     ab, ar = protomers(a)
     bb, br = protomers(b)
@@ -109,7 +116,7 @@ def anim_gating_morph(fmt: str = "gif") -> Path:
     traj = morph(start, end, n_frames=61, method="restrained")
 
     spec = AnimationSpec(
-        name="gating_morph", n_frames=72, size=(960, 720), fps=18,
+        name="gating_morph", n_frames=72, size=size, fps=18,
         caption="PIEZO1 gating: the dome flattens under membrane tension",
         subcaption=f"7WLT -> 7WLU  ·  {info['n_common_residues']} residues  ·  "
                    f"{info['endpoint_rmsd']:.0f} A RMSD  ·  interpolation, not a trajectory")
@@ -129,7 +136,7 @@ def anim_gating_morph(fmt: str = "gif") -> Path:
             view.update_coords(base + delta.astype(np.float32))
 
         an.run(step, schedule=ping_pong(spec.n_frames, hold=5))
-        return an.save(OUT / f"gating_morph.{fmt}", **SAVE_OPTS)
+        return an.save(out or OUT / f"gating_morph.{fmt}", **SAVE_OPTS)
 
 
 def anim_normal_mode(mode_index: int = 2, fmt: str = "gif") -> Path:
@@ -282,6 +289,13 @@ def anim_variant(residue: int = 2456, fmt: str = "gif") -> Path:
 
 ANIMATIONS = {
     "gating": (anim_gating_morph, "Curved dome flattening (7WLT -> 7WLU)"),
+    # Committed to docs/img because the README shows it and docs/anim is
+    # git-ignored. Same code path, smaller frame.
+    "readme": (lambda fmt="gif": anim_gating_morph(
+        fmt, size=(640, 480),
+        out=Path(__file__).resolve().parent.parent / "docs" / "img"
+        / "gating_morph_small.gif"),
+        "The gating morph at README size, into docs/img"),
     "mode": (anim_normal_mode, "Lowest symmetric elastic-network mode"),
     "yoda1": (lambda fmt="gif": anim_ligand_site("yoda1_pocket", fmt),
               "Yoda1 binding pocket"),

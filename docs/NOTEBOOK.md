@@ -222,6 +222,104 @@ gate but a 0.098 nm bottleneck, so it is shut for the other reason.
 
 ---
 
+## Ion permeation
+
+Drift-diffusion for each species along the measured pore. Gated by the wetting
+verdict, because a current through a pore the model calls shut is meaningless.
+
+```python
+from piezo1.physics.permeation import (solve_pnp, default_species,
+                                       blocking_mechanisms)
+
+res = solve_pnp(prof, default_species())
+res.current * 1e12       # 2.44 pA for open-like 11ZC at the default voltage
+res.conductance * 1e12   # 40.7 pS
+res.blocked_by           # None here; a string naming the mechanism if shut
+res.converged            # the Gummel loop diverges if you push it; check this
+
+blocking_mechanisms(pred, prof.radius, default_species())   # ALL of them, not the first
+```
+
+**The answer is dominated by two unmeasured inputs.** The in-pore diffusivity
+and the effective ion radius have never been measured for PIEZO1; across their
+plausible ranges the conductance spans 16–94 pS against a published 25–30 pS.
+The 40.7 pS above is an overestimate and is reported as one. `series_conductance`
+is the independent closed-form check on the solver.
+
+---
+
+## The full-length model
+
+Experimental core plus the AlphaFold distal blade, with the join kept visible.
+
+```python
+from piezo1.structure.hybrid import build_hybrid_model
+
+model = build_hybrid_model(st)          # st = a human PIEZO1 entry
+model.seam_residue                      # 570
+model.predicted.sum()                   # 4437 atoms over 569 residues
+model.confident_prediction.sum() / model.predicted.sum()    # 0.48
+model.overlap_rmsd, model.global_rmsd   # 2.39 A at the seam, 75.2 A overall
+model.warnings()                        # what a caller must be told
+```
+
+**Use `model.experimental_only` unless you mean to include the prediction.**
+Every atom carries its `source` and `plddt` precisely so that no analysis can
+average across the join. The 2.4 Å seam fit says nothing about the rest of the
+graft — the two models differ by 75 Å over the region they share.
+
+---
+
+## HaloTag fusion
+
+There is no structure of the fusion, so this produces a **region**, not a pose.
+
+```python
+from piezo1.structure.fusion import build_fusion, load_halotag
+from piezo1.structure.fusion_pose import pose_for_display, spin_scan
+
+tag = load_halotag()                    # PDB 6U32, with its TMR ligand
+model = build_fusion(st, tag)
+model.pore_exit_distances()[0]          # 3.95 nm on 8YEZ
+model.volume.volume                     # nm^3 the tag centre can occupy
+model.meta["clashes"]                   # sphere-model verdict
+
+pose = pose_for_display(st, model, tag) # the real fold, one orientation
+pose.body_contacts                      # excludes the anchor residue - see below
+pose.meta["clear_spins"]                # 1 of 36 on 8YEZ, 27 on 7WLT, 0 on 11ZC
+```
+
+Two traps. **The spin about the linker is undetermined** — `pose_for_display`
+picks the least-contacting draw as a display convention, not a determination.
+And when counting contacts, **exclude the anchor residue**: the placement rule
+aims the tag's N-terminus at PIEZO1's C-terminus, so counting that contact
+reports the rule's own construction and made all four structures look as though
+no orientation fits.
+
+Every distance here depends on `fusion.linker_residues`, which no source for
+the construct states. Vary it; do not trust it.
+
+---
+
+## Calcium at the tag
+
+```python
+from piezo1.physics.nanodomain import Nanodomain
+
+nd = Nanodomain(current_A=res.current, calcium_fraction=0.1,
+                distance_m=3.95e-9)
+nd.concentration_M * 1e6     # 225.6 uM
+nd.occupancy                 # 0.999 against a 0.2 uM sensor Kd
+nd.saturated                 # True whenever the channel is open
+nd.falsifiers                # what would have to be observed to refute this
+```
+
+The tag distance is **modelled**, and the calcium share of the current is
+unverified. `nd.sweep(...)` runs the 80-combination parameter sweep that shows
+the saturation conclusion survives both.
+
+---
+
 ## Things that will bite you
 
 | | |
@@ -235,3 +333,7 @@ gate but a 0.098 nm bottleneck, so it is shut for the other reason.
 | Units | Coordinates Å, dome geometry nm, energies k_BT, tension mN/m. |
 | Footprint | The linear solver is not quantitative at PIEZO1's 63° contact slope — 3.6× too large. Use `physics.elastica`. |
 | Wetting | `predict_wetting` finds *hydrophobic* gates, not steric occlusion. Check both flags. |
+| Permeation | Two inputs are unmeasured; the answer spans 16-94 pS across their ranges. Never quote it as a prediction. |
+| Hybrid model | Use `experimental_only`. A 2.4 A seam fit hides a 75 A global disagreement. |
+| Tag orientation | Undetermined. The drawn spin is a display convention, and contact counts must exclude the anchor residue. |
+| pLDDT colours | Were applied in the wrong order until Round 76, painting every atom "very low". Use `plddt_band_colors`. |

@@ -4,6 +4,65 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## A documentation pass — and two claims I invented while making it clearer
+
+George asked for the docs to be reviewed and updated, the README rewritten in
+clear English with citations and a reference list, and new figures where they
+help.
+
+**What was actually wrong with the README.** Not only the prose. Its *Status*
+section listed as "Planned" a Helfrich membrane solver, tension-dependent
+Markov kinetics, conformational morphing, pore profiling, pocket detection and
+docking — every one of which had shipped, some dozens of rounds earlier. A
+reader would have concluded the project did a fraction of what it does. It also
+predated the HaloTag work, ion permeation, the nanodomain, the full-length
+model, the parameter registry and the guided tour, none of which it mentioned.
+
+Rewritten around what a reader wants to know in the order they want it: what
+PIEZO1 is and why its shape *is* the mechanism, what the software does grouped
+by task, the numbers it reproduces against the published ones, how to install
+and drive it, and the closing record — which is guarded by `test_conclusion.py`
+and was left intact. Citations are inline and there is a numbered reference
+list with DOIs, all 22 of them traceable to `docs/REFERENCES.md`, which is
+itself built behind a title-verification gate.
+
+**And I introduced two false claims while doing it**, both in one paragraph,
+both by writing from memory instead of checking. I said E756del is carried by
+roughly a third of people of African ancestry — the project's own `SCIENCE.md`
+records the gnomAD AFR frequency as 0.166–0.173, so a sixth, which is what the
+old README correctly said. And I wrote that it protects against severe malaria,
+where `SCIENCE.md` records the association as **contested**: a later study found
+OR 0.91, p = 0.19, and the original mouse work tested R2482H, a different
+allele. Both are now stated as the project's own data states them, and
+`tests/test_readme.py` pins each so the same slip fails rather than ships.
+
+That test also caught something real. Checking that every README figure can be
+rebuilt, it found `gating_morph_small.gif` committed with **no script that
+produces it** — `docs/anim/` is git-ignored, so anything the README shows must
+be committed, which makes it exactly the file that quietly stops matching the
+code. It now comes from `make_animations.py --only readme`, the same code path
+at a smaller frame. My first version of that check was also too naive to be
+trusted: it scanned the scripts for each figure's name and flagged `app_modes`
+and `app_pore`, which are built from an f-string. Suspect the checker first —
+it was two-thirds wrong and one-third right.
+
+**Two new figures**, both for features that are hard to describe in words:
+`hybrid_model.png` (the graft in AlphaFold's confidence colours against the grey
+experimental core, seam marked) and `halotag_fold.png` (the real tag fold at its
+modelled position). `scripts/make_model_figures.py` generates both. The tag
+figure draws the channel in a uniform colour rather than by chain, because the
+tag's orange sits 0.10 from the chain palette's orange and a per-protomer
+picture makes the modelled tag look like part of the experimental trimer.
+
+**`docs/NOTEBOOK.md`** covered none of ion permeation, the full-length model,
+the fusion pose or the nanodomain. All four added, and every snippet was run
+against real data before being written down — which caught two wrong signatures
+I would otherwise have documented.
+
+Suite 1065 → 1076. All 21 documented numbers still reproduce.
+
+---
+
 ## Round 76 — the full-length model reaches the GUI, and the colouring it needs was broken
 
 `structure/hybrid.py` had existed since Round 65 and nothing outside a notebook
