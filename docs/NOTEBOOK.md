@@ -88,6 +88,30 @@ modes.collectivity(0)
 contiguous and identically ordered, which is what makes the symmetry labelling
 valid.
 
+## Does the network describe the molecule?
+
+The standard check, and the one to run before quoting any mode: correlate the
+predicted fluctuation against the B-factor the entry was deposited with.
+
+```python
+from piezo1.analysis.fluctuations import assess_b_factors, compare_fluctuations
+
+assess_b_factors(st).summary()   # check the COLUMN before the network
+res = compare_fluctuations(st)   # 7WLT: r = +0.434, Spearman +0.726
+res.spearman_r, res.control_spearman      # 0.726 against a burial control's 0.578
+res.beats_control, res.control_inverted   # True, False
+res.by_mode_count                # how much the mode truncation matters
+```
+
+**Three traps, all of them live.** `assess_b_factors` refuses a uniform column,
+a grouped one (3JAC has 212 distinct values over 2,754 residues) and an
+AlphaFold model, whose B column holds **pLDDT** — a confidence that
+anti-correlates with fluctuation at −0.57 and would otherwise look like a
+strong negative result. Read `control_spearman`: contact number uses no network
+at all, and if it wins, the agreement is burial. A control that comes out
+**negative** means the entry's B-factor rises with burial, so the column is not
+a mobility and neither number means anything.
+
 ## Pore profile
 
 ```python

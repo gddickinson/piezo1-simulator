@@ -30,6 +30,15 @@ CAVEATS = {
         "it, from an uncharged baseline that is already cation-selective from "
         "size alone; the curated route reaches an in-pore concentration no "
         "solution could hold, which is flagged on the result."),
+    "fluctuations": (
+        "A VALIDATION OF THE NETWORK, and mostly a verdict on the entry. An "
+        "observed B-factor in a cryo-EM map absorbs local resolution, "
+        "sharpening and the refinement's own restraints, so read the quality "
+        "block first. Spearman is the number to use — the relationship is "
+        "monotone but not linear. The contact-number CONTROL needs no network "
+        "at all; if it wins, the agreement is burial rather than mechanism, "
+        "and if it comes out NEGATIVE this entry's column rises with burial "
+        "and is not reporting mobility."),
     "labelling": (
         "Kinetics imported unchanged from the halotag_binding_sim project and "
         "reproduced to machine precision. The linker length and the reactive "
@@ -112,6 +121,10 @@ class TabularAnalysisMixin:
     def show_permeation(self) -> None:
         self._run_registry_analysis(
             "permeation", "Ion permeation through the pore")
+
+    def show_fluctuations(self) -> None:
+        self._run_registry_analysis(
+            "fluctuations", "Predicted fluctuation against the B-factors")
 
     def show_interactions(self) -> None:
         self._run_registry_analysis(

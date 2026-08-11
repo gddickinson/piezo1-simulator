@@ -242,6 +242,8 @@ def build_parser() -> argparse.ArgumentParser:
             ("pore", "pore radius profile and bottleneck"),
             ("hydration", "hydrophobic-gating prediction (Rao et al. 2019)"),
             ("modes", "elastic network normal modes with symmetry labels"),
+            ("fluctuations", "predicted fluctuation against the deposited "
+                             "B-factors, with a burial control"),
             ("pockets", "alpha-sphere cavities and ligand contacts"),
             ("interactions", "hydrogen bonds, salt bridges, disulfides"),
             ("hybrid", "full-length model: experimental core plus the "

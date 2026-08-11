@@ -240,7 +240,8 @@ def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
                "prediction_record": "show_prediction_record",
                "ligands": "show_ligands",
                "paired_variant": "show_paired_variant",
-               "hybrid": "show_hybrid"}
+               "hybrid": "show_hybrid",
+               "fluctuations": "show_fluctuations"}
 
     for name in ANALYSES:
         assert name in drawn or name in tabular, (

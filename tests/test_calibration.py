@@ -41,6 +41,7 @@ CHECKING_MODULES = (
     "analysis.design",
     "analysis.provenance_chain",
     "analysis.parameter_effect",
+    "analysis.fluctuations",
     "dead_code",
 )
 
@@ -129,6 +130,31 @@ CALIBRATED = {
         "test_dead_code.py::test_the_detector_is_calibrated",
     "dead_code.reference_counts":
         "test_dead_code.py::test_same_file_references_count",
+
+    # fluctuations: the elastic network against the deposited B-factors.
+    # A checking instrument in the strict sense — it is the standard test of
+    # whether the network describes the molecule — so it is registered here
+    # rather than treated as an analysis that happens to produce a number.
+    "fluctuations.pearson":
+        "test_fluctuations.py::test_the_correlations_return_their_analytic_limits",
+    "fluctuations.spearman":
+        "test_fluctuations.py::test_ranks_average_ties_rather_than_inventing_an_order",
+    "fluctuations.predicted_msf":
+        "test_fluctuations.py::"
+        "test_the_comparison_recovers_a_planted_fluctuation_and_a_bad_network_does_not",
+    "fluctuations.contact_number":
+        "test_fluctuations.py::"
+        "test_contact_number_is_a_control_and_not_a_copy_of_the_prediction",
+    "fluctuations.assess_b_factors":
+        "test_fluctuations.py::"
+        "test_a_predicted_model_is_refused_and_the_gate_points_the_right_way",
+    "fluctuations.observed_b_factors":
+        "test_fluctuations.py::"
+        "test_observed_b_factors_are_read_per_residue_not_per_atom",
+    "fluctuations.compare_fluctuations":
+        "test_fluctuations.py::test_a_shuffled_observation_correlates_with_nothing",
+    "fluctuations.survey_fluctuations":
+        "test_fluctuations.py::test_the_survey_of_every_downloaded_entry",
 
     # parameter_effect
     "parameter_effect.measure_effect":

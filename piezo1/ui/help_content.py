@@ -158,6 +158,26 @@ out of the calculation rather than being imposed.</p>
 <b>Animate</b> drives the structure along it. The amplitude is a visualisation
 choice and is not a physical prediction of how far the protein travels.</p>
 
+<h3>Does the network describe this molecule? — Analysis &rarr; Fluctuation vs B-factor</h3>
+<p>The standard check on any elastic network, and one this project had never
+run until Round 82: does the predicted mean-square fluctuation track the
+<b>B-factor the entry was deposited with</b>?</p>
+<p><b>The column is checked before the network is.</b> A cryo-EM B-factor
+absorbs local resolution and sharpening as much as motion, so three kinds of
+column are refused rather than correlated — a uniform one, a <b>grouped</b> one
+(3JAC carries 212 distinct values over 2,754 residues), and an AlphaFold model,
+whose B column holds <b>pLDDT</b>, a confidence that runs the other way.</p>
+<p><b>Read the control.</b> A buried residue moves less in any packed solid, so
+every correlation is shown beside the same correlation for contact number,
+which uses no network at all. Across the catalogue the network's median rank
+correlation is <b>0.74</b> against the control's <b>0.32</b> and it wins on 13
+of 15 entries — but on Pearson it is 0.48 against 0.39 and wins only 9 of 15.
+The network orders residues by mobility much better than burial does, and
+predicts how much they move barely better.</p>
+<p>A <b>negative</b> control is a verdict on the entry: its B-factor rises with
+burial, which no mobility does. Three entries do that, and on two of them the
+network gets 0.10 — there the column is the problem, not the model.</p>
+
 <h3>Morph</h3>
 <p>Interpolates between two conformational endpoints. Three methods, each
 reporting its own bond-geometry error: linear (fast, distorts bonds),

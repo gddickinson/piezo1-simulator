@@ -403,6 +403,53 @@ difference vector built that way is meaningless. Protomer correspondence is now
 always determined by superposition
 (`piezo1.structure.superpose.match_protomers`).
 
+### The B-factor check, run at last (Round 82)
+
+The standard question about any elastic network is whether its predicted
+mean-square fluctuation tracks the deposited B-factor. Every structure here
+carries one for every atom, and until Round 82 no analysis had read one.
+
+**The column has to be checked before the network is.** A cryo-EM B-factor
+absorbs local resolution, sharpening and the refinement's own restraints, so
+three kinds of column are refused rather than correlated: a uniform one, a
+**grouped** one (3JAC and 6BPZ carry 212 distinct values over ~2,700 C-alphas,
+one per thirteen residues), and an AlphaFold model, whose B column holds
+**pLDDT** — a confidence that runs the other way. That last is not a
+hypothetical: build the network on the AlphaFold monomer and its own column
+anti-correlates at Spearman **−0.57**, which is what the gate exists to stop
+being reported as a result.
+
+**Every correlation is reported beside a control that uses no network at all.**
+A residue with more neighbours moves less in any packed solid. Contact number
+needs no Hessian, no eigenvalues and no gating coordinate, so if the network
+does not beat it the agreement is burial wearing a mechanism's clothes.
+
+| | Network | Contact-number control |
+|---|---|---|
+| Median Spearman | **0.74** | 0.32 |
+| Median Pearson | **0.48** | 0.39 |
+| Entries where it wins (Spearman) | **13 of 15** | — |
+| Entries where it wins (Pearson) | **9 of 15** | — |
+
+**So the network orders residues by mobility much better than burial does, and
+predicts the size of the mobility barely better.** Both numbers are stated
+because quoting either alone misrepresents it. The rank correlation is the one
+to read — the relationship is monotone but strongly non-linear, so Pearson is
+dominated by a few very mobile residues.
+
+Three further results are worth recording rather than smoothing:
+
+- **18 of 21 entries can answer.** The three that cannot say why: two grouped
+  refinements and one monomeric fragment (4RAX).
+- **Three entries have a *negative* control** — 8YEZ, 8ZU8 and 6B3R — meaning
+  their B-factor *rises* with burial, which no mobility does. On the first two
+  the network gets 0.10, and the honest reading is that the column is not a
+  temperature factor rather than that the network failed. Those three are
+  excluded from the counts above.
+- **The two entries the network loses on are 6KG7 and 8IXN**, named in the test
+  so that a change in either reopens the question. 6KG7 is PIEZO2 — the
+  paralogue — where burial predicts the column at 0.55 and the network at 0.07.
+
 ---
 
 ## 4b. The pore, measured from coordinates

@@ -282,6 +282,20 @@ TAG_PARAMETERS = [
                      "an input, and nothing is clipped to it.",
          description="In-pore concentration above which the model is flagged."),
 
+    # ---------------------------------------------- fluctuation comparison ----
+    dict(key="fluctuation.min_distinct_fraction",
+         name="B-factor resolution floor", value=0.10, unit="fraction",
+         minimum=0.0, maximum=1.0, kind="method",
+         category="Fluctuation comparison", citation="method_choice",
+         source_note="Below one distinct B-factor value per ten residues the "
+                     "column was refined in groups and cannot resolve "
+                     "per-residue mobility, so a correlation against it would "
+                     "measure the grouping rather than the network. Measured "
+                     "here: 3JAC and 6BPZ carry ~212 distinct values over "
+                     "~2700 C-alphas and are the only entries this excludes.",
+         description="Distinct B-factor values per residue below which an "
+                     "entry is refused rather than compared."),
+
     # ------------------------------------------------- calcium nanodomain ----
     dict(key="nanodomain.d_calcium", name="Cytosolic calcium diffusivity",
          value=2.2e-10, unit="m^2/s", minimum=1e-12, maximum=1e-8,

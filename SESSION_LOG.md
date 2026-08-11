@@ -4,6 +4,101 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 82 — the B-factors, read at last, and what they say about the network
+
+Every structure this project loads carries a `b_factor` for every atom and no
+analysis had ever read one. That is the first thing anyone does with an elastic
+network — does the predicted mean-square fluctuation track the deposited
+B-factor? — and this project's central mechanism claim rests on such a network.
+
+**One correction to the premise.** The roadmap said the ANM has no
+scalar-fluctuation counterpart. It has: `ModeSet.msf` sums `|v|²/λ` over modes
+and both the feature table and the fluctuation colouring already consume it.
+What was missing was the *comparison*. That changes what this round is — a
+missing validation rather than missing physics — and it is worth writing down,
+because "we never built X" and "we built X and never checked it" call for
+different responses.
+
+### The column decides more than the network does
+
+An observed B-factor is a temperature factor only in the sense that refinement
+put it there. In a cryo-EM map it absorbs local resolution, sharpening,
+per-particle scaling and the restraints. So the comparison is gated on the
+column before any Hessian is built, and three kinds are refused:
+
+- **uniform** — carries no per-residue information;
+- **grouped** — 3JAC and 6BPZ each carry **212 distinct values over ~2,700
+  C-alphas**, one per thirteen residues, and cannot resolve what is being asked
+  of them;
+- **pLDDT** — an AlphaFold model puts a *confidence* in that field, high where
+  the model is certain, which is where a real B-factor would be low.
+
+The last gate is decided by provenance, which is a decision rather than a
+measurement, so the measurement is made separately: build the network on the
+AlphaFold monomer and correlate its own column, and it comes out at **−0.57**.
+The gate points the right way, and that is checked rather than asserted.
+
+### The control is what makes the number mean anything
+
+A residue with more neighbours moves less. That is true of any packed solid
+with no normal modes in it at all, so a correlation between an ANM and a
+B-factor can be entirely burial. Every result therefore carries the same
+correlation for **contact number** — no Hessian, no eigenvalues, no gating
+coordinate.
+
+That control is what turned a clean-looking result into an honest one:
+
+| | Network | Contact number |
+|---|---|---|
+| Median Spearman | **0.74** | 0.32 |
+| Median Pearson | **0.48** | 0.39 |
+| Wins on Spearman | **13 of 15** | — |
+| Wins on Pearson | **9 of 15** | — |
+
+**The elastic network orders PIEZO1's residues by mobility much better than
+burial does, and predicts how far they move barely better.** Had I reported
+only the rank correlation this would have read as a validation; had I reported
+only Pearson it would have read as a failure. Both are in the module, in the
+result dialog and in `SCIENCE.md`, and a test fails if the asymmetry ever
+disappears without the prose changing.
+
+### Three things the survey turned up
+
+**18 of 21 entries can answer**, and the three that cannot say why rather than
+being dropped.
+
+**Three entries have a *negative* control** — 8YEZ, 8ZU8 and 6B3R. Their
+B-factor *rises* with burial, which no mobility does. On the first two the
+network scores 0.10, and the honest reading is that the column is not a
+temperature factor rather than that the network failed. They are excluded from
+the counts above; counting them as wins, which the naive comparison does, would
+have added two spurious successes.
+
+**The two entries the network loses on are named in the test**, so a change in
+either reopens the question. One of them is **6KG7 — PIEZO2**, where burial
+predicts the column at 0.55 and the network at 0.07. That is a hint about
+Round 83's question rather than an answer to it.
+
+### The calibration, and the thing it had to be able to say
+
+A planted fluctuation generated *by* the network is recovered exactly. The same
+comparison against a network built on **shuffled coordinates** — same beads,
+same cutoff, same spring model, only the neighbours changed — collapses. A
+shuffled observation returns nothing, bounded by the null's own standard
+deviation rather than by a round number, because at sixty residues a
+correlation of 0.25 is two sigma and a fixed threshold would either be vacuous
+or flake.
+
+`fluctuations` is registered in `tests/test_calibration.py` as a checking
+instrument in its own right, since that is exactly what it is: an instrument
+for checking the network, and therefore subject to the rule.
+
+Suite 1304 → 1320 passing (1330 collected, 10 skipped for want of
+downloaded data); 115 → 116 registered parameters. Reachable as
+`piezo1 fluctuations <entry>` and under Analysis → Fluctuation vs B-factor.
+
+---
+
 ## Round 81 — the pore gets its charge, and a sign error falls out
 
 `solve_pnp` has taken a `fixed_charge` argument since Round 33. Its documented

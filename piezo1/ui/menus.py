@@ -209,6 +209,12 @@ def _analysis_menu(win, bar) -> None:
             "is shut, EVERY mechanism shutting it. The in-pore diffusivity and\n"
             "ion radius are unmeasured, so the answer spans 16-94 pS across\n"
             "their plausible ranges against a published 25-30 pS.")
+    _action(menu, "&Fluctuation vs B-factor…", win.show_fluctuations, "",
+            "The standard validation of an elastic network: does the predicted\n"
+            "mean-square fluctuation track the deposited B-factor? Reported\n"
+            "with a contact-number control that uses no network at all, and\n"
+            "with the quality of the column itself, because a grouped or\n"
+            "predicted-model column cannot answer the question.")
     _action(menu, "&Interactions…", win.show_interactions, "",
             "Hydrogen bonds, salt bridges, hydrophobic contacts, pi-stacking,\n"
             "cation-pi and disulfides, using published geometric criteria.")

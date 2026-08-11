@@ -3,8 +3,8 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: 7 open items, all in Block R.**
-Everything finished — 378 items across 81 rounds, each carrying the result it
+**Status: 5 open items, all in Block R.**
+Everything finished — 380 items across 82 rounds, each carrying the result it
 measured — is in
 [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
 
@@ -124,18 +124,35 @@ downloaded entry nothing compares.*
       recorded conductance by one part in 10¹⁴.
 
 ### Round 82 — The B-factors every structure carries, and nothing reads
-- [ ] `Structure` parses `b_factor` for every atom and no analysis has ever
+- [x] `Structure` parses `b_factor` for every atom and no analysis has ever
       looked at one. Comparing predicted mean-square fluctuation against
       observed B-factor is the standard validation of an elastic network — the
       one ProDy users run first — and this project has never run it on the
       network its central mechanism claim rests on. There is no GNM here
       either; the ANM has no scalar-fluctuation counterpart.
-- [ ] *Validate:* report the correlation **including if it is poor**, and
+      **Done, with one correction to the premise:** the *prediction* did
+      exist — `ModeSet.msf` sums `|v|²/λ` and the feature table already
+      consumes it. What was missing was the comparison, so this round is a
+      missing validation rather than missing physics.
+      `analysis/fluctuations.py`, reachable from the CLI and the GUI.
+- [x] *Validate:* report the correlation **including if it is poor**, and
       calibrate before believing it: cryo-EM B-factors are sharpened, per-atom
       values in a backbone-only model may be uniform, and some entries carry
       pLDDT rather than B in that column. Establish on a case with a known
       answer that the comparison can distinguish a good network from a
       deliberately bad one, or record why the comparison cannot be made here.
+      **All three, and the answer is split.** Calibrated on a planted
+      fluctuation that the right network recovers exactly and one built on
+      shuffled coordinates does not. All three bad-column cases are refused
+      with the reason — and the pLDDT gate is shown to point the right way by
+      measurement, not assertion: AlphaFold's own column anti-correlates at
+      −0.57. Measured across the catalogue: **18 of 21 entries can answer**,
+      median Spearman **0.74** against a contact-number control's **0.32**,
+      winning 13 of 15 — but on Pearson **0.48 against 0.39**, winning only 9
+      of 15. The network orders residues by mobility much better than burial
+      does and predicts how far they move barely better; both are reported.
+      Three entries have a *negative* control, meaning their B-factor rises
+      with burial and is not a mobility at all.
 
 ### Round 83 — PIEZO2 is downloaded, classified, and only ever excluded
 - [ ] 6KG7 is fetched, entity-classified and then excluded from every ensemble

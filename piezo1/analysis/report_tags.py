@@ -17,7 +17,8 @@ from ..structure.protomers import protomer_blocks
 
 __all__ = ["analysis_fusion", "analysis_labelling", "analysis_permeation",
            "analysis_nanodomain", "analysis_prediction_record",
-           "analysis_ligands", "analysis_paired_variant"]
+           "analysis_ligands", "analysis_paired_variant",
+           "analysis_fluctuations"]
 
 
 def analysis_fusion(st: Structure, species: str, **kw) -> dict:
@@ -435,3 +436,48 @@ def analysis_hybrid(st: Structure, species: str, **kw) -> dict:
                  "grafted blade is a PREDICTION and the seam-local fit says "
                  "nothing about the rest of it."),
     }
+
+
+def analysis_fluctuations(st: Structure, species: str,
+                          n_modes: int | None = None, **kw) -> dict:
+    """The elastic network against this entry's own B-factors.
+
+    Reported with the control beside it, because a residue with many
+    neighbours moves less whether or not there is a normal mode anywhere near
+    it. An entry whose column cannot be interpreted returns the reason instead
+    of a number.
+    """
+    from .fluctuations import assess_b_factors, compare_fluctuations
+
+    quality = assess_b_factors(st)
+    out = {"n_residues_in_column": quality.n_residues,
+           "n_distinct_values": quality.n_distinct,
+           "distinct_fraction": quality.distinct_fraction,
+           "b_range": [quality.minimum, quality.maximum],
+           "column_is_plddt": quality.is_confidence,
+           "usable": quality.usable, "reason": quality.reason}
+    if not quality.usable:
+        out["note"] = ("no comparison was made; the reason above is the "
+                       "result, not a failure to compute")
+        return out
+
+    result = compare_fluctuations(st, n_modes=n_modes)
+    if not result.available:
+        out.update({"usable": False, "reason": result.quality.reason})
+        return out
+    out.update({
+        "n_residues_compared": len(result.residues),
+        "n_modes": result.n_modes,
+        "pearson": result.pearson_r,
+        "spearman": result.spearman_r,
+        "control_contact_number_pearson": result.control_pearson,
+        "control_contact_number_spearman": result.control_spearman,
+        "beats_control": result.beats_control,
+        "control_inverted": result.control_inverted,
+        "by_mode_count": result.by_mode_count,
+        "note": ("Spearman is the number to read: the relationship is "
+                 "monotone but not linear, so Pearson is dominated by a few "
+                 "very mobile residues. A negative control means this entry's "
+                 "B-factor rises with burial, which no mobility does — there "
+                 "the column is the problem, not the network.")})
+    return out
