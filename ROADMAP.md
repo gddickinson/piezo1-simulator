@@ -3,8 +3,8 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: 10 open items, all in Block R.**
-Everything finished — 375 items across 80 rounds, each carrying the result it
+**Status: 7 open items, all in Block R.**
+Everything finished — 378 items across 81 rounds, each carrying the result it
 measured — is in
 [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
 
@@ -88,7 +88,7 @@ argument nothing supplies, a field on every structure nothing reads, and a
 downloaded entry nothing compares.*
 
 ### Round 81 — The pore has no charge, and the API already says so
-- [ ] `solve_pnp` takes a `fixed_charge` argument, its documented equation
+- [x] `solve_pnp` takes a `fixed_charge` argument, its documented equation
       carries a ρ_fixed term, and **no caller anywhere has ever supplied one**.
       Every permeation number this project has produced treats the pore as
       electrically neutral. Meanwhile `functional_residues.json` curates four
@@ -97,13 +97,31 @@ downloaded entry nothing compares.*
       across the trimer — and `default_species()` offers a generic "cation" and
       "anion" that are not even named Na⁺, K⁺ and Ca²⁺. A cation channel
       modelled without charge cannot be selective, and this one is not.
-- [ ] Map the curated acidic and basic pore-lining residues onto the axial
+      **Done.** `physics/pore_charge.py` builds the density; the species are
+      now K⁺/Cl⁻/Ca²⁺ and a NaCl set exists for the published protocol.
+- [x] Map the curated acidic and basic pore-lining residues onto the axial
       slices the pore profile already produces, and pass the result through.
-- [ ] *Validate:* the charged pore must make the model **cation-selective**, as
+      **Done, and it measured something on the way:** three of the four curated
+      selectivity glutamates are not within side-chain reach of the lumen
+      (E2117 at 12.9 Å past the wall), which is what Coste et al. 2015
+      concluded about E2117 from function alone. Two routes are reported side
+      by side — curated (6 charges, net −6) and geometric (46, net **+8**) —
+      because they disagree in kind.
+- [x] *Validate:* the charged pore must make the model **cation-selective**, as
       a permeability ratio compared with the published PIEZO1 value — and if it
       does not, that is the result and it gets reported. Zero fixed charge must
       reproduce today's numbers **exactly**, so the change is visible,
       reversible, and cannot silently move the existing conductance claim.
+      **Yes, in direction; no, in value.** P_Cl/P_Na = 0.021 curated and 0.207
+      geometric against a published 0.14, from an uncharged baseline of 0.904
+      — the two routes bracket the measurement tenfold apart rather than
+      reproducing it, and the curated route only gets there at an in-pore
+      concentration of 13.9 M, which is flagged as outside the continuum
+      model's validity. An explicitly zero charge reproduces the neutral pore
+      bit for bit. Finding this required correcting an **inverted drift sign**
+      in the Scharfetter-Gummel flux that no test could see while every
+      current was computed between identical baths; the correction moved the
+      recorded conductance by one part in 10¹⁴.
 
 ### Round 82 — The B-factors every structure carries, and nothing reads
 - [ ] `Structure` parses `b_factor` for every atom and no analysis has ever

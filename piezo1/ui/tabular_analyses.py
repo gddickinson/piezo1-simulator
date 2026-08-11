@@ -24,7 +24,12 @@ CAVEATS = {
         "Continuum model of an atomic-scale pore. The in-pore diffusivity and "
         "the ion radius are UNMEASURED, and the computed conductance spans "
         "16-94 pS across their plausible ranges, so agreement with the "
-        "published 25-30 pS would be tuning rather than prediction."),
+        "published 25-30 pS would be tuning rather than prediction. The "
+        "SELECTIVITY block reports two routes to the pore's fixed charge that "
+        "bracket the measured P_Cl/P_Na tenfold apart rather than reproducing "
+        "it, from an uncharged baseline that is already cation-selective from "
+        "size alone; the curated route reaches an in-pore concentration no "
+        "solution could hold, which is flagged on the result."),
     "labelling": (
         "Kinetics imported unchanged from the halotag_binding_sim project and "
         "reproduced to machine precision. The linker length and the reactive "

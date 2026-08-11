@@ -42,6 +42,19 @@ is at the edge of its validity — not that it was never attempted.
 the spreading resistance of its own mouths, so Hall's access resistance is added
 in series at each end.
 
+**The pore has fixed charge, and until Round 81 nothing supplied it.** The
+``fixed_charge`` argument existed from the start, the equation above carries its
+term, and no caller anywhere ever passed one — so every current this project had
+produced treated a cation channel as electrically neutral. It is now built from
+the coordinates by :mod:`piezo1.physics.pore_charge` and enters through the same
+electroneutral limit the potential already uses: a fixed charge density ``X(z)``
+sets a local Donnan potential (:func:`~piezo1.physics._pnp_kernels
+._donnan_potential`), counterions are enriched and coions excluded against it,
+and the resulting concentration gradients drive a diffusion current that gives
+the pore a **reversal potential** — which is what selectivity is measured as.
+With ``X = 0`` and identical baths the extra terms are analytically zero, and
+the arithmetic path is the untouched one, so the 41.0 pS below cannot move.
+
 **Gating comes from Round 19, not from here.** A pore wide enough to pass an ion
 still carries no current if it has dewetted, because the ion's hydration shell is
 not there to be shed into. :func:`blocking_mechanisms` returns *every* reason
@@ -65,52 +78,92 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from ..parameters import PARAMETERS as _P
-from ._pnp_kernels import _bernoulli, _solve_with_dirichlet
+from ._pnp_kernels import (F_FARADAY, R_GAS, _bernoulli, _charge_diagnostics,
+                           _donnan_potential, _face_conductance,
+                           _nernst_planck, _neutrality_step, _ohmic_potential,
+                           _solve_with_dirichlet)
 
 __all__ = ["IonSpecies", "PermeationResult", "solve_pnp", "conductance",
            "series_conductance", "access_resistance", "default_species",
-           "blocking_mechanisms", "debye_length", "F_FARADAY", "R_GAS"]
-
-#: Faraday constant, C/mol. Definitional since the 2019 SI redefinition.
-F_FARADAY = 96485.33212
-#: Molar gas constant, J/(mol K). Definitional since 2019.
-R_GAS = 8.314462618
+           "sodium_species", "blocking_mechanisms", "debye_length",
+           "F_FARADAY", "R_GAS"]
 
 
 @dataclass(frozen=True)
 class IonSpecies:
-    """One permeant species: how it drifts, diffuses and how big it is."""
+    """One permeant species: how it drifts, diffuses and how big it is.
+
+    ``concentration`` is the bath at the **first** end of the profile;
+    ``concentration_right`` is the bath at the last end and defaults to the
+    same, which is the symmetric recording the conductance is quoted for. A
+    permeability ratio can only be measured when they differ, because a channel
+    between identical baths reverses at zero whatever it is selective for.
+    """
 
     name: str
     valence: int
     diffusivity: float                 # m^2/s, bulk
     radius: float                      # A, crystal
-    concentration: float               # M, in both baths
+    concentration: float               # M, at z[0]
+    concentration_right: float | None = None    # M, at z[-1]; None = symmetric
+
+    @property
+    def right(self) -> float:
+        return (self.concentration if self.concentration_right is None
+                else self.concentration_right)
+
+    @property
+    def symmetric(self) -> bool:
+        return self.right == self.concentration
 
 
 def default_species(calcium: float = 0.0) -> list[IonSpecies]:
     """A symmetric monovalent bath, optionally with calcium added.
 
-    Monovalent by default because the 25-30 pS the model is checked against was
-    measured that way. Calcium is added as an extra species rather than
-    replacing the salt, which is what a real recording does.
+    The names are the ions the registered constants actually describe: the
+    "cation" carried K+'s diffusivity and Shannon radius all along, and calling
+    it ``cation`` hid that the model was never told which ion it was solving
+    for. Monovalent by default because the 25-30 pS the model is checked
+    against was measured that way; calcium is added as an extra species rather
+    than replacing the salt, which is what a real recording does.
     """
     salt = _P.value("permeation.bath_concentration")
     scale = _P.value("permeation.diffusion_scale")
     species = [
-        IonSpecies("cation", +1, _P.value("permeation.diffusion_cation") * scale,
+        IonSpecies("K+", +1, _P.value("permeation.diffusion_cation") * scale,
                    _P.value("permeation.radius_cation"), salt),
-        IonSpecies("anion", -1, _P.value("permeation.diffusion_anion") * scale,
+        IonSpecies("Cl-", -1, _P.value("permeation.diffusion_anion") * scale,
                    _P.value("permeation.radius_anion"), salt),
     ]
     if calcium > 0:
         species.append(IonSpecies(
-            "calcium", +2, _P.value("permeation.diffusion_calcium") * scale,
+            "Ca2+", +2, _P.value("permeation.diffusion_calcium") * scale,
             _P.value("permeation.radius_calcium"), calcium))
         # Balance the extra charge with anion, so the bath is electroneutral.
         species[1] = IonSpecies(species[1].name, -1, species[1].diffusivity,
                                 species[1].radius, salt + 2 * calcium)
     return species
+
+
+def sodium_species(left: float | None = None,
+                   right: float | None = None) -> list[IonSpecies]:
+    """NaCl at two possibly different concentrations, in mol/L.
+
+    Sodium rather than the default potassium because the published permeability
+    ratio this is compared with is ``P_Cl/P_Na``, measured in NaCl on both
+    sides at different concentrations (Coste et al. 2015). Comparing a
+    potassium model against a sodium measurement would be free to disagree for
+    the wrong reason: Na+ is the slower and the smaller of the two.
+    """
+    scale = _P.value("permeation.diffusion_scale")
+    left = _P.value("permeation.dilution_high") if left is None else left
+    right = _P.value("permeation.dilution_low") if right is None else right
+    return [
+        IonSpecies("Na+", +1, _P.value("permeation.diffusion_sodium") * scale,
+                   _P.value("permeation.radius_sodium"), left, right),
+        IonSpecies("Cl-", -1, _P.value("permeation.diffusion_anion") * scale,
+                   _P.value("permeation.radius_anion"), left, right),
+    ]
 
 
 @dataclass
@@ -128,6 +181,11 @@ class PermeationResult:
     blocked_by: str | None = None
     access_ohm: float = 0.0
     pore_ohm: float = 0.0
+    #: Signed current through the pore alone, before the series access
+    #: correction. `current` divides the applied voltage by the total
+    #: resistance and is therefore always the sign of the voltage; this one
+    #: keeps its sign, which is the whole content of a reversal potential.
+    pore_current: float = 0.0
     converged: bool = True
     iterations: int = 0
     meta: dict = field(default_factory=dict)
@@ -218,49 +276,6 @@ def series_conductance(z: np.ndarray, radius: np.ndarray,
             "access_ohm": access_ohm, "conductivity": sigma}
 
 
-def _solve_nernst_planck(z, area, potential, species, temperature, bath):
-    """Steady concentration profile and the constant flux it carries.
-
-    Scharfetter-Gummel: the flux between two nodes is exact for a linear
-    potential and constant coefficients across the interval, so the scheme does
-    not go unstable when drift dominates. A centred difference does, and shows
-    it as negative concentrations rather than as an error.
-    """
-    n = len(z)
-    h = np.diff(z)
-    thermal = R_GAS * temperature / F_FARADAY
-    delta = species.valence * np.diff(potential) / thermal      # (n-1,)
-
-    face_area = 0.5 * (area[:-1] + area[1:])
-    a = species.diffusivity * face_area / h                     # (n-1,)
-
-    lower = np.zeros(n)
-    diag = np.zeros(n)
-    upper = np.zeros(n)
-    rhs = np.zeros(n)
-
-    b_plus = _bernoulli(delta)          # multiplies c_{k+1}
-    b_minus = _bernoulli(-delta)        # multiplies c_k
-
-    for k in range(1, n - 1):
-        left, right = a[k - 1], a[k]
-        lower[k] = left * b_minus[k - 1]
-        diag[k] = -(left * b_plus[k - 1] + right * b_minus[k])
-        upper[k] = right * b_plus[k]
-
-    diag[0] = diag[-1] = 1.0
-    rhs[0] = rhs[-1] = bath
-
-    matrix = np.zeros((n, n))
-    matrix[np.arange(n), np.arange(n)] = diag
-    matrix[np.arange(1, n), np.arange(n - 1)] = lower[1:]
-    matrix[np.arange(n - 1), np.arange(1, n)] = upper[:-1]
-
-    concentration = _solve_with_dirichlet(matrix, rhs)
-    flux = a[0] * (concentration[0] * b_minus[0] - concentration[1] * b_plus[0])
-    return concentration, float(flux)
-
-
 def debye_length(species: list[IonSpecies], temperature: float,
                  permittivity_relative: float) -> float:
     """Screening length of the bath, in metres.
@@ -280,41 +295,6 @@ def debye_length(species: list[IonSpecies], temperature: float,
                          / (2.0 * F_FARADAY ** 2 * ionic_strength)))
 
 
-def _ohmic_potential(z, areas, concentrations, species, temperature,
-                     v_left, v_right):
-    """Potential from current continuity — the electroneutral limit of PNP.
-
-    Where the double layers do not overlap, the pore interior is neutral and
-    Poisson reduces to :math:`\\nabla\\cdot(\\sigma A \\nabla\\phi) = 0`, with
-    the local conductivity set by the local concentrations. That is what is
-    solved here, and it is well-posed: a Laplace problem with positive
-    coefficients, so the Gummel loop around it converges.
-
-    The full Poisson coupling is implemented in :func:`_poisson_newton_step` but
-    is **not** used by default, and the reason is physics rather than
-    convenience — see :func:`debye_length` and the module docstring.
-    """
-    n = len(z)
-    h = np.diff(z)
-    conductance_face = np.zeros(n - 1)
-    for s in species:
-        c = concentrations[s.name]
-        local = ((s.valence ** 2 * F_FARADAY ** 2 * s.diffusivity)
-                 / (R_GAS * temperature)) * c * areas[s.name]
-        conductance_face += 0.5 * (local[:-1] + local[1:]) / h
-
-    matrix = np.zeros((n, n))
-    rhs = np.zeros(n)
-    for k in range(1, n - 1):
-        left, right = conductance_face[k - 1], conductance_face[k]
-        matrix[k, k - 1] = left
-        matrix[k, k] = -(left + right)
-        matrix[k, k + 1] = right
-    matrix[0, 0] = matrix[-1, -1] = 1.0
-    rhs[0], rhs[-1] = v_left, v_right
-    return _solve_with_dirichlet(matrix, rhs)
-
-
 def solve_pnp(profile, wetting=None, voltage: float | None = None,
               species: list[IonSpecies] | None = None,
               fixed_charge: np.ndarray | None = None,
@@ -326,11 +306,29 @@ def solve_pnp(profile, wetting=None, voltage: float | None = None,
     it says the pore is shut, the result is zero current with the reason
     recorded — the continuum equations would happily push ions through a
     dewetted pore, because nothing in them knows about the hydration shell.
+
+    ``fixed_charge`` is the charge the pore wall itself carries, one value per
+    slice of ``profile``, as a signed molar-equivalent density in mol/m^3 (that
+    is, rho_fixed / F). :func:`piezo1.physics.pore_charge.map_charge` builds it
+    from coordinates. It enters through a local Donnan potential, so counterions
+    are enriched and coions excluded, and the concentration gradients that
+    creates carry a diffusion current — which is what makes a reversal
+    potential possible at all.
+
+    **Which equation closes the system depends on whether there is charge.**
+    A neutral pore between identical baths has uniform concentrations as an
+    exact solution, and the potential is then fixed by ohmic current continuity
+    — the closure every number before Round 81 was computed with, still used
+    here, arithmetic untouched, so ``fixed_charge=np.zeros(n)`` returns those
+    numbers bit for bit. A charged pore, or one between different baths, is not
+    uniform, and its potential is fixed by **local electroneutrality** instead.
+    That is not a preference between two approximations: the ohmic operator
+    contains no term the fixed charge could enter through.
     """
     voltage = _P.value("permeation.test_voltage") if voltage is None else voltage
     species = species or default_species()
     temperature = _P.value("permeation.temperature")
-    permittivity = _P.value("permeation.permittivity_pore") * 8.8541878128e-12
+    thermal = R_GAS * temperature / F_FARADAY
 
     z = np.asarray(profile.z, dtype=float) * 1e-10          # A -> m
     radius = np.asarray(profile.radius, dtype=float) * 1e-10
@@ -347,28 +345,64 @@ def solve_pnp(profile, wetting=None, voltage: float | None = None,
                   "n_mechanisms": len(reasons),
                   "min_radius_A": float(radius.min()) * 1e10})
 
-    geometric_area = np.pi * radius ** 2
     areas = {s.name: _accessible_area(radius, s.radius) for s in species}
-    charge_fixed = (np.zeros_like(z) if fixed_charge is None
-                    else np.asarray(fixed_charge, dtype=float))
+    fixed = (None if fixed_charge is None
+             else np.asarray(fixed_charge, dtype=float)[order])
+    charged = fixed is not None and bool(np.any(fixed != 0.0))
+    symmetric = all(s.symmetric for s in species)
 
-    potential = np.linspace(0.0, voltage, len(z))
+    if charged or not symmetric:
+        # Partition against the mean of the two baths; with identical baths
+        # that is the bath, and the Donnan solve is exact.
+        reference = np.array([[0.5 * (s.concentration + s.right) * 1000.0] * len(z)
+                              for s in species])
+        psi = _donnan_potential([s.valence for s in species], reference,
+                                np.zeros_like(z) if fixed is None else fixed,
+                                thermal)
+    else:
+        psi = None
+
+    def _bath(value, valence, end):
+        if psi is None:
+            return value * 1000.0
+        return value * 1000.0 * float(np.exp(-valence * psi[end] / thermal))
+
+    left = {s.name: _bath(s.concentration, s.valence, 0) for s in species}
+    right = {s.name: _bath(s.right, s.valence, -1) for s in species}
+
+    applied = np.linspace(0.0, voltage, len(z))
+    potential = applied if psi is None else applied + psi
+    valences = [s.valence for s in species]
+    zero_charge = np.zeros_like(z)
+    # A zero applied voltage would make a relative tolerance unreachable, so the
+    # charged branch measures convergence against the thermal voltage instead —
+    # which is the scale the potential actually moves on.
+    threshold = (tol * max(abs(voltage), 1e-12) if psi is None
+                 else tol * max(abs(voltage), thermal))
     concentrations, fluxes = {}, {}
     converged, used = False, 0
 
     for used in range(1, max_iterations + 1):
         for s in species:
-            concentration, flux = _solve_nernst_planck(
-                z, areas[s.name], potential, s, temperature,
-                s.concentration * 1000.0)
+            concentration, flux = _nernst_planck(
+                z, areas[s.name], potential, s.valence, s.diffusivity, thermal,
+                left[s.name], right[s.name])
             concentrations[s.name] = concentration
             fluxes[s.name] = flux
 
-        updated = _ohmic_potential(z, areas, concentrations, species,
-                                   temperature, 0.0, voltage)
-        change = float(np.max(np.abs(updated - potential)))
-        potential = (1.0 - relaxation) * potential + relaxation * updated
-        if change < tol * max(abs(voltage), 1e-12):
+        if psi is None:
+            face = _face_conductance(z, areas, concentrations, species,
+                                     temperature)
+            updated = _ohmic_potential(z, face, 0.0, voltage)
+            change = float(np.max(np.abs(updated - potential)))
+            potential = (1.0 - relaxation) * potential + relaxation * updated
+        else:
+            step = _neutrality_step(
+                valences, [concentrations[s.name] for s in species],
+                zero_charge if fixed is None else fixed, thermal)
+            change = float(np.max(np.abs(step)))
+            potential = potential + relaxation * step
+        if change < threshold:
             converged = True
             break
 
@@ -384,20 +418,23 @@ def solve_pnp(profile, wetting=None, voltage: float | None = None,
     total_ohm = pore_ohm + access_ohm
     conductance_value = 1.0 / total_ohm if np.isfinite(total_ohm) else 0.0
 
+    meta = {"n_slices": len(z), "conductivity_S_per_m": sigma,
+            "species": [s.name for s in species],
+            "diffusion_scale": _P.value("permeation.diffusion_scale"),
+            "debye_length_A": lam * 1e10,
+            "min_radius_A": float(radius.min()) * 1e10,
+            "double_layers_overlap": bool(lam > float(radius.min())),
+            "fixed_charge": charged, "symmetric_baths": symmetric,
+            "note": "continuum model of an atomic-scale pore; the two "
+                    "confinement parameters are unmeasured"}
+    if charged or not symmetric:
+        meta.update(_charge_diagnostics(concentrations, species, fixed, psi))
     return PermeationResult(
         current=voltage / total_ohm if np.isfinite(total_ohm) else 0.0,
         conductance=conductance_value, voltage=voltage, z=z, radius=radius,
         potential=potential, concentrations=concentrations, fluxes=fluxes,
-        access_ohm=access_ohm, pore_ohm=pore_ohm, converged=converged,
-        iterations=used,
-        meta={"n_slices": len(z), "conductivity_S_per_m": sigma,
-              "species": [s.name for s in species],
-              "diffusion_scale": _P.value("permeation.diffusion_scale"),
-              "debye_length_A": lam * 1e10,
-              "min_radius_A": float(radius.min()) * 1e10,
-              "double_layers_overlap": bool(lam > float(radius.min())),
-              "note": "continuum model of an atomic-scale pore; the two "
-                      "confinement parameters are unmeasured"})
+        access_ohm=access_ohm, pore_ohm=pore_ohm, pore_current=float(current),
+        converged=converged, iterations=used, meta=meta)
 
 
 def blocking_mechanisms(wetting, radius: np.ndarray,

@@ -101,6 +101,20 @@ wrong**, and every time it returned a plausible number rather than an error:
 **When a checker disagrees with the pipeline, suspect the checker first.**
 Historically it has been wrong more often than the thing it was checking.
 
+**Once, it was the other way round, and that is worth stating too.** Round 81
+calibrated a new selectivity measurement on a pore with no charge in it, where
+the answer is the two ions' mobility ratio. It came back inverted. Suspecting
+the instrument was right as a *first* move and wrong as a conclusion: the
+inversion was a sign error in the drift term of the transport solver, five
+rounds older than the checker, which had made cations drift *up* the potential
+gradient since the solver was written. It had survived two independent
+cross-checks because both compared magnitudes, and every current the project
+had computed was between identical baths — where reversing the field only
+reverses the sign, and the sign was then discarded. The rule that saved it is
+the second half of the calibration rule rather than the first: the known answer
+has to be one the instrument can get *wrong*, and "which way does a cation go"
+is such an answer where "how much current flows" is not.
+
 *Implementation:* `tests/test_calibration.py` holds a register mapping every
 public checking callable to the test that calibrates it, and fails if one is
 added without.

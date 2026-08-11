@@ -248,6 +248,42 @@ is the independent closed-form check on the solver.
 
 ---
 
+## The pore's fixed charge, and selectivity
+
+Everything above is for an electrically neutral pore, which is what
+`solve_pnp` computes unless you give it a charge. Building one takes the
+structure, the profile and the axis, because a residue only counts if it can
+reach the lumen at its own height.
+
+```python
+from piezo1.physics.pore_charge import pore_charge, cytosolic_end
+from piezo1.physics.selectivity import measure_selectivity
+
+charge = pore_charge(st, prof, axis, mode="curated", species="mouse")
+charge.summary()             # '6 charged groups (curated), net -6 e, ...'
+charge.residue_summary()     # which residue numbers, how many copies, how far
+
+res = solve_pnp(prof, fixed_charge=charge.density)
+res.meta["peak_in_pore_M"]           # 13.9 — check this before believing it
+res.meta["exceeds_packing_limit"]    # True: past what a solution can reach
+res.meta["electroneutrality_residual"]   # ~1e-10 if the closure converged
+
+sel = measure_selectivity(prof, fixed_charge=charge.density,
+                          cytosolic_index=cytosolic_end(st, axis))
+sel.summary()                # 'P_Cl-/P_Na+ = 0.021 against a published 0.14; ...'
+```
+
+**Three things will bite you here.** `cytosolic_index` is a sign, not a
+formality — pass the wrong end and a cation-selective pore is reported as
+anion-selective with a perfectly plausible number, which is why
+`cytosolic_end` measures it. `mode="lining"` gives a *different kind* of
+answer from `mode="curated"`, not a refinement of it: on 11ZC the geometric
+route is net **positive** where the curated one is net negative. And an
+uncharged pore is not an unselective one — it returns 0.9035 here, from size
+exclusion alone, so that is the baseline any charged result has to beat.
+
+---
+
 ## The full-length model
 
 Experimental core plus the AlphaFold distal blade, with the join kept visible.

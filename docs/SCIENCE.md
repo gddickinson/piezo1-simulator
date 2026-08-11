@@ -1084,6 +1084,87 @@ into a certainty. It is reported as a separate verdict beside the conductance
 rather than multiplied into it, so a reader can disagree with the switch without
 having to recompute the current.
 
+## 8f-bis. The pore's own charge, and whether it makes the model selective
+
+Until Round 81 every current above was computed for an electrically **neutral**
+pore. The solver took a `fixed_charge` argument, its documented equation carried
+the term, and no caller had ever supplied one — so a cation channel was being
+modelled with nothing in it that could prefer a cation.
+
+**Where the charge comes from.** Ionisable side chains are placed at their own
+C-alpha height along the conduction axis and counted as pore-lining if the
+charge, on a fully extended side chain, could reach the lumen at that height.
+C-alpha rather than the charged atom because **11ZC — the only open structure —
+is the only entry deposited without side chains**, so the coordinates that are
+most needed do not exist; measuring the other entries differently would make
+them incomparable. The criterion is deliberately permissive, so a residue it
+rejects cannot line the pore in any rotamer.
+
+**What that admits, on the flat structure (mouse numbering in brackets):**
+
+| Curated as | Residue | Distance past the lumen wall | In? |
+|---|---|---|---|
+| selectivity glutamate | E2461 (2487) | 0.9–1.9 Å | **yes** |
+| selectivity glutamate | E2117 (2133) | 12.9–13.1 Å | no |
+| selectivity glutamate | E2469 (2495) | 6.6–7.2 Å | no |
+| selectivity glutamate | E2470 (2496) | 7.2–7.5 Å | no |
+| CTD constriction | E2511 (2537) | 1.4–1.6 Å | **yes** |
+
+Three of the four glutamates the annotation calls selectivity determinants are
+not within reach of the lumen, and one the annotation never called a
+selectivity residue is. For E2117 that agrees with the paper that identified it:
+Coste et al. concluded from function alone that the residue *"may not lie in the
+selectivity filter but could be located close enough to the pore to
+allosterically modulate its properties"*. The geometry and the
+electrophysiology reach the same conclusion without either having been fitted
+to the other.
+
+**How the charge enters.** A fixed charge density sets a local Donnan potential,
+counterions are enriched against it and coions excluded, and the resulting
+gradients carry a diffusion current — which is what gives a pore a reversal
+potential at all. Selectivity is then measured the way it was published:
+150 mM NaCl cytosolic against 30 mM extracellular, reversal potential found by
+bisection, inverted through the GHK voltage equation. Coste et al. 2015 report
+**P_Cl/P_Na = 0.14** for mPiezo1 by exactly that protocol.
+
+| Route | Charges | Net | Conductance | P_Cl/P_Na | Peak in-pore |
+|---|---|---|---|---|---|
+| none (baseline) | 0 | 0 | 40.1 pS | **0.9035** | 0.15 M |
+| curated pore residues | 6 | −6 e | 29.6 pS | **0.0214** | 13.9 M |
+| every ionisable group reaching the lumen | 46 | +8 e | 4.1 pS | **0.2066** | 9.7 M |
+| measured (Coste 2015) | — | — | 25–30 pS | 0.14 | — |
+
+**The direction is right and the number is not.** Both routes make the model
+cation-selective, which is the direction the measurement has, and they bracket
+the published ratio about tenfold apart — so the charge does something real and
+the model does not pin down how much. Three things stop this being read as
+agreement:
+
+- *The uncharged pore is already cation-selective*, at 0.9035. Chloride's crystal
+  radius is nearly twice sodium's, so at a 3.3 Å bottleneck it loses more
+  cross-section than it gains in mobility. Part of PIEZO1's preference for
+  cations is size, before any charge is involved.
+- *The curated route is outside the model's validity.* Six carboxylates in a
+  3.3 Å lumen demand a counterion concentration of **13.9 M**, above any
+  packing a solution could reach. The result is flagged, not clipped: the model
+  really does say that, which is how one knows to stop believing it there.
+- *The two routes disagree in kind, not just in value.* The curated set is net
+  negative; the geometric set is net **positive**, because the extracellular
+  cap contributes more arginine and lysine than glutamate. Neither is evidence
+  for the other — one is a claim about function, the other about position.
+
+**A sign error the wiring exposed.** Getting here required the
+Scharfetter-Gummel drift term to be correct, and it was not: the two Bernoulli
+factors were attached to the wrong nodes, so cations drifted *up* the potential
+gradient. Nothing in fifty rounds could see it, because every current the
+project had computed was between identical baths — where the concentration term
+vanishes and reversing the field only reverses the current — and the sign was
+then discarded by `pore_ohm = abs(voltage / current)`. It surfaced immediately
+once the baths differed, as a pore that grew *more* anion-selective the more
+negative charge it was given. Correcting it changed the recorded conductance by
+one part in 10¹⁴, which is round-off; supplying an explicitly zero charge still
+reproduces the neutral pore bit for bit.
+
 ## 8g. What the deposited variant structures can support
 
 Round 34 set out to compare ion permeation across the four deposited PIEZO1

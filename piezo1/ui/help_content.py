@@ -7,6 +7,8 @@ the project demands: where the number came from, and what it does not mean.
 
 from __future__ import annotations
 
+from .help_topics_tags import TAGS_AND_CURRENT
+
 __all__ = ["TOPICS", "DOC_LINKS", "SHORTCUTS", "topic_html"]
 
 #: Documents shipped with the project, opened in the system viewer.
@@ -324,91 +326,6 @@ bundled. Run <tt>python -m piezo1.io.fetch</tt> once. Analyses degrade to
 
 #: Ordered so the list reads as a tour rather than an index.
 
-_TAGS_AND_CURRENT = """
-<h2>HaloTag fusion, labelling and ion current</h2>
-
-<h3>Seeing the tags — View &rarr; HaloTag fusion</h3>
-<p>PIEZO1 imaging constructs fuse <b>HaloTag</b> to the cytosolic C-terminus,
-one per protomer. <b>There is no structure of the fusion</b>, so everything
-drawn here is a model: the linker is a straight seam rather than a
-conformation, and the <b>accessible volume</b> is shown as a point cloud
-precisely so a single position is not mistaken for a determined one.</p>
-<p>The tag body can be drawn two ways. <b>Show modelled tags</b> gives a sphere
-of the tag's radius of gyration — the shape that claims exactly what the model
-determined, a position and nothing about orientation. <b>Show tag structure</b>
-gives the real 6U32 fold, rigidly placed at the same centre and turned so its
-N-terminus faces the channel's C-terminus. That is more informative and more
-dangerous, because a drawn fold reads as a determined pose. It is not: the
-<b>spin about the linker is undetermined</b>, and <b>Turn tag orientation</b>
-rotates it 10° at a time so you can see that for yourself — the fold turns and
-nothing else moves. Atoms inside the channel are drawn red, and the status line
-says how many of the 36 sampled orientations clear it.</p>
-<p>Colour is <i>not</i> what keeps a modelled tag from reading as experimental
-structure: the tag's orange sits 0.10 from the chain palette's orange, and every
-colour genuinely distant from the eight chain hues is too dark to see. The
-status line is the guard, which is why the fold cannot be drawn without it.</p>
-<p>Drawing the fold measures something the sphere could only assert. Over 36
-spins the fold clears the channel in <b>27 of 36</b> orientations on 7WLT, 7 on
-8YFG, <b>1</b> on 8YEZ and <b>none</b> on 11ZC — and 11ZC is exactly the entry
-whose sphere clearance (15.7 Å) falls below the radius of gyration (17.6 Å). The
-two models agree on which structures admit a tag, while the sphere is generous
-about how much room there is.</p>
-<p>Measured inputs, from PDB <b>6U32</b> (1.8 Å, TMR ligand bound): radius of
-gyration <b>17.6 Å</b>, N-terminus <b>19.9 Å</b> from the centre, furthest atom
-<b>30.0 Å</b>. A C-terminal fusion attaches to the tag's <i>N</i>-terminus, so
-that offset — not the radius of gyration — sets where the body sits.</p>
-<p>The tag centre lands <b>3.3–4.2 nm</b> from the pore exit across all twenty
-downloaded entries. That is <i>below</i> the 4–6 nm this project first
-estimated, and sweeping the unverified linker length from 1 to 30 residues moves
-it by under a nanometre, so the miss is structural rather than an artefact of the
-assumption. About half the accessible volume does lie in the 4–6 nm band: the
-window describes a reachable position, not the ensemble mean.</p>
-
-<h3>Labelling — Analysis &rarr; HaloTag labelling</h3>
-<p>The kinetics are <b>imported</b> from the companion
-<tt>halotag_binding_sim</tt> project and reproduced to machine precision, so any
-divergence would mean the import is wrong rather than that anything was
-discovered.</p>
-<p>Because all three sites must bind for a channel to be fully labelled, a
-per-site shortfall is <b>cubed</b>: p = 0.9 leaves only 0.73 of channels fully
-labelled. At the standard protocol (200 nM, 30 min) labelling is complete in
-<b>54 s</b>, giving a 100% three-dye population — so at any realistic
-concentration there is <i>no</i> kinetic dye mixture. A mixture at a saturating
-protocol argues instead for <b>chemically unreactive tags</b>, whose ceiling is
-the reactive fraction cubed and which no incubation removes.</p>
-
-<h3>Ion current — Analysis &rarr; Ion permeation</h3>
-<p>Drift-diffusion for each ion species along the measured pore, with the
-spreading resistance of the pore mouths in series, and <b>gated by the wetting
-verdict</b>: a pore wide enough for an ion still carries no current if it has
-dewetted, because the hydration shell the ion must shed into is not there.</p>
-<p>When the pore is shut the report lists <b>every</b> mechanism, not the first.
-That distinction is real: <b>8YEZ</b> is shut both sterically <i>and</i> by a
-hydrophobic gate, while <b>7WLU</b> is shut only sterically.</p>
-<p>For the open <b>11ZC</b> the model gives <b>41 pS</b> against a published
-<b>25–30 pS</b>. Two things temper that. The in-pore diffusivity and the ion
-radius are <b>unmeasured</b>, and across their plausible ranges the answer spans
-<b>16–94 pS</b> — so the model can be made to agree, but that would be tuning.
-And the Debye length in 150 mM (5.7–8.1 Å) <i>exceeds</i> the open pore radius
-(3.3 Å), so the double layers overlap and a continuum treatment of this pore is
-at the edge of its validity. The potential is therefore solved in the
-electroneutral limit, which agrees with an independent closed-form check to
-1.5%.</p>
-
-<h3>What the variant structures can support — Analysis &rarr; Variant structures</h3>
-<p>A null result, shipped rather than worked around. Of the four deposited
-variant entries, <b>one</b> (8YFG, R2456H) actually resolves its own mutation;
-A1988 and E756 are unmodelled in the entries named for them. <b>8ZU3, 8YFC and
-9VMX share one set of coordinates</b> — separate depositions, different files,
-identical atoms — so they cannot distinguish anything from each other. And every
-deposited human structure is <b>closed</b>, so no difference in conductance can
-be measured between them.</p>
-<p>All four are <b>gain-of-function</b>. There is no deposited loss-of-function
-structure, so this route cannot discriminate direction even in principle. That
-is the same data limit the blind test met from the other side.</p>
-"""
-
-
 _FRAMING = """
 <h2>Where structures sit, and showing more than one</h2>
 
@@ -468,7 +385,7 @@ TOPICS: list[tuple[str, str]] = [
     ("Physics panel", _PHYSICS),
     ("Analysis panel", _ANALYSIS),
     ("Measure panel — selecting atoms", _MEASURE),
-    ("HaloTag and ion current", _TAGS_AND_CURRENT),
+    ("HaloTag and ion current", TAGS_AND_CURRENT),
     ("Framing and multiple structures", _FRAMING),
     ("Limits and honesty", _HONESTY),
     ("Wrong numbers, and what stops them", _hazards_topic()),

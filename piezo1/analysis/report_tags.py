@@ -130,7 +130,8 @@ def analysis_permeation(st: Structure, species: str, step: float | None = None,
     if not blocks:
         return {"error": "needs three well-resolved protomers"}
 
-    profile = pore_profile(st, detect_c3_axis(blocks), step=step)
+    axis = detect_c3_axis(blocks)
+    profile = pore_profile(st, axis, step=step)
     grid = load_grid()
     wetting = predict_wetting(st, profile, grid) if grid.available else None
 
@@ -157,9 +158,72 @@ def analysis_permeation(st: Structure, species: str, step: float | None = None,
             "calcium_2mM_pS": solve_pnp(
                 profile, wetting,
                 species=default_species(calcium=0.002)).conductance_pS})
+        out["fixed_charge"] = _charged_pore(st, profile, axis, species, wetting)
     out["note"] = ("continuum model of an atomic-scale pore; the in-pore "
                    "diffusivity and ion radius are unmeasured and the result "
                    "spans 16-94 pS across their plausible ranges")
+    return out
+
+
+def _charged_pore(st: Structure, profile, axis, species: str, wetting) -> dict:
+    """What the pore's own charge does to the current and to selectivity.
+
+    Both routes are reported because they disagree, and the disagreement is
+    informative: ``curated`` is the literature's answer to which residues line
+    the pore, ``lining`` is the coordinates' answer, and neither is evidence
+    for the other. The neutral pore is reported alongside as the baseline — it
+    is *already* weakly cation-selective from size exclusion alone, so a
+    selective answer is not by itself evidence that the charge did anything.
+    """
+    from ..physics.permeation import solve_pnp
+    from ..physics.pore_charge import MODES, cytosolic_end, pore_charge
+    from ..physics.selectivity import measure_selectivity
+
+    end = cytosolic_end(st, axis)
+    out: dict = {"cytosolic_end_index": end,
+                 "published_pcl_pna": PARAMETERS.value(
+                     "permeation.published_pcl_pna")}
+    try:
+        neutral = measure_selectivity(profile, cytosolic_index=end,
+                                      wetting=wetting)
+        out["neutral"] = {"p_anion_over_cation": neutral.p_anion_over_cation,
+                          "reversal_mV": neutral.reversal_mV,
+                          "protocol": neutral.meta["protocol"]}
+    except ValueError as exc:
+        return {"error": str(exc)}
+
+    for mode in MODES:
+        charge = pore_charge(st, profile, axis, mode=mode, species=species)
+        result = solve_pnp(profile, wetting, fixed_charge=charge.density)
+        rows = charge.residue_summary()
+        row = {"n_groups": charge.n_groups,
+               "net_charge_e": charge.net_charge,
+               # The geometric route names seventeen residues, which is a wall
+               # of text in a result window; the curated one names two and the
+               # detail is the point there.
+               "residues": rows if mode == "curated" else
+               [f"{r['res_name']}{r['res_seq']}x{r['copies']}"
+                f"{'+' if r['charge'] > 0 else '-'}" for r in rows],
+               "peak_density_M": charge.peak_density / 1000.0,
+               "conductance_pS": result.conductance_pS,
+               "peak_in_pore_M": result.meta.get("peak_in_pore_M"),
+               "exceeds_packing_limit": result.meta.get(
+                   "exceeds_packing_limit"),
+               "electroneutrality_residual": result.meta.get(
+                   "electroneutrality_residual"),
+               "converged": result.converged}
+        selectivity = measure_selectivity(profile, fixed_charge=charge.density,
+                                          cytosolic_index=end, wetting=wetting)
+        row["p_anion_over_cation"] = selectivity.p_anion_over_cation
+        row["reversal_mV"] = selectivity.reversal_mV
+        row["cation_selective"] = selectivity.cation_selective
+        out[mode] = row
+
+    out["note"] = ("the fixed charge makes the pore cation-selective on both "
+                   "routes, which is the direction the measurement has; the "
+                   "two routes bracket the published ratio rather than "
+                   "reproducing it, and the curated route reaches an in-pore "
+                   "concentration a continuum model cannot be believed at")
     return out
 
 

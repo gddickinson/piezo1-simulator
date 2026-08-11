@@ -67,6 +67,11 @@ EXEMPT_NAMES = {
     "n_angular": "mesh resolution for rendering",
     "n_frames": "animation length",
     "n_rays": "ray-cast sampling density",
+    "cytosolic_index": "which end of the pore profile is the cytosolic one. An "
+                       "array index describing a structure's orientation, not a "
+                       "quantity; it is measured by pore_charge.cytosolic_end "
+                       "rather than chosen, and the default matches the "
+                       "canonical frame the profile is computed in",
     "n_protomers": "structural fact fixed by the assembly, registered as anm.n_protomers",
     "n_channels": "simulation multiplicity chosen by the caller",
     "n_points_": "plotting density",
@@ -116,11 +121,26 @@ EXEMPT = {
         "determines this number.",
     ("structure/fusion.py", "AccessibleVolume", "n_before_clash"):
         "counter, initialised to zero",
-    ("physics/permeation.py", None, "F_FARADAY"):
+    ("physics/_pnp_kernels.py", None, "F_FARADAY"):
         "SI-definitional since the 2019 redefinition; a unit conversion, not a "
         "measured quantity that could be revised",
-    ("physics/permeation.py", None, "R_GAS"):
+    ("physics/_pnp_kernels.py", None, "R_GAS"):
         "SI-definitional since the 2019 redefinition",
+    ("physics/pore_charge.py", None, "AVOGADRO"):
+        "SI-definitional since the 2019 redefinition; it turns a count of "
+        "elementary charges into a molar density and nothing else",
+    ("physics/_pnp_kernels.py", None, "_EXP_CLIP"):
+        "overflow guard on the Donnan solve, in thermal voltages. 40 of them "
+        "is over a volt, far outside anything the fixed charge can produce, so "
+        "it can only ever catch a runaway iterate — a value that clips is a "
+        "bug report, not a modelling choice.",
+    ("physics/permeation.py", "PermeationResult", "pore_current"):
+        "computed field",
+    ("physics/selectivity.py", None, "REVERSAL_BRACKET_V"):
+        "how wide a voltage range the reversal potential is searched over. A "
+        "search bound: the root is bracketed inside it or reported as absent, "
+        "and widening it cannot move a root that exists. +/-200 mV contains "
+        "the Nernst limit of the protocol (-43 mV) five times over.",
     ("analysis/variant_structures.py", "VariantStructure", "n_protein_atoms"):
         "counter, initialised to zero",
     ("physics/permeation.py", "PermeationResult", "access_ohm"): "computed field",

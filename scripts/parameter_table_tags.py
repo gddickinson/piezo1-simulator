@@ -187,12 +187,100 @@ TAG_PARAMETERS = [
                      "(80); 40 is a common compromise. It only matters where "
                      "there is fixed charge to screen.",
          description="Relative permittivity used in the Poisson equation."),
+    # The sodium set exists because the published permeability ratio was
+    # measured in NaCl. The default "cation" above is potassium — smaller
+    # diffusivity and larger radius are both wrong for Na+, and comparing a
+    # potassium model against a sodium measurement would let it disagree for a
+    # reason that has nothing to do with the pore.
+    dict(key="permeation.diffusion_sodium", name="Sodium bulk diffusivity",
+         value=1.33e-9, unit="m^2/s", minimum=1e-11, maximum=1e-8,
+         kind="convention", category="Permeation", citation="convention",
+         source_note="Na+ in water at 25 C; the standard tabulated value. "
+                     "Slower than K+ because it holds its hydration shell "
+                     "more tightly.",
+         description="Bulk diffusion coefficient of sodium."),
+    dict(key="permeation.radius_sodium", name="Sodium crystal radius",
+         value=1.02, unit="A", minimum=0.3, maximum=4.0, kind="convention",
+         category="Permeation", citation="convention",
+         source_note="Na+ Shannon radius, six-coordinate",
+         description="Sodium crystal radius."),
+    dict(key="permeation.dilution_high", name="Dilution potential, high side",
+         value=0.15, unit="M", minimum=0.001, maximum=3.0, kind="convention",
+         category="Permeation", citation="coste2015",
+         source_note="150 mM NaCl intracellular, the concentrated side of the "
+                     "protocol P_Cl/P_Na was measured with",
+         description="Bath concentration on the concentrated side."),
+    dict(key="permeation.dilution_low", name="Dilution potential, dilute side",
+         value=0.03, unit="M", minimum=0.001, maximum=3.0, kind="convention",
+         category="Permeation", citation="coste2015",
+         source_note="30 mM NaCl extracellular (with sucrose for osmolarity), "
+                     "the dilute side of the same protocol",
+         description="Bath concentration on the dilute side."),
+    dict(key="permeation.published_pcl_pna", name="Published P_Cl/P_Na",
+         value=0.14, unit="", minimum=0.0, maximum=10.0, kind="empirical",
+         category="Permeation", citation="coste2015",
+         source_note="mPiezo1 permeates chloride with P_Cl/P_Na = 0.14, from "
+                     "the dilution potential inverted through GHK. Below one, "
+                     "so the channel prefers cations — but far from zero, so "
+                     "it is a weakly selective cation channel and not an "
+                     "ion-exchange membrane.",
+         description="Measured chloride-over-sodium permeability ratio."),
     dict(key="permeation.published_conductance", name="Published unitary conductance",
          value=27.5, unit="pS", minimum=1.0, maximum=200.0, kind="empirical",
          category="Permeation", citation="coste2010piezo",
          source_note="25-30 pS for PIEZO1 with monovalent cations; the "
                      "midpoint is the comparison target for the PNP model",
          description="Measured single-channel conductance."),
+
+    # --------------------------------------------------- pore fixed charge ----
+    # Where a charged side chain can put its charge, measured from its own
+    # C-alpha with the chain fully extended. These decide which residues count
+    # as pore-lining when only C-alpha coordinates exist, which is the case for
+    # the one open structure. Extended values on purpose: the test is meant to
+    # err towards inclusion, so a residue it rejects cannot line the pore in
+    # any rotamer.
+    dict(key="pore_charge.reach_asp", name="Aspartate side-chain reach",
+         value=3.9, unit="A", minimum=1.0, maximum=12.0, kind="convention",
+         category="Pore fixed charge", citation="convention",
+         source_note="Ca to carboxylate-carbon distance in an extended Asp, "
+                     "from standard side-chain geometry",
+         description="How far Asp can put its charge from its own C-alpha."),
+    dict(key="pore_charge.reach_glu", name="Glutamate side-chain reach",
+         value=5.1, unit="A", minimum=1.0, maximum=12.0, kind="convention",
+         category="Pore fixed charge", citation="convention",
+         source_note="one methylene longer than Asp",
+         description="How far Glu can put its charge from its own C-alpha."),
+    dict(key="pore_charge.reach_lys", name="Lysine side-chain reach",
+         value=6.4, unit="A", minimum=1.0, maximum=12.0, kind="convention",
+         category="Pore fixed charge", citation="convention",
+         source_note="Ca to NZ in an all-trans lysine",
+         description="How far Lys can put its charge from its own C-alpha."),
+    dict(key="pore_charge.reach_arg", name="Arginine side-chain reach",
+         value=7.3, unit="A", minimum=1.0, maximum=12.0, kind="convention",
+         category="Pore fixed charge", citation="convention",
+         source_note="Ca to the guanidinium centre in an extended arginine; "
+                     "the longest ionisable side chain there is",
+         description="How far Arg can put its charge from its own C-alpha."),
+    dict(key="pore_charge.smoothing", name="Axial charge smoothing",
+         value=3.0, unit="A", minimum=0.5, maximum=15.0, kind="method",
+         category="Pore fixed charge", citation="method_choice",
+         source_note="A charge's height along the axis is known to about a "
+                     "side-chain length, and on the open structure only from "
+                     "C-alpha. Placing it on a single slice would claim a "
+                     "precision the coordinates do not have and would make the "
+                     "density depend on the slice spacing. Total charge is "
+                     "conserved whatever this is set to.",
+         description="Gaussian width each charge is spread over along the axis."),
+    dict(key="pore_charge.max_concentration",
+         name="Counterion packing ceiling", value=10.0, unit="M",
+         minimum=0.1, maximum=100.0, kind="method",
+         category="Pore fixed charge", citation="method_choice",
+         source_note="Close-packed hydrated K+ at a 3.3 A radius is about "
+                     "8 M, so 10 M is where a continuum treatment of point "
+                     "ions has certainly stopped describing a solution. It "
+                     "only ever flags a result — no calculation reads it as "
+                     "an input, and nothing is clipped to it.",
+         description="In-pore concentration above which the model is flagged."),
 
     # ------------------------------------------------- calcium nanodomain ----
     dict(key="nanodomain.d_calcium", name="Cytosolic calcium diffusivity",

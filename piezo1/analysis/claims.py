@@ -22,7 +22,10 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable
 
-import numpy as np
+from .claims_structural import (  # noqa: F401  (the registry calls them)
+    _blocks, _dome_radius, _gating_overlap, _pore_bottleneck,
+    _selectivity, _structure, _tm_surface, _wetting_score,
+    _within_position_variance)
 
 __all__ = ["Claim", "ClaimResult", "CLAIMS", "verify_claims", "claims_by_cost"]
 
@@ -86,87 +89,6 @@ class ClaimResult:
 # The computations
 # --------------------------------------------------------------------------
 
-def _structure(pdb: str):
-    from ..config import STRUCTURE_DIR
-    from ..core.structure import Structure
-    path = STRUCTURE_DIR / f"{pdb.upper()}.cif"
-    if not path.exists():
-        raise FileNotFoundError(f"{pdb} not downloaded")
-    return Structure.from_file(path)
-
-
-def _blocks(structure):
-    from ..structure.protomers import protomer_blocks
-    return protomer_blocks(structure)
-
-
-def _tm_surface(structure, species: str) -> np.ndarray:
-    import json
-
-    from ..config import RESOURCE_DIR
-    tms = json.loads((RESOURCE_DIR / f"uniprot_{species}.json").read_text())
-    points = []
-    for chain in structure.chains:
-        mask = structure.mask_ca() & (structure.chain == chain)
-        if mask.sum() < 300:
-            continue
-        xyz, seq = structure.xyz[mask], structure.res_seq[mask]
-        for tm in tms["transmembrane"]:
-            mid = 0.5 * (tm["start"] + tm["end"])
-            half = max(2.0, (tm["end"] - tm["start"]) / 6.0)
-            sel = (seq >= mid - half) & (seq <= mid + half)
-            if sel.sum() >= 3:
-                points.append(xyz[sel].mean(axis=0))
-    return np.array(points)
-
-
-def _dome_radius() -> float:
-    from ..structure.geometry import measure_dome
-    st = _structure("7WLT")
-    blocks, _ = _blocks(st)
-    return measure_dome(blocks, _tm_surface(st, "mouse")).radius_of_curvature / 10.0
-
-
-def _gating_overlap() -> float:
-    """Overlap of the lowest symmetric mode with the observed transition."""
-    from ..physics.anm import ANM
-    from ..structure.superpose import match_protomers
-
-    curved, flat = _structure("7WLT"), _structure("7WLU")
-    cb, cr = _blocks(curved)
-    fb, fr = _blocks(flat)
-    common = np.array(sorted(set(cr.tolist()) & set(fr.tolist())))
-
-    def resample(st, residues):
-        out = []
-        for chain in st.chains:
-            mask = st.mask_ca() & (st.chain == chain)
-            if mask.sum() < 300:
-                continue
-            index = {int(r): i for i, r in enumerate(st.res_seq[mask])}
-            xyz = st.xyz[mask]
-            out.append(np.array([xyz[index[r]] for r in residues], dtype=float))
-        return out[:3]
-
-    cb, fb = resample(curved, common), resample(flat, common)
-    match = match_protomers(cb, fb)
-    fb = [fb[i] for i in match.order]
-
-    anm = ANM.from_trimer(cb, cutoff=15.0, spring="inverse_square").build()
-    modes = anm.calc_modes(n_modes=30)
-    anm.label_symmetry(modes)
-
-    from ..structure.superpose import kabsch
-    rotation, translation, centroid = kabsch(np.vstack(fb), np.vstack(cb))
-    fitted = (np.vstack(fb) - centroid) @ rotation.T + translation
-    displacement = (fitted - np.vstack(cb)).ravel()
-
-    # `overlap` returns the whole spectrum at once; take the best A mode.
-    overlaps = np.abs(np.asarray(modes.overlap(displacement), dtype=float))
-    symmetric = np.array([s == "A" for s in modes.symmetry])
-    return float(overlaps[symmetric].max()) if symmetric.any() else 0.0
-
-
 def _t50_kinetics() -> float:
     from ..physics.kinetics import GatingModel
     return float(GatingModel().half_activation())
@@ -200,102 +122,6 @@ def _linear_overestimate() -> float:
     from ..physics.elastica import compare_with_linear
     from ..physics.membrane import MembraneParameters
     return 1.0 / compare_with_linear(8.691, 1.992, MembraneParameters()).energy_ratio
-
-
-def _pore_bottleneck(pdb: str) -> float:
-    from ..structure.pore import pore_profile
-    from ..structure.superpose import detect_c3_axis
-    st = _structure(pdb)
-    blocks, _ = _blocks(st)
-    return float(pore_profile(st, detect_c3_axis(blocks))
-                 .bottleneck_radius)
-
-
-def _wetting_score(pdb: str) -> float:
-    from .hydration import load_grid, predict_wetting
-    from ..structure.pore import pore_profile
-    from ..structure.superpose import detect_c3_axis
-    grid = load_grid()
-    if not grid.available:
-        raise FileNotFoundError("CHAP grid not downloaded")
-    st = _structure(pdb)
-    blocks, _ = _blocks(st)
-    profile = pore_profile(st, detect_c3_axis(blocks))
-    return float(predict_wetting(st, profile, grid).score)
-
-
-def _within_position_variance() -> float:
-    """Fraction of the mechanical ddG variance that is *within* position.
-
-    The Round 26 criterion, measured on the multiply-substituted positions.
-    Round 7's model gave 0.049 here; the per-contact model must exceed 0.20.
-    """
-    import collections
-
-    from .substitution import variance_decomposition
-    from .variant_impact import VariantImpactModel
-    from ..core.annotations import load_annotations
-    from ..core.sequence import human_sequence, human_to_mouse, mouse_to_human
-    from ..structure.superpose import kabsch, match_protomers
-    from ..structure.protomers import protomer_blocks
-
-    curved, flat = _structure("7WLT"), _structure("7WLU")
-    _cb, cr = protomer_blocks(curved)
-    _fb, fr = protomer_blocks(flat)
-    common = np.array(sorted(set(cr.tolist()) & set(fr.tolist())))
-
-    def resample(st):
-        out = []
-        for chain in st.chains:
-            mask = st.mask_ca() & (st.chain == chain)
-            if mask.sum() < 300:
-                continue
-            index = {int(r): i for i, r in enumerate(st.res_seq[mask])}
-            xyz = st.xyz[mask]
-            if all(r in index for r in common):
-                out.append(np.array([xyz[index[r]] for r in common], float))
-        return out[:3]
-
-    cb, fb = resample(curved), resample(flat)
-    fb = [fb[i] for i in match_protomers(cb, fb).order]
-    rotation, translation, centroid = kabsch(np.vstack(fb), np.vstack(cb))
-    displacement = (((np.vstack(fb) - centroid) @ rotation.T + translation)
-                    - np.vstack(cb))
-
-    reference = human_sequence()
-    sequence = {}
-    for residue in common:
-        human = mouse_to_human(int(residue))
-        if human and 1 <= human <= len(reference):
-            sequence[int(residue)] = reference[human - 1]
-
-    by_position = collections.defaultdict(list)
-    for variant in load_annotations("human").variants:
-        if not (variant.residue and variant.wt_aa and variant.mut_aa):
-            continue
-        if len(variant.wt_aa) != 1 or len(variant.mut_aa) != 1:
-            continue
-        if not variant.mut_aa.isalpha():
-            continue
-        if variant.label not in {v.label for v in by_position[variant.residue]}:
-            by_position[variant.residue].append(variant)
-    multi = {k: v for k, v in by_position.items() if len(v) > 1}
-
-    model = VariantImpactModel(coords=np.vstack(cb),
-                               residues=np.tile(common, 3),
-                               gating_vector=displacement, sequence=sequence)
-    positions, values = [], []
-    for human_residue, variants in multi.items():
-        mouse_residue = human_to_mouse(human_residue)
-        if mouse_residue is None:
-            continue
-        for variant in variants:
-            prediction = model.predict(mouse_residue, variant.wt_aa,
-                                       variant.mut_aa)
-            if prediction.modelled and np.isfinite(prediction.gating_cost_change):
-                positions.append(human_residue)
-                values.append(prediction.gating_cost_change)
-    return variance_decomposition(positions, values).within_fraction
 
 
 def _footprint_area_change() -> float:
@@ -395,6 +221,15 @@ CLAIMS: list[Claim] = [
     Claim("pore.bottleneck_11zc", "Flat-state pore bottleneck",
           3.30, 0.10, "A", "docs/SCIENCE.md",
           lambda: _pore_bottleneck("11ZC"), "medium"),
+    Claim("permeation.pcl_pna_neutral",
+          "P_Cl/P_Na of the uncharged pore — the baseline, not a null",
+          0.9035, 0.02, "", "docs/SCIENCE.md", lambda: _selectivity(None),
+          "slow", published="0.14 (Coste et al. 2015, mPiezo1)"),
+    Claim("permeation.pcl_pna_curated",
+          "P_Cl/P_Na with the curated pore-lining charge",
+          0.0214, 0.002, "", "docs/SCIENCE.md",
+          lambda: _selectivity("curated"), "slow",
+          published="0.14 (Coste et al. 2015, mPiezo1)"),
     Claim("hydration.score_8yez", "Rao 2019 wetting score, closed 8YEZ",
           0.82, 0.05, "", "docs/SCIENCE.md",
           lambda: _wetting_score("8YEZ"), "medium"),

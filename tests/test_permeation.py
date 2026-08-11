@@ -257,11 +257,16 @@ def test_the_answer_is_dominated_by_two_unmeasured_parameters(open_profile):
 
 
 def test_calcium_permeates_but_carries_little_of_the_current(open_profile):
-    """PIEZO1 is weakly selective, so calcium is a minority carrier at 2 mM."""
+    """PIEZO1 is weakly selective, so calcium is a minority carrier at 2 mM.
+
+    The species are named for the ions their registered constants describe —
+    K+, Cl-, Ca2+ — rather than "cation" and "anion", which hid that the model
+    was never told which ion it was solving for.
+    """
     result = solve_pnp(open_profile, species=default_species(calcium=0.002))
-    assert "calcium" in result.fluxes
-    assert result.fluxes["calcium"] > 0
-    carried = 2 * result.fluxes["calcium"]
+    assert "Ca2+" in result.fluxes
+    assert abs(result.fluxes["Ca2+"]) > 0
+    carried = 2 * abs(result.fluxes["Ca2+"])
     total = sum(abs(s.valence * result.fluxes[s.name])
                 for s in default_species(calcium=0.002))
     assert carried / total < 0.05

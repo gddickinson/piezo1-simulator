@@ -4,6 +4,128 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 81 — the pore gets its charge, and a sign error falls out
+
+`solve_pnp` has taken a `fixed_charge` argument since Round 33. Its documented
+equation carries the ρ_fixed term. **No caller had ever supplied one.** So every
+current this project has published was computed for an electrically neutral
+pore — a cation channel with nothing in it that could prefer a cation.
+
+### The argument that was already there
+
+Wiring it in is not just passing an array. Fixed charge only means anything
+through the *equations*, and the electroneutral limit the solver already uses is
+where it belongs: a charge density sets a local Donnan potential, counterions
+are enriched against it and coions excluded, and the concentration gradients
+that creates carry a diffusion current. That current is what gives a pore a
+reversal potential, which is what selectivity is measured as. The same
+double-layer overlap that stopped the Poisson coupling converging in Round 33 —
+5.7–8.1 Å screening against a 3.3 Å radius — is what makes the uniform-potential
+limit the right one here, so the justification was already measured.
+
+### The calibration failed, and it was supposed to be able to
+
+Before believing anything about PIEZO1 I ran three known answers: a cation must
+drift downhill, the GHK inversion must return its Nernst and unity limits, and
+an uncharged pore must return its ions' mobility ratio rather than one.
+
+The third came out **inverted**: a pore given more negative charge became more
+*anion*-selective, monotonically and smoothly. Suspecting the checker first is
+the standing rule here, and it was right to — but this time the checker was
+fine. The Scharfetter-Gummel drift term had its two Bernoulli factors attached
+to the wrong nodes, so cations drifted *up* the potential gradient. The
+decisive test needs no discretisation at all: at a field weak enough that SG
+reduces to a centred difference, the flux must equal `-D A z c φ'/φ_T`, and it
+came back with the right magnitude and the wrong sign.
+
+Nothing could have caught it. Every current the project had computed was
+between identical baths, where the concentration term vanishes and reversing
+the field only reverses the sign — and the sign was then discarded by
+`pore_ohm = abs(voltage / current)`. Two independent checks agreed with each
+other (`series_conductance` to 1.5%) because both are magnitudes. Correcting it
+moved the recorded 41 pS by one part in 10¹⁴.
+
+### And then the closure was wrong too
+
+With the sign fixed and real charge supplied, the Gummel loop did not converge
+and the electroneutrality residual reached **43 times the ionic content**. The
+cause is a discretisation mismatch: I had extended the ohmic closure with a
+diffusion-current source term, discretised centrally, while the flux is
+discretised Scharfetter-Gummel — and where a carboxylate sits the potential
+changes by four thermal voltages across one Ångström, at which point the two
+disagree by more than the term itself.
+
+The fix is not a better source term, it is the right closure. A charged pore's
+potential is set by **local electroneutrality**, not by Ohm's law; the ohmic
+operator contains no term the fixed charge could enter through at all. Imposing
+electroneutrality directly converges in tens of iterations, drives the residual
+to 1e-10, and reproduces Donnan equilibrium exactly — zero current and Boltzmann
+partitioning to machine precision at zero applied voltage. The neutral path
+keeps the old closure, untouched, which is how an explicitly zero charge still
+returns the old numbers bit for bit.
+
+### What the charge is, and what it is not
+
+The residues came out more interesting than the wiring. Positions have to come
+from C-alpha, because **11ZC — the only open structure — is the only entry
+deposited without side chains**; measuring the others from their real side
+chains would make them incomparable. A residue counts if its charge, on a fully
+extended side chain, could reach the lumen at its own height, which is
+deliberately permissive.
+
+On that criterion **three of the four curated "selectivity glutamates" are not
+within reach of the lumen**. E2117 sits 12.9 Å past the wall. That is not a
+contradiction of the curation: Coste et al., who identified E2117 (mouse E2133)
+by mutagenesis, concluded from function alone that it *"may not lie in the
+selectivity filter but could be located close enough to the pore to
+allosterically modulate its properties"*. The geometry and the
+electrophysiology agree without either having been fitted to the other, which
+is the most satisfying thing in the round.
+
+### The result
+
+| Route | Charges | Net | Conductance | P_Cl/P_Na |
+|---|---|---|---|---|
+| none | 0 | 0 | 40.1 pS | 0.904 |
+| curated | 6 | −6 e | 29.6 pS | 0.021 |
+| every group reaching the lumen | 46 | **+8 e** | 4.1 pS | 0.207 |
+| measured (Coste 2015) | — | — | 25–30 pS | 0.14 |
+
+**The direction is right and the number is not.** Both routes make the model
+cation-selective and they bracket the published ratio tenfold apart. Three
+things stop that being read as agreement, and all three are reported beside it:
+the uncharged pore is *already* cation-selective at 0.904, because chloride is
+nearly twice sodium's radius and loses more cross-section at a 3.3 Å bottleneck
+than it gains in mobility; the curated route only reaches 0.021 at an in-pore
+concentration of **13.9 M**, which is flagged as past any packing a solution
+could reach; and the two routes are net negative and net *positive*
+respectively, so they disagree in kind rather than in value.
+
+That the curated route also moves the conductance from 41 pS to 29.6 pS, into
+the published 25–30 pS band, is recorded and explicitly not claimed. It is one
+of several free choices moving a number the module already documents as
+spanning 16–94 pS across two unmeasured parameters.
+
+### A guard that earned its keep
+
+The four side-chain reach parameters were reported as **read by nothing** the
+first time the suite ran. They were read — through a dictionary of key strings,
+which `provenance_chain.resolved_keys` cannot see, because it scans for the call
+rather than running it. That is the failure mode the check exists for: such a
+parameter still appears in the dialog, still trips the non-default banner, still
+stops `verify_claims`, and does nothing. The four calls are now written out, and
+a test holds the two routes together so they cannot drift.
+
+Suite 1275 → 1304 passing (29 new tests, all but four of them known-answer
+cases run before any PIEZO1 number); 104 → 115 registered parameters; two new
+claims so the selectivity numbers cannot drift out of `SCIENCE.md`. Three files
+reached the 500-line limit on the way and were split at real seams:
+`_pnp_kernels.py` took the discretisation, `claims_structural.py` took the claim
+recomputations that need downloaded coordinates, and `help_topics_tags.py` took
+the longest help topic.
+
+---
+
 ## Rounds 78–80 — three documentation rounds that found three code defects
 
 Block Q's remaining items were all documentation. Each turned up something in
