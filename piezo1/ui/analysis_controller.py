@@ -76,6 +76,42 @@ class AnalysisWorker(QObject):
                            in zip(profile.residues, profile.conservation, keep)
                            if ok and np.isfinite(v)}}
 
+    def _path(self) -> dict:
+        """The blade-to-gate route, and how far it is from being unique.
+
+        The degeneracy number is the point of doing this here rather than in
+        the drawing code. A single line on screen reads as *the* pathway, so
+        the same search is re-run with this route's own steps deleted from the
+        graph and the best remaining route is costed. Both numbers reach the
+        status line together.
+
+        The degeneracy measurement itself lives in
+        :func:`piezo1.ui.path_controller.alternative_cost`, so it can be
+        calibrated on a graph whose answer is known — a route with one bridge
+        must come back as unique — rather than only on the trimer, where
+        nothing independently says what the right answer is.
+        """
+        from ..analysis.allostery import allosteric_path, cross_correlation
+        from .path_controller import alternative_cost, path_endpoints
+
+        coords = np.vstack(self.payload["blocks"])
+        residues = np.tile(np.asarray(self.payload["residues"]), 3)
+        dcc = cross_correlation(self.payload["modes"])
+        source, target, source_name = path_endpoints(
+            residues, self.payload["annotations"])
+        if not source or not target:
+            raise ValueError(
+                "no blade or gate residues are resolved in this structure")
+        path = allosteric_path(coords, dcc, source, target, residues)
+        alternative = alternative_cost(coords, dcc, source, target, residues,
+                                       path.sites)
+
+        return {"path": path, "residues": list(path.residues),
+                "sites": list(path.sites), "cost": float(path.cost),
+                "correlations": list(path.correlations),
+                "coords": coords[np.asarray(path.sites, dtype=int)],
+                "alternative_cost": alternative, "source_name": source_name}
+
     def _allostery(self) -> dict:
         from ..analysis.allostery import perturbation_response
         modes = self.payload["modes"]
@@ -151,6 +187,17 @@ class AnalysisController:
     def compute_conservation(self) -> None:
         self._start("conservation", {"structure": self.win.structure})
 
+    def compute_path(self) -> None:
+        if self.win.modes is None or not self.win._mode_blocks:
+            self.win._set_status(
+                "the allosteric path needs normal modes — compute them in "
+                "Physics first")
+            return
+        self._start("path", {"modes": self.win.modes,
+                             "blocks": self.win._mode_blocks,
+                             "residues": self.win._mode_residues,
+                             "annotations": self.win.path.annotations()})
+
     def compute_allostery(self) -> None:
         if self.win.modes is None:
             self.win._set_status(
@@ -185,11 +232,21 @@ class AnalysisController:
             if self.hydration is not None and self.hydration.available:
                 note += f" · {self.hydration.verdict}"
             self.win._set_status(note)
+            # The drawn pore reads this same profile object, so the picture
+            # and the plot can never be of different runs.
+            self.win.pore_surface.refresh()
+            # The nanodomain's source point is the cytosolic end of this same
+            # profile, so it waits on the same run.
+            self.win.nanodomain.refresh()
 
         elif kind == "pockets":
             self.pockets = result["pockets"]
             panel.set_pockets(self.pockets)
             self.win._set_status(f"{len(self.pockets)} pockets")
+            self.win.pocket_view.refresh()
+
+        elif kind == "path":
+            self.win.path.refresh(result)
 
         elif kind in ("conservation", "allostery"):
             self.scalars[kind] = result["values"]

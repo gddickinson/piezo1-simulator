@@ -26,6 +26,7 @@ class PhysicsPanel(QWidget):
     animate_toggled = pyqtSignal(bool)
     amplitude_changed = pyqtSignal(float)
     color_by_mode_requested = pyqtSignal(bool)
+    color_by_fluctuation_requested = pyqtSignal(bool)
     morph_requested = pyqtSignal(dict)
     morph_position_changed = pyqtSignal(float)
     morph_play_toggled = pyqtSignal(bool)
@@ -136,6 +137,23 @@ class PhysicsPanel(QWidget):
         self.color_button.setEnabled(False)
         self.color_button.toggled.connect(self.color_by_mode_requested.emit)
         row.addWidget(self.color_button)
+
+        # The whole mode set rather than one mode: sum |v|^2/lambda, which is
+        # the quantity Round 82 validated against the deposited B-factors.
+        # Deliberately beside "colour by displacement" so the two are one
+        # click apart — one mode's motion and the ensemble's amplitude are
+        # routinely confused, and seeing them differ is the cheapest cure.
+        self.fluctuation_button = QPushButton("Colour by fluctuation")
+        self.fluctuation_button.setToolTip(
+            'Colour each residue by the elastic network\'s predicted\n'
+            'mean-square fluctuation, summed over every computed mode.\n'
+            'This is the prediction validated against the deposited\n'
+            'B-factors in Analysis -> Fluctuation vs B-factor.')
+        self.fluctuation_button.setCheckable(True)
+        self.fluctuation_button.setEnabled(False)
+        self.fluctuation_button.toggled.connect(
+            self.color_by_fluctuation_requested.emit)
+        row.addWidget(self.fluctuation_button)
         v.addLayout(row)
         layout.addWidget(box)
 
@@ -279,6 +297,7 @@ class PhysicsPanel(QWidget):
             self.mode_combo.setEnabled(False)
             self.animate_button.setEnabled(False)
             self.color_button.setEnabled(False)
+            self.fluctuation_button.setEnabled(False)
             self.mode_combo.blockSignals(False)
             return
         for i in range(modes.n_modes):
@@ -289,6 +308,7 @@ class PhysicsPanel(QWidget):
         self.mode_combo.setEnabled(True)
         self.animate_button.setEnabled(True)
         self.color_button.setEnabled(True)
+        self.fluctuation_button.setEnabled(True)
         self.mode_combo.setCurrentIndex(0)
         self._describe(0)
 

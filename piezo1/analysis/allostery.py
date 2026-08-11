@@ -219,13 +219,22 @@ def allosteric_path(coords: np.ndarray, dcc: np.ndarray,
                     source_sites, target_sites,
                     residues: np.ndarray,
                     contact_cutoff: float | None = None,
-                    min_correlation: float | None = None) -> AllostericPath:
+                    min_correlation: float | None = None,
+                    exclude=None) -> AllostericPath:
     """Shortest correlation-weighted path from a source to a target set.
 
     Edges join residues within ``contact_cutoff`` and cost ``−log|DCC_ij|``, so
     a pair that moves together is cheap to cross and an uncorrelated pair is
     expensive. The shortest path is therefore the route along which motion is
     transmitted most reliably, not merely the shortest way through space.
+
+    ``exclude`` is an iterable of ``(i, j)`` site pairs that are **deleted from
+    the graph**, in either direction — the way to ask "what is the best route
+    that does not use these steps?". Deletion is not the same as making them
+    expensive: suppressing a correlation to the ``min_correlation`` floor
+    leaves an edge costing ``−log(floor)``, which is finite, so a route with no
+    alternative still returns one. That difference is the whole answer when the
+    question is whether a drawn route is unique.
     """
     if min_correlation is None:
         min_correlation = _P.value("allostery.min_correlation")
@@ -243,6 +252,13 @@ def allosteric_path(coords: np.ndarray, dcc: np.ndarray,
                        dtype=int)
     if len(pairs) == 0:
         raise ValueError(f"no residue pairs within {contact_cutoff} A")
+
+    if exclude:
+        banned = {(int(min(a, b)), int(max(a, b))) for a, b in exclude}
+        keep = np.array([(int(a), int(b)) not in banned for a, b in pairs])
+        pairs = pairs[keep]
+        if len(pairs) == 0:
+            raise ValueError("every contact was excluded")
 
     corr = np.abs(dcc[pairs[:, 0], pairs[:, 1]])
     weight = -np.log(np.maximum(corr, min_correlation))

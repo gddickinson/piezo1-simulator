@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from .help_topics_physics import PHYSICS
 from .help_topics_tags import TAGS_AND_CURRENT
+from .help_topics_views import VIEWS
 
 __all__ = ["TOPICS", "DOC_LINKS", "SHORTCUTS", "topic_html"]
 
@@ -391,6 +392,7 @@ TOPICS: list[tuple[str, str]] = [
     ("Physics panel", PHYSICS),
     ("Analysis panel", _ANALYSIS),
     ("Measure panel — selecting atoms", _MEASURE),
+    ("Drawing what was measured", VIEWS),
     ("HaloTag and ion current", TAGS_AND_CURRENT),
     ("Framing and multiple structures", _FRAMING),
     ("Limits and honesty", _HONESTY),

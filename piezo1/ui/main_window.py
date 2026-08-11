@@ -31,10 +31,13 @@ from .companions import CompanionMixin
 from .tabular_analyses import TabularAnalysisMixin
 from .fusion_controller import FusionController
 from .dome_controller import DomeController
-from .dome_controller import DomeController
 from .hybrid_controller import HybridController
 from .interaction_controller import InteractionController
 from .ion_flux_controller import IonFluxController
+from .nanodomain_controller import NanodomainController
+from .path_controller import AllostericPathController
+from .pocket_controller import PocketController
+from .pore_controller import PoreSurfaceController
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
 from .presentation import PresentationController
@@ -111,6 +114,13 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.dome_surface = DomeController(self)
         self.contacts = InteractionController(self)
         self.ion_flux = IonFluxController(self)
+        # Each of these draws something an analysis already measured, and each
+        # reads that analysis's own result object rather than recomputing —
+        # so a picture and the panel beside it can never be of different runs.
+        self.pore_surface = PoreSurfaceController(self)
+        self.pocket_view = PocketController(self)
+        self.path = AllostericPathController(self)
+        self.nanodomain = NanodomainController(self)
         self.session = SessionController(self)
         self.presentation = PresentationController(self)
         self._build_menu()
@@ -188,6 +198,8 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.physics_panel.animate_toggled.connect(self.physics.animate_mode)
         self.physics_panel.amplitude_changed.connect(self.physics.set_amplitude)
         self.physics_panel.color_by_mode_requested.connect(self.physics.color_by_mode)
+        self.physics_panel.color_by_fluctuation_requested.connect(
+            self.physics.color_by_fluctuation)
         self.morph_controller = MorphController(self)
         self.physics_panel.morph_requested.connect(self.morph_controller.build)
         self.physics_panel.morph_position_changed.connect(
@@ -384,6 +396,14 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         # leaving it up would draw one model's dome over another's.
         self.dome_surface.clear()
         self.contacts.clear()
+        # Same rule for everything else drawn from a measurement: the pore, the
+        # pockets, the route and the calcium field all belong to the structure
+        # being replaced, and one entry's bottleneck drawn inside another's
+        # lumen is a picture nothing on screen would contradict.
+        self.pore_surface.clear()
+        self.pocket_view.clear()
+        self.path.reset()
+        self.nanodomain.clear()
 
         self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.set_species(rec.numbering_species)

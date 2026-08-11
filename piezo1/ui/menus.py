@@ -129,6 +129,48 @@ def _view_menu(win, bar) -> None:
                 "footprint: a solution to an equation with two registered\n"
                 "parameters in it, which overestimates this footprint 3.65x at\n"
                 "PIEZO1's contact slope. Nothing here resolves it.")
+    _action(menu, "&Pore surface", win.pore_surface.show, "",
+            checkable=True, checked=False,
+            tip="Draw the pore as the probe spheres it was measured with: at\n"
+                "each height, the largest sphere that fits without touching\n"
+                "an atom. Same profile the Analysis panel plots — read, not\n"
+                "recomputed, so the picture and the plot cannot be of\n"
+                "different runs. Red is narrower than a bare ion, amber\n"
+                "clears that but not the hydrated cut, blue clears both, and\n"
+                "the residues lining the narrowest slice are marked.\n"
+                "These are the spheres that FIT, not the pore wall — and a\n"
+                "radius does not settle whether it conducts, because a wide\n"
+                "hydrophobic lumen dewets.")
+    _action(menu, "P&ockets", win.pocket_view.show, "",
+            checkable=True, checked=False,
+            tip="Draw the top-ranked cavities as the alpha spheres the\n"
+                "detector found them with. The spheres OVERLAP heavily, so\n"
+                "their count is the sampling and the reported volume is\n"
+                "their union rather than their sum. Ligands are excluded\n"
+                "before detection — a bound lipid fills the very pocket\n"
+                "being looked for — so a drawn pocket may sit on top of one.\n"
+                "A cavity is geometry, not a binding site: no deposited\n"
+                "PIEZO entry holds a bound modulator.")
+    _action(menu, "&Allosteric path", win.path.show, "",
+            checkable=True, checked=False,
+            tip="Draw the cheapest route from the blade to the hydrophobic\n"
+                "gate through a contact graph weighted by -log|DCC| — the\n"
+                "picture of this project's central mechanical claim. Needs\n"
+                "normal modes first. The tube is coloured by each step's own\n"
+                "correlation, so the weakest link is visible rather than\n"
+                "averaged away. A drawn line reads as unique and is not, so\n"
+                "the search is re-run with this route's edges removed and\n"
+                "the status line gives what the best alternative costs.")
+    _action(menu, "&Calcium nanodomain", win.nanodomain.show, "",
+            checkable=True, checked=False,
+            tip="Draw the calcium field an open channel makes around its own\n"
+                "pore exit, as the two surfaces that matter: where the sensor\n"
+                "is 90% occupied and where it is half-occupied at its Kd.\n"
+                "The Green's function is spherically symmetric, so these are\n"
+                "exactly spheres — nothing is idealised for drawing. The\n"
+                "model is a point source in free solution and does not know\n"
+                "the protein is there. A shut structure draws NOTHING and\n"
+                "says why: no current is borrowed from another entry.")
     _action(menu, "&Full-length model", win.hybrid.show, "",
             checkable=True, checked=False,
             tip="Graft the AlphaFold distal blade onto the experimental core.\n"

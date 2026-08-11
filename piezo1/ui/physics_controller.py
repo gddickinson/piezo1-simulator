@@ -228,6 +228,8 @@ class PhysicsController:
     def color_by_mode(self, on: bool) -> None:
         if self.win.view is None or self.win.modes is None or self.win.structure is None:
             return
+        if on:
+            self._untick("fluctuation_button")
         if not on:
             self.win.view.color_by = self.win._current_color()
             self.win.view.values = None
@@ -239,4 +241,70 @@ class PhysicsController:
             self.win.view.color_by = ColorBy.VALUE
         self.win.view.rebuild()
         self.win.viewport.update()
+
+    def color_by_fluctuation(self, on: bool) -> None:
+        """Colour by the network's predicted mean-square fluctuation.
+
+        The quantity is `ModeSet.msf` — Σ|v|²/λ over every computed mode — read
+        rather than recomputed, so this is the same array
+        :func:`piezo1.analysis.fluctuations.predicted_msf` correlates against
+        the deposited B-factors. If the two ever disagreed, the picture would
+        be showing something the validation never tested.
+
+        Deliberately **not** averaged over the protomers, unlike
+        `predicted_msf`. That average exists because the *observation* is one
+        B-factor per residue per chain and counting one prediction three times
+        would be wrong; here the three copies are on screen separately, and
+        folding them would paint a difference that the model does not have as
+        if it were agreement.
+        """
+        if self.win.view is None or self.win.modes is None or self.win.structure is None:
+            return
+        if on:
+            self._untick("color_button")
+        if not on:
+            self.win.view.color_by = self.win._current_color()
+            self.win.view.values = None
+        else:
+            if self._ca_map is None:
+                self._build_ca_map()
+            msf = np.asarray(self.win.modes.msf(), dtype=float)
+            self.win.view.values = msf[self._ca_map]
+            self.win.view.color_by = ColorBy.VALUE
+            self.win._set_status(self.fluctuation_line())
+        self.win.view.rebuild()
+        self.win.viewport.update()
+
+    def _untick(self, button: str) -> None:
+        """Turn the other value-colouring off without re-entering its handler.
+
+        Both buttons drive `ColorBy.VALUE` through the same `view.values`
+        slot, so leaving one checked while the other paints would show a lit
+        button describing a colour that is not on screen.
+        """
+        widget = getattr(self.win.physics_panel, button, None)
+        if widget is not None and widget.isChecked():
+            widget.blockSignals(True)
+            widget.setChecked(False)
+            widget.blockSignals(False)
+
+    def fluctuation_line(self) -> str:
+        """What the colours mean, and what says whether to believe them.
+
+        The scale is arbitrary — a mean-square fluctuation in a network with an
+        unfitted spring constant has no units anyone can compare with an
+        Angstrom. What makes it a prediction rather than a picture is the
+        measured agreement with the deposited B-factors, and that lives one
+        menu away, so this points at it rather than quoting a number the
+        colouring did not compute.
+        """
+        modes = self.win.modes
+        n = 0 if modes is None else modes.n_modes
+        return (f"colouring by predicted mean-square fluctuation over {n} "
+                f"modes (sum |v|^2/lambda) · the scale is ARBITRARY: this "
+                f"network has no fitted spring constant, so only the ordering "
+                f"means anything · whether the ordering is right is measured "
+                f"in Analysis -> Fluctuation vs B-factor, where the network's "
+                f"median Spearman is 0.74 against a burial-only control's "
+                f"0.32 — but on Pearson 0.48 against 0.39")
 

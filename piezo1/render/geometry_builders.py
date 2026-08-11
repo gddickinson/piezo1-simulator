@@ -14,7 +14,7 @@ from .spline import (SS_COIL, SS_HELIX, SS_STRAND, catmull_rom,
                      parallel_transport_frames, smooth_path)
 
 __all__ = ["Mesh", "build_tube", "build_cartoon", "build_membrane_mesh",
-           "build_disc", "CARTOON_PROFILE"]
+           "build_disc", "build_sphere", "CARTOON_PROFILE"]
 
 
 @dataclass
@@ -247,6 +247,42 @@ def build_membrane_mesh(height_fn, r_max: float, n_radial: int = 96,
 
     return Mesh(positions.astype(np.float32), normals.astype(np.float32),
                 colors.astype(np.float32), tris.ravel())
+
+
+def build_sphere(center, radius: float, n_lat: int = 32, n_lon: int = 64,
+                 color: tuple[float, float, float] = (0.4, 0.6, 0.9)) -> Mesh:
+    """A UV sphere as a *mesh*, which the impostor sphere batch cannot be.
+
+    The renderer already draws spheres far better than this — ray-cast
+    impostors, pixel-exact at any zoom. What they cannot be is transparent:
+    :class:`SphereBatch` has no alpha, because an atom never needed one. A
+    field iso-surface does: it encloses the protein and would otherwise hide
+    everything it is drawn around.
+    """
+    center = np.asarray(center, dtype=float)
+    lat = np.linspace(0.0, np.pi, n_lat)
+    lon = np.linspace(0.0, 2.0 * np.pi, n_lon, endpoint=False)
+    LAT, LON = np.meshgrid(lat, lon, indexing="ij")
+    normals = np.stack([np.sin(LAT) * np.cos(LON),
+                        np.sin(LAT) * np.sin(LON),
+                        np.cos(LAT)], axis=-1)
+    positions = center[None, None, :] + radius * normals
+
+    i = np.arange(n_lat - 1)[:, None] * n_lon
+    j = np.arange(n_lon)[None, :]
+    jn = (j + 1) % n_lon
+    a, b = i + j, i + jn
+    c, d = i + n_lon + jn, i + n_lon + j
+    tris = np.concatenate([
+        np.stack([a, b, c], axis=-1).reshape(-1, 3),
+        np.stack([a, c, d], axis=-1).reshape(-1, 3),
+    ]).astype(np.int32)
+
+    flat = positions.reshape(-1, 3)
+    return Mesh(flat.astype(np.float32),
+                normals.reshape(-1, 3).astype(np.float32),
+                np.tile(np.asarray(color, np.float32), (len(flat), 1)),
+                tris.ravel())
 
 
 def build_disc(radius: float, n_angular: int = 128,

@@ -288,7 +288,11 @@ def test_the_guide_covers_what_the_recent_rounds_added(qapp):
     # or silently fails for a reason that has nothing to do with the content.
     text = re.sub(r"\s+", " ", " ".join(body for _t, body in TOPICS)).lower()
     for phrase in ("halotag", "accessible volume", "permeation", "pore mouths",
-                   "canonical", "multiple structures", "unreactive tags"):
+                   "canonical", "multiple structures", "unreactive tags",
+                   # The drawn overlays. Each is a picture that can be
+                   # over-read, so the guide has to say what each one is not.
+                   "probe spheres", "alpha spheres", "allosteric path",
+                   "calcium nanodomain", "colour by fluctuation"):
         assert phrase in text, f"the guide never mentions {phrase!r}"
 
     # And it must keep saying what the model cannot do.

@@ -302,8 +302,9 @@ shipped arrangement.
 - **Model** — choose a structure and how it is drawn.
 - **Annotation** — domains, functional sites and variants. Selecting one
   highlights it and explains it, with the PMID.
-- **Physics** — measure the dome, compute and animate normal modes, or colour
-  the structure by how far each residue moves in a chosen mode.
+- **Physics** — measure the dome, compute and animate normal modes, and colour
+  the structure either by how far each residue moves in a chosen mode or by the
+  whole mode set's predicted fluctuation.
 - **Analysis** — the pore profile with hydrophobicity drawn against it, pocket
   detection, and per-residue conservation or mechanical coupling as colour
   maps. Click the pore plot to select the residues lining it at that height.
@@ -311,6 +312,24 @@ shipped arrangement.
   export.
 
 ![Pore analysis](docs/img/app_pore.png)
+
+### Drawing what was measured
+
+Seven results can be drawn on top of the structure from the **View** menu. None
+of them computes anything of its own — each reads the same result the panel or
+table shows, so a picture and a panel cannot be of different runs. Each also
+carries, on the status line, what it must *not* be read as, because a drawn
+surface is more persuasive than the number it came from.
+
+| Overlay | What it draws | What it is not |
+|---|---|---|
+| **Dome surface** | The fitted sphere cap and its flat projection; the gap between them is the excess area | The far-field membrane footprint is not drawn — linear theory overestimates it 3.65× at this contact slope |
+| **Contacts** | One cylinder per detected interaction, coloured by kind | Heavy-atom geometry: no deposited entry has hydrogens, so a drawn hydrogen bond is an inference |
+| **Pore surface** | The probe spheres the radius profile was measured with, banded red/amber/blue | The space that fits, not the pore wall — and a radius does not say conducting |
+| **Pockets** | The top-ranked cavities as their alpha spheres | The spheres overlap, so counting them is not a volume; a cavity is not a binding site |
+| **Allosteric path** | The cheapest blade-to-gate route, coloured by each step's correlation | Not unique: the best route avoiding it costs 1.001× on 8YEZ, and the status line says so |
+| **Calcium nanodomain** | Concentration shells around the measured cytosolic pore mouth | A point source in free solution — the shells pass through the protein; a shut structure draws nothing rather than borrowing a current |
+| **Full-length model** | The AlphaFold distal blade grafted on, coloured by pLDDT | Prediction, and the seam is marked rather than hidden |
 
 Other windows: **Overlay** superposes a second structure and reports where the
 two differ, searching protomer correspondence rather than trusting chain labels

@@ -5425,3 +5425,119 @@ The status line carries two caveats that cannot be omitted, the same two the
 table carries: no deposited PIEZO entry has hydrogens, so every criterion is
 heavy-atom geometry and a drawn hydrogen bond is an inference; and a contact
 belongs to *this* structure in *this* state.
+
+---
+
+## Five more overlays, and a checker that could not say "no"
+
+The list this closes is the visualisation shortlist from the end of the last
+session: interactions (done then), pore surface, pockets, allosteric path,
+calcium nanodomain, predicted fluctuation. All five remaining are in, each as a
+View-menu toggle or a Physics-panel button.
+
+They share a rule, which is why they were worth doing together: **each reads the
+result the corresponding analysis already produced rather than computing its
+own.** The pore surface draws `analysis.pore`; the pockets draw
+`analysis.pockets`; the fluctuation colouring reads `ModeSet.msf`. Two rankings
+of the same pockets, or two pore profiles from different parameter values, would
+both look entirely reasonable on screen and there would be nothing to say which
+was right. So the picture and the panel are the same object, asserted by
+identity rather than by closeness.
+
+### The calibration found a real defect, in the checker rather than the thing
+
+The allosteric route is the most persuasive picture this application can draw
+and the easiest to over-read: a single line from blade to gate reads as *the*
+pathway. Round 25 already knew it is not — the beam is a near-degenerate
+alternative — but that lives in a test, and nobody looking at the picture reads
+tests. So the drawn route carries a measurement: re-run the same search with
+this route's own steps removed, and report what the best remaining route costs.
+
+The rule says calibrate a checker before believing it, on a case whose answer is
+known. Two graphs: one where a single bridge is the only way across, one lattice
+where the routes are interchangeable. The lattice passed. **The bridge did not.**
+
+The first version suppressed the route's correlations to the registry's
+`min_correlation` floor. That does not remove an edge — it leaves one costing
+−log(0.001) = 6.9, which is finite, so the search walked straight back over the
+route it had been told to avoid. On the real trimer it returned 1.0013× and
+looked perfect, because on a real network an alternative always exists. No input
+could ever have made it answer "unique". A checker that cannot say no is not a
+check, and this one would have passed forever on the only data it was ever
+pointed at.
+
+Fixed at the source: `allosteric_path` gained an `exclude` set of site pairs
+that are deleted from the graph before dijkstra runs. The real answer did not
+move — 1.0013× either way — which is the point. The correction was invisible in
+the measurement and total in what the measurement was entitled to claim.
+
+### The endpoints were trivially wrong, and the picture is what showed it
+
+The first version handed every blade residue to the search. The result was a
+five-step hop from THU9 — the blade unit that happens to sit nearest the pore —
+straight to the gate, never going near the beam. Perfectly correct as "the
+cheapest blade-to-gate route", and useless as a picture of a lever.
+
+The source is now the most distal blade unit the entry actually *resolves*,
+taken from the domain records' own `thu_index`: THU4 on a deposited structure,
+THU1 on a full-length model, and reported rather than assumed since it changes
+what the route means. On 8YEZ that gives 32 steps through
+THU4 → THU5 → THU6 → THU7 → THU8 → THU9 → Anchor → CTD.
+
+### Two surfaces that are correct and unwatchable
+
+The calcium nanodomain's iso-surfaces are the ones carrying Round 32's
+conclusion: at 11ZC's 2.43 pA the sensor is still 90% occupied at **119 nm** and
+half-occupied at its Kd at **372 nm**, against a channel reaching 14 nm. Drawn,
+that is a viewport of shell with a speck inside, and the speck is the protein.
+
+This is the far-field footprint problem again and it takes the same answer: the
+numbers go on the status line and the surfaces are not drawn. What *is* drawn is
+the near field at the protein's own scale — shells at decade concentrations, out
+to a stated multiple of the structure's own extent. The budget is the part the
+tests check, in both directions: the occupancy surfaces must measurably exceed it
+(if they ever fit, draw them) and something must still fall inside it, because a
+filter that admits nothing looks exactly like a bug.
+
+And a shut structure draws **nothing**. `report_tags` borrows 11ZC's current when
+the loaded entry is closed, labelled — but a caption cannot carry that weight
+against a picture, because a cloud drawn around 8YEZ reads as 8YEZ's. The empty
+screen and its sentence are Round 34's result: no deposited human PIEZO1 entry
+conducts.
+
+### The pixel count, again
+
+Every controller test here checks that a batch was built with the right
+contents. Every one of those passed for the entire life of the renderer while
+cylinders drew nothing. So `test_ui_overlays_render` renders each overlay to a
+framebuffer and counts lit pixels.
+
+It earned its place immediately. The route's tube is thinner than its node
+markers, so a screenshot showing beads is no evidence the tube drew at all — and
+the tube is what carries the correlation colouring. Hidden the nodes; the tube
+still draws. That could not have been established from the picture, because the
+route on 11ZC runs mostly in the membrane plane and an edge-on camera
+foreshortens 122 Å into a blob.
+
+### Smaller things
+
+- `build_sphere` is a new mesh primitive. The impostor `SphereBatch` draws
+  spheres far better and has no alpha channel, which is fine for an atom and
+  fatal for an iso-surface that encloses the protein.
+- The pore bands are applied **ascending**, so each slice takes the highest band
+  it clears, with the Round 76 pLDDT defect pinned: applied in declaration order
+  a wide-open pore comes out entirely red, which is a perfectly plausible
+  picture of a shut channel.
+- The bottleneck is marked by drawing its lining residues, not by drawing its
+  own probe sphere differently — that would have been a lie about a radius.
+- The two value colourings share one slot, so each unticks the other with
+  signals blocked. Without the block, unchecking fires the other handler and
+  resets the colouring that was just set: the button works and the model stays
+  grey.
+- Colour-by-fluctuation is measured *not* to be a second view of colour-by-
+  displacement: r < 0.95 between them, or one of the two buttons should go.
+- The overlay help moved into a topic of its own, `help_topics_views.py`, which
+  is a real seam — every other topic explains part of the model, this one
+  explains the seven things drawn on top of it, and they share a failure mode.
+
+Suite 1399 → 1469 passing, 10 skipped.
