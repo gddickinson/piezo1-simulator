@@ -22,7 +22,17 @@ from ..config import RenderSettings
 from ..render.scene import Scene
 from .hud import HudOverlay
 
-__all__ = ["ViewportWidget", "configure_surface_format"]
+__all__ = ["ViewportWidget", "configure_surface_format", "CLICK_SLOP"]
+
+#: How far the mouse may move between press and release and still count as a
+#: click rather than a drag, in pixels. A few pixels of tremor is normal on a
+#: trackpad; a rotation is tens to hundreds.
+CLICK_SLOP = 3
+
+#: How close, in Angstrom, the pick ray must pass to an atom centre to hit it.
+#: Generous relative to a carbon so that a cartoon ribbon — which draws no atom
+#: where the ray lands — still picks the residue the user aimed at.
+PICK_RADIUS = 2.2
 
 
 def configure_surface_format(settings: RenderSettings | None = None) -> None:
@@ -51,6 +61,8 @@ class ViewportWidget(QOpenGLWidget):
     atom_picked = pyqtSignal(int)
     #: Emitted with a human-readable status string.
     status = pyqtSignal(str)
+    #: Right-click: the position to pop up at, and the atom under it (-1 none).
+    context_requested = pyqtSignal(QPoint, int)
 
     def __init__(self, settings: RenderSettings | None = None, parent=None) -> None:
         super().__init__(parent)
@@ -58,6 +70,7 @@ class ViewportWidget(QOpenGLWidget):
         self.ctx = None
         self.scene: Scene | None = None
         self._last_pos: QPoint | None = None
+        self._press_pos: QPoint | None = None
         self._buttons = Qt.MouseButton.NoButton
         self._pick_source: np.ndarray | None = None
         self._spin_speed = 0.0
@@ -157,14 +170,34 @@ class ViewportWidget(QOpenGLWidget):
 
     def mousePressEvent(self, event) -> None:
         self._last_pos = event.position().toPoint()
+        self._press_pos = self._last_pos
         self._buttons = event.buttons()
 
     def mouseReleaseEvent(self, event) -> None:
+        """A click picks; a drag rotates and must not.
+
+        The two are told apart by how far the mouse moved *since the button
+        went down*, which is why the press position is kept separately.
+        Comparing against ``_last_pos`` cannot work: ``mouseMoveEvent`` updates
+        it on every step to compute the drag delta, so by release time it is
+        the release position and the distance is always zero — every rotation
+        ended in a pick. That was merely noisy while a pick only rewrote the
+        status bar; once a pick highlights, it repaints the selection each time
+        the user turns the structure.
+        """
         pos = event.position().toPoint()
-        if (self._last_pos is not None
-                and (pos - self._last_pos).manhattanLength() < 3
-                and event.button() == Qt.MouseButton.LeftButton):
+        still = (self._press_pos is not None
+                 and (pos - self._press_pos).manhattanLength() < CLICK_SLOP)
+        if still and event.button() == Qt.MouseButton.LeftButton:
             self._pick_at(pos)
+        elif still and event.button() == Qt.MouseButton.RightButton:
+            # Right-drag zooms, so the menu is on the *click* — the same
+            # distinction the left button already makes between picking and
+            # rotating. A user who drags to zoom never gets a menu they did
+            # not ask for.
+            index = self.atom_at(pos)
+            self.context_requested.emit(pos, -1 if index is None else index)
+        self._press_pos = None
         self._buttons = Qt.MouseButton.NoButton
 
     def mouseMoveEvent(self, event) -> None:
@@ -225,8 +258,21 @@ class ViewportWidget(QOpenGLWidget):
         self._pick_source = None if coords is None else np.asarray(coords, np.float64)
 
     def _pick_at(self, pos: QPoint) -> None:
+        """Identify the atom under ``pos`` and announce it as a selection."""
+        index = self.atom_at(pos)
+        if index is not None:
+            self.atom_picked.emit(index)
+
+    def atom_at(self, pos: QPoint) -> int | None:
+        """The atom under ``pos``, or -1 for none — without announcing it.
+
+        Separate from ``_pick_at`` because the right-click menu needs to know
+        what it was opened on without that counting as a selection: opening a
+        menu and then dismissing it must leave the model exactly as it was.
+        ``None`` means there is nothing to pick against at all.
+        """
         if self.scene is None or self._pick_source is None or not len(self._pick_source):
-            return
+            return None
         x_ndc = 2.0 * pos.x() / max(self.width(), 1) - 1.0
         y_ndc = 1.0 - 2.0 * pos.y() / max(self.height(), 1)
         origin, direction = self.scene.camera.ray_through_pixel(x_ndc, y_ndc)
@@ -236,17 +282,14 @@ class ViewportWidget(QOpenGLWidget):
         # Only consider atoms in front of the near plane.
         valid = along > 0
         if not valid.any():
-            self.atom_picked.emit(-1)
-            return
+            return -1
         perp = np.linalg.norm(rel - np.outer(along, direction), axis=1)
         perp[~valid] = np.inf
         # Among atoms the ray passes close to, take the nearest to the camera.
-        hits = np.flatnonzero(perp < 2.2)
+        hits = np.flatnonzero(perp < PICK_RADIUS)
         if len(hits) == 0:
-            self.atom_picked.emit(-1)
-            return
-        best = hits[np.argmin(along[hits])]
-        self.atom_picked.emit(int(best))
+            return -1
+        return int(hits[np.argmin(along[hits])])
 
 
 class _LabelOverlay(QWidget):

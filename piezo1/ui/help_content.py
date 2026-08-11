@@ -31,20 +31,43 @@ DOC_LINKS = [
     ("Roadmap", "ROADMAP.md", "Completed and planned work"),
 ]
 
+#: Every binding the application has. The list is complete rather than
+#: representative, and a test enforces that: `test_ui_controls` fails if a menu
+#: action carries a shortcut this does not mention, or if a key the viewport
+#: handles is missing. Four bindings were undocumented until that check existed
+#: — middle-drag, right-drag, O and the +/- pair.
 SHORTCUTS = [
+    # Mouse — the viewport
     ("Drag", "Rotate the model"),
     ("Shift + drag", "Pan"),
+    ("Middle-drag", "Pan"),
+    ("Right-click", "Open the context menu: select this residue, this chain "
+                    "or all three copies, add it to a measurement, centre on "
+                    "it, copy its label — plus representation, colouring and "
+                    "the view toggles"),
+    ("Right-drag", "Zoom — dragging never opens the menu"),
     ("Wheel", "Zoom"),
-    ("R", "Reset the camera to frame the model"),
-    ("Space", "Toggle spin"),
     ("Click an atom", "Identify it and mark it in gold — chain, residue, "
-                      "domain, any annotation. Press Start picking in the "
+                      "domain, any annotation. Dragging to rotate never picks, "
+                      "however the drag ends. Press Start picking in the "
                       "Measure panel to measure between clicks instead"),
+    # Keys — the viewport, which must have focus (click it once)
+    ("R", "Reset the camera to frame the model"),
+    ("O", "Switch between perspective and orthographic projection"),
+    ("Space", "Toggle spin"),
+    ("+ / -", "Grow or shrink the drawn atoms"),
+    # Menu shortcuts
     ("Ctrl+O", "Open a structure file"),
     ("Ctrl+S / Ctrl+L", "Save / load a session"),
     ("Ctrl+E", "Export an analysis report"),
+    ("Ctrl+Shift+S", "Sequence window"),
+    ("Ctrl+D", "Display options — what the overlay shows"),
+    ("Ctrl+P", "Parameters — every registered number, with its source"),
     ("Ctrl+R", "Reset the panel layout"),
+    ("F11", "Presentation mode (full screen)"),
     ("F1", "This help"),
+    ("F2", "Guided tour"),
+    ("Ctrl+Q", "Quit"),
 ]
 
 _MODEL = """
@@ -193,7 +216,23 @@ The mark is the copy you clicked, not all three protomers: a click means one
 specific atom, where selecting a residue from the Annotations panel means the
 residue number and therefore all three.</p>
 <p>Rotating does not select. A click only registers if the mouse has barely
-moved, so dragging to turn the structure will not pick anything by accident.</p>
+moved between press and release, so dragging to turn the structure will not
+pick anything by accident, however the drag ends.</p>
+
+<h3>Right-click — the context menu</h3>
+<p>Right-clicking opens a menu for whatever is under the cursor. On a residue
+it offers to select that copy, the same residue number in all three protomers,
+or the whole chain; to add the atom to a measurement (<i>arming picking for
+you</i>, so this is the short way in); to centre the view on it; and to copy its
+label. Any variant reported at that residue is named. On empty background the
+residue entries are simply absent.</p>
+<p>Either way the menu carries <b>Representation</b>, <b>Colour by</b>, and the
+view toggles — reset, spin, orthographic projection. Those drive the Model
+panel's own controls rather than a second copy of them, so the panel and the
+menu can never disagree about what is on screen.</p>
+<p>Opening the menu selects nothing. It identifies the residue so the entries
+can name it, and dismissing it leaves the model exactly as it was. Right-<i>drag</i>
+still zooms and never opens the menu.</p>
 
 <h3>Measuring — Measure panel</h3>
 <p>Measuring needs picking to be <b>armed</b>, because clicks already mean

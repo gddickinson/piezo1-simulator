@@ -4,6 +4,69 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Auditing every control, and the one that had been wrong all along
+
+Asked to confirm that the mouse, keyboard and menu controls all work, the only
+honest way to answer was to fire them rather than read them — and reading would
+have missed the bug, because the handler looked correct.
+
+**Every rotation ended in a pick.** `mouseReleaseEvent` told a click from a drag
+by the distance from `_last_pos` — which `mouseMoveEvent` overwrites on every
+step to compute the drag delta. By release time it *was* the release position,
+so the distance was always zero and a 390-pixel rotation registered as a click.
+Harmless while a pick only rewrote the status bar, which is why it survived;
+the moment a pick highlights, every turn of the structure repainted the
+selection. Fixed by keeping the press position separately (`CLICK_SLOP = 3`,
+enough for trackpad tremor).
+
+Everything else checked out: 75 menu actions, all with their own tooltips, no
+shortcut collisions, none disabled, and all 55 non-dialog ones fire without
+raising against a loaded structure. Left-drag rotates, shift- and middle-drag
+pan, right-drag and the wheel zoom, `R`/`O`/`Space`/`+`/`-` all act, and the
+viewport takes focus so the keys are reachable at all.
+
+**One of my own checks was wrong first**, which is the standing lesson again in
+miniature: I tested panning by watching `camera.pivot`, which `translate` does
+not touch — it moves `camera.pan`. Reported as working once measured properly,
+rather than filed as a bug.
+
+Four bindings were undocumented — middle-drag, right-drag, `O` and `+`/`-`. The
+shortcut list is now complete, and `test_ui_controls` reads the viewport's own
+`keyPressEvent` for `Qt.Key.*` names and fails if one is missing from the help,
+so a new key cannot be added unannounced.
+
+## A right-click menu, built so it cannot drift from the panels
+
+George asked for right-click to open a context menu of useful actions. Right-
+*drag* keeps the zoom and the menu is on the *click*, which is the same
+distinction the left button already makes between picking and rotating — a user
+dragging to zoom never gets a menu they did not ask for.
+
+Two design rules, both tested rather than asserted:
+
+*Nothing is implemented twice.* The Representation and Colour-by entries set
+the **Model panel's combo boxes**, not `view.style` directly. Calling the setter
+would change the model while the panel went on displaying the old value, and
+the two would disagree the first time anyone used the menu. The test watches
+the combo move, not the code.
+
+*Opening the menu is not a selection.* It identifies the residue under the
+cursor so the entries can name it, and dismissing it must leave the model as it
+was. That needed splitting `_pick_at` into `atom_at`, which answers the
+question, and `_pick_at`, which announces it.
+
+`Add to measurement` **arms picking** rather than refusing when it is off. This
+menu is exactly where a user who never found the Measure button ends up, and
+telling them to go and press it first would repeat the problem it solves.
+
+Shown with `popup()` rather than `exec()`: `exec()` spins its own event loop and
+does not return until the user chooses, so the whole path would have been
+untestable — the first probe hung for ten minutes and that is how I found out.
+
+Suite 1002 → 1040. `ui/context_menu.py` 240 lines.
+
+---
+
 ## Selecting atoms — a feature that existed and could not be found
 
 George reported three things while testing: clicking the structure put a

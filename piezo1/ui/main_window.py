@@ -34,6 +34,7 @@ from .ion_flux_controller import IonFluxController
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
 from .presentation import PresentationController
+from .context_menu import ContextMenuMixin
 from .selection import PICK_HINTS, SelectionMixin
 from ..structure.protomers import modelled_residues, protomer_blocks
 from .morph_controller import MorphController
@@ -55,7 +56,7 @@ __all__ = ["MainWindow", "PICK_HINTS"]
 
 class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
                  AppearanceMixin, PreferencesMixin, SelectionMixin,
-                 QMainWindow):
+                 ContextMenuMixin, QMainWindow):
     """Top-level window."""
 
     def __init__(self) -> None:
@@ -92,6 +93,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.viewport.scene_ready.connect(self._on_scene_ready)
         self.viewport.status.connect(self._set_status)
         self.viewport.atom_picked.connect(self._on_pick)
+        self.viewport.context_requested.connect(self._show_context_menu)
 
         self._build_docks()
         self.fusion = FusionController(self)
