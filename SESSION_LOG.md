@@ -4,6 +4,48 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 75 — retiring the roadmap, and what its length was hiding
+
+`ROADMAP.md` had reached 2,702 lines, of which **96% was a record of work
+already finished**, duplicating `SESSION_LOG.md`. The question the file exists
+to answer — *what is left?* — took scrolling past three hundred ticked boxes to
+find.
+
+Split into a 108-line `ROADMAP.md` holding only open work, and
+`docs/ROADMAP_COMPLETED.md` holding the finished record verbatim. The rule was
+mechanical — a section goes wholesale to one file or the other — and it turned
+out every section was entirely open or entirely done, so nothing had to be cut
+in half and no completed item could be stranded beside an unfinished one.
+
+**The validation clause asked for a count before and after; it got a
+comparison.** A number typed in from memory proves nothing, so
+`tests/test_roadmap.py` reads the pre-split file **out of git** at commit
+`4c1c61c` and compares item by item: every one of the 358 completed items is
+present afterwards, none appears in both files, every open item is in
+`ROADMAP.md` and none in the archive. Frozen counts back it up where history is
+unavailable, and the completed count is ratcheted so it can only grow. Deleting
+three items, filing one in both files, and tidying away the awkward Round 68
+entry each fail it.
+
+**What the length was hiding.** Two adjacent headings, both numbered *Round 68*
+— one ticked as superseded by Round 63, one still open asking the identical
+question. Round 67 had recorded the supersession by *adding* a heading rather
+than ticking the original, and nobody saw the duplicate because nobody reads
+three hundred ticked boxes. Merged, with the duplication itself written into
+the entry rather than tidied away.
+
+My first description of this was wrong and is worth recording as such: I read
+the open copy alone and wrote that "Round 68 asked a question Round 63 had
+already answered, and nobody noticed". The supersession *was* noticed and
+recorded — in a second heading, six lines above. The defect was duplication,
+not oversight. Corrected before it reached the archive.
+
+This is the second stale roadmap entry found (Round 53 was the first), and both
+survived for the same reason. That is the argument for the split, stated as a
+measurement rather than a preference.
+
+---
+
 ## Auditing every control, and the one that had been wrong all along
 
 Asked to confirm that the mouse, keyboard and menu controls all work, the only

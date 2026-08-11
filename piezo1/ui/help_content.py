@@ -28,7 +28,9 @@ DOC_LINKS = [
      "Standing policy on power, multiplicity and what a null may claim"),
     ("Bibliography", "docs/REFERENCES.md", "All 60 verified references"),
     ("Session log", "SESSION_LOG.md", "What was done each round, and why"),
-    ("Roadmap", "ROADMAP.md", "Completed and planned work"),
+    ("Roadmap", "ROADMAP.md", "What is still open — 12 items across six rounds"),
+    ("Completed rounds", "docs/ROADMAP_COMPLETED.md",
+     "The result of every finished round, 75 of them"),
 ]
 
 #: Every binding the application has. The list is complete rather than

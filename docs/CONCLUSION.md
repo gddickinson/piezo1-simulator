@@ -155,7 +155,7 @@ instrument was itself the thing at fault.
 
 ## 8. Where to go next
 
-`ROADMAP.md` Blocks P and Q list what remains, which is engineering and
+`ROADMAP.md` lists what remains — Block Q — which is engineering and
 communication rather than science: the two routes to the central claim are
 closed by measurement, and Round 64 recorded in writing that no further test
 will be attempted on this variant set.
