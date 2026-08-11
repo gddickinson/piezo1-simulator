@@ -4,6 +4,58 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Selecting atoms — a feature that existed and could not be found
+
+George reported three things while testing: clicking the structure put a
+selection in the status bar but not in the Measure panel, nothing was ever
+highlighted on the model, and it was not clear whether selecting required some
+other click.
+
+All three were real, and they were separate.
+
+**Picking is armed, and nothing said so.** Clicks reach the Measure panel only
+when its button is toggled on. That gate is correct and worth keeping: a click
+already means "tell me about this residue", and a measurement tool that quietly
+consumed those clicks would break inspection. But the button said `Measure`,
+which reads as a verb you press *after* selecting, and the hint under it said
+"Pick 2 atoms for a distance" — the goal, not the step, phrased as though
+clicking would already work. The button now says **Start picking** and then
+**Picking — click atoms**, and the hint states which of the two states you are
+in and what to do in it.
+
+**A pick appeared only when the measurement completed.** `_refill` drew
+`self.set.measurements`, so selecting one atom of two left the Selection table
+empty — exactly what was reported. Pending picks now get their own row,
+dimmed in the pick marker's blue, with the number still to go, so the table
+shows the selection rather than only the result. Deleting that row abandons the
+half-made selection; it sits past the end of `measurements`, which a naive row
+index would have got wrong.
+
+**A click marked nothing.** `_on_pick`'s unarmed branch built a status string
+and stopped. The machinery to highlight was already there — `_highlight` draws
+a gold sphere batch and is used by the annotation and analysis panels — it was
+simply never called from a click. It is now, with one change: `_highlight`
+takes an optional `chains`, because a residue *number* means all three
+protomers and that is what an annotation wants, while a click means the one
+copy under the cursor.
+
+Discoverability is also paid for in the status bar, but only three times
+(`PICK_HINTS`). A permanent hint would crowd out the residue identification
+that is the status bar's actual job.
+
+**Why this survived.** `MeasurementSet` had fourteen tests and the panel that
+drives it had none, so the whole wiring layer was uncovered — including the arm
+gate, the table refill and the click routing. `tests/test_ui_measure.py` covers
+it with the real widgets offscreen; reverting each of the three fixes fails 1,
+5 and 1 tests respectively.
+
+`main_window.py` reached 497 lines, so selection, camera focus and the pick
+path moved to `ui/selection.py` as `SelectionMixin` — the seam this work had
+just drawn, and consistent with the five mixins already there. 373 + 149 lines.
+Suite 987 → 1002.
+
+---
+
 ## Drawing the real HaloTag fold — a user request, and the finding it produced
 
 Not a roadmap round. George asked, while testing the GUI, whether the three

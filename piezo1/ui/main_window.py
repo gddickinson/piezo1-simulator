@@ -34,6 +34,7 @@ from .ion_flux_controller import IonFluxController
 from .appearance import AppearanceMixin
 from .preferences import PreferencesMixin
 from .presentation import PresentationController
+from .selection import PICK_HINTS, SelectionMixin
 from ..structure.protomers import modelled_residues, protomer_blocks
 from .morph_controller import MorphController
 from .physics_controller import PhysicsController
@@ -48,12 +49,13 @@ from .panels.measure_panel import MeasurePanel
 from .panels.physics_panel import PhysicsPanel
 from .panels.structure_panel import StructurePanel
 
-__all__ = ["MainWindow"]
+__all__ = ["MainWindow", "PICK_HINTS"]
 
 
 
 class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
-                 AppearanceMixin, PreferencesMixin, QMainWindow):
+                 AppearanceMixin, PreferencesMixin, SelectionMixin,
+                 QMainWindow):
     """Top-level window."""
 
     def __init__(self) -> None:
@@ -83,6 +85,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self._mode_residues: np.ndarray = np.array([], dtype=np.int64)
         self.selected_residues: list[int] = []
         self.selection_label: str = ""
+        self._pick_hints = 0
 
         self.viewport = ViewportWidget(SETTINGS.render)
         self.setCentralWidget(self.viewport)
@@ -336,107 +339,6 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
             + (f" · {frame.summary()}" if not frame.is_identity else ""))
         self._refresh_displayed()
         self.viewport.update()
-
-    # ------------------------------------------------------------- alignment
-    # ------------------------------------------------------------ highlight
-
-    def _highlight(self, residues, label: str) -> None:
-        if self.view is None or self.structure is None:
-            return
-        self.selected_residues = [int(r) for r in (residues or [])]
-        self.selection_label = label
-        st = self.structure
-        if not residues:
-            self.view.highlight = None
-        else:
-            self.view.highlight = np.isin(
-                st.res_seq, np.asarray(list(residues), dtype=np.int32))
-        # Highlight is drawn by the sphere shader, so show the selected atoms
-        # as spheres on top of whatever representation is active.
-        self.viewport.scene.remove(f"{self.view.name}:selection")
-        if residues:
-            mask = self.view.highlight
-            n = int(mask.sum())
-            if n:
-                batch = self.viewport.scene.spheres(f"{self.view.name}:selection")
-                batch.upload(st.xyz[mask], st.vdw_radii()[mask] * 1.05,
-                             np.tile(np.array([1.0, 0.83, 0.2], np.float32), (n, 1)),
-                             np.ones(n, np.float32))
-                self._set_status(f"{label}: {n} atoms highlighted")
-            else:
-                self._set_status(f"{label}: no atoms — residues not modelled "
-                                 f"in {self.record.pdb if self.record else '?'}")
-        self.viewport.update()
-
-    def _focus_residues(self, residues) -> None:
-        """Move the camera to a selection, if the user has asked for that."""
-        mode = self.focus_mode()
-        if (mode == "none" or self.structure is None
-                or self.viewport.scene is None or not residues):
-            return
-        mask = np.isin(self.structure.res_seq,
-                       np.asarray(list(residues), dtype=np.int32))
-        if not mask.any():
-            return
-        camera = self.viewport.scene.camera
-        if mode == "frame":
-            # Keep the orientation the user has set; only the pivot and the
-            # distance change. Reframing rotation as well would throw away the
-            # view they had chosen, which is the complaint this option exists
-            # to answer.
-            camera.frame(self.structure.xyz[mask])
-        else:
-            camera.pivot = self.structure.xyz[mask].mean(axis=0)
-        self.viewport.update()
-
-    def _set_measure_mode(self, on: bool) -> None:
-        self.viewport.measure_mode = on
-        self._refresh_measurements()
-        self._set_status("measure mode: click atoms to pick" if on
-                         else "measure mode off")
-
-    def _refresh_measurements(self) -> None:
-        """Push labels and picked-atom markers into the viewport."""
-        if self.viewport.scene is None or self.structure is None:
-            return
-        self.viewport.set_overlay_labels(self.measure_panel.overlay_labels())
-        name = "measure:picks"
-        self.viewport.scene.remove(name)
-        picked = self.measure_panel.highlighted_atoms()
-        if picked:
-            idx = np.asarray(sorted(set(picked)), dtype=int)
-            idx = idx[idx < self.structure.n_atoms]
-            if len(idx):
-                batch = self.viewport.scene.spheres(name)
-                batch.upload(self.structure.xyz[idx],
-                             self.structure.vdw_radii()[idx] * 1.15,
-                             np.tile(np.array([0.47, 0.78, 1.0], np.float32),
-                                     (len(idx), 1)),
-                             np.ones(len(idx), np.float32))
-        self.viewport.update()
-
-    def _on_pick(self, index: int) -> None:
-        if index < 0 or self.structure is None:
-            self._set_status("nothing under the cursor")
-            return
-        st = self.structure
-        if self.measure_panel.armed:
-            label = (f"{st.res_name[index]}{int(st.res_seq[index])}"
-                     f"{st.chain[index]}.{st.atom_name[index]}")
-            self.measure_panel.add_pick(int(index), st.xyz[index].astype(float),
-                                        label)
-            return
-        res = int(st.res_seq[index])
-        info = self.annotations.annotate_residue(res)
-        bits = [f"{st.res_name[index]}{res} chain {st.chain[index]} "
-                f"atom {st.atom_name[index]}"]
-        if info["domain"]:
-            bits.append(f"domain: {info['domain']}")
-        if info["groups"]:
-            bits.append("sites: " + ", ".join(info["groups"]))
-        for v in info["variants"]:
-            bits.append(f"variant {v['label']} ({v['classification']})")
-        self._set_status("   ·   ".join(bits))
 
     def _about(self) -> None:
         QMessageBox.about(

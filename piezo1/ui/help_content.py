@@ -37,7 +37,9 @@ SHORTCUTS = [
     ("Wheel", "Zoom"),
     ("R", "Reset the camera to frame the model"),
     ("Space", "Toggle spin"),
-    ("Click an atom", "Identify it — chain, residue, domain, any annotation"),
+    ("Click an atom", "Identify it and mark it in gold — chain, residue, "
+                      "domain, any annotation. Press Start picking in the "
+                      "Measure panel to measure between clicks instead"),
     ("Ctrl+O", "Open a structure file"),
     ("Ctrl+S / Ctrl+L", "Save / load a session"),
     ("Ctrl+E", "Export an analysis report"),
@@ -181,13 +183,35 @@ and a per-protomer difference is numerical noise.</p>
 """
 
 _MEASURE = """
-<h2>Measure panel</h2>
-<p>Click atoms in the viewport to measure between them.</p>
-<ul>
-<li><b>Distance</b> — two atoms.</li>
-<li><b>Angle</b> — three.</li>
-<li><b>Dihedral</b> — four.</li>
-</ul>
+<h2>Selecting and measuring</h2>
+
+<h3>What a click does</h3>
+<p>Clicking an atom in the 3-D view always does two things: it names the
+residue in the status bar — with its domain, any annotated site, and any
+variant reported there — and it <b>marks that residue in gold on the model</b>.
+The mark is the copy you clicked, not all three protomers: a click means one
+specific atom, where selecting a residue from the Annotations panel means the
+residue number and therefore all three.</p>
+<p>Rotating does not select. A click only registers if the mouse has barely
+moved, so dragging to turn the structure will not pick anything by accident.</p>
+
+<h3>Measuring — Measure panel</h3>
+<p>Measuring needs picking to be <b>armed</b>, because clicks already mean
+"tell me about this residue" and a measurement tool that silently consumed
+them would break inspection. So:</p>
+<ol>
+<li>Choose <b>distance</b> (two atoms), <b>angle</b> (three) or
+<b>dihedral</b> (four).</li>
+<li>Press <b>Start picking</b>. The button changes to
+<i>Picking — click atoms</i>.</li>
+<li>Click the atoms in the 3-D view. Each one appears in the
+<b>Selection</b> table straight away, in blue, with the number still to go —
+and is marked in blue on the model.</li>
+<li>On the last atom the row resolves to a value and units.</li>
+</ol>
+<p>Pressing the button again abandons any half-made selection. Selecting the
+blue pending row and pressing <b>Delete</b> does the same without disarming;
+selecting a completed row and pressing Delete removes that measurement.</p>
 <p>Measurements accumulate in the table and export to CSV. The measurement
 logic is deliberately free of Qt so it can be tested without a display; the
 regression case is the C2411–C2415 disulfide, which must come out at
@@ -402,7 +426,7 @@ TOPICS: list[tuple[str, str]] = [
     ("Annotation panel", _ANNOTATION),
     ("Physics panel", _PHYSICS),
     ("Analysis panel", _ANALYSIS),
-    ("Measure panel", _MEASURE),
+    ("Measure panel — selecting atoms", _MEASURE),
     ("HaloTag and ion current", _TAGS_AND_CURRENT),
     ("Framing and multiple structures", _FRAMING),
     ("Limits and honesty", _HONESTY),
