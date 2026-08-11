@@ -85,8 +85,10 @@ class OverlayWorker(QObject):
         """C-alpha coordinates for residues resolved in both, chain A of each.
 
         Residue numbers are the join key, which is only valid within one
-        numbering system; cross-species overlays are refused by the controller
-        before reaching here rather than producing a confident wrong fit.
+        numbering system. Pairs that are not — a different species, the PIEZO2
+        paralogue, or a splice isoform numbered in its own coordinates — are
+        refused by :meth:`OverlayController._numbering_refusal` before reaching
+        here, rather than producing a confident wrong fit.
         """
         def table(st):
             mask = st.mask_ca() & (st.chain == st.chains[0])
@@ -180,24 +182,19 @@ class OverlayController:
             return
         if self._thread is not None:
             return
-        record = self.win.registry.get(pdb.upper())
-        reference_record = self.win.record
-        if (record is not None and reference_record is not None
-                and record.numbering_species != reference_record.numbering_species):
-            self.win._set_status(
-                f"{pdb} is {record.numbering_species} numbering and "
-                f"{reference_record.pdb} is {reference_record.numbering_species}"
-                " — residue numbers do not correspond, so this overlay is refused")
-            return
-
         from ..config import STRUCTURE_DIR
         path = STRUCTURE_DIR / f"{pdb.upper()}.cif"
         if not path.exists():
             self.win._set_status(f"{pdb} is not downloaded")
             return
 
-        self.win._set_status(f"superposing {pdb}…")
         mobile = Structure.from_file(path)
+        refusal = self._numbering_refusal(pdb, mobile)
+        if refusal:
+            self.win._set_status(refusal)
+            return
+
+        self.win._set_status(f"superposing {pdb}…")
         self._thread = QThread()
         self._worker = OverlayWorker(self.win.structure, mobile, mode)
         self._worker.moveToThread(self._thread)
@@ -205,6 +202,47 @@ class OverlayController:
         self._worker.finished.connect(self._on_ready)
         self._worker.failed.connect(self._on_failed)
         self._thread.start()
+
+    def _numbering_refusal(self, pdb: str, mobile: Structure) -> str:
+        """Why these two must not be joined on residue number, or "".
+
+        Residue numbers are the join key, so the two entries have to be in the
+        *same* numbering. That was checked against the registry's species field
+        until it was noticed that 6KG7 — PIEZO2 — is filed as "mouse" exactly
+        like every mouse Piezo1 entry, so the guard passed it: overlaying 7WLT
+        on 6KG7 returned a confident 47.9 A over 920 "matched" C-alphas of
+        which 6% were even the same amino acid, where the alignment-based
+        comparison gives 4.36 A over 3,708. A number, in the right units,
+        wrong by more than tenfold.
+
+        So the check is now the measurement rather than the label, and it
+        covers three cases with one question: a different species, a different
+        protein, and a file numbered in a splice isoform's own coordinates.
+        """
+        from ..analysis.numbering_check import identify_numbering
+
+        reference = identify_numbering(self.win.structure)
+        moving = identify_numbering(mobile)
+        name = self.win.structure.name or "the reference"
+
+        for entry, identity in ((pdb, moving), (name, reference)):
+            if not identity.confident:
+                detail = (identity.splice.summary() if identity.splice
+                          else identity.summary())
+                return (f"{entry} is not in canonical numbering — {detail} — "
+                        f"so residue numbers cannot be the join key and this "
+                        f"overlay is refused")
+
+        if moving.reference == reference.reference:
+            return ""
+
+        paralogue = moving.is_piezo2 != reference.is_piezo2
+        why = ("different proteins" if paralogue else "different species")
+        hint = (" — use Analysis → PIEZO2 comparison, which matches the two "
+                "through a real alignment" if paralogue else "")
+        return (f"{pdb} is {moving.reference} and {name} is "
+                f"{reference.reference}: {why}, so residue numbers do not "
+                f"correspond and this overlay is refused{hint}")
 
     def cleanup(self) -> None:
         if self._thread is not None:

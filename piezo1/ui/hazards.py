@@ -51,13 +51,20 @@ class Hazard:
 HAZARDS: tuple = (
     Hazard(
         key="cross_species_overlay",
-        scenario="Superpose a mouse structure on a human one and read the "
-                 "per-residue deviation, where residue 2456 means different "
-                 "things in the two files.",
-        wrong="A deviation profile aligned by residue number across species, "
-              "which is off by a non-constant offset.",
-        guard="OverlayController refuses a pair whose numbering species "
-              "differ, naming both, rather than silently aligning them.",
+        scenario="Superpose one structure on another and read the per-residue "
+                 "deviation, where the same residue number means different "
+                 "things in the two files — a different species, the PIEZO2 "
+                 "paralogue, or a splice isoform numbered in its own "
+                 "coordinates.",
+        wrong="A deviation profile aligned by residue number between files "
+              "that do not share one. Measured on the paralogue: 47.9 A over "
+              "920 'matched' C-alphas of which 6% are even the same amino "
+              "acid, where a real alignment gives 4.36 A over 3,708.",
+        guard="OverlayController identifies both files by scoring their own "
+              "residue names against every reference sequence, and refuses "
+              "any pair that does not share one — naming what each is. The "
+              "check was the registry's species label until Round 83 found "
+              "PIEZO2 filed as 'mouse' and passing it.",
         status="guarded",
         where="ui/overlay_controller.py"),
 

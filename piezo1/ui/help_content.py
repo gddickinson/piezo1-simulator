@@ -396,6 +396,13 @@ lists what is drawn. Turning it off drops the extras.</p>
 <p>This is <i>display</i>, not measurement. The overlay feature superposes one
 nominated structure and reports an RMSD; this simply draws several. Every
 analysis runs on the primary structure, whatever else is on screen.</p>
+<p><b>This is how to see PIEZO1 and PIEZO2 together.</b> The shared frame is
+each structure's own three-fold symmetry, so it needs no correspondence between
+them and works across the paralogue. The measuring <i>overlay</i> does not and
+refuses the pair: it joins on residue number, and mouse Piezo1 residue 1500 is
+not mouse Piezo2 residue 1500. For a measured comparison of the two, use
+Analysis &rarr; PIEZO2 comparison, which matches them through a real
+alignment.</p>
 """
 
 

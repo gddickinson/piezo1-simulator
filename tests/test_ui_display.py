@@ -150,3 +150,78 @@ def test_overlay_needs_shared_residues(human_structure):
         human_structure, res_seq=human_structure.res_seq + 100000)
     with pytest.raises(ValueError, match="in common"):
         OverlayWorker(human_structure, shifted, "chain")._superpose()
+
+
+# --------------------------------------------------------------------------
+# What the overlay must refuse to join on residue number
+# --------------------------------------------------------------------------
+
+class _StubWindow:
+    """Enough of MainWindow for the refusal check, and nothing else."""
+
+    def __init__(self, structure):
+        self.structure = structure
+        self.record = None
+        self.status = ""
+
+    def _set_status(self, message):
+        self.status = message
+
+
+def _controller(structure):
+    from piezo1.ui.overlay_controller import OverlayController
+
+    return OverlayController(_StubWindow(structure))
+
+
+def test_the_overlay_refuses_the_paralogue_and_says_where_to_go_instead(
+        curved_structure, structure_by_id):
+    """The guard checked species, and PIEZO2 is filed as "mouse" like the rest.
+
+    So 7WLT on 6KG7 passed it, joined two different proteins on residue number
+    and returned a confident 47.9 A over 920 "matched" C-alphas — of which 6%
+    were even the same amino acid — where the alignment-based comparison gives
+    4.36 A over 3,708. The check is now the measured protein rather than the
+    registry's species label.
+    """
+    piezo2 = structure_by_id("6KG7")
+    if piezo2 is None:
+        pytest.skip("6KG7 not downloaded — run python -m piezo1.io.fetch")
+    refusal = _controller(curved_structure)._numbering_refusal("6KG7", piezo2)
+    assert refusal, "the paralogue must not be joined on residue number"
+    assert "different proteins" in refusal
+    assert "PIEZO2 comparison" in refusal, (
+        "a refusal should name the tool that does the job properly")
+
+
+def test_the_overlay_still_refuses_a_cross_species_pair(curved_structure,
+                                                        human_structure):
+    """The case the old guard did catch, kept."""
+    refusal = _controller(curved_structure)._numbering_refusal("8YEZ",
+                                                               human_structure)
+    assert refusal and "different species" in refusal
+
+
+def test_the_overlay_refuses_the_splice_isoform(curved_structure,
+                                                structure_by_id):
+    """A case the species guard missed too.
+
+    6LQI is mouse Piezo1 by every label, and is deposited in the Piezo1.1
+    isoform's own numbering — so more than half its residues answer to a
+    number that means something else in 7WLT.
+    """
+    isoform = structure_by_id("6LQI")
+    if isoform is None:
+        pytest.skip("6LQI not downloaded — run python -m piezo1.io.fetch")
+    refusal = _controller(curved_structure)._numbering_refusal("6LQI", isoform)
+    assert refusal and "canonical numbering" in refusal
+
+
+def test_the_overlay_allows_the_pair_it_is_for(curved_structure, flat_structure):
+    """A guard that refuses everything is not a guard.
+
+    7WLT against 7WLU is the comparison the overlay exists for — same protein,
+    same species, same numbering — and it must go through.
+    """
+    assert _controller(curved_structure)._numbering_refusal("7WLU",
+                                                            flat_structure) == ""

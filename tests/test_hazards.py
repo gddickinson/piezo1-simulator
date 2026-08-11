@@ -176,15 +176,44 @@ def test_analyses_use_the_primary_structure_not_a_companion():
 
 # ----------------------------------------- cross-species numbering
 
-def test_the_overlay_refuses_a_cross_species_pair():
-    """The guard names both numbering systems rather than aligning silently."""
-    import inspect
+def test_the_overlay_refuses_a_pair_that_shares_no_numbering():
+    """Driven rather than grepped: the guard is watched refusing each case.
 
-    from piezo1.ui import overlay_controller
+    Reading the source for a variable name asserted that a particular
+    *implementation* was present, which is how it went stale — the guard was
+    rewritten in Round 83 to identify the protein rather than trust the
+    registry's species label, and the grep failed while the hazard was more
+    strongly guarded than before. Three pairs must be refused and one must go
+    through.
+    """
+    from piezo1.config import STRUCTURE_DIR
+    from piezo1.core import Structure
+    from piezo1.ui.overlay_controller import OverlayController
 
-    source = inspect.getsource(overlay_controller)
-    assert "numbering_species" in source
-    assert source.count("numbering_species") >= 2
+    def load(pdb):
+        path = STRUCTURE_DIR / f"{pdb}.cif"
+        if not path.exists():
+            pytest.skip(f"{pdb} not downloaded — run python -m piezo1.io.fetch")
+        return Structure.from_file(path)
+
+    class _Window:
+        def __init__(self, structure):
+            self.structure, self.record = structure, None
+
+        def _set_status(self, message):
+            self.status = message
+
+    reference = load("7WLT")
+    controller = OverlayController(_Window(reference))
+
+    for pdb, expected in (("8YEZ", "different species"),
+                          ("6KG7", "different proteins"),
+                          ("6LQI", "canonical numbering")):
+        refusal = controller._numbering_refusal(pdb, load(pdb))
+        assert refusal and expected in refusal, f"{pdb}: {refusal!r}"
+
+    # ...and the pair the overlay exists for still goes through.
+    assert controller._numbering_refusal("7WLU", load("7WLU")) == ""
 
 
 def test_no_constant_offset_exists_between_the_two_numbering_systems():
