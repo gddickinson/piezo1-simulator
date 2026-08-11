@@ -56,6 +56,13 @@ HUMAN_ACC = "Q92508"
 MOUSE_ACC = "E2JF22"
 #: UniProt accession for canonical human PIEZO2 (2752 aa).
 HUMAN_PIEZO2_ACC = "Q9H5I5"
+#: The two invertebrate PIEZOs with deposited structures. They are the most
+#: distant homologues available and therefore the strongest generality control:
+#: PIEZO2 answers "is this PIEZO1 or the fold?" within mammals, and these ask
+#: it across half a billion years.
+WORM_PIEZO_ACC = "A0A061ACU2"        # C. elegans PEZO-1, 2442 aa
+FLY_PIEZO_ACC = "M9MSG8"             # Drosophila Piezo, 2551 aa
+
 #: UniProt accession for canonical mouse Piezo2 (2822 aa). 6KG7 is deposited in
 #: this numbering, so the paralogue comparison needs it rather than the human
 #: entry — the two differ by 70 residues and no constant offset relates them.

@@ -252,8 +252,12 @@ def test_the_registry_note_matches_what_the_file_contains():
     assert "8-823" not in record.note
     assert "2,822" in record.note or "2822" in record.note
     # ...and it really is more than any PIEZO1 entry resolves.
+    # ...and it resolves more than any PIEZO1 entry, which is the claim the
+    # note makes. The invertebrates are excluded: 9UOY resolves more still,
+    # and it is not a PIEZO1.
     for other in load_registry():
-        if other.pdb == "6KG7" or not other.available or other.state == "fragment":
+        if (other.pdb == "6KG7" or not other.available
+                or other.state == "fragment" or other.protein != "PIEZO1"):
             continue
         st = Structure.from_file(other.path)
         m = st.mask_ca() & (st.chain == st.chains[0])
@@ -276,11 +280,15 @@ def test_the_registry_contains_only_piezo_structures():
     from piezo1.io.registry import load_registry
 
     for record in load_registry():
-        assert record.species in ("human", "mouse"), record.pdb
+        assert record.protein in ("PIEZO1", "PIEZO2", "PEZO-1", "dPIEZO"), \
+            record.pdb
         if not record.available:
             continue
         identity = identify_numbering(Structure.from_file(record.path))
         assert identity.explained, f"{record.pdb}: {identity.summary()}"
+        assert record.protein == identity.protein, (
+            f"{record.pdb}: registry says {record.protein}, coordinates say "
+            f"{identity.protein}")
 
 
 def test_unassigned_residues_are_not_counted_as_disagreement():
@@ -406,15 +414,24 @@ def test_the_piezo2_annotation_resources_are_committed_and_parallel():
     """
     import json
 
+    helices, lengths = {}, {}
     for name in REFERENCES:
         path = RESOURCE_DIR / f"uniprot_{name}.json"
         assert path.exists(), f"{path.name} is not committed"
         data = json.loads(path.read_text())
-        assert data["n_transmembrane"] == 38, name
-    lengths = {name: json.loads((RESOURCE_DIR / f"uniprot_{name}.json").read_text())["length"]
-               for name in REFERENCES}
-    assert lengths == {"human": 2521, "mouse": 2547,
-                       "human_piezo2": 2752, "mouse_piezo2": 2822}
+        helices[name] = data["n_transmembrane"]
+        lengths[name] = data["length"]
+
+    # The four vertebrate PIEZOs share the 38-helix architecture this project's
+    # domain table is built on. The invertebrates do NOT — 36 and 40 — which is
+    # exactly why they are the interesting control and why nothing here may
+    # transfer a helix index to them by number.
+    assert all(helices[n] == 38 for n in
+               ("human", "mouse", "human_piezo2", "mouse_piezo2"))
+    assert helices["worm_piezo"] != 38 and helices["fly_piezo"] != 38
+    assert lengths == {"human": 2521, "mouse": 2547, "human_piezo2": 2752,
+                       "mouse_piezo2": 2822, "worm_piezo": 2442,
+                       "fly_piezo": 2551}
 
 
 def test_compare_refuses_the_arguments_the_wrong_way_round():

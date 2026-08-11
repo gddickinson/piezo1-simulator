@@ -40,6 +40,7 @@
     "L9Q"
    ],
    "protein": "PIEZO1",
+   "numbering": "human",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -88,6 +89,7 @@
     "L9Q"
    ],
    "protein": "PIEZO1",
+   "numbering": "human",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -136,6 +138,7 @@
     "L9Q"
    ],
    "protein": "PIEZO1",
+   "numbering": "human",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -183,6 +186,7 @@
     "L9Q"
    ],
    "protein": "PIEZO1",
+   "numbering": "human",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -191,6 +195,101 @@
     "default",
     "human_reference",
     "variant_mapping"
+   ]
+  },
+  {
+   "pdb": "9VEE",
+   "file": "9VEE.cif",
+   "resolution": 3.36,
+   "released": "2026-04-08",
+   "title": "The cryo-EM structure of human Piezo2-MDFIC2 complex (composite map)",
+   "journal": "Proc Natl Acad Sci U S A",
+   "year": 2026,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-65005"
+   ],
+   "n_atoms": 34893,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1396,
+     "first": 917,
+     "last": 2752
+    },
+    {
+     "chain": "B",
+     "n_ca": 1396,
+     "first": 917,
+     "last": 2752
+    },
+    {
+     "chain": "C",
+     "n_ca": 1396,
+     "first": 917,
+     "last": 2752
+    }
+   ],
+   "ligands": [],
+   "protein": "PIEZO2",
+   "numbering": "human_piezo2",
+   "species": "human",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Human PIEZO2 with MDFIC2. The paralogue in the SAME species as our PIEZO1 reference, so a PIEZO1-PIEZO2 comparison no longer has to cross species too.",
+   "recommended_for": [
+    "piezo2",
+    "paralogue",
+    "human_piezo2"
+   ]
+  },
+  {
+   "pdb": "9VEF",
+   "file": "9VEF.cif",
+   "resolution": 3.75,
+   "released": "2026-04-08",
+   "title": "The cryo-EM structure of human Piezo2-MDFIC complex (composite map)",
+   "journal": "Proc Natl Acad Sci U S A",
+   "year": 2026,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-65006"
+   ],
+   "n_atoms": 34857,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1396,
+     "first": 917,
+     "last": 2752
+    },
+    {
+     "chain": "C",
+     "n_ca": 1396,
+     "first": 917,
+     "last": 2752
+    },
+    {
+     "chain": "E",
+     "n_ca": 1396,
+     "first": 917,
+     "last": 2752
+    }
+   ],
+   "ligands": [],
+   "protein": "PIEZO2",
+   "numbering": "human_piezo2",
+   "species": "human",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Human PIEZO2 with MDFIC, the partner complex to 9VEE.",
+   "recommended_for": [
+    "piezo2",
+    "paralogue"
    ]
   },
   {
@@ -232,6 +331,7 @@
     "L9Q"
    ],
    "protein": "PIEZO1",
+   "numbering": "human",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -277,6 +377,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "human",
    "species": "human",
    "state": "curved",
    "gating": "closed",
@@ -301,12 +402,107 @@
    "protomer_chains": [],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "fragment",
    "gating": "n/a",
    "note": "X-ray structure of the cap/CED at 1.45 A - by far the highest resolution available for any part of PIEZO1.",
    "recommended_for": [
     "cap_detail"
+   ]
+  },
+  {
+   "pdb": "9ZIT",
+   "file": "9ZIT.cif",
+   "resolution": 3.1,
+   "released": "2025-12-24",
+   "title": "C. elegans PEZO-1 Isoform K",
+   "journal": "Cell Rep",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-74283"
+   ],
+   "n_atoms": 33087,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1359,
+     "first": 801,
+     "last": 2442
+    },
+    {
+     "chain": "B",
+     "n_ca": 1359,
+     "first": 801,
+     "last": 2442
+    },
+    {
+     "chain": "C",
+     "n_ca": 1359,
+     "first": 801,
+     "last": 2442
+    }
+   ],
+   "ligands": [],
+   "protein": "PEZO-1",
+   "numbering": "worm_piezo",
+   "species": "worm",
+   "state": "curved",
+   "gating": "closed",
+   "note": "C. elegans PEZO-1 isoform K.",
+   "recommended_for": [
+    "invertebrate",
+    "isoform"
+   ]
+  },
+  {
+   "pdb": "9UOY",
+   "file": "9UOY.cif",
+   "resolution": 3.4,
+   "released": "2025-12-24",
+   "title": "Structure of C. elegans piezo channel",
+   "journal": "Cell Rep",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-64385"
+   ],
+   "n_atoms": 46695,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1919,
+     "first": 1,
+     "last": 2438
+    },
+    {
+     "chain": "B",
+     "n_ca": 1919,
+     "first": 1,
+     "last": 2438
+    },
+    {
+     "chain": "C",
+     "n_ca": 1919,
+     "first": 1,
+     "last": 2438
+    }
+   ],
+   "ligands": [],
+   "protein": "PEZO-1",
+   "numbering": "worm_piezo",
+   "species": "worm",
+   "state": "curved",
+   "gating": "closed",
+   "note": "C. elegans PEZO-1. An invertebrate PIEZO, so neither a PIEZO1 nor a PIEZO2 \u2014 the duplication that made those two is vertebrate. The most distant structure available.",
+   "recommended_for": [
+    "invertebrate",
+    "generality"
    ]
   },
   {
@@ -350,6 +546,7 @@
     "PLX"
    ],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -396,6 +593,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -441,6 +639,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -486,6 +685,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -532,6 +732,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -577,6 +778,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -625,6 +827,7 @@
     "NAG"
    ],
    "protein": "PIEZO2",
+   "numbering": "mouse_piezo2",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -633,6 +836,57 @@
     "piezo2",
     "distal_blade",
     "paralogue"
+   ]
+  },
+  {
+   "pdb": "9W7X",
+   "file": "9W7X.cif",
+   "resolution": 3.95,
+   "released": "2026-05-06",
+   "title": "Cryo-EM structure of dPIEZO channel",
+   "journal": "To be published",
+   "year": null,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-65735"
+   ],
+   "n_atoms": 31971,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "B",
+     "n_ca": 1305,
+     "first": 765,
+     "last": 2526
+    },
+    {
+     "chain": "A",
+     "n_ca": 1305,
+     "first": 765,
+     "last": 2526
+    },
+    {
+     "chain": "C",
+     "n_ca": 1305,
+     "first": 765,
+     "last": 2526
+    }
+   ],
+   "ligands": [
+    "P5S",
+    "PEE",
+    "PLX"
+   ],
+   "protein": "dPIEZO",
+   "numbering": "fly_piezo",
+   "species": "fly",
+   "state": "curved",
+   "gating": "closed",
+   "note": "Drosophila PIEZO. Deposited in an isoform's own numbering, +3 after residue 1570 \u2014 found by the numbering check, not by reading the paper.",
+   "recommended_for": [
+    "invertebrate",
+    "generality"
    ]
   },
   {
@@ -672,6 +926,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -721,6 +976,7 @@
     "PLX"
    ],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "intermediate",
    "gating": "intermediate",
@@ -771,6 +1027,7 @@
     "PLX"
    ],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -816,6 +1073,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -861,6 +1119,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "curved",
    "gating": "closed",
@@ -906,6 +1165,7 @@
    ],
    "ligands": [],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "flat",
    "gating": "open-like",
@@ -954,6 +1214,7 @@
     "PLX"
    ],
    "protein": "PIEZO1",
+   "numbering": "mouse",
    "species": "mouse",
    "state": "flattened",
    "gating": "closed",

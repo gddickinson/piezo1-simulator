@@ -1,0 +1,507 @@
+{
+ "accession": "A0A061ACU2",
+ "id": "PIEZ1_CAEEL",
+ "organism": "Caenorhabditis elegans",
+ "gene": "pezo-1",
+ "length": 2442,
+ "mass_da": 276793,
+ "sequence": "MTVPPLLKSCVVKLLLPAALLAAAIIRPSFLSIGYVLLALVSAVLPPIRKSLALPKLVGTFVIITFLFCLAVALGVGSYQISEQVVHKNDRTYICNRSDTTLFRSIGLVRFHPTGTFESTRAFLPEIIATSAALLTIIIVMFLSHRDEQLDVVGDVVTVRSESGREQRRQRKLAAIMWSAIGNSLRRLTNFVLFLFTAYVGIVKPSLSNSIYFLAFLFISTWWSTYTPLRHGVYNQIKKFLIFYSALHFLVLYTYQIPIVHHSWLPTGSFLPRLFGLTVLMDSSCPEWWKFPFVAPDFNDDDLIMKWPLYANPIVVLVFFYLTVAQYKFTRNGSREYIDDNEYGSSVHEERFVSAGTVETNVDDVGQLISISESTASAPSGRGRGNTLLLSNASSSANDDEQGRARSRSPLRNGEEQGSIPLRKVTSQVVDRNKLSNIFNTTAPGDKESAASKGMIAVMTFVIFHSYSIALTAMMTWALLYHSIFGLILLILTCILWIFRDTRKSSFAMAPIILMYIEFLLILQYFLSMDIHAEIGDPAWMNFVGIEWTTLPVHAVIILCVQTLLTLPVFLLLRLARREKFYESLSDYERQRRINSYGTFGASKTGAGGVAVAKFQDPKSRKFAAFVEYLSNKVSVYFIFVVSVVLLVVSTCFAPNFYNILFFALWALNLIYLKFSFRLYRGLAYAFWLTLTFYTSIVIIALYIYQFPGVSQWIIRNTSLSQEWLNAIGLVDFRAIGESGALFLQLLAPIALFVVTMLQLKFFHGPWSRATSPRRAENDPPTSTTEAAAVASTSGTQGRAHAAGDTLVKKLHKLANQTIELLWRFFEVHISKIVFVIIAIFIANNINALYIPLVILLSLAICLPSAADGIFSLFMCAYLFLVALSKMIYQLDIVPELSQIDRGVGADNCSHGNISMPEWFGLKKEVEGTEPIYMLFGVIVSIIALAFQSIVIYRQRHYRASLGLPESMRAKVFPDFHHSHFDRSLKNAIQFLIDYGFYKFGLEITMIAIGIDIFNRMDALAAIQCFWLVLFALNKRVFVRRIWVFYVIYMAILYPLQFFSYVGLPPDSCIEYPWSYWIPSYSDDARFNLSYLLNLSIYGVNWPSAYLIGDFFVLLLASCQLAVFRREGEDNDSIYNDGNFVIKPENPQYDFIDTKKSYVDYFKSFVFHYGHWITLMSTLAAGIAGTSLFALGYIIFTLTMLWSGNNLYVMNSTLRSFEHTLKRWNALLGYTLFTITMKVCLQIFGCVFLSWFDQSGGWGKTLCIVRQLFSITCVNNECHVLKELEDFSKACAVETKEGNIGFDVIALSFLVFQIRIFHSWYFQHCMVEYRSEVILANRGAVLKNQLIEKEMKEQNEQQKAKFNDIRRRTEAIRERYQKQIERGAAERDFEPVTYGHAKRAGDYYMFKYDPENDDLVEPVDSFVPEVDPKATAYDRLDPGQIMYAATAHDLDLAKTVQQVKKGDTIKDPDSRALIAVSEPEARKPGGTEETDGDEDEDNKDSKVESTAKFIQKMIASALDLCSVTLNKLCREHRYVGFVLSKEKQKLKSGHSESLSNTSRKLTDIRSAVDLPSLQLVQSANDVEKMETAVSVDWQQKSSATRLLNAVVNCIGAHTDILCYFFAIMTQVMTGGLITLPLPLMSLFWGNLSNPRPSKFFWVTMITYTECVIVIKFVCQFAFMPYNSITWRTEHQMDPMSLDKLFGVSQRDSFALWDIVLLFSLFFHRYMLRKLGLWKDANLTDTFTLKEEPRSASGSDTGSPKKIAQEPKVVVTQSDTLEGTSGGEIVIPSDPNAVSNMEELDCEPPIPEKQSGPIGRFIHQLFHPKFRYIRDLYPIMFGIDVICFLIMTFGYSAFGEGGSGNVLDDVKASRIPVTLVVMLVGMTLAIIIDRALYLRKSVVGKLIYQVLMIAFLHIWVFLVLPNMTRRSAISNHVAQALYVIKSCYFLVSAWQIRNGYPELCIGNLLTHSYGMTNMIAFKVFMNIPFLFELRTAIDWTWTDTSMPLFDFFNMENFYAHIFNIKCARQFEAAYPAPRGIPKGKLVKYMMGFPIIIGVVIFIFSPLLLWSLLNQIGTISMPEKVTLRISIEGYPPLYEMEAQGSNHDNAELGMIKPDQLASLNQALTDSYTTRDTNSILRSRMSVSYLKGYTYEDILIVRFRPESEIYWPISQDSRNAMIDKLSRNTSVNFEVSLEFTRPYDPNENAALKHSKSWLVPISLDMTIRAKIQSALRGDPGHPILIPQSIPAFIQVPNQGELTLPTSIGNTIINDGNPRINTTGMEKSDEARAWFDSLTLNLEQGKSQNEKMWIATSEHPGDQNAKLWIKTANTTYSGRPYLQVVGFIDRAFPSFLAKVFKGGVIAVYLSVILVVGRGLVRGIFTTSPSTVMFTELPNADHLLKICLDIYLVREAKDFMLEQDLFAKLIFLFRSPATLIEWTRMSKKKQE",
+ "entry_version": 66,
+ "sequence_version": 1,
+ "last_modified": "2014-09-03",
+ "transmembrane": [
+  {
+   "start": 6,
+   "end": 26,
+   "description": "Helical; Name=1",
+   "name": "TM1"
+  },
+  {
+   "start": 28,
+   "end": 48,
+   "description": "Helical; Name=2",
+   "name": "TM2"
+  },
+  {
+   "start": 57,
+   "end": 77,
+   "description": "Helical; Name=3",
+   "name": "TM3"
+  },
+  {
+   "start": 123,
+   "end": 143,
+   "description": "Helical; Name=4",
+   "name": "TM4"
+  },
+  {
+   "start": 174,
+   "end": 196,
+   "description": "Helical; Name=5",
+   "name": "TM5"
+  },
+  {
+   "start": 199,
+   "end": 219,
+   "description": "Helical; Name=6",
+   "name": "TM6"
+  },
+  {
+   "start": 240,
+   "end": 260,
+   "description": "Helical; Name=7",
+   "name": "TM7"
+  },
+  {
+   "start": 304,
+   "end": 324,
+   "description": "Helical; Name=8",
+   "name": "TM8"
+  },
+  {
+   "start": 455,
+   "end": 475,
+   "description": "Helical; Name=9",
+   "name": "TM9"
+  },
+  {
+   "start": 479,
+   "end": 499,
+   "description": "Helical; Name=10",
+   "name": "TM10"
+  },
+  {
+   "start": 507,
+   "end": 527,
+   "description": "Helical; Name=11",
+   "name": "TM11"
+  },
+  {
+   "start": 553,
+   "end": 573,
+   "description": "Helical; Name=12",
+   "name": "TM12"
+  },
+  {
+   "start": 634,
+   "end": 654,
+   "description": "Helical; Name=13",
+   "name": "TM13"
+  },
+  {
+   "start": 657,
+   "end": 677,
+   "description": "Helical; Name=14",
+   "name": "TM14"
+  },
+  {
+   "start": 684,
+   "end": 704,
+   "description": "Helical; Name=15",
+   "name": "TM15"
+  },
+  {
+   "start": 740,
+   "end": 760,
+   "description": "Helical; Name=16",
+   "name": "TM16"
+  },
+  {
+   "start": 833,
+   "end": 853,
+   "description": "Helical; Name=17",
+   "name": "TM17"
+  },
+  {
+   "start": 875,
+   "end": 895,
+   "description": "Helical; Name=18",
+   "name": "TM18"
+  },
+  {
+   "start": 932,
+   "end": 952,
+   "description": "Helical; Name=19",
+   "name": "TM19"
+  },
+  {
+   "start": 991,
+   "end": 1011,
+   "description": "Helical; Name=20",
+   "name": "TM20"
+  },
+  {
+   "start": 1013,
+   "end": 1033,
+   "description": "Helical; Name=21",
+   "name": "TM21"
+  },
+  {
+   "start": 1042,
+   "end": 1062,
+   "description": "Helical; Name=22",
+   "name": "TM22"
+  },
+  {
+   "start": 1097,
+   "end": 1117,
+   "description": "Helical; Name=23",
+   "name": "TM23"
+  },
+  {
+   "start": 1161,
+   "end": 1181,
+   "description": "Helical; Name=24",
+   "name": "TM24"
+  },
+  {
+   "start": 1188,
+   "end": 1210,
+   "description": "Helical; Name=25",
+   "name": "TM25"
+  },
+  {
+   "start": 1232,
+   "end": 1252,
+   "description": "Helical; Name=26",
+   "name": "TM26"
+  },
+  {
+   "start": 1300,
+   "end": 1320,
+   "description": "Helical; Name=27",
+   "name": "TM27"
+  },
+  {
+   "start": 1616,
+   "end": 1636,
+   "description": "Helical; Name=28",
+   "name": "TM28"
+  },
+  {
+   "start": 1655,
+   "end": 1675,
+   "description": "Helical; Name=29",
+   "name": "TM29"
+  },
+  {
+   "start": 1707,
+   "end": 1727,
+   "description": "Helical; Name=30",
+   "name": "TM30"
+  },
+  {
+   "start": 1834,
+   "end": 1854,
+   "description": "Helical; Name=31",
+   "name": "TM31"
+  },
+  {
+   "start": 1867,
+   "end": 1887,
+   "description": "Helical; Name=32",
+   "name": "TM32"
+  },
+  {
+   "start": 1901,
+   "end": 1921,
+   "description": "Helical; Name=33",
+   "name": "TM33"
+  },
+  {
+   "start": 1931,
+   "end": 1951,
+   "description": "Helical; Name=34",
+   "name": "TM34"
+  },
+  {
+   "start": 2047,
+   "end": 2067,
+   "description": "Helical; Name=35",
+   "name": "TM35"
+  },
+  {
+   "start": 2347,
+   "end": 2367,
+   "description": "Helical; Name=36",
+   "name": "TM36"
+  }
+ ],
+ "topology": [
+  {
+   "start": 1,
+   "end": 5,
+   "description": "Extracellular"
+  },
+  {
+   "start": 27,
+   "end": 27,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 49,
+   "end": 56,
+   "description": "Extracellular"
+  },
+  {
+   "start": 78,
+   "end": 122,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 144,
+   "end": 173,
+   "description": "Extracellular"
+  },
+  {
+   "start": 197,
+   "end": 198,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 220,
+   "end": 239,
+   "description": "Extracellular"
+  },
+  {
+   "start": 261,
+   "end": 303,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 325,
+   "end": 454,
+   "description": "Extracellular"
+  },
+  {
+   "start": 476,
+   "end": 478,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 500,
+   "end": 506,
+   "description": "Extracellular"
+  },
+  {
+   "start": 528,
+   "end": 552,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 574,
+   "end": 633,
+   "description": "Extracellular"
+  },
+  {
+   "start": 655,
+   "end": 656,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 678,
+   "end": 683,
+   "description": "Extracellular"
+  },
+  {
+   "start": 705,
+   "end": 739,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 761,
+   "end": 832,
+   "description": "Extracellular"
+  },
+  {
+   "start": 854,
+   "end": 874,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 896,
+   "end": 931,
+   "description": "Extracellular"
+  },
+  {
+   "start": 953,
+   "end": 990,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1012,
+   "end": 1012,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1034,
+   "end": 1041,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1063,
+   "end": 1096,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1118,
+   "end": 1160,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1182,
+   "end": 1187,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1211,
+   "end": 1231,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1253,
+   "end": 1299,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1321,
+   "end": 1615,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1637,
+   "end": 1654,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1676,
+   "end": 1706,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1728,
+   "end": 1833,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1855,
+   "end": 1866,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1888,
+   "end": 1900,
+   "description": "Extracellular"
+  },
+  {
+   "start": 1922,
+   "end": 1930,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 1952,
+   "end": 2046,
+   "description": "Extracellular"
+  },
+  {
+   "start": 2068,
+   "end": 2346,
+   "description": "Cytoplasmic"
+  },
+  {
+   "start": 2368,
+   "end": 2442,
+   "description": "Extracellular"
+  }
+ ],
+ "regions": [
+  {
+   "start": 389,
+   "end": 417,
+   "description": "Disordered"
+  },
+  {
+   "start": 768,
+   "end": 798,
+   "description": "Disordered"
+  },
+  {
+   "start": 1463,
+   "end": 1502,
+   "description": "Disordered"
+  }
+ ],
+ "coiled_coil": [],
+ "disulfide": [],
+ "modified_residues": [],
+ "glycosylation": [
+  {
+   "position": 332,
+   "end": 332,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 392,
+   "end": 392,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 440,
+   "end": 440,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 816,
+   "end": 816,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 908,
+   "end": 908,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 913,
+   "end": 913,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1088,
+   "end": 1088,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1094,
+   "end": 1094,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1646,
+   "end": 1646,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1737,
+   "end": 1737,
+   "description": "N-linked (GlcNAc...) asparagine"
+  }
+ ],
+ "natural_variants": [],
+ "mutagenesis": [
+  {
+   "position": 2094,
+   "end": 2094,
+   "description": "Does not cause significant conformational changes the last cytoplasmic domain.",
+   "wt": "M",
+   "mut": "R"
+  },
+  {
+   "position": 2405,
+   "end": 2405,
+   "description": "Reduces brood size and ovulation rates, and there is an accumulation of ooplasmic uterine masses.",
+   "wt": "R",
+   "mut": "P"
+  }
+ ],
+ "n_transmembrane": 36
+}

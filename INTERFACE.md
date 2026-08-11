@@ -210,14 +210,16 @@ geometry at a fraction of the triangle count.
 | `uniprot_human.json` | Distilled UniProt Q92508: sequence, 38 TM segments, topology, PTMs, 26 natural variants, disulfide, coiled coil. Built by `scripts/build_uniprot_annotations.py`. | ✅ |
 | `uniprot_mouse.json` | Same for mouse E2JF22 (2547 aa). | ✅ |
 | `uniprot_mouse_piezo2.json` | Mouse Piezo2 Q8CD54 (**2822 aa**), the numbering 6KG7 is deposited in. Added in Round 83 so the paralogue's transmembrane helices come from the same source PIEZO1's do — otherwise the two dome measurements differ by how each membrane surface was defined. | ✅ |
-| `uniprot_human_piezo2.json` | Human PIEZO2 Q9H5I5 (2752 aa). Three PIEZO lengths in the catalogue, no constant offset between any pair. | ✅ |
+| `uniprot_human_piezo2.json` | Human PIEZO2 Q9H5I5 (2752 aa). | ✅ |
+| `uniprot_worm_piezo.json` | *C. elegans* PEZO-1 A0A061ACU2 (2442 aa, **36** TM). | ✅ |
+| `uniprot_fly_piezo.json` | *Drosophila* PIEZO M9MSG8 (2551 aa, **40** TM). Six PIEZO lengths in the catalogue, no constant offset between any pair — and two of them do not even share the 38-helix architecture. | ✅ |
 | `domains.json` | 17 architectural domains with ranges in both numbering systems, provenance (uniprot / derived-by-rule / literature) and confidence. | ✅ |
 | `variants.json` | 68 curated variants, every wild-type residue verified against Q92508, each annotated with which structures resolve it. **Frozen** — Round 7 and Round 22 reference it. | ✅ |
 | `variants_clinvar.json` | 232 ClinVar pathogenic/likely-pathogenic variants past the same wild-type gate, with direction *inferred* from the disease mechanism and 11 marked ambiguous for being reported under both diseases. | ✅ |
 | `functional_residues.json` | 37 residues in 11 groups: hydrophobic gate, selectivity glutamates, CTD constrictions, Yoda1 pocket, PIP2 cluster, basic patches. | ✅ |
 | `numbering_human_mouse.json` | Cached human↔mouse alignment map. | ✅ |
 | `ligands.json` | Six modulators with PubChem-verified chemistry, measured potency and — the point of the file — a **graded site-evidence level**. Only one carries a residue-level site, at `docking_md`. `bound_structure` is rejected by the build, which verifies against the downloaded entries that no bound modulator exists. | ✅ |
-| `structures.json` | Registry of 21 structures with state, resolution, coverage, ligands, citation. Built from a glob over the downloaded files, so `NOT_A_PIEZO` in the build script excludes 6U32 — the HaloTag crystal structure, which the next rebuild after Round 31 swept in as an entry of "unknown" species. Round 83 corrected 6KG7's note, which claimed it resolved residues 8–823; it resolves 8–2822, more than any PIEZO1 entry, and a test now reads the file rather than the note. | ✅ |
+| `structures.json` | Registry of **26** structures across four proteins — PIEZO1, PIEZO2 (mouse *and* human), *C. elegans* PEZO-1 and *Drosophila* PIEZO — each carrying a **measured** `protein` and `numbering` with state, resolution, coverage, ligands, citation. Built from a glob over the downloaded files, so `NOT_A_PIEZO` in the build script excludes 6U32 — the HaloTag crystal structure, which the next rebuild after Round 31 swept in as an entry of "unknown" species. Round 83 corrected 6KG7's note, which claimed it resolved residues 8–823; it resolves 8–2822, more than any PIEZO1 entry, and a test now reads the file rather than the note. | ✅ |
 | `parameters.json` | **115 parameters** in 20 categories — every number the calculations use, with unit, bounds, kind and citation. 45 cite a paper; the other 70 are method choices or conventions, each obliged to say why. Built by `scripts/build_parameters.py` behind a provenance gate. | ✅ |
 
 ---

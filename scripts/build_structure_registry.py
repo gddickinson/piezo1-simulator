@@ -37,6 +37,12 @@ from piezo1.core.structure import Structure  # noqa: E402
 #: through the registry, so nothing needs it here.
 NOT_A_PIEZO = {
     "6U32",   # HaloTag bound to its tetramethylrhodamine ligand
+    # 4PKE is a Piezo *domain* from a distant organism — 211 residues, no
+    # protomer, and it matches none of the six references above 0.08. It is a
+    # real homologue and cataloguing it would need a seventh reference for one
+    # fragment that no analysis here can use, so it is left out on purpose
+    # rather than added as an entry of "unknown" protein.
+    "4PKE",
 }
 
 CURATION = {
@@ -110,6 +116,33 @@ CURATION = {
     # any PIEZO1 entry here - and it is in MOUSE Piezo2 numbering (Q8CD54,
     # 2822 aa), not human PIEZO2's 2752. Both facts are checked by
     # tests/test_paralogue.py against the file itself.
+    # --- the homologues, added when a search for PIEZO entries found six the
+    # --- catalogue was missing. Two are human PIEZO2, which makes the
+    # --- paralogue comparison a same-species one for the first time; three are
+    # --- invertebrate, which asks the generality question across half a
+    # --- billion years rather than across the mammals.
+    "9VEE": dict(species="human", state="curved", gating="closed",
+                 note="Human PIEZO2 with MDFIC2. The paralogue in the SAME "
+                      "species as our PIEZO1 reference, so a PIEZO1-PIEZO2 "
+                      "comparison no longer has to cross species too.",
+                 recommended_for=["piezo2", "paralogue", "human_piezo2"]),
+    "9VEF": dict(species="human", state="curved", gating="closed",
+                 note="Human PIEZO2 with MDFIC, the partner complex to 9VEE.",
+                 recommended_for=["piezo2", "paralogue"]),
+    "9UOY": dict(species="worm", state="curved", gating="closed",
+                 note="C. elegans PEZO-1. An invertebrate PIEZO, so neither a "
+                      "PIEZO1 nor a PIEZO2 — the duplication that made those "
+                      "two is vertebrate. The most distant structure available.",
+                 recommended_for=["invertebrate", "generality"]),
+    "9ZIT": dict(species="worm", state="curved", gating="closed",
+                 note="C. elegans PEZO-1 isoform K.",
+                 recommended_for=["invertebrate", "isoform"]),
+    "9W7X": dict(species="fly", state="curved", gating="closed",
+                 note="Drosophila PIEZO. Deposited in an isoform's own "
+                      "numbering, +3 after residue 1570 — found by the "
+                      "numbering check, not by reading the paper.",
+                 recommended_for=["invertebrate", "generality"]),
+
     "6KG7": dict(species="mouse", state="curved", gating="closed",
                  note="PIEZO2 (mouse Piezo2, Q8CD54 numbering), the paralogue "
                       "control. Resolves 1,817 residues from 8 to 2,822 in 16 "
@@ -181,7 +214,7 @@ def main() -> int:
         # would have been a second place for the answer to be wrong, and this
         # is the field the structure chooser filters on.
         identity = identify_numbering(st)
-        protein = "PIEZO2" if identity.is_piezo2 else "PIEZO1"
+        protein = identity.protein
         if not identity.explained:
             print(f"  ! {pdb}: numbering not identified — {identity.summary()}")
 
@@ -195,7 +228,7 @@ def main() -> int:
             "doi": info.get("doi"), "emdb": info.get("emdb", []),
             "n_atoms": st.n_atoms, "n_protomers": len(chains),
             "protomer_chains": chains, "ligands": ligands,
-            "protein": protein,
+            "protein": protein, "numbering": identity.reference,
             **cur,
         })
 

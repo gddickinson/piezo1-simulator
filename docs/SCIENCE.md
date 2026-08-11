@@ -485,6 +485,29 @@ That is a caveat on this project's own dome numbers too: depth and excess area
 scale with how much blade an entry resolves, and only the radius of curvature
 is robust to it.
 
+**The comparison got much sharper once human PIEZO2 was in the catalogue.** A
+search for deposited PIEZO structures found six the catalogue was missing, two
+of them **human PIEZO2** (9VEE, 9VEF) — so the paralogue question no longer has
+to cross a species boundary as well:
+
+| | overlap with PIEZO1's gating mode | in PIEZO2's symmetric subspace | control |
+|---|---|---|---|
+| mouse PIEZO1 → mouse PIEZO2 (6KG7) | 0.804, its **7th** A mode | 0.925 | 0.190 |
+| human PIEZO1 → human PIEZO2 (9VEE) | **0.962**, its **lowest** A mode | **0.981** | 0.116 |
+
+Within one species, PIEZO1's candidate gating coordinate is essentially
+PIEZO2's lowest symmetric mode. The cross-species comparison had been diluting
+the result, not creating it.
+
+The same search added the two **invertebrate** PIEZOs — *C. elegans* PEZO-1
+(9UOY, 9ZIT) and *Drosophila* PIEZO (9W7X). They are neither PIEZO1 nor PIEZO2,
+because that duplication is vertebrate, and they do not share the 38-helix
+architecture the domain table is built on: PEZO-1 has **36** and dPIEZO **40**.
+Nothing here may transfer a helix index to them by number, and a test enforces
+that. 9W7X turned out to be a third splice-isoform case — deposited in an
+isoform's own numbering, **+3 after residue 1570** — found by the numbering
+check rather than by reading the paper.
+
 **Two deposited entries are not in the numbering this project reads them in.**
 The identification built for the paralogue comparison found both, and both are
 live — domains, helices, variants and functional residues are all applied by

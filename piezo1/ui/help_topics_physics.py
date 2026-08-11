@@ -94,6 +94,17 @@ a wrong graft is not visible on screen, it is a blade in roughly the right
 place in the wrong sequence.</p>
 
 <h3>Is any of this PIEZO1? — Analysis &rarr; PIEZO2 comparison</h3>
+<p><b>The catalogue now holds four PIEZOs.</b> PIEZO1 (human and mouse),
+PIEZO2 (<b>human</b> and mouse), <i>C. elegans</i> PEZO-1 and <i>Drosophila</i>
+PIEZO. Filter the entry list by <b>Protein</b> in the Model panel to reach
+them. The invertebrates are neither PIEZO1 nor PIEZO2 — that duplication is
+vertebrate — and they do not even share the 38-helix architecture, with 36 and
+40 respectively.</p>
+<p>Having <b>human</b> PIEZO2 matters: the comparison no longer has to cross a
+species boundary as well as the paralogue. Mouse-to-mouse gives an overlap of
+0.804 with PIEZO2's seventh symmetric mode; human-to-human gives <b>0.962</b>
+with its <b>lowest</b>. The comparison picks the same-species partner
+automatically.</p>
 <p><b>PIEZO2 is the only control available</b> for the question this project
 otherwise never asks: how much of the mechanism is PIEZO1, and how much is the
 fold? 6KG7 was downloaded, classified and then excluded from every ensemble as

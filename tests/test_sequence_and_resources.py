@@ -89,11 +89,24 @@ def test_variants_are_sequence_verified():
 
 
 def test_registry_entries_resolve_to_files():
+    """Every entry has its file, and every entry says which reference it uses.
+
+    The species list was ``human``/``mouse``, which was the whole catalogue
+    until it gained the invertebrate PIEZOs. What must hold is not a fixed set
+    of species but that each entry names a committed UniProt resource its
+    residue numbers belong to — because that is what the annotations are read
+    through, and getting it wrong shifts every helix.
+    """
+    from piezo1.config import RESOURCE_DIR
+
     reg = load_registry()
     assert len(reg) >= 15
     for rec in reg.available():
         assert rec.path.exists()
-        assert rec.species in ("human", "mouse", "unknown")
+        assert rec.species, rec.pdb
+        assert (RESOURCE_DIR / f"uniprot_{rec.numbering_species}.json").exists(), (
+            f"{rec.pdb} claims {rec.numbering_species} numbering and there is "
+            f"no committed resource for it")
     if not reg.available():
         pytest.skip("no structures downloaded; run python -m piezo1.io.fetch")
     assert reg.default() is not None

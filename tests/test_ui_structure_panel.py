@@ -71,8 +71,9 @@ def test_the_protein_filter_separates_piezo2_from_piezo1(panel):
     assert "PIEZO2" in _options(panel, "protein")
 
     panel.filter_combos["protein"].setCurrentText("PIEZO2")
-    assert [r.pdb for r in panel._records] == ["6KG7"]
-    assert panel.current_record().pdb == "6KG7"
+    shown = [r.pdb for r in panel._records]
+    assert "6KG7" in shown and "9VEE" in shown, shown
+    assert all(r.protein == "PIEZO2" for r in panel._records)
 
     panel.filter_combos["protein"].setCurrentText("PIEZO1")
     assert "6KG7" not in [r.pdb for r in panel._records]
@@ -91,15 +92,15 @@ def test_the_count_says_how_much_is_hidden(panel):
     assert f"of {total}" in panel.count.text()
     assert panel.count.text().startswith(f"{total} of")
 
-    panel.filter_combos["protein"].setCurrentText("PIEZO2")
-    assert panel.count.text().startswith("1 of")
+    panel.filter_combos["protein"].setCurrentText("PEZO-1")
+    assert panel.count.text().startswith("2 of"), (
+        "two C. elegans entries; the count must follow the data")
 
 
 def test_an_empty_combination_says_so_rather_than_leaving_stale_detail(panel):
     """The previous entry's details under an empty chooser read as current."""
-    panel.filter_combos["protein"].setCurrentText("PIEZO2")
-    before = panel.detail.text()
-    assert "6KG7" in before or "PIEZO2" in before or before
+    panel.filter_combos["protein"].setCurrentText("PEZO-1")
+    assert panel._records
 
     panel.filter_combos["species"].setCurrentText("human")
     assert panel._records == []
@@ -162,12 +163,15 @@ def test_the_protein_field_is_measured_and_present_on_every_entry():
     records = load_registry().available()
     assert records, "no structures downloaded"
     for record in records:
-        assert record.protein in ("PIEZO1", "PIEZO2"), record.pdb
+        assert record.protein in ("PIEZO1", "PIEZO2", "PEZO-1", "dPIEZO"), \
+            record.pdb
         measured = identify_numbering(Structure.from_file(record.path))
-        assert record.is_piezo2 == measured.is_piezo2, (
+        assert record.protein == measured.protein, (
             f"{record.pdb}: registry says {record.protein}, the coordinates "
-            f"say {measured.reference}")
-    assert sum(r.is_piezo2 for r in records) == 1
+            f"say {measured.protein}")
+        assert record.numbering == measured.reference, record.pdb
+    assert sum(r.is_piezo2 for r in records) >= 3, (
+        "human PIEZO2 joined mouse PIEZO2 in the catalogue")
 
 
 # ------------------------------------------- the completeness selector

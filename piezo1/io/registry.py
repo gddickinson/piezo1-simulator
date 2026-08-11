@@ -39,6 +39,10 @@ class StructureRecord:
     #: silently claiming PIEZO1 — which is what the species field did until
     #: Round 83, when PIEZO2 filed as "mouse" slipped past the overlay guard.
     protein: str = "unknown"
+    #: The committed UniProt reference this file's residue numbers belong to,
+    #: measured at build time. Replaces guessing it from ``species``, which
+    #: only ever had two answers and now has six.
+    numbering: str = ""
 
     @property
     def path(self) -> Path:
@@ -61,7 +65,14 @@ class StructureRecord:
 
     @property
     def numbering_species(self) -> str:
-        """Which numbering the deposited residue numbers use."""
+        """Which committed UniProt resource this entry's numbers belong to.
+
+        Measured at build time and stored. The fallback is the old rule, which
+        assumed every entry was a PIEZO1 in one of two species — true until the
+        catalogue grew a paralogue and two invertebrates.
+        """
+        if self.numbering:
+            return self.numbering
         return "human" if self.species == "human" else "mouse"
 
     def label(self) -> str:
@@ -152,5 +163,6 @@ def load_registry() -> Registry:
             ligands=tuple(e.get("ligands", [])), note=e.get("note", ""),
             recommended_for=tuple(e.get("recommended_for", [])),
             protein=e.get("protein", "unknown"),
+            numbering=e.get("numbering", ""),
         ))
     return Registry(entries=entries)

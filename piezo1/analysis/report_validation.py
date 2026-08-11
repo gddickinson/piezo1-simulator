@@ -75,9 +75,10 @@ def analysis_paralogue(st: Structure, species: str, **kw) -> dict:
 
     identity = identify_numbering(st)
     if identity.is_piezo2:
-        return {"error": "this is the PIEZO2 entry; load a PIEZO1 structure "
-                         "and the comparison runs against 6KG7"}
-    result = compare(piezo1_pdb=st.name, piezo2_pdb="6KG7")
+        return {"error": "this is a PIEZO2 entry; load a PIEZO1 structure and "
+                         "the comparison runs against the best PIEZO2 partner "
+                         "available — the same species where there is one"}
+    result = compare(piezo1_pdb=st.name)
     if "error" in result:
         return result
 

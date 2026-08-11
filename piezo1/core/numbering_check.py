@@ -47,12 +47,17 @@ from .structure import AA3TO1, Structure
 __all__ = ["NumberingIdentity", "SpliceShift", "MismatchBlock",
            "identify_numbering", "detect_splice", "mismatch_blocks",
            "reference_entry", "REFERENCES", "PIEZO1_REFERENCES",
-           "PIEZO2_REFERENCES"]
+           "PIEZO2_REFERENCES", "INVERTEBRATE_REFERENCES"]
 
 #: The committed UniProt resources an entry can be scored against.
-REFERENCES = ("human", "mouse", "human_piezo2", "mouse_piezo2")
+REFERENCES = ("human", "mouse", "human_piezo2", "mouse_piezo2",
+              "worm_piezo", "fly_piezo")
 PIEZO1_REFERENCES = ("human", "mouse")
 PIEZO2_REFERENCES = ("human_piezo2", "mouse_piezo2")
+#: The invertebrate PIEZOs. Neither is a PIEZO1 or a PIEZO2 — the duplication
+#: that produced those two is vertebrate — so they are their own category and
+#: the generality question they answer is a wider one.
+INVERTEBRATE_REFERENCES = ("worm_piezo", "fly_piezo")
 
 
 def reference_entry(name: str) -> dict:
@@ -166,6 +171,18 @@ class NumberingIdentity:
     @property
     def is_piezo2(self) -> bool:
         return self.reference in PIEZO2_REFERENCES
+
+    @property
+    def is_invertebrate(self) -> bool:
+        return self.reference in INVERTEBRATE_REFERENCES
+
+    @property
+    def protein(self) -> str:
+        """PIEZO1, PIEZO2, PEZO-1 or dPIEZO — what to call this on screen."""
+        return {"human": "PIEZO1", "mouse": "PIEZO1",
+                "human_piezo2": "PIEZO2", "mouse_piezo2": "PIEZO2",
+                "worm_piezo": "PEZO-1", "fly_piezo": "dPIEZO",
+                }.get(self.reference, "unknown")
 
     @property
     def confident(self) -> bool:

@@ -50,7 +50,7 @@ from ..core.numbering_check import (PIEZO2_REFERENCES, identify_numbering,
 
 __all__ = ["DomeRow", "ModeComparison", "paralogue_map",
            "tm_index_correspondence", "dome_comparison",
-           "mode_comparison", "compare"]
+           "mode_comparison", "compare", "best_paralogue_partner"]
 
 
 def paralogue_map(piezo1: str = "mouse", piezo2: str = "mouse_piezo2"):
@@ -299,11 +299,40 @@ def _overlaps(reference: np.ndarray, modes, rotation: np.ndarray) -> np.ndarray:
     return out
 
 
-def compare(piezo1_pdb: str = "7WLT", piezo2_pdb: str = "6KG7",
+def best_paralogue_partner(piezo1_pdb: str) -> str | None:
+    """Which PIEZO2 entry to compare this one against.
+
+    Same species first. Until the catalogue gained human PIEZO2 the only
+    option was mouse 6KG7, so a human PIEZO1 had to be compared across a
+    species boundary as well as across the paralogue — and that cost real
+    signal: the gating-mode overlap is 0.804 cross-species and **0.962**
+    human-to-human, where PIEZO2's own *lowest* symmetric mode is the match
+    rather than its seventh.
+    """
+    from ..io.registry import load_registry
+
+    registry = load_registry()
+    record = registry.get(piezo1_pdb.upper())
+    candidates = [e for e in registry.available() if e.protein == "PIEZO2"]
+    if not candidates:
+        return None
+    if record is not None:
+        same = [e for e in candidates if e.species == record.species]
+        if same:
+            candidates = same
+    # Best resolved first, so the comparison uses the most of the molecule.
+    candidates.sort(key=lambda e: -(e.protomer_chains[0]["n_ca"]
+                                    if e.protomer_chains else 0))
+    return candidates[0].pdb
+
+
+def compare(piezo1_pdb: str = "7WLT", piezo2_pdb: str | None = None,
             n_modes: int | None = None) -> dict:
     """The whole comparison, as the report and the CLI serve it."""
     from ..io.registry import load_registry
 
+    if piezo2_pdb is None:
+        piezo2_pdb = best_paralogue_partner(piezo1_pdb) or "6KG7"
     registry = load_registry()
     loaded = {}
     for pdb in (piezo1_pdb, piezo2_pdb):

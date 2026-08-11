@@ -22,8 +22,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from piezo1.config import (HUMAN_ACC, HUMAN_PIEZO2_ACC, MOUSE_ACC,  # noqa: E402
-                           MOUSE_PIEZO2_ACC, RESOURCE_DIR, SEQUENCE_DIR)
+from piezo1.config import (FLY_PIEZO_ACC, HUMAN_ACC,  # noqa: E402
+                           HUMAN_PIEZO2_ACC, MOUSE_ACC, MOUSE_PIEZO2_ACC,
+                           RESOURCE_DIR, SEQUENCE_DIR, WORM_PIEZO_ACC)
 
 #: The PIEZO2 entries are here because 6KG7 is a PIEZO2 structure and the
 #: paralogue comparison needs its transmembrane annotation from the same source
@@ -31,7 +32,8 @@ from piezo1.config import (HUMAN_ACC, HUMAN_PIEZO2_ACC, MOUSE_ACC,  # noqa: E402
 #: how their membrane surfaces were defined rather than by their shape. Mouse
 #: as well as human because 6KG7 is deposited in mouse numbering.
 SPECIES = {"human": HUMAN_ACC, "mouse": MOUSE_ACC,
-           "human_piezo2": HUMAN_PIEZO2_ACC, "mouse_piezo2": MOUSE_PIEZO2_ACC}
+           "human_piezo2": HUMAN_PIEZO2_ACC, "mouse_piezo2": MOUSE_PIEZO2_ACC,
+           "worm_piezo": WORM_PIEZO_ACC, "fly_piezo": FLY_PIEZO_ACC}
 
 #: UniProt feature types we keep, mapped to the key used in the output file.
 KEEP_RANGES = {
