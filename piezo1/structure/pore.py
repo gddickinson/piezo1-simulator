@@ -37,7 +37,7 @@ class PoreSlice:
     radius: float             # largest fitting sphere radius, Angstrom
     center: np.ndarray        # probe centre in world coordinates
     lining: tuple[int, ...] = ()      # residue numbers touching the probe
-    lining_names: tuple[str, ...] = ()
+    lining_names: tuple[str, ...] = ()   # parallel to `lining`, same order
 
 
 @dataclass
@@ -256,10 +256,20 @@ def pore_profile(structure: Structure, axis: SymmetryAxis,
                                          tree, radii, leash, search)
         radius[i] = r
         centers[i] = c
-        lining_res = tuple(sorted(set(int(v) for v in res_seq[touching]))) \
-            if len(touching) else ()
-        lining_nm = tuple(sorted(set(str(v) for v in res_name[touching]))) \
-            if len(touching) else ()
+        # Numbers and names must come out of the SAME de-duplication, or they
+        # are not parallel and every consumer that zips them mislabels the
+        # pore. They were two independently sorted sets until Round 84c: on
+        # 8YEZ that reported the worst dewetted residue as GLU2510 when it is
+        # PRO2510, and on 11YE as LEU2427 when it is ILE2296 — a different
+        # residue, not just a different name. `zip` also truncates to the
+        # shorter tuple, so a slice touching three residues that share a name
+        # contributed one lining point instead of three.
+        if len(touching):
+            unique, first = np.unique(res_seq[touching], return_index=True)
+            lining_res = tuple(int(v) for v in unique)
+            lining_nm = tuple(str(v) for v in res_name[touching][first])
+        else:
+            lining_res, lining_nm = (), ()
         slices.append(PoreSlice(z=float(z), radius=float(r), center=c,
                                 lining=lining_res, lining_names=lining_nm))
 

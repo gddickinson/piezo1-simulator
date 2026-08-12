@@ -49,6 +49,7 @@ COLOR_LABELS = [
     ("Secondary structure", ColorBy.SECONDARY),
     ("B-factor", ColorBy.BFACTOR),
     ("AlphaFold pLDDT", ColorBy.PLDDT),
+    ("Hydrophobicity (Kyte-Doolittle)", ColorBy.HYDROPHOBICITY),
     ("Element", ColorBy.ELEMENT),
     ("Computed value", ColorBy.VALUE),
     ("Uniform", ColorBy.UNIFORM),

@@ -33,6 +33,7 @@ from .fusion_controller import FusionController
 from .dome_controller import DomeController
 from .hybrid_controller import HybridController
 from .interaction_controller import InteractionController
+from .component_controller import ComponentController
 from .ion_flux_controller import IonFluxController
 from .micelle_controller import MicelleController
 from .nanodomain_controller import NanodomainController
@@ -119,6 +120,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.dome_surface = DomeController(self)
         self.contacts = InteractionController(self)
         self.ion_flux = IonFluxController(self)
+        self.components = ComponentController(self)
         # Each of these draws something an analysis already measured, and each
         # reads that analysis's own result object rather than recomputing —
         # so a picture and the panel beside it can never be of different runs.
@@ -426,6 +428,11 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.viewport.set_pick_source(st.xyz)
         self.structure_panel.set_entities(self.view.entity_map())
         self._show_provenance()
+        # A component chosen on the previous entry is re-applied to this one,
+        # because the view is a *new* MolecularView and would otherwise show
+        # everything while the menu still said one part — the selector and the
+        # picture disagreeing is worse than losing the selection.
+        self.components.refresh()
         self.presentation.refresh()
         self.overlay_panel.set_choices(self.registry.entries, exclude=rec.pdb)
         if self._sequence_window is not None:

@@ -82,6 +82,14 @@ CAVEATS = {
         "n = 1. Only one deposited variant entry resolves its own mutation, so "
         "this is the single structural comparison available. It says what the "
         "structures show, not what R2456H does."),
+    "liu2025": (
+        "A REPLICATION AUDIT of Liu et al. 2025, not a result about PIEZO1. "
+        "Six panels reproduce from coordinates, seven have an ANALOGUE that "
+        "is a different quantity, and eleven need patch clamp, a cryo-EM map "
+        "or a molecular-dynamics trajectory this project does not hold. The "
+        "curvature panel DISAGREES with the paper and says so: our sphere fit "
+        "saturates on a nearly flat surface, giving 18 nm where they report "
+        "117. Read the reason beside any panel not marked replicated."),
     "guo2017": (
         "A REPLICATION AUDIT, not a result about PIEZO1. It reports how much "
         "of the paper this project can reproduce from coordinates and, just "
@@ -196,6 +204,11 @@ class TabularAnalysisMixin:
     def show_paired_variant(self) -> None:
         self._run_registry_analysis(
             "paired_variant", "R2456H against wild type — the one pair")
+
+    def show_liu2025(self) -> None:
+        """Every panel of the paper the intermediate-open structure comes from."""
+        self._run_registry_analysis(
+            "liu2025", "Liu et al. 2025 — what reproduces, and what cannot")
 
     def show_guo2017(self) -> None:
         """Every panel of the paper the dome model comes from."""

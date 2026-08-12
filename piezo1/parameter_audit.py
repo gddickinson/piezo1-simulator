@@ -110,6 +110,26 @@ EXEMPT_NAMES = {
 #: Specific (module, owner, name) triples exempt for reasons of their own.
 EXEMPT = {
     ("structure/frame.py", "Frame", "n_atoms_fitted"): "counter, initialised to zero",
+    ("physics/conduction_path.py", "ConductionPath", "dropped_entry"):
+        "counter, initialised to zero",
+    ("physics/conduction_path.py", "ConductionPath", "dropped_exit"):
+        "counter, initialised to zero",
+    ("physics/conduction_path.py", None, "_MIN_SLICES"):
+        "a floor on the arithmetic, not on the physics: below it the truncated "
+        "path is a gap between two annotations rather than a pore, and the "
+        "result is refused rather than computed. No structure in the catalogue "
+        "comes near it — the shortest truncated path is 80 slices.",
+    ("physics/martini.py", "currents_pA", "valence"):
+        "the charge number of the ion the trajectory counted — which ion, not "
+        "a fitted quantity. Their simulations count Na+, so it is 1.",
+    ("physics/charge.py", "ion_rate", "valence"):
+        "the charge number of the ion whose rate is being counted — which ion, "
+        "not a fitted quantity. The species themselves carry registered radii "
+        "and diffusivities; this only says how many charges each one carries.",
+    ("analysis/liu2025_permeation.py", "cumulative_permeation", "valence"):
+        "the charge number of the permeating ion — which ion is being counted, "
+        "not a fitted quantity. Liu et al.'s Figure 5D counts Na+, so it is 1; "
+        "the ion species themselves carry registered radii and diffusivities.",
     ("structure/fusion_pose.py", None, "SPIN_SAMPLES"):
         "how finely the tag's undetermined spin is sampled when reporting what "
         "fraction of orientations touch the channel. A reporting resolution, "
@@ -124,6 +144,12 @@ EXEMPT = {
         "determines this number.",
     ("structure/fusion.py", "AccessibleVolume", "n_before_clash"):
         "counter, initialised to zero",
+    ("physics/charge.py", None, "ELEMENTARY_CHARGE"):
+        "SI-definitional since the 2019 redefinition; a unit conversion between "
+        "amperes and ions per second, not a measured quantity that could be "
+        "revised. Exempt for the same reason F_FARADAY and R_GAS below are — it "
+        "only became visible to this audit when it moved out of `render`, which "
+        "is not scanned, into `physics`, which is.",
     ("physics/_pnp_kernels.py", None, "F_FARADAY"):
         "SI-definitional since the 2019 redefinition; a unit conversion, not a "
         "measured quantity that could be revised",

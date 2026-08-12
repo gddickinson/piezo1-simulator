@@ -278,9 +278,21 @@ def analysis_hydration(st: Structure, species: str, step: float | None = None,
         return {"error": "CHAP grid not downloaded; run python -m piezo1.io.fetch"}
     prof = pore_profile(st, detect_c3_axis(blocks), step=step)
     pred = predict_wetting(st, prof, grid)
+    # Which constriction the verdict is about. "Sterically occluded" reads as a
+    # shut gate, and the narrowest point is not at the gate in any entry in the
+    # catalogue — see `analysis.pore_regions`.
+    from .pore_regions import Bottleneck, describe_bottleneck
+    try:
+        where = describe_bottleneck(st, prof)
+    except Exception as exc:                   # never lose the verdict itself
+        where = Bottleneck(reason=f"bottleneck not located: {exc}")
     return {"score": pred.score,
             "cutoff": pred.meta["cutoff"],
             "bottleneck_radius_nm": pred.min_radius / 10.0,
+            "bottleneck_region": where.narrowest_region,
+            "bottleneck_location": where.sentence(),
+            "transmembrane_gate_radius_nm": (
+                where.gate.radius / 10.0 if where.gate else None),
             "hydrophobic_gate": pred.hydrophobic_gate,
             "sterically_occluded": pred.sterically_occluded,
             "conductive": pred.conductive,
@@ -323,6 +335,28 @@ def analysis_pockets(st: Structure, species: str, top: int = 5, **kw) -> dict:
                      "residues": list(p.residues[:20])}
                     for p in pockets[:top]],
             "ligand_contacts": ligand_contact_residues(st)}
+
+
+def analysis_liu2025(st: Structure, species: str, **kw) -> dict:
+    """Liu et al. 2025 panel by panel: what reproduces and what cannot.
+
+    Runs across their four deposited states rather than against the loaded
+    structure — the paper's claims are comparisons between states, and a single
+    entry can only ever supply one side of one.
+    """
+    from .liu2025 import PANELS, coverage, replicate_all
+
+    summary = coverage()
+    return {
+        "paper": summary["paper"],
+        "coverage": {k: summary[k] for k in
+                     ("total", "replicated", "analogue", "not_replicable")},
+        "cannot_replicate": {p.key: p.reason for p in PANELS
+                             if p.status == "not_replicable"},
+        "analogues": {p.key: p.reason for p in PANELS
+                      if p.status == "analogue"},
+        "panels": replicate_all(),
+    }
 
 
 def analysis_guo2017(st: Structure, species: str, **kw) -> dict:
@@ -394,6 +428,7 @@ ANALYSES = {
     "pockets": analysis_pockets,
     "interactions": analysis_interactions,
     "guo2017": analysis_guo2017,
+    "liu2025": analysis_liu2025,
 }
 
 

@@ -16,6 +16,10 @@ uniform float u_fog_strength;
 uniform float u_ambient;
 uniform float u_shininess;
 uniform int u_outline;
+// Per-batch opacity. 1.0 for every molecular representation; the pore
+// probe spheres are drawn translucent so the lining stays visible
+// through them, which is the whole point of drawing them at all.
+uniform float u_alpha;
 
 out vec4 f_color;
 
@@ -71,5 +75,5 @@ void main()
                       0.0, 1.0) * u_fog_strength;
     color = mix(color, u_fog_color, fog);
 
-    f_color = vec4(color, 1.0);
+    f_color = vec4(color, u_alpha);
 }

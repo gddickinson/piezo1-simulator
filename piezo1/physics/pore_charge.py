@@ -191,6 +191,21 @@ def cytosolic_end(structure: Structure, axis) -> int:
     return 0 if tail < float(np.mean(projection)) else -1
 
 
+#: The groups whose residues count as pore-facing **for the charge map**.
+#:
+#: Named rather than selected by ``category == "pore"``, which is what this did
+#: until Round 84d. That coupling was invisible and load-bearing: adding four
+#: curated groups for Liu et al. 2025's cap gate and spring linker — all of
+#: them genuinely pore elements, all of them correctly categorised — took the
+#: curated charge set from 6 to 12 and **flipped the measured selectivity from
+#: cation- to anion-selective**, because R2279, D2310, E2318 and E2367 sit in
+#: the cap rather than on the conduction pathway. An annotation edit must not
+#: silently redefine a recorded measurement, so the set it feeds is written
+#: down here and adding a group is now a deliberate act.
+CURATED_CHARGE_GROUPS = ("hydrophobic_gate", "pore_lining",
+                         "selectivity_acidic", "ctd_constriction")
+
+
 def _curated_map(annotations: Annotations, species: str) -> dict[int, str]:
     """Residue number -> annotation group, for the groups called pore-facing.
 
@@ -201,7 +216,7 @@ def _curated_map(annotations: Annotations, species: str) -> dict[int, str]:
     key = "mouse" if species == "mouse" else "human"
     out: dict[int, str] = {}
     for group in annotations.residue_groups:
-        if group.category != "pore":
+        if group.id not in CURATED_CHARGE_GROUPS:
             continue
         for detail in group.detail:
             number = detail.get(key)

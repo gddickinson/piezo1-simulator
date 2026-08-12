@@ -7,6 +7,16 @@ coordinates every frame without rebuilding vertex arrays.
 All three batch types share the uniform block applied by
 :class:`piezo1.render.scene.Scene`, so lighting and depth cueing stay
 consistent between representations.
+
+**An empty upload means "draw nothing", not an error.** ``ctx.buffer`` refuses
+a zero-length payload — "the buffer cannot be empty" — and an animation whose
+first frame is empty is the normal case, not a bug: the ion stream begins with
+no ions in the pore and fills over the first tenth of a second. That exception
+propagated out of the frame callback, which
+:meth:`piezo1.ui.gl_widget.ViewportWidget._on_tick` catches by *unregistering
+the animation*, so the stream died on frame one and every conducting structure
+looked exactly like a shut one. ``render()`` already draws nothing at
+``count == 0``, so the guard is to keep the buffer and stop.
 """
 
 from __future__ import annotations
@@ -97,14 +107,28 @@ class SphereBatch(Batch):
     DTYPE = np.dtype([("center", "f4", 3), ("radius", "f4"),
                       ("color", "f4", 3), ("flags", "f4")])
 
+    #: Per-batch opacity, 0-1. Below 1 the batch also declares itself
+    #: `transparent`, so `Scene.render` moves it into the blended pass with
+    #: depth writes off — a translucent batch drawn in the opaque pass writes
+    #: depth and hides whatever it was meant to reveal.
+    alpha: float = 1.0
+
     def __init__(self, ctx, library: ShaderLibrary, name: str = "spheres") -> None:
         super().__init__(name=name, ctx=ctx)
         self.program = library.get("sphere")
         self._capacity = 0
+        self.alpha = 1.0
+
+    @property
+    def transparent(self) -> bool:
+        return self.alpha < 1.0
 
     def upload(self, centers: np.ndarray, radii: np.ndarray,
                colors: np.ndarray, flags: np.ndarray | None = None) -> None:
         n = len(centers)
+        if n == 0:
+            self.count = 0
+            return
         data = np.empty(n, dtype=self.DTYPE)
         data["center"] = centers
         data["radius"] = radii
@@ -140,6 +164,9 @@ class SphereBatch(Batch):
 
     def render(self) -> None:
         if self.visible and self.count and self.vao is not None:
+            member = self.program.get("u_alpha", None)
+            if member is not None:
+                member.value = float(self.alpha)
             self.vao.render(moderngl.TRIANGLE_STRIP, vertices=4, instances=self.count)
 
 
@@ -173,6 +200,9 @@ class CylinderBatch(Batch):
     def upload(self, starts: np.ndarray, ends: np.ndarray, radii: np.ndarray,
                colors_a: np.ndarray, colors_b: np.ndarray | None = None) -> None:
         n = len(starts)
+        if n == 0:
+            self.count = 0
+            return
         data = np.empty(n, dtype=self.DTYPE)
         data["start"] = starts
         data["end"] = ends
@@ -225,6 +255,9 @@ class MeshBatch(Batch):
                colors: np.ndarray, indices: np.ndarray,
                alpha: np.ndarray | float = 1.0) -> None:
         n = len(positions)
+        if n == 0 or len(indices) == 0:
+            self.release()
+            return
         data = np.empty(n, dtype=self.DTYPE)
         data["position"] = positions
         data["normal"] = normals

@@ -4,8 +4,8 @@ Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
 **Status: 7 open items, all in Block R.**
-Round **84b** was added mid-block on request and completed out of order;
-Round 84 itself is still open. Its record is below.
+Rounds **84b** through **84e** were added mid-block on request and completed
+out of order; Round 84 itself is still open. Their records are below.
 Everything finished — 382 items across 83 rounds, each carrying the result it
 measured — is in
 [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
@@ -248,6 +248,106 @@ recomputed.*
       0.000% truncation error by comparing zero with zero; the first planarity
       control was a tautology; the helix detector passed 41% of a random
       walk's windows until the turn criterion was added.
+
+### Round 84c — Why the ion flux animation showed nothing, anywhere
+*Requested rather than planned, from a report that every structure came back
+non-conducting whether flat or curved. Numbered 84c for the same reason 84b
+was: Round 85 below is a review and taking its number would put two adjacent
+headings on the same one.*
+- [x] Find out why. **Two independent causes.** The animation itself had never
+      drawn an ion: the stream is empty on its first frame, `ctx.buffer`
+      refuses a zero-length payload, and `_on_tick` answers an exception from a
+      frame callback by unregistering the animation — so a conducting entry
+      looked exactly like the seventeen that are refused, and no ion had ever
+      reached the screen. Fixed in
+      `render/primitives.py`, where an empty upload now means *draw nothing*.
+- [x] Make the refusal say which constriction. **Done: the narrowest point is
+      at the transmembrane gate in 0 of the 18 entries whose gate can be
+      located** — below it at the cytoplasmic constriction in 16, above it in
+      the cap in 2 — while the gate itself is 2.4–4.7 Å everywhere, at or above
+      the 1.5 Å water radius. `analysis/pore_regions.py` reports all three
+      regions rather than the global minimum, because the two flanking
+      constrictions are within 0.02 Å on 8IXO and which wins flips with the
+      frame.
+- [x] Check it against the open-prone structure. **Done: 8IXO's gate is
+      3.52 Å, its Rao score 0.31 clears the cutoff, and the V2476 side-chain
+      diagonal is 14.2 Å against 7.7 Å on 7WLT** — reproducing Liu et al.
+      2025's 7 → 14 Å. It is refused on a 0.98 Å neck at E2537, the
+      constriction that paper reports as *remaining closed* because the lateral
+      portals carry the current.
+- [x] *Validate:* the locator calibrated before it is believed. **Done, and it
+      caught two things.** A narrow point planted inside the gate must come
+      back as `gate`, or "never at the gate" asserts nothing. Deciding the
+      numbering from the gate's three residue names read **mouse PIEZO2 as
+      human PIEZO1**; the job went to `identify_numbering`. And the claim that
+      8IXO has the widest gate in the catalogue was wrong — 7WLU and 3JAC are
+      wider and are the two worst-resolved entries, so gate radius is
+      confounded with resolution and cannot carry the dilation claim.
+- [x] Fix the mislabelling found on the way. **Done.** `PoreSlice.lining` and
+      `.lining_names` were two independently sorted sets, so `predict_wetting`
+      named the wrong residue on 8 of 19 entries (8YEZ's GLU2510 is PRO2510;
+      11YE's LEU2427 is ILE2296, a different residue). Measured before fixing:
+      scores move ≤ 4.6%, **no verdict flips**, both frozen claims unchanged.
+
+### Round 84d — The paper that says the current does not go down the axis
+*Requested rather than planned, following directly from 84c: reproduce Liu et
+al. 2025's figures and their Figure 5 permeation simulation, and make the
+scientific choices selectable.*
+- [x] Finish the answer to why 8IXO does not conduct. **Done: the axial pore is
+      closed at BOTH ends.** Every remaining sub-2 A constriction between their
+      own endpoints is R2295 and its neighbours — the residue the paper says the
+      cap is shut above — and the neck is the other end. Ions enter and leave
+      laterally; only the middle of the path is axial.
+- [x] Make the pathway a choice. **Done:** `physics/conduction_path.py`, with
+      `axial` returning the same profile object so nothing recorded moves. On
+      the lateral route **8IXO conducts at 53.8 pS**. And the honest half,
+      pinned as a test: **it does not separate open from closed** — six curved
+      entries also conduct at 6-12 pS. Necessary, not sufficient.
+- [x] Enumerate every panel of the paper. **Done: 24 panels, 6 reproduce, 7
+      analogue, 11 refused** with a specific reason each. All four of their
+      states are deposited and in the catalogue, which is why so much of it
+      reproduces.
+- [x] Reproduce the panels that state numbers. **Done, seven within about an
+      Angstrom**: pore axis 110 -> 100 (ours 109.5 -> 96.2), V2476 diagonal
+      7 -> 14 (7.7 -> 14.2), cap loops 4.3 -> 16.2 (4.8 -> 16.1) and
+      4.8 -> 12.8 (5.7 -> 11.4), spring Y2464 17 (16.6).
+- [x] The Figure 5 permeation analogue at their four voltages. **Done: 40.1 pS
+      slope on 8IXO against their 20 pS**, twice, consistent with the 1.4x this
+      solver already carries. Figure 5C is **refused** rather than approximated:
+      a 1-D steady state has one flux through every slice and cannot give four
+      different cavity counts.
+- [x] A Martini-class scaffold that prepares and does not run. **Done**, with
+      the boundary enforced rather than asserted: `MartiniRun` is constructed in
+      exactly one place and `load_results` raises rather than estimating.
+- [x] *Validate:* every instrument calibrated first. **Done, and it caught four
+      latent defects** — a zero anion area making the PNP system singular, a
+      0/0 chord conductance reporting 1,586 pS at 0 V, an annotation edit
+      flipping the recorded selectivity through an implicit `category == "pore"`
+      coupling, and `default_species()` being passed as the `wetting`
+      argument — **and two of my own claims**: reading mouse PIEZO2 as human
+      PIEZO1, and asserting 8IXO had the widest gate when the two widest are
+      the two worst-resolved entries.
+
+### Round 84e — Showing one part of it
+*Requested rather than planned: display selected components with their
+important residues, opacity on the drawn pore, and more colouring options.*
+- [x] Named components of the assembly. **Done: ten**, built entirely from
+      curated annotation ids rather than ranges in the viewer, so each inherits
+      every correction `domains.json` and `functional_residues.json` have had.
+      `pore_module` is Liu et al.'s Figure 2E view — 8,343 of 32,112 atoms on
+      8IXO, with all four gates in ball-and-stick.
+- [x] Hide without subsetting. **Done**, with a test that measures the dome
+      either side of a selection and requires it bit-identical, and a status
+      line that says "hidden, not removed" on every switch.
+- [x] Opacity on the drawn pore. **Done**, which needed a `u_alpha` on the
+      sphere impostor — it had none — and the transparent-pass flag, or a
+      translucent batch writes depth and hides what it was meant to reveal.
+- [x] Hydrophobicity colouring. **Done**: Kyte-Doolittle on a fixed +-4.5
+      scale, not auto-ranged, so two structures stay comparable.
+- [x] *Validate:* **found the defect that only pixels could see** — `traces` is
+      built once at construction, so the residue filter left the cartoon
+      drawing the whole chain and hiding 97% of the atoms changed the picture
+      by a tenth.
 
 ### Round 85 — Review after Rounds 81–84
 - [ ] Five-round review. The standing question for this block: the project has

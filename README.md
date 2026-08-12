@@ -163,6 +163,34 @@ room there is.
 The software also predicts labelling kinetics and the calcium concentration a
 dye on the tag would see when the channel opens.
 
+### Where the current actually goes, and why nothing conducts
+
+Liu et al., *Neuron* 2025 (PDB 8IXN, 8IXO) solved the only **intermediate-open**
+PIEZO1 structure, and reported that ions never use the pore axis end to end:
+they enter through three lateral cap gates and leave through intracellular
+lateral portals, because the cap is shut above R2295 and the cytoplasmic
+constriction neck stays closed.
+
+That is why this project's axial conduction model refuses almost every
+structure. **View → Ion flux pathway** makes the route a choice — axial stays
+the default — and **View → Ion flux voltage** sweeps their four potentials:
+
+```bash
+python -m piezo1.cli liu2025 --coverage           # panel by panel
+python scripts/make_liu2025_figures.py            # the replicable panels
+```
+
+> 6 of 24 panels reproduce from deposited coordinates, 7 have an analogue that
+> is not the same quantity, and 11 need patch clamp, a cryo-EM map or a
+> molecular-dynamics trajectory this project does not hold.
+
+Seven distances they state come back within about an Angstrom — the pore axis
+shortening 110 → 100 Å, the transmembrane gate's V2476 side-chain diagonal
+opening 7 → 14 Å, the cap-gate loops separating 4.3 → 16.2 Å. The curvature
+radii do **not**: our sphere fit reproduces the curved state and saturates on a
+flat one, giving 18 nm where they report 117, and that is reported rather than
+adjusted.
+
 ### Replicate the paper the dome model comes from
 
 The membrane dome mechanism is Guo & MacKinnon, *eLife* 2017 — PDB 6B3R. Its

@@ -100,6 +100,33 @@ def cmd_analysis(args) -> int:
     return 0 if "error" not in result else 1
 
 
+def cmd_liu2025(args) -> int:
+    """Liu et al. 2025 panel by panel, including what cannot be reproduced.
+
+    Most panels compare their four deposited states, so ``structure`` is
+    accepted for symmetry with the other commands and used by none of them —
+    a single entry can only ever supply one side of a comparison.
+    """
+    from .analysis.liu2025 import (PANELS, coverage, not_replicable,
+                                   panel_by_key, replicate)
+
+    counts = {k: coverage()[k] for k in
+              ("total", "replicated", "analogue", "not_replicable")}
+    if args.panel:
+        _emit(replicate(panel_by_key(args.panel).key), args.json)
+    elif args.coverage:
+        _emit(counts, args.json)
+    else:
+        _emit({
+            "paper": coverage()["paper"],
+            "coverage": counts,
+            "panels": {p.key: {"label": p.label, "status": p.status,
+                               "title": p.title} for p in PANELS},
+            "cannot_replicate": {p.key: p.reason for p in not_replicable()},
+        }, args.json)
+    return 0
+
+
 def cmd_guo2017(args) -> int:
     """Replicate Guo & MacKinnon 2017 panel by panel."""
     from .analysis.guo2017 import (PANELS, coverage, panel_by_key, replicate,
@@ -309,6 +336,17 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--coverage", action="store_true",
                    help="only report how much of the paper is reachable")
     p.set_defaults(func=cmd_guo2017)
+
+    p = sub.add_parser("liu2025", parents=[common],
+                       help="replicate the figures of Liu et al. 2025, the "
+                            "paper the intermediate-open structure comes from")
+    p.add_argument("structure", nargs="?", default="8IXO",
+                   help="ignored for most panels, which compare all four of "
+                        "their states (default 8IXO, the intermediate-open one)")
+    p.add_argument("--panel", help="one panel key, e.g. 2b; omit for all")
+    p.add_argument("--coverage", action="store_true",
+                   help="only report how much of the paper is reachable")
+    p.set_defaults(func=cmd_liu2025)
 
     p = sub.add_parser("variants", parents=[common], help="the curated variant table")
     p.add_argument("--classification")

@@ -106,6 +106,70 @@ the lumen</b> on the open structure — E2117 sits 12.9 Å past the wall. That
 agrees with the paper that identified it, which concluded from function alone
 that the residue probably modulates the pore rather than lining it.</p>
 
+<h3>Why almost nothing animates — View &rarr; Ion flux animation</h3>
+<p>The stream is gated by the same wetting verdict, so <b>17 of the 19
+deposited PIEZO1 entries show no ions at all</b>. That is the honest outcome
+and not a fault — but the reason matters, and until Round 84c the status line
+did not give it.</p>
+<p><b>The refusal is almost never about the gate.</b> Locating the
+transmembrane gate from the curated <tt>hydrophobic_gate</tt> residues and
+asking where the profile is actually pinched: in <b>none</b> of the 18 entries
+whose gate can be located is the narrowest point <i>at</i> the gate. It is
+below it, at the cytoplasmic constriction, in 16, and above it in the cap in
+2. The gate itself measures <b>2.4–4.7 Å</b> everywhere — at or above the
+1.5 Å water radius the steric test uses. The status line now names the
+constriction and quotes the gate's radius beside it.</p>
+<p><b>8IXO is the case that makes the point.</b> It is Liu et al. 2025's
+intermediate-<i>open</i> S2472E structure. Its gate is 3.52 Å; its lining
+clears the hydrophobicity cutoff at 0.31; and the V2476 side-chain diagonal
+measures <b>14.2 Å</b> against <b>7.7 Å</b> on the curved 7WLT, reproducing the
+7 &rarr; 14 Å dilation that paper reports. It is still refused — on a
+<b>0.98 Å</b> neck at E2537, the vertical constriction the same paper says
+<i>remains closed</i>, because <b>the lateral portals carry the current</b>.
+Our conduction model is one-dimensional and axial: it has no lateral portals in
+it, so it must pass through a constriction the real channel goes around. That
+is a stated limit of the model, not a property of the structures.</p>
+<p><b>And the two entries that do animate are the two weakest models.</b>
+<b>11ZC</b> is deposited at 6.0 Å with backbone atoms only — no side chains
+anywhere — which is why nothing in it is narrow, why its gate measures 7.04 Å
+and why it runs at 2.4 pA. <b>3JAC</b> is 4.8 Å with 346 unnamed residues and
+runs at 0.18 pA, a tenth of the measured conductance rather than the 1.5×
+overestimate 11ZC gives. Both numbers carry that comparison on the HUD. The
+animation is a picture of a rate, and on these two entries the rate is a
+picture of the resolution.</p>
+
+<h3>Choosing the route — View &rarr; Ion flux pathway</h3>
+<p>Round 84d made the conduction pathway a <b>choice</b> instead of an
+assumption, because the assumption was wrong for this channel.</p>
+<p><b>Axial</b> is the default and is what every number this project has
+recorded was computed on: bulk solvent, down the three-fold axis, bulk solvent.
+It refuses all but two entries, and the reason is that PIEZO1's axis is closed
+at <i>both</i> ends on purpose — pinched to about 1 Å at <b>R2295</b> on top
+and at the cytoplasmic constriction beneath. Liu et al. 2025 report both:
+Na⁺ enters the cap vestibule through <b>three lateral cap gates</b> and leaves
+the inner vestibule through <b>intracellular lateral portals</b>, and neither
+closed end is ever traversed.</p>
+<p>The <b>lateral</b> options exclude those ends, which is the smallest change
+that lets the model represent that route. On it, <b>8IXO conducts at 53.8 pS</b>
+where the axial model refuses it. Two things must be read with it. The portal
+is <b>not modelled</b> — the truncated end slice becomes the mouth and its
+radius is the pore's, not the portal's — so the current is an <b>upper
+bound</b>. And it does <b>not</b> separate open from closed: 7WLT, 6B3R, 8IMZ
+and others also conduct at 6–12 pS once the ends are open, against 8IXO's 53.8.
+The right ordering, roughly fivefold, and not the clean contrast their
+simulations show. Opening the ends is necessary and not sufficient.</p>
+<p><b>View &rarr; Ion flux voltage</b> sweeps the four transmembrane potentials
+of their Figure 5A. At 0 V the current is zero and nothing animates, which is
+the correct picture rather than a failure. Across the four, the slope on 8IXO
+is <b>40.1 pS against their 20 pS</b> — twice, which is the same overestimate
+this solver already carries against the measured unitary conductance.</p>
+<p>What the animation still is not: their Figure 5 has explicit ions with
+trajectories, and this has a concentration field. The particles are a rate made
+visible. Their Figure 5C — how many Na⁺ reached each cavity — has <b>no
+analogue here at all</b> and the panel registry says so: a one-dimensional
+steady state carries one flux through every slice by construction, and their
+count includes ions that entered and turned back.</p>
+
 <h3>What the variant structures can support — Analysis &rarr; Variant structures</h3>
 <p>A null result, shipped rather than worked around. Of the four deposited
 variant entries, <b>one</b> (8YFG, R2456H) actually resolves its own mutation;

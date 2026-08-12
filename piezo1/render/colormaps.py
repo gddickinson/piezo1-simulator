@@ -17,7 +17,7 @@ import numpy as np
 from ..config import RESOURCE_DIR
 from ..core.structure import Structure
 
-__all__ = ["potential_colors", "hex_to_rgb", "chain_colors", "domain_colors", "bfactor_colors",
+__all__ = ["hydrophobicity_colors", "potential_colors", "hex_to_rgb", "chain_colors", "domain_colors", "bfactor_colors",
            "plddt_band_colors",
            "plddt_colors", "value_colors", "uniform_color", "SEQUENCE_COLORS",
            "DomainPalette", "load_domain_palette", "PLDDT_BANDS"]
@@ -211,3 +211,44 @@ def plddt_colors(structure: Structure) -> np.ndarray:
     """AlphaFold confidence colouring; ``b_factor`` holds pLDDT in AFDB files."""
     return plddt_band_colors(structure.b_factor)
 
+
+#: Kyte-Doolittle runs -4.5 (arginine) to +4.5 (isoleucine), so the scale is
+#: **fixed** at that range rather than auto-ranged over whatever is on screen.
+#: Same reasoning as `potential_colors`: an auto-ranged hydropathy map paints
+#: a uniformly polar loop in full orange, and two structures coloured that way
+#: cannot be compared with each other or with a published panel.
+KYTE_DOOLITTLE_RANGE = 4.5
+
+
+def hydrophobicity_colors(structure) -> np.ndarray:
+    """Per-atom Kyte-Doolittle hydropathy, blue polar to orange apolar.
+
+    Residue-level, because the scale is: every atom of a residue takes its
+    residue's value, which is what makes a hydrophobic belt legible as a band
+    rather than as speckle. Anything the scale does not name — a modified
+    residue, a ligand, a water — comes out mid-grey rather than at zero on the
+    colour ramp, so "not scored" cannot be read as "neutral".
+    """
+    from ..analysis.hydropathy import KYTE_DOOLITTLE
+    from ..core.structure import AA3TO1
+
+    values = np.full(structure.n_atoms, np.nan, dtype=np.float64)
+    for three, one in AA3TO1.items():
+        score = KYTE_DOOLITTLE.get(one)
+        if score is None:
+            continue
+        values[structure.res_name == three] = score
+
+    scaled = np.clip(values / KYTE_DOOLITTLE_RANGE, -1.0, 1.0)
+    out = np.empty((structure.n_atoms, 3), dtype=np.float32)
+    polar = np.array([0.30, 0.55, 0.95], dtype=np.float32)
+    apolar = np.array([0.95, 0.60, 0.20], dtype=np.float32)
+    middle = np.array([0.94, 0.94, 0.92], dtype=np.float32)
+    unknown = np.array([0.55, 0.55, 0.58], dtype=np.float32)
+
+    known = np.isfinite(scaled)
+    t = np.abs(np.nan_to_num(scaled))[:, None]
+    towards = np.where((np.nan_to_num(scaled) >= 0)[:, None], apolar, polar)
+    out[:] = middle * (1.0 - t) + towards * t
+    out[~known] = unknown
+    return out

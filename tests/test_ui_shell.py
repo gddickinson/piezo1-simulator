@@ -243,7 +243,8 @@ def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
                "hybrid": "show_hybrid",
                "fluctuations": "show_fluctuations",
                "paralogue": "show_paralogue",
-               "guo2017": "show_guo2017"}
+               "guo2017": "show_guo2017",
+               "liu2025": "show_liu2025"}
 
     for name in ANALYSES:
         assert name in drawn or name in tabular, (
@@ -293,7 +294,11 @@ def test_the_guide_covers_what_the_recent_rounds_added(qapp):
                    # The drawn overlays. Each is a picture that can be
                    # over-read, so the guide has to say what each one is not.
                    "probe spheres", "alpha spheres", "allosteric path",
-                   "calcium nanodomain", "colour by fluctuation"):
+                   "calcium nanodomain", "colour by fluctuation",
+                   # Why 17 of 19 entries animate nothing, and — the part a
+                   # bare "sterically occluded" gets wrong — which
+                   # constriction refuses them.
+                   "lateral portals"):
         assert phrase in text, f"the guide never mentions {phrase!r}"
 
     # And it must keep saying what the model cannot do.

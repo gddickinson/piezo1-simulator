@@ -35,6 +35,7 @@ SEED = [
     ("geng2020", "PMID:32142647", "Plug-and-latch gating; Piezo1.1 isoform 6LQI", "piezo"),
     ("yang2022", "PMID:35388220", "Curved and flattened mPIEZO1 in bilayer; 7WLT/7WLU", "piezo1"),
     ("zhou2023mdfic", "PMID:37590348", "MDFIC is a PIEZO auxiliary subunit", "piezo"),
+    ("liu2025", "PMID:39719701", "Intermediate-open S2472E; PDB 8IXN/8IXO; lateral portals carry the current", "piezo1"),
     ("vaisey2026", "PMID:42234740", "Lipid cofactor required; force alone insufficient", "piezo1"),
     # --- membrane mechanics ----------------------------------------------
     ("haselwandter2018", "PMID:30480546", "Membrane footprint; R_c 10.2 nm, lambda 14 nm", "piezo"),

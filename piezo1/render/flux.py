@@ -22,6 +22,15 @@ so a time base is meaningful and the honest thing is to name the factor.
 wetting verdict, and a channel predicted not to conduct must show no particles
 at all rather than a slow trickle. Drawing ions through a closed gate would be
 a confidently wrong picture of the project's own central structural result.
+
+**And it must say which constriction refused it.** 17 of the 19 deposited
+PIEZO1 entries are refused, and in none of them is the narrowest point at the
+transmembrane gate — it is beyond it, at the cytoplasmic constriction or above
+it in the cap. Liu et al. 2025, whose intermediate-open entry is in this
+catalogue, report that neck as bypassed by lateral portals an axial model does
+not contain. "Sterically occluded" alone reads as a shut gate;
+:mod:`piezo1.analysis.pore_regions` supplies the location and the gate's own
+radius beside it.
 """
 
 from __future__ import annotations
@@ -31,10 +40,11 @@ from dataclasses import dataclass
 __all__ = ["FluxTimebase", "ELEMENTARY_CHARGE", "ion_rate", "timebase",
            "timebase_for_structure", "DISPLAY_PARTICLES_PER_SECOND"]
 
-#: Coulombs. Exact by the 2019 SI definition, like ``F_FARADAY`` in
-#: :mod:`piezo1.physics.permeation`, which is why it is a module constant
-#: rather than a registered parameter — it is a definition, not a measurement.
-ELEMENTARY_CHARGE = 1.602176634e-19
+#: Re-exported from :mod:`piezo1.physics.charge`, where they moved in Round 84d
+#: so that `physics` and `analysis` could use them without importing `render`
+#: and reversing the project's dependency arrow. Every existing import of
+#: ``piezo1.render.flux.ion_rate`` keeps working.
+from ..physics.charge import ELEMENTARY_CHARGE, ion_rate  # noqa: F401
 
 #: Ions crossing per displayed second. Chosen so individual particles are
 #: separable to the eye; it sets the slowdown rather than being derived from it.
@@ -76,18 +86,6 @@ class FluxTimebase:
         return max(1, int(round(seconds * fps)))
 
 
-def ion_rate(current_pA: float, valence: int = 1) -> float:
-    """Ions per second carried by ``current_pA`` at the given valence.
-
-    A divalent ion carries twice the charge, so the same current is half as
-    many ions — which matters here because PIEZO1 is calcium-permeable and the
-    animation would otherwise overstate the particle count for Ca²⁺.
-    """
-    if valence <= 0:
-        raise ValueError("valence must be positive")
-    return abs(current_pA) * 1e-12 / (ELEMENTARY_CHARGE * valence)
-
-
 def timebase(current_pA: float, valence: int = 1,
              particles_per_second: float | None = None,
              conducting: bool = True, reason: str = "",
@@ -114,7 +112,9 @@ def timebase(current_pA: float, valence: int = 1,
         slowdown=ions / particles_per_second, conducting=True, caveat=caveat)
 
 
-def timebase_for_structure(structure, profile=None, grid=None) -> FluxTimebase:
+def timebase_for_structure(structure, profile=None, grid=None,
+                           pathway: str = "axial",
+                           voltage: float | None = None) -> FluxTimebase:
     """The time base for a loaded structure, gated by the wetting verdict.
 
     Kept here rather than in the controller so it can be exercised on real
@@ -126,14 +126,21 @@ def timebase_for_structure(structure, profile=None, grid=None) -> FluxTimebase:
     either, and did not.
     """
     from ..analysis.hydration import load_grid, predict_wetting
+    from ..analysis.pore_regions import describe_bottleneck
     from ..physics.permeation import default_species, solve_pnp
     from ..structure.pore import pore_profile
     from ..structure.protomers import protomer_blocks
     from ..structure.superpose import detect_c3_axis
 
+    from ..physics.conduction_path import conduction_path
+
     if profile is None:
         blocks, _ = protomer_blocks(structure)
         profile = pore_profile(structure, detect_c3_axis(blocks))
+
+    # `axial` returns the same object, so the default path is untouched.
+    path = conduction_path(structure, profile, pathway)
+    profile = path.profile
 
     try:
         verdict = predict_wetting(structure, profile,
@@ -143,10 +150,26 @@ def timebase_for_structure(structure, profile=None, grid=None) -> FluxTimebase:
                         reason=f"wetting not evaluated: {exc}")
 
     if verdict.hydrophobic_gate or verdict.sterically_occluded:
-        return timebase(0.0, conducting=False, reason=verdict.summary())
+        # Say where. Every refusal in the catalogue is on a constriction BEYOND
+        # the gate, which the axial model must pass and the real channel leaves
+        # sideways before reaching — so a bare "sterically occluded" reads as a
+        # shut gate and is wrong about which constriction it is.
+        reason = verdict.summary()
+        try:
+            reason += " · " + describe_bottleneck(structure, profile).sentence()
+        except Exception:                      # never lose the verdict itself
+            pass
+        if not path.is_axial or path.refused:
+            reason += " · " + path.caveat()
+        return timebase(0.0, conducting=False, reason=reason)
 
     try:
-        result = solve_pnp(profile, default_species())
+        # `wetting` is the second argument. This passed `default_species()`
+        # there until Round 84d, so the solver's own blocking check silently
+        # saw a list instead of a verdict and skipped — harmless only because
+        # the caller had already gated on the same verdict two lines up.
+        result = solve_pnp(profile, verdict, voltage=voltage,
+                           species=default_species())
     except Exception as exc:
         return timebase(0.0, conducting=False, reason=f"permeation failed: {exc}")
 
@@ -163,6 +186,8 @@ def timebase_for_structure(structure, profile=None, grid=None) -> FluxTimebase:
     if published > 0 and abs(modelled / published - 1.0) > 0.15:
         caveat = (f"rate from the model's {modelled:.0f} pS, "
                   f"{modelled / published:.1f}x the measured {published:.0f} pS")
+    if not path.is_axial:
+        caveat = (caveat + " · " if caveat else "") + path.caveat()
 
     # `.current` is in amperes; the time base is stated in picoamperes.
     return timebase(float(result.current) * 1e12, conducting=True, caveat=caveat)

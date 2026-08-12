@@ -65,6 +65,52 @@ SITES = [
      "source": "converted from mouse M2493/F2494 and P2536/E2537",
      "color": "#d2691e", "category": "pore"},
 
+    {"group": "cap_constriction", "residues": {2279: "R"},
+     "label": "Extracellular cap constriction",
+     "description": "The closed top of the cap. Liu et al. 2025 measure their "
+                    "pore axis from this residue down to the intracellular "
+                    "constriction neck, and state that the cap is shut above "
+                    "it in every structure they solved - so ions reach the cap "
+                    "vestibule through the LATERAL cap gates rather than "
+                    "through the top. Curated because it is the upper endpoint "
+                    "of any axial conduction path, and this project's axial "
+                    "model is limited by it on every entry.",
+     "source": "Liu et al. Neuron 2025 (PMID 39719701), mouse R2295",
+     "color": "#8fd4a8", "category": "pore"},
+
+    {"group": "cap_gate", "residues": {2316: "T", 2317: "V", 2318: "E",
+                                       2319: "Y"},
+     "label": "Cap gate",
+     "description": "The extracellular gate formed between neighbouring cap "
+                    "subunits, which opens on the transition to the "
+                    "intermediate state. Y2319 (mouse Y2335) is the residue "
+                    "whose displacement Liu et al. track.",
+     "source": "Liu et al. Neuron 2025 (mouse T2332/V2333/E2334/Y2335)",
+     "color": "#5ec8ff", "category": "pore"},
+
+    {"group": "cap_gate_loops", "residues": {2310: "D", 2312: "A",
+                                             2366: "P", 2367: "E"},
+     "label": "Cap gate loops 1 and 2",
+     "description": "The two loops whose separation opens the lateral access "
+                    "into the cap vestibule: A2312-P2366 widens from ~4.3 to "
+                    "~16.2 A and D2310-E2367 from ~4.8 to ~12.8 A between the "
+                    "curved and intermediate states. Note the numbering offset "
+                    "here is 16, while the spring linker below is 26 - the "
+                    "human-mouse offset is not constant even inside the cap.",
+     "source": "Liu et al. Neuron 2025 (mouse D2326/A2328/P2382/E2383)",
+     "color": "#7fd4ff", "category": "pore"},
+
+    {"group": "spring_linker", "residues": {2429: "P", 2434: "F", 2439: "G",
+                                            2438: "Y"},
+     "label": "Spring linker",
+     "description": "The linker connecting the cap to the pore-lining inner "
+                    "helix, which compresses from an extended state on "
+                    "opening. F2434 and Y2438 (mouse F2460, Y2464) are the "
+                    "residues whose side-chain separation Liu et al. measure "
+                    "at 9 A extended and 17 A compressed.",
+     "source": "Liu et al. Neuron 2025 (mouse P2455-G2465)",
+     "color": "#c9a0ff", "category": "pore"},
+
     # --- ligand sites ------------------------------------------------------
     {"group": "yoda1_pocket", "residues": {1718: "A", 2075: "A", 2078: "A"},
      "label": "Yoda1 binding pocket",

@@ -26,6 +26,42 @@ computes anything of its own: each calls the same function the corresponding
 panel or table calls, so if a picture and a panel ever disagree, the picture is
 wrong and that is a defect rather than a finding.</p>
 
+<h3>Showing one part — View &rarr; Show component</h3>
+<p>A PIEZO1 trimer is 120,000 atoms and 300 Å across, and almost every question
+is about one part of it. Ten components are offered, each built from the
+<b>curated annotation</b> rather than from ranges written into the viewer: the
+backbone comes from <tt>domains.json</tt> and the residues picked out in gold
+from <tt>functional_residues.json</tt>, so what you see is what the analyses
+read.</p>
+<p>The one to start with is <b>Pore module</b> — Liu et al. 2025's Figure 2E
+view. Outer helix, cap, spring linker, inner helix and CTD, with all four gates
+in ball-and-stick: 26% of the atoms, and the only view in which their argument
+is legible. <b>MD construct</b> is exactly what they simulated and nothing
+else.</p>
+<p><b>It hides; it does not subset.</b> Every analysis still runs on the whole
+assembly — the pore profile, the dome, the normal modes — and the status line
+says so on every switch. A selector that quietly changed what the dome fit
+measures would be the most confusing possible way to break this application,
+and a test measures the dome either side of a selection to prove it does
+not.</p>
+<p>An entry whose numbering cannot be read from its own coordinates — a PIEZO2
+structure, or 6LQI in its splice isoform's numbering — falls back to the whole
+assembly and says why. A confident selection of the wrong helices looks exactly
+like a right one.</p>
+
+<h3>Colour by hydrophobicity, and how solid the pore is</h3>
+<p><b>Hydrophobicity (Kyte–Doolittle)</b> in the Model panel colours blue for
+polar through to orange for apolar, on a <b>fixed</b> −4.5 to +4.5 scale. Fixed,
+not auto-ranged, for the same reason the electrostatic colouring is: an
+auto-ranged hydropathy map paints a uniformly polar loop in full orange and
+cannot be compared with another structure or with a published panel. A residue
+the scale does not name — <tt>UNK</tt>, a modified residue, a ligand — is drawn
+mid-grey, so <i>not scored</i> cannot be misread as <i>neutral</i>.</p>
+<p><b>View &rarr; Pore surface opacity</b> makes the drawn probe spheres
+translucent. A probe sphere is the space left over rather than the wall, and at
+full opacity it hides the lining residues that define it — which are what
+anyone looking at a pore is looking for.</p>
+
 <h3>The dome — View &rarr; Dome surface</h3>
 <p>The dome is the project's central geometric claim and it was four numbers in
 a status bar. This draws it. The <b>blue cap</b> is the sphere fitted to the

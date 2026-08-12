@@ -151,3 +151,49 @@ def test_balls_and_sticks_are_separate_styles():
 
     offered = {value for _label, value in STYLE_LABELS}
     assert {Style.BALLS, Style.STICKS, Style.BALL_AND_STICK} <= offered
+
+
+# ------------------------------------------------- an empty batch draws nothing
+
+def test_an_empty_upload_does_not_raise(context):
+    """Round 84c's regression, and the reason the ion stream never started.
+
+    ``ctx.buffer`` refuses a zero-length payload — "the buffer cannot be
+    empty". An animation whose first frame has no particles is the normal
+    case, not an error, and the exception escaped the frame callback into
+    ``ViewportWidget._on_tick``, which responds by *unregistering the
+    animation*. So the one conducting structure in the catalogue died on frame
+    one and looked exactly like the 17 that are refused.
+    """
+    scene = _scene(context)
+    empty3 = np.zeros((0, 3), np.float32)
+
+    scene.spheres("s").upload(empty3, np.zeros(0, np.float32), empty3)
+    scene.cylinders("c").upload(empty3, empty3, np.zeros(0, np.float32), empty3)
+    scene.mesh("m").upload(empty3, empty3, empty3, np.zeros((0, 3), np.int32))
+
+
+def test_an_empty_batch_lights_no_pixels_and_then_a_full_one_does(context):
+    """Calibration: the empty case must be *empty*, not merely quiet.
+
+    A guard that swallowed the upload entirely would also pass the test above,
+    so the same batch is filled afterwards and must reach the screen — and
+    emptied again, and must leave it.
+    """
+    scene = _scene(context)
+    batch = scene.spheres("ions")
+    scene.camera.frame(np.array([[-12.0, -12.0, -12.0],
+                                 [12.0, 12.0, 12.0]], np.float32))
+    empty3 = np.zeros((0, 3), np.float32)
+
+    batch.upload(empty3, np.zeros(0, np.float32), empty3)
+    blank = _lit(context, scene)
+    assert batch.count == 0
+
+    batch.upload(np.zeros((1, 3), np.float32), np.array([6.0], np.float32),
+                 np.array([[0.35, 0.85, 1.0]], np.float32))
+    assert _lit(context, scene) > blank + 500, (
+        "the guard swallowed a non-empty upload as well")
+
+    batch.upload(empty3, np.zeros(0, np.float32), empty3)
+    assert _lit(context, scene) == blank

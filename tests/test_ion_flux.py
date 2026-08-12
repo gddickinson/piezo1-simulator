@@ -207,3 +207,203 @@ def test_a_rate_that_matched_the_measurement_would_carry_no_caveat():
     from piezo1.render.flux import timebase
 
     assert timebase(1.65).caveat == ""
+
+
+# ---------------------------------------- the refusal has to say which one
+
+def test_the_refusal_names_the_constriction_and_the_gate_beside_it():
+    """8IXO is the case that makes this non-optional.
+
+    It is the intermediate-open S2472E structure of Liu et al. 2025, its gate
+    is 3.52 A, its lining clears the Rao cutoff — and it is refused. A message
+    saying only "sterically occluded" reads as a shut gate, which is the one
+    thing that is not true of it.
+    """
+    from piezo1.render.flux import timebase_for_structure
+
+    base = timebase_for_structure(_structure("8IXO"))
+    assert not base.conducting
+    assert "transmembrane gate" in base.reason, base.reason
+    assert "cytosol" in base.reason, base.reason
+    assert "2537" in base.reason, base.reason
+
+
+def test_the_refusal_still_carries_the_verdict_it_came_from():
+    """The location is added to the wetting summary, never in place of it."""
+    from piezo1.analysis.hydration import load_grid, predict_wetting
+    from piezo1.render.flux import timebase_for_structure
+    from piezo1.structure.pore import pore_profile
+    from piezo1.structure.protomers import protomer_blocks
+    from piezo1.structure.superpose import detect_c3_axis
+
+    grid = load_grid()
+    if not grid.available:
+        pytest.skip("CHAP grid not downloaded — run python -m piezo1.io.fetch")
+
+    st = _structure("7WLT")
+    blocks, _ = protomer_blocks(st)
+    profile = pore_profile(st, detect_c3_axis(blocks))
+    verdict = predict_wetting(st, profile, grid=grid)
+    assert verdict.summary() in timebase_for_structure(st, profile=profile).reason
+
+
+# --------------------------------------------- the controller, against real GL
+
+class _Viewport:
+    """Records what the controller registers, and owns a real scene."""
+
+    def __init__(self, scene):
+        self.scene = scene
+        self.hud = None
+        self.animations = []
+
+    def add_animation(self, callback):
+        self.animations.append(callback)
+
+    def update(self):
+        pass
+
+
+class _Window:
+    def __init__(self, structure, scene):
+        self.structure = structure
+        self.viewport = _Viewport(scene)
+        self.status = ""
+
+    def _set_status(self, text):
+        self.status = text
+
+
+@pytest.fixture(scope="module")
+def gl():
+    moderngl = pytest.importorskip("moderngl")
+    try:
+        return moderngl.create_standalone_context(require=410)
+    except Exception as exc:                              # pragma: no cover
+        pytest.skip(f"no OpenGL 4.1 context available: {exc}")
+
+
+@pytest.fixture
+def flowing(gl):
+    """The controller, switched on, on the one entry that conducts."""
+    from piezo1.config import RenderSettings
+    from piezo1.render.scene import Scene
+    from piezo1.ui.ion_flux_controller import IonFluxController
+
+    scene = Scene(gl, RenderSettings(samples=1))
+    scene.resize(320, 240)
+    window = _Window(_structure("11ZC"), scene)
+    controller = IonFluxController(window)
+    controller.show(True)
+    if controller._timebase is None or not controller._timebase.conducting:
+        pytest.skip("11ZC did not come back conducting")
+    return controller, window, scene
+
+
+def test_the_stream_survives_its_empty_first_frame(flowing):
+    """The bug: the animation died on frame one and never drew an ion.
+
+    12 particles enter per displayed second, so at 60 fps the first four frames
+    hold nothing. The empty upload raised, `_on_tick` caught it and
+    unregistered the callback, and the only conducting structure in the
+    catalogue looked exactly like the 17 that are refused.
+    """
+    controller, window, _ = flowing
+    assert window.viewport.animations, "the animation was never registered"
+
+    assert len(controller._positions) == 0, (
+        "the premise: the first frame really is empty")
+    assert controller._step(1.0 / 60.0) is not False, (
+        "the first frame unregistered the animation")
+
+    for _ in range(90):
+        assert controller._step(1.0 / 60.0) is not False
+    assert len(controller._positions) > 0, "no ions ever entered the pore"
+
+
+def test_the_ions_reach_the_screen_and_leave_it_again(gl, flowing):
+    """Counted in pixels, because a built batch proves nothing.
+
+    Every earlier test of this controller passed while it drew no ion at all.
+    """
+    import numpy as np
+
+    controller, _, scene = flowing
+    scene.camera.frame(controller._path.astype(np.float32))
+
+    def lit():
+        fbo = gl.simple_framebuffer((320, 240))
+        fbo.use()
+        fbo.clear(0.05, 0.05, 0.07, 1.0)
+        scene.render()
+        pixels = np.frombuffer(fbo.read(components=3), np.uint8)
+        return int((pixels.reshape(-1, 3).astype(int).sum(axis=1) > 60).sum())
+
+    empty = lit()
+    for _ in range(90):
+        controller._step(1.0 / 60.0)
+    assert lit() > empty + 100, "the ions are not reaching the screen"
+
+    controller.clear()
+    assert lit() == empty
+
+
+def test_the_stream_follows_the_measured_pore_and_not_the_symmetry_axis(flowing):
+    """The probe centre is leashed to the axis, not pinned to it.
+
+    On 11ZC the fitted centre sits a median 0.56 A off the axis and up to the
+    full 8 A leash, and at 11 of 125 heights the axis line falls *outside* the
+    sphere fitted there — so ions drawn on the straight axis cross the wall of
+    the pore that was measured. The calibration is that assertion, on this
+    entry's own numbers: if the two ever coincide, this test should say so
+    rather than passing vacuously.
+    """
+    import numpy as np
+
+    from piezo1.structure.pore import pore_profile
+    from piezo1.structure.protomers import protomer_blocks
+    from piezo1.structure.superpose import detect_c3_axis
+
+    controller, window, _ = flowing
+    blocks, _residues = protomer_blocks(window.structure)
+    axis = detect_c3_axis(blocks)
+    profile = pore_profile(window.structure, axis)
+
+    direction = axis.direction / np.linalg.norm(axis.direction)
+    straight = axis.point[None, :] + profile.z[:, None] * direction[None, :]
+    offset = np.linalg.norm(profile.centers - straight, axis=1)
+    assert (offset > profile.radius).sum() >= 5, (
+        "the axis no longer leaves the fitted probe anywhere, so this test "
+        "cannot distinguish the two routes")
+
+    # The stream visits every measured probe centre, in order.
+    assert np.allclose(controller.points_at(controller._arc), controller._path)
+    assert sorted(map(tuple, np.round(controller._path, 6))) == sorted(
+        map(tuple, np.round(profile.centers, 6)))
+
+
+def test_the_stream_runs_towards_the_cytosolic_end(flowing):
+    """Which way is out is measured, not left to the sign of the axis.
+
+    `detect_c3_axis` fixes a line, not a direction, so without this half the
+    catalogue would show an inward current flowing out of the cell — a picture
+    that looks entirely reasonable and is backwards.
+    """
+    import numpy as np
+
+    from piezo1.physics.pore_charge import cytosolic_end
+    from piezo1.structure.pore import pore_profile
+    from piezo1.structure.protomers import protomer_blocks
+    from piezo1.structure.superpose import detect_c3_axis
+
+    controller, window, _ = flowing
+    blocks, _residues = protomer_blocks(window.structure)
+    axis = detect_c3_axis(blocks)
+    profile = pore_profile(window.structure, axis)
+
+    entry, exit_ = controller.points_at([0.0, controller.length])
+    cytosolic_z = (profile.z.min() if cytosolic_end(window.structure, axis) == 0
+                   else profile.z.max())
+    assert (abs(axis.project(exit_[None, :])[0] - cytosolic_z)
+            < abs(axis.project(entry[None, :])[0] - cytosolic_z)), (
+        "the stream ends further from the cytosolic mouth than it began")

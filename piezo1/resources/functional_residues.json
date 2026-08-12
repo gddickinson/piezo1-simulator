@@ -192,6 +192,167 @@
    ]
   },
   {
+   "id": "cap_constriction",
+   "label": "Extracellular cap constriction",
+   "category": "pore",
+   "description": "The closed top of the cap. Liu et al. 2025 measure their pore axis from this residue down to the intracellular constriction neck, and state that the cap is shut above it in every structure they solved - so ions reach the cap vestibule through the LATERAL cap gates rather than through the top. Curated because it is the upper endpoint of any axial conduction path, and this project's axial model is limited by it on every entry.",
+   "source": "Liu et al. Neuron 2025 (PMID 39719701), mouse R2295",
+   "color": "#8fd4a8",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2279,
+     "human_aa": "R",
+     "mouse": 2295,
+     "mouse_aa": "R",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "cap_gate",
+   "label": "Cap gate",
+   "category": "pore",
+   "description": "The extracellular gate formed between neighbouring cap subunits, which opens on the transition to the intermediate state. Y2319 (mouse Y2335) is the residue whose displacement Liu et al. track.",
+   "source": "Liu et al. Neuron 2025 (mouse T2332/V2333/E2334/Y2335)",
+   "color": "#5ec8ff",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2316,
+     "human_aa": "T",
+     "mouse": 2332,
+     "mouse_aa": "T",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2317,
+     "human_aa": "V",
+     "mouse": 2333,
+     "mouse_aa": "V",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2318,
+     "human_aa": "E",
+     "mouse": 2334,
+     "mouse_aa": "E",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2319,
+     "human_aa": "Y",
+     "mouse": 2335,
+     "mouse_aa": "Y",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "cap_gate_loops",
+   "label": "Cap gate loops 1 and 2",
+   "category": "pore",
+   "description": "The two loops whose separation opens the lateral access into the cap vestibule: A2312-P2366 widens from ~4.3 to ~16.2 A and D2310-E2367 from ~4.8 to ~12.8 A between the curved and intermediate states. Note the numbering offset here is 16, while the spring linker below is 26 - the human-mouse offset is not constant even inside the cap.",
+   "source": "Liu et al. Neuron 2025 (mouse D2326/A2328/P2382/E2383)",
+   "color": "#7fd4ff",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2310,
+     "human_aa": "D",
+     "mouse": 2326,
+     "mouse_aa": "D",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2312,
+     "human_aa": "A",
+     "mouse": 2328,
+     "mouse_aa": "A",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2366,
+     "human_aa": "P",
+     "mouse": 2382,
+     "mouse_aa": "P",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2367,
+     "human_aa": "E",
+     "mouse": 2383,
+     "mouse_aa": "E",
+     "offset": 16,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
+   "id": "spring_linker",
+   "label": "Spring linker",
+   "category": "pore",
+   "description": "The linker connecting the cap to the pore-lining inner helix, which compresses from an extended state on opening. F2434 and Y2438 (mouse F2460, Y2464) are the residues whose side-chain separation Liu et al. measure at 9 A extended and 17 A compressed.",
+   "source": "Liu et al. Neuron 2025 (mouse P2455-G2465)",
+   "color": "#c9a0ff",
+   "evidence": "experimental",
+   "residues": [
+    {
+     "human": 2429,
+     "human_aa": "P",
+     "mouse": 2455,
+     "mouse_aa": "P",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2434,
+     "human_aa": "F",
+     "mouse": 2460,
+     "mouse_aa": "F",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2438,
+     "human_aa": "Y",
+     "mouse": 2464,
+     "mouse_aa": "Y",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    },
+    {
+     "human": 2439,
+     "human_aa": "G",
+     "mouse": 2465,
+     "mouse_aa": "G",
+     "offset": 26,
+     "conserved": true,
+     "verified": true
+    }
+   ]
+  },
+  {
    "id": "yoda1_pocket",
    "label": "Yoda1 binding pocket",
    "category": "ligand",

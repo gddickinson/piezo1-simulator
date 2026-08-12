@@ -45,7 +45,7 @@ from ..parameters import PARAMETERS as _P
 from .structure import AA3TO1, Structure
 
 __all__ = ["NumberingIdentity", "SpliceShift", "MismatchBlock",
-           "identify_numbering", "detect_splice", "mismatch_blocks",
+           "identify_numbering", "piezo1_numbering", "detect_splice", "mismatch_blocks",
            "reference_entry", "REFERENCES", "PIEZO1_REFERENCES",
            "PIEZO2_REFERENCES", "INVERTEBRATE_REFERENCES"]
 
@@ -349,3 +349,27 @@ def detect_splice(numbers, names, sequence: str) -> SpliceShift | None:
     return SpliceShift(breakpoint=int(pairs[cut - 1][0]), offset=best_shift,
                        identity_before=before, identity_after=best,
                        n_after=n_after)
+
+
+def piezo1_numbering(structure) -> str | None:
+    """Which numbering a PIEZO1 entry is in, or ``None`` if it is not one.
+
+    ``"human"`` or ``"mouse"`` when :func:`identify_numbering` matches a PIEZO1
+    reference and finds no splice shift; ``None`` otherwise — a paralogue, an
+    invertebrate PIEZO, or 6LQI, which is PIEZO1 and still cannot be read by
+    residue number because it is deposited in the Piezo1.1 isoform's own
+    numbering.
+
+    A ``None`` is a refusal and never a default to human. Anything that reads
+    annotation by residue number has to ask this first, which is why it lives
+    in ``core`` rather than beside its first caller: ``physics`` needs it to
+    bound a conduction path and ``analysis`` needs it to locate a gate, and
+    the arrow between those two only points one way.
+    """
+    try:
+        identity = identify_numbering(structure)
+    except Exception:                            # noqa: BLE001
+        return None
+    if identity.reference not in PIEZO1_REFERENCES or identity.splice is not None:
+        return None
+    return identity.reference

@@ -265,12 +265,12 @@ def main() -> int:
                       f"{expect!r} -> {rec.get('title', '')[:70]!r}")
                 rec = None
         if rec is None:
-            if key in MANUAL:
-                e = dict(MANUAL[key], key=key, topic=topic,
-                         section=SECTION_OF.get(key, "Other"))
-                entries.append(e)
-                print(f"    (manual entry)")
-                continue
+            # `MANUAL` was referenced here and never defined, so the *rejection*
+            # path — the one that matters — raised NameError instead of
+            # reporting the rejection. Latent until Round 84d, when the title
+            # gate correctly refused a wrong PMID for Liu et al. 2025
+            # (39674176 resolves to a paper about IgG in adipose tissue; the
+            # right one is 39719701) and the script died instead of saying so.
             print(f"    ! could not resolve {key}")
             unresolved.append((key, query, topic))
             continue

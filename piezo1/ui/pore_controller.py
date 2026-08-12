@@ -150,6 +150,11 @@ class PoreSurfaceController:
     """Owns the drawn pore under View -> Pore surface."""
 
     def __init__(self, window) -> None:
+        #: How solid the drawn probe spheres are, 0-1. A probe sphere is the
+        #: space left over rather than the wall, and at full opacity it hides
+        #: the lining residues that define it — which are what anyone looking
+        #: at a pore is looking for.
+        self.opacity = 1.0
         self.win = window
         self._names: list[str] = []
         #: Set while waiting for the Analysis panel's pore run to land, so the
@@ -183,6 +188,13 @@ class PoreSurfaceController:
             self.win.analysis.compute_pore()
             return
         self._draw()
+
+    def set_opacity(self, value: float) -> None:
+        """Change how solid the drawn pore is, redrawing if it is on screen."""
+        self.opacity = max(0.0, min(1.0, float(value)))
+        if self.visible:
+            self._draw()
+            self.win.viewport.update()
 
     def clear(self) -> None:
         scene = self.win.viewport.scene
@@ -219,6 +231,7 @@ class PoreSurfaceController:
         radii = np.asarray(profile.radius, dtype=np.float32)[keep]
 
         batch = scene.spheres(f"{NAME}:probe")
+        batch.alpha = float(self.opacity)
         batch.upload(centers, radii, radius_colors(radii).astype(np.float32))
         self._names.append(f"{NAME}:probe")
 

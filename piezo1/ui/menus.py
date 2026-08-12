@@ -67,6 +67,12 @@ def _file_menu(win, bar) -> None:
     _action(menu, "&Quit", win.close, "Ctrl+Q", "Close the application")
 
 
+def build_component_menu_stub(win, menu) -> None:
+    from .menus_flux import build_component_menu
+
+    build_component_menu(win, menu, _action)
+
+
 def _view_menu(win, bar) -> None:
     menu = bar.addMenu("&View")
     menu.setToolTipsVisible(True)
@@ -98,13 +104,21 @@ def _view_menu(win, bar) -> None:
             "Choose what the overlay shows: scale bar, animation clock, "
             "orientation axes and which measured values")
     menu.addSeparator()
+    build_component_menu_stub(win, menu)
+    menu.addSeparator()
 
     _action(menu, "&Ion flux animation", win.ion_flux.show, "",
             checkable=True, checked=False,
             tip="Animate ions crossing the pore at the rate the computed\n"
                 "current sets. A channel passes ~10^7 ions/s, so the stream\n"
                 "runs about a MILLIONFOLD slow and the HUD states the factor.\n"
-                "A pore the wetting model calls shut shows no ions at all.")
+                "A pore the wetting model calls shut shows no ions at all -\n"
+                "which is 17 of the 19 deposited entries on the default\n"
+                "AXIAL pathway, because PIEZO1's axis is closed at both ends.")
+    from .menus_flux import (build_component_menu, build_flux_settings,
+                             build_pore_opacity_menu)
+    build_flux_settings(win, menu, _action)
+    build_pore_opacity_menu(win, menu, _action)
 
     _action(menu, "&Contacts", win.contacts.show, "",
             checkable=True, checked=False,
@@ -345,6 +359,13 @@ def _analysis_menu(win, bar) -> None:
             "only one of four variant entries resolves its own mutation, and\n"
             "three of them share one set of coordinates.")
     menu.addSeparator()
+    _action(menu, "&Liu 2025 figures…", win.show_liu2025, "",
+            tip="Every panel of the paper the intermediate-open structure\n"
+                "(8IXO) comes from, and what this project can do with each.\n"
+                "6 reproduce, 7 have an ANALOGUE that is a different\n"
+                "quantity, 11 need patch clamp, a cryo-EM map or a\n"
+                "molecular-dynamics trajectory we do not hold.\n"
+                "The curvature panel DISAGREES and says so.")
     _action(menu, "&Guo && MacKinnon 2017 figures…", win.show_guo2017, "",
             "Replicate the paper the dome model comes from, panel by panel.\n"
             "Sixteen of its thirty-one panels reproduce from coordinates,\n"

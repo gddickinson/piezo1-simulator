@@ -1753,6 +1753,51 @@ Corrected in `scripts/build_references.py`.
 
 ---
 
+## The conduction pathway is a choice, and PIEZO1 makes the default wrong
+
+Every conduction number in this document was computed on an **axial** path:
+bulk solvent, down the three-fold axis, bulk solvent. That is what HOLE-style
+profiling measures and what the drift-diffusion solver integrates over, and for
+most channels it is right.
+
+For PIEZO1 it is wrong at both ends. Liu et al. 2025 (Neuron 113:590–604,
+PMID 39719701) report that Na⁺ reaches the cap vestibule through **three lateral
+cap gates**, because the cap "remains closed above the residue R2295 position
+among all the structures"; and that after crossing the transmembrane gate it
+leaves the inner vestibule through **intracellular lateral portals** rather than
+the vertical constriction neck, which stays closed even in their
+intermediate-open structure. Their 10 µs simulations put 37 Na⁺ through a single
+portal and none through the neck.
+
+Measured here on all 19 deposited PIEZO1 entries, the axial profile is pinched
+below the 1.5 Å water radius at **R2295 and its immediate neighbours** at the
+top and at the curated CTD constrictions at the bottom — so the axial model
+refuses every structure, including 8IXO, whose transmembrane gate has
+demonstrably opened.
+
+| quantity | Liu et al. 2025 | measured here |
+|---|---|---|
+| R2295–E2537 pore axis, curved → intermediate | 110 → 100 Å | 109.5 → 96.2 Å |
+| V2476 side-chain diagonal, curved → intermediate | 7 → 14 Å | 7.7 → 14.2 Å |
+| A2328–P2382 cap-gate loops | 4.3 → 16.2 Å | 4.8 → 16.1 Å |
+| D2326–E2383 cap-gate loops | 4.8 → 12.8 Å | 5.7 → 11.4 Å |
+| Y2464 spring linker, compressed | 17 Å | 16.6 Å |
+| mid-plane curvature radius, four states | 10–12 / 14 / 32 / 117 nm | 9.7 / 11.2 / 16.5 / **18.4** nm |
+| slope conductance, intermediate | ~20 pS (CG-MD) | 40.1 pS (continuum) |
+
+`physics/conduction_path.py` makes the route selectable. **`axial` is the
+default and returns the same profile object**, so every number recorded before
+it existed is reproduced bit for bit. On the `lateral` route 8IXO conducts at
+53.8 pS — and so do several *closed* entries at 6–12 pS, so opening the ends is
+necessary and not sufficient. The portal itself is not modelled, so a lateral
+current is an upper bound.
+
+The curvature row is the one disagreement. Our sphere fit reproduces Guo &
+MacKinnon's 10.2 nm on the curved state, where it was calibrated, and saturates
+on the flat ones: fitting a sphere to a nearly flat surface is ill-conditioned,
+and under-estimating a large radius is how that fails. Recorded rather than
+adjusted.
+
 ## Key references
 
 Full bibliographies with PMIDs are in `ref/research/`.

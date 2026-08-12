@@ -52,6 +52,10 @@ class ColorBy(str, Enum):
     ELEMENT = "element"
     UNIFORM = "uniform"
     VALUE = "value"
+    #: Kyte-Doolittle hydropathy on a *fixed* -4.5..+4.5 scale, for the same
+    #: reason POTENTIAL is fixed: an auto-ranged hydropathy map cannot be
+    #: compared with another structure or with a published panel.
+    HYDROPHOBICITY = "hydrophobicity"
     #: Electrostatic potential, on a *fixed* diverging scale. Separate from
     #: VALUE because VALUE auto-ranges, and an auto-ranged potential map paints
     #: an almost-neutral surface as violently charged.
@@ -91,6 +95,11 @@ class MolecularView:
     #: also contains lipids, detergent, glycan and, in six entries, the MDFIC
     #: auxiliary subunit, and which of those to show is a choice.
     visible_entities: frozenset = frozenset()
+    #: Residue numbers to draw, or None for all. Set by the component
+    #: selector. Applied in `_entity_filter`, which every representation goes
+    #: through — cartoon, spheres, bonds and the traces — so a component
+    #: cannot be half-applied.
+    visible_residues: frozenset | None = None
     values: np.ndarray | None = None          # per-atom scalar for ColorBy.VALUE
     highlight: np.ndarray | None = None       # per-atom bool
     #: Colour used by :attr:`ColorBy.UNIFORM`. Per-view rather than global, so
@@ -137,6 +146,8 @@ class MolecularView:
             return colormaps.bfactor_colors(st)
         if self.color_by is ColorBy.PLDDT:
             return colormaps.plddt_colors(st)
+        if self.color_by is ColorBy.HYDROPHOBICITY:
+            return colormaps.hydrophobicity_colors(st)
         if self.color_by is ColorBy.ELEMENT:
             return st.element_colors()
         if self.color_by is ColorBy.POTENTIAL and self.values is not None:
@@ -155,6 +166,19 @@ class MolecularView:
         self._palette = colormaps.load_domain_palette(species)
 
     # ------------------------------------------------------------- rebuilding
+
+    def set_visible_residues(self, residues) -> None:
+        """Restrict what is drawn to these residue numbers, or None for all.
+
+        Rebuilds the **traces** as well as the batches. `traces` is built once
+        in `__post_init__`, so setting the field and calling `rebuild()` filtered
+        the atom representations and left the cartoon drawing the whole chain —
+        which is most of what is on screen at the default style, so hiding 97%
+        of the atoms changed the picture by about a tenth.
+        """
+        self.visible_residues = None if residues is None else frozenset(residues)
+        self._build_traces()
+        self.rebuild()
 
     def rebuild(self) -> None:
         """Drop and recreate every batch for the current style."""
@@ -258,7 +282,10 @@ class MolecularView:
         return self._entities
 
     def _entity_filter(self, mask: np.ndarray) -> np.ndarray:
-        """Drop atoms whose category the user has switched off."""
+        """Drop atoms the user has switched off, by category or by component."""
+        if self.visible_residues is not None:
+            mask = mask & np.isin(self.structure.res_seq,
+                                  np.fromiter(self.visible_residues, dtype=int))
         if not self.visible_entities:
             return mask
         allowed = self.entity_map().mask(*self.visible_entities)

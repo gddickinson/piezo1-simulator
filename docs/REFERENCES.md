@@ -9,7 +9,7 @@ Open-access full texts are downloaded to `ref/papers/` with
 git-ignored: the papers are other people's copyright, and the
 bibliography here is enough to retrieve them.
 
-**79 references.** 39 are open access.
+**80 references.** 39 are open access.
 
 ## Structure
 
@@ -189,4 +189,6 @@ bibliography here is enough to retrieve them.
   <sub>Used for: gnomAD constraint: LOEUF, pLI and missense z-scores</sub>
 - **`bertaccini2025piezo1`** — Bertaccini GA, Casanellas I, Evans EL, Nourse JL, Dickinson GD, Liu G, Seal S, Ly AT, Holt JR, Wijerathne TD, Yan S, Hui EE, Lacroix JJ, Panicker MM, Upadhyayula S, Parker I, Pathak MM. *Visualizing PIEZO1 localization and activity in hiPSC-derived single cells and organoids with HaloTag technology.* Nature communications 2025;16:5556. [PMID 40593468](https://pubmed.ncbi.nlm.nih.gov/40593468/) · [doi:10.1038/s41467-025-59150-1](https://doi.org/10.1038/s41467-025-59150-1) · **OA**  
   <sub>Used for: The tagged-PIEZO1 experiment this labelling model describes; three tags per channel and the multi-level brightness histogram</sub>
+- **`liu2025`** — Liu S, Yang X, Chen X, Zhang X, Jiang J, Yuan J, Liu W, Wang L, Zhou H, Wu K, Tian B, Li X, Xiao B. *An intermediate open structure reveals the gating transition of the mechanically activated PIEZO1 channel.* Neuron 2025;113:590-604.e6. [PMID 39719701](https://pubmed.ncbi.nlm.nih.gov/39719701/) · [doi:10.1016/j.neuron.2024.11.020](https://doi.org/10.1016/j.neuron.2024.11.020)  
+  <sub>Used for: Intermediate-open S2472E; PDB 8IXN/8IXO; lateral portals carry the current</sub>
 

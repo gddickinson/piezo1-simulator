@@ -382,8 +382,21 @@ def solve_pnp(profile, wetting=None, voltage: float | None = None,
     concentrations, fluxes = {}, {}
     converged, used = False, 0
 
+    # A species the pore excludes somewhere carries no steady flux — the slices
+    # are in series, so one zero-area slice is an infinite resistance and the
+    # answer is exactly zero rather than something to solve for. Stating it
+    # here is not a convenience: `_accessible_area` clamps at zero, and a zero
+    # row makes the discretised system SINGULAR, which is a LinAlgError rather
+    # than an answer. Cl- (1.81 A) is excluded by any pore below that, which no
+    # axial profile ever reached because the wetting gate refused it first.
+    excluded = [s.name for s in species if float(areas[s.name].min()) <= 0.0]
+
     for used in range(1, max_iterations + 1):
         for s in species:
+            if s.name in excluded:
+                concentrations[s.name] = np.full_like(z, left[s.name])
+                fluxes[s.name] = 0.0
+                continue
             concentration, flux = _nernst_planck(
                 z, areas[s.name], potential, s.valence, s.diffusivity, thermal,
                 left[s.name], right[s.name])
@@ -414,7 +427,13 @@ def solve_pnp(profile, wetting=None, voltage: float | None = None,
     lam = debye_length(species, temperature,
                        _P.value("permeation.permittivity_pore"))
     access_ohm = 2.0 * access_resistance(float(max(radius[0], radius[-1])), sigma)
-    pore_ohm = abs(voltage / current) if current != 0 else np.inf
+    # A chord conductance at zero drive is 0/0. Left ungated, a solver flux of
+    # 1e-20 A made `abs(0 / current)` exactly zero, the pore vanished from the
+    # series and the reported conductance became 1/R_access — 1,586 pS on 8IXO,
+    # forty times its own value at -0.1 V. Found by sweeping Liu et al.'s four
+    # voltages, the first of which is 0 V; no earlier caller used one.
+    pore_ohm = (abs(voltage / current)
+                if current != 0 and voltage != 0 else np.inf)
     total_ohm = pore_ohm + access_ohm
     conductance_value = 1.0 / total_ohm if np.isfinite(total_ohm) else 0.0
 

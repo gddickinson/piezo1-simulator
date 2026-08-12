@@ -103,3 +103,37 @@ def test_ligands_are_excluded_by_default(human_structure):
     assert np.allclose(with_lig.z, without.z)
     # On a shared grid, extra atoms can only ever reduce the clearance.
     assert (with_lig.radius <= without.radius + 1e-6).all()
+
+
+def test_lining_numbers_and_names_are_parallel(human_structure, human_profile):
+    """They were two independently sorted sets until Round 84c.
+
+    `PoreSlice.lining` was `sorted(set(numbers))` and `lining_names` was
+    `sorted(set(names))`, so every consumer that zipped them — including
+    `predict_wetting`, which is what names the gate residues a user reads —
+    paired each number with an unrelated name. On 8YEZ it reported the worst
+    dewetted residue as GLU2510 when it is PRO2510, and on 11YE as LEU2427
+    when it is ILE2296: a different residue, not merely a different label.
+
+    Checked against the structure itself rather than against a copy of the
+    expected answer, and only on slices that touch more than one *kind* of
+    residue — on a slice where every lining residue is a leucine the old code
+    was accidentally right, so those cases assert nothing.
+    """
+    name_of: dict[int, str] = {}
+    for number, name in zip(human_structure.res_seq, human_structure.res_name):
+        name_of.setdefault(int(number), str(name))
+
+    informative = 0
+    for sl in human_profile.slices:
+        assert len(sl.lining) == len(sl.lining_names), (
+            "zip truncates to the shorter tuple, silently dropping residues")
+        if len(set(sl.lining_names)) > 1:
+            informative += 1
+        for number, name in zip(sl.lining, sl.lining_names):
+            assert name_of[int(number)] == name, (
+                f"slice at z={sl.z:.1f} labels residue {number} as {name}, "
+                f"but it is {name_of[int(number)]}")
+    assert informative > 20, (
+        f"only {informative} slices touch more than one kind of residue, so "
+        f"this test would pass on the old mispairing too")

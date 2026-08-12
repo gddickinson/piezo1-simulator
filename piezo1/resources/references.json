@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 79,
+ "n_references": 80,
  "unresolved": [],
  "references": [
   {
@@ -802,6 +802,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.7554/elife.70988",
    "section": "Electrophysiology and kinetics"
+  },
+  {
+   "key": "liu2025",
+   "topic": "Intermediate-open S2472E; PDB 8IXN/8IXO; lateral portals carry the current",
+   "title": "An intermediate open structure reveals the gating transition of the mechanically activated PIEZO1 channel",
+   "authors": "Liu S, Yang X, Chen X, Zhang X, Jiang J, Yuan J, Liu W, Wang L, Zhou H, Wu K, Tian B, Li X, Xiao B.",
+   "journal": "Neuron",
+   "year": "2025",
+   "volume": "113",
+   "pages": "590-604.e6",
+   "pmid": "39719701",
+   "pmcid": null,
+   "doi": "10.1016/j.neuron.2024.11.020",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/j.neuron.2024.11.020",
+   "section": "Other"
   },
   {
    "key": "los2008halotag",
