@@ -379,25 +379,40 @@ def detect_splice(numbers, names, sequence: str) -> SpliceShift | None:
 
 
 def piezo1_numbering(structure) -> str | None:
-    """Which numbering a PIEZO1 entry is in, or ``None`` if it is not one.
+    """A numbering this project can read **annotation** in, or ``None``.
 
-    ``"human"`` or ``"mouse"`` when :func:`identify_numbering` matches a PIEZO1
-    reference and finds no splice shift; ``None`` otherwise — a paralogue, an
-    invertebrate PIEZO, or 6LQI, which is PIEZO1 and still cannot be read by
-    residue number because it is deposited in the Piezo1.1 isoform's own
-    numbering.
+    ``"human"`` or ``"mouse"`` when :func:`identify_numbering` matches one of
+    those and finds no splice shift; ``None`` otherwise — a paralogue, an
+    invertebrate or non-animal PIEZO, or 6LQI, which is PIEZO1 and still cannot
+    be read by residue number because it is deposited in the Piezo1.1 isoform's
+    own numbering.
 
     A ``None`` is a refusal and never a default to human. Anything that reads
     annotation by residue number has to ask this first, which is why it lives
     in ``core`` rather than beside its first caller: ``physics`` needs it to
     bound a conduction path and ``analysis`` needs it to locate a gate, and
     the arrow between those two only points one way.
+
+    **The gate is** :data:`~piezo1.core.annotations.ANNOTATED_NUMBERINGS`
+    **rather than** :data:`PIEZO1_REFERENCES`, and the difference is not
+    academic. Round 89 added rat Piezo1 as a third PIEZO1 reference, which is
+    right — a rat entry should be *identified* as rat rather than mis-read as
+    mouse — and it silently widened this function's return set to include a
+    numbering no resource carries annotation in. Every caller here takes the
+    returned string straight to ``load_annotations``, so the rat AlphaFold model
+    would have reached the component selector, the conduction path and the pore
+    charge map as a numbering they would then find nothing in and report as an
+    empty result rather than as a refusal. The two questions are different:
+    *which protein is this* has nine answers, *can I read annotation into it*
+    has two.
     """
+    from .annotations import is_annotated
+
     try:
         identity = identify_numbering(structure)
     except Exception:                            # noqa: BLE001
         return None
-    if identity.reference not in PIEZO1_REFERENCES or identity.splice is not None:
+    if not is_annotated(identity.reference) or identity.splice is not None:
         return None
     return identity.reference
 

@@ -304,3 +304,43 @@ structural comparison at all — the only representation either has is an
 AlphaFold *monomer*, and everything here needs three protomers. So whether the
 dome is a property of the fold rather than of animals is **not answerable from
 structure with what exists**. That is a gap in the world, not in this code.
+
+
+### Round 89b/89c — the annotation gap, and a trimer from one protomer
+*Both raised from use rather than planned: a crash on the plant filter, and a
+request to display an assembled trimer where only one protomer exists.*
+
+- [x] **89b.** Loading any entry in a numbering this project has no curated
+      annotation for raised `KeyError` in the domain palette — the default
+      colouring, so the entry could not be opened. **Predates Round 89**: the
+      registry has carried `worm_piezo`, `fly_piezo` and both PIEZO2 numberings
+      since Round 83, so 6KG7 and 9UOY behaved identically. The second face was
+      worse and silent: the functional-residue loader handed **mouse PIEZO1
+      residue numbers to every non-human numbering**. Fixed by one statement in
+      one place — `ANNOTATED_NUMBERINGS = ("human", "mouse")` — with an
+      unannotated numbering yielding nothing and the reason travelling to the
+      status line, because uniform grey reads as "no domains here".
+- [x] *And one that was Round 89's.* `piezo1_numbering()` gated on
+      `PIEZO1_REFERENCES`, which had just gained rat. Every caller takes its
+      return straight to `load_annotations`, so the rat model would have
+      reached the component selector and the conduction path as a numbering
+      they find nothing in — an empty result where a refusal belongs. It gates
+      on annotation now. *Which protein is this* has nine answers; *can I read
+      annotation into it* has two.
+- [x] **89c.** `structure/assembly.py`: place a monomer three times onto a
+      deposited trimer's protomers, reachable as **Completeness → Assembled
+      trimer (MODELLED)**. The plant PIEZO now draws as a trimer and the dome,
+      pore and elastic network accept it.
+- [x] *Validate:* an exact known answer. Chain A pulled out of 6B3R and rebuilt
+      against 6B3R gives **0.00 Å and 8 clashes — 6B3R's own count**; against
+      7WLT it gives 1.34 Å and 36, which is the half that makes the first mean
+      something. The clash counter calibrated too: real trimers score 3–8 where
+      assemblies score thousands.
+- [x] *Say what it is worth, including if that is little.* **79% (worm), 83%
+      (plant), 96% (rat) of an assembly's departure from planarity is the
+      template's arrangement**, measured with `structure.planarity`'s existing
+      decomposition. So a dome measured on one is mostly a measurement of the
+      template, and this does **not** answer whether the dome is a property of
+      the fold rather than of animals. It narrows Round 89's "cannot be asked
+      from structure at all" to "can be asked, and would be 83% about 9ZIS" —
+      a sharper statement of the same gap, not a way round it.

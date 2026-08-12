@@ -61,14 +61,33 @@ def chain_colors(structure: Structure) -> np.ndarray:
 
 @dataclass
 class DomainPalette:
-    """Domain definitions with colours, in one species' numbering."""
+    """Domain definitions with colours, in one species' numbering.
+
+    ``species`` is a *numbering* — one of ``core.annotations``'
+    ``ANNOTATED_NUMBERINGS``. For anything else this palette is **empty**, and
+    :attr:`annotated` says so rather than the lookups raising: ``domains.json``
+    carries spans under ``human`` and ``mouse`` keys only, and every access here
+    used to index them directly. Loading any PIEZO2, PEZO-1 or dPIEZO entry
+    therefore crashed the renderer with ``KeyError`` at the moment it tried to
+    colour by domain, which is the default colouring.
+    """
 
     species: str
     domains: list[dict]
 
+    @property
+    def annotated(self) -> bool:
+        from ..core.annotations import is_annotated
+
+        return is_annotated(self.species)
+
+    def _span(self, d: dict) -> dict:
+        """This domain's span in the palette's numbering, or an empty one."""
+        return d.get(self.species) or {}
+
     def color_of(self, residue: int) -> tuple[float, float, float] | None:
         for d in self.domains:
-            span = d[self.species]
+            span = self._span(d)
             if span["start"] is None or span["end"] is None:
                 continue
             if span["start"] <= residue <= span["end"]:
@@ -81,12 +100,12 @@ class DomainPalette:
         # Later, more specific domains win: sort by span width, widest first.
         ordered = sorted(
             (d for d in self.domains
-             if d[self.species]["start"] and d[self.species]["end"]),
-            key=lambda d: d[self.species]["end"] - d[self.species]["start"],
+             if self._span(d).get("start") and self._span(d).get("end")),
+            key=lambda d: self._span(d)["end"] - self._span(d)["start"],
             reverse=True,
         )
         for d in ordered:
-            s, e = d[self.species]["start"], d[self.species]["end"]
+            s, e = self._span(d)["start"], self._span(d)["end"]
             lo, hi = max(1, int(s)), min(length, int(e))
             if lo <= hi:
                 table[lo:hi + 1] = hex_to_rgb(d["color"])
@@ -95,7 +114,7 @@ class DomainPalette:
     def domain_of(self, residue: int) -> dict | None:
         best = None
         for d in self.domains:
-            span = d[self.species]
+            span = self._span(d)
             if span["start"] is None or span["end"] is None:
                 continue
             if span["start"] <= residue <= span["end"]:

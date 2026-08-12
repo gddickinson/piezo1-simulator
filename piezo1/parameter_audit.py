@@ -54,6 +54,11 @@ EXEMPT_NAMES = {
     "ROUND": "which recorded validation a design analysis refers to; an "
              "identifier, not a quantity — the numbers are read from the record",
     "chunk": "memory blocking; cannot change a result",
+    "n_corresponding": "zero-initialised count on a refusal result; the real "
+                       "value is measured, never defaulted",
+    "n_core": "zero-initialised count on a refusal result",
+    "clashes": "zero-initialised count on a refusal result; measured by "
+               "structure.clashes.count_clashes when there is an assembly",
     "n_points": "quadrature or plotting density",
     "n_samples": "Monte-Carlo sample count",
     "n_simulations": "Monte-Carlo replicate count",

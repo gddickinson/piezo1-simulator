@@ -1,4 +1,4 @@
-# ROADMAP — the completed record
+# ROADMAP — the compl eted record
 
 What was done, round by round, with the measured result written into the
 checkbox. Split out of `ROADMAP.md` in Round 75, verbatim: 358 completed items

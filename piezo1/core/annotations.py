@@ -18,7 +18,9 @@ import numpy as np
 
 from ..config import RESOURCE_DIR
 
-__all__ = ["Domain", "ResidueGroup", "Variant", "Annotations", "load_annotations"]
+__all__ = ["Domain", "ResidueGroup", "Variant", "Annotations",
+           "load_annotations", "ANNOTATED_NUMBERINGS", "is_annotated",
+           "annotation_gap"]
 
 
 @dataclass(frozen=True)
@@ -105,11 +107,55 @@ class Variant:
         return pdb.upper() in self.modelled_in
 
 
+#: The numbering systems this project holds curated annotation **in**.
+#:
+#: Not the same as the numberings it can *read* — ``numbering_check.REFERENCES``
+#: has nine, because identifying which protein a file is is a different job from
+#: having domain boundaries for it. ``domains.json``, ``variants.json`` and
+#: ``functional_residues.json`` are hand-curated in human and mouse PIEZO1
+#: numbering and in nothing else.
+#:
+#: Stating it in one place is the fix for a defect that predates the family
+#: work and had two faces. Loading a PIEZO2, PEZO-1 or dPIEZO entry raised
+#: ``KeyError`` in the domain palette — visible, at least. The functional
+#: residues did something worse and silent: ``r["human"] if species == "human"
+#: else r["mouse"]`` handed back **mouse PIEZO1 residue numbers for every
+#: non-human numbering**, so selecting "hydrophobic gate" on a *C. elegans*
+#: structure lit up whatever happens to sit at mouse 2473, 2476 and 2480.
+#:
+#: The rule now is that an unannotated numbering yields **nothing**, and the
+#: caller is told why — because an empty domain list drawn as uniform grey
+#: reads as "this protein has no domains" rather than "we have no annotation
+#: for it", and those are opposite claims.
+ANNOTATED_NUMBERINGS = ("human", "mouse")
+
+
+def is_annotated(numbering: str) -> bool:
+    return numbering in ANNOTATED_NUMBERINGS
+
+
+def annotation_gap(numbering: str) -> str:
+    """Why there is no annotation for this numbering, or "" if there is."""
+    if is_annotated(numbering):
+        return ""
+    return (f"no curated annotation exists in {numbering} numbering — "
+            f"domains, functional residues and variants are hand-curated in "
+            f"human and mouse PIEZO1 only, and applying them here by residue "
+            f"number would annotate a different protein's positions")
+
+
 class Annotations:
-    """Aggregated access to domains, functional residues and variants."""
+    """Aggregated access to domains, functional residues and variants.
+
+    An instance for a numbering this project has no annotation in is **empty
+    and says so** through :attr:`annotated` and :attr:`gap`, rather than
+    falling back to a numbering it does have.
+    """
 
     def __init__(self, species: str = "human") -> None:
         self.species = species
+        self.annotated = is_annotated(species)
+        self.gap = annotation_gap(species)
         self.domains: list[Domain] = []
         self.residue_groups: list[ResidueGroup] = []
         self.variants: list[Variant] = []
@@ -125,6 +171,15 @@ class Annotations:
         return json.loads(path.read_text())
 
     def _load(self) -> None:
+        if not self.annotated:
+            # Deliberately before any file is read. Every record below is keyed
+            # by human or mouse residue number, and there is no partial answer
+            # to give: a domain range or a gate residue read into another
+            # protein's numbering is not approximately right, it is a different
+            # position. The gap is carried on the object for the UI to state.
+            self.meta["unannotated"] = self.gap
+            return
+
         data = self._read("domains.json")
         if data:
             self.meta["domains"] = data.get("numbering", {})
@@ -149,10 +204,13 @@ class Annotations:
                     id=g["id"], label=g["label"], category=g["category"],
                     description=g["description"], source=g["source"],
                     color=g["color"], evidence=g.get("evidence", "experimental"),
-                    residues=tuple(r["human"] if self.species == "human"
-                                   else r["mouse"]
+                    # Only ever "human" or "mouse" here — the early return
+                    # above guarantees it. Written as an explicit lookup rather
+                    # than an else-branch because the else-branch is what
+                    # silently handed mouse numbers to five other proteins.
+                    residues=tuple(r[self.species]
                                    for r in g["residues"]
-                                   if r.get("human") is not None),
+                                   if r.get(self.species) is not None),
                     detail=tuple(g["residues"]),
                 ))
 

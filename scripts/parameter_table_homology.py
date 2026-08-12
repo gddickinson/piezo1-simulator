@@ -82,3 +82,65 @@ HOMOLOGY_PARAMETERS = [
                      "substitution score decides whether the mapping can be "
                      "trusted."),
 ]
+
+#: Building a trimer from one protomer. Kept beside the family parameters
+#: because the reason the feature exists is a family one: the only structural
+#: representation of a non-animal PIEZO is a monomer, and everything measuring
+#: a dome needs three protomers.
+HOMOLOGY_PARAMETERS += [
+    dict(key="assembly.min_corresponding", name="Residues to place a protomer",
+         value=200, unit="residues", minimum=20, maximum=2000, kind="method",
+         category="Family homology", citation="method_choice",
+         source_note="a Kabsch fit will happily superpose twenty atoms and "
+                     "report a small RMSD while placing the fold anywhere; "
+                     "200 is roughly a 4-TM unit, below which the placement "
+                     "is not constrained by the architecture. A monomer that "
+                     "cannot reach it against a template is refused rather "
+                     "than assembled loosely",
+         description="Corresponding C-alphas required before a protomer may "
+                     "be placed on a template chain."),
+    dict(key="assembly.clash_distance", name="Inter-protomer clash cutoff",
+         value=2.5, unit="A", minimum=1.0, maximum=5.0, kind="convention",
+         category="Family homology", citation="method_choice",
+         source_note="below the ~3.0-3.4 A of a real heavy-atom contact and "
+                     "above a hydrogen bond's 2.7-3.2 A donor-acceptor "
+                     "distance, so it counts atoms that are interpenetrating "
+                     "rather than touching. Nothing models the interface, so "
+                     "this count is the honest symptom of a template that "
+                     "does not fit the protein being assembled",
+         description="Heavy-atom separation below which two atoms in "
+                     "different assembled protomers count as clashing."),
+]
+
+HOMOLOGY_PARAMETERS += [
+    dict(key="assembly.core_fraction", name="Core descent fraction",
+         value=0.6, unit="fraction", minimum=0.1, maximum=0.95, kind="method",
+         category="Family homology", citation="method_choice",
+         source_note="how fast the search shrinks while no residue is yet "
+                     "within the cutoff. Only a descent rate — the core "
+                     "itself is defined by `assembly.core_cutoff`, and this "
+                     "exists because starting from a 19 A global fit nothing "
+                     "is within 3 A and a distance criterion alone never "
+                     "starts",
+         description="Fraction of the current core kept per descent cycle."),
+    dict(key="assembly.refit_cycles", name="Core-fit rejection cycles",
+         value=20, unit="", minimum=1, maximum=100, kind="method",
+         category="Family homology", citation="method_choice",
+         source_note="superpose, drop the worst deviations, refit. The loop "
+                     "exits on its own when the kept set stops changing, so "
+                     "this is a runaway bound rather than a tuned depth",
+         description="Outlier-rejection rounds when finding the rigid core."),
+    dict(key="assembly.core_cutoff", name="Core-fit outlier cutoff",
+         value=3.0, unit="A", minimum=0.5, maximum=15.0, kind="method",
+         category="Family homology", citation="method_choice",
+         source_note="a residue deviating more than this after superposition "
+                     "is not following the template and is dropped. A "
+                     "distance rather than a fraction, because a fraction "
+                     "drove the core to its floor on every catalogue entry — "
+                     "200 of 2,500 residues fitted to 1.2 A, which is not a "
+                     "core but the 200 that agree best, and always exists. "
+                     "With a cutoff the surviving count is a measurement of "
+                     "how much of the protomer the template accounts for",
+         description="Post-superposition deviation above which a residue is "
+                     "excluded from the rigid core."),
+]

@@ -191,12 +191,20 @@ def test_the_completeness_selector_offers_every_fill_mode(panel):
     It decides *what is loaded*, so every analysis, animation and measurement
     then runs on it without any of them knowing this feature exists.
     """
-    from piezo1.structure.full_length import FILL_MODES
+    # DISPLAY_MODES, not FILL_MODES: the selector offers one more than
+    # `build_full_length` can build. The trimer assembly is a completeness of
+    # the *assembly* rather than of the chain, handled in the UI, and putting
+    # it in FILL_MODES broke the builder's own mode table with a KeyError.
+    from piezo1.structure.full_length import (ASSEMBLY_MODE, DISPLAY_MODES,
+                                              FILL_MODES)
 
     labels = [panel.fill_combo.itemText(i)
               for i in range(panel.fill_combo.count())]
-    assert labels == [label for _key, label, _tip in FILL_MODES]
+    assert labels == [label for _key, label, _tip in DISPLAY_MODES]
+    assert DISPLAY_MODES == FILL_MODES + (ASSEMBLY_MODE,)
     assert panel.current_fill() == "none", "deposited only must be the default"
+    # The one the builder must never be handed.
+    assert ASSEMBLY_MODE[0] not in [key for key, _l, _t in FILL_MODES]
 
 
 def test_choosing_a_completeness_asks_for_a_reload(panel):

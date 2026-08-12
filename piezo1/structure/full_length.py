@@ -48,7 +48,7 @@ from ..core.structure import Structure
 from ..parameters import PARAMETERS as _P
 from .hybrid import build_hybrid_model, predicted_model_for
 
-__all__ = ["FullLengthModel", "build_full_length", "predicted_mask",
+__all__ = ["DISPLAY_MODES", "ASSEMBLY_MODE", "FullLengthModel", "build_full_length", "predicted_mask",
            "SEAM_KEY", "GAP_KEY", "is_full_length", "FILL_MODES",
            "resolved_gaps"]
 
@@ -74,6 +74,29 @@ FILL_MODES = (
     ("full", "+ AlphaFold (full length)",
      "Both: the complete chain, roughly half of it predicted."),
 )
+
+#: What the Completeness selector offers, which is **not** the same list.
+#:
+#: ``FILL_MODES`` is what :func:`build_full_length` can build, and the four
+#: entries above are completenesses of the *chain*. The trimer is a
+#: completeness of the *assembly*, built by :mod:`piezo1.structure.assembly`
+#: and handled entirely in the UI. Putting it in ``FILL_MODES`` broke the
+#: builder's own mode table with a `KeyError`, which is the right complaint:
+#: it is not a mode this module can build.
+#:
+#: It shares the selector because it shares what makes the selector worth
+#: having — whatever is chosen becomes the displayed structure, and every
+#: analysis then runs on it without knowing.
+ASSEMBLY_MODE = (
+    "trimer", "Assembled trimer (MODELLED)",
+    "For an entry that models one protomer — the AlphaFold monomers. Places "
+    "it three times onto a deposited trimer's protomers, so the dome, the "
+    "pore and the elastic network will accept it. The ARRANGEMENT is the "
+    "template's, not a measurement of this protein, and no inter-protomer "
+    "contact is modelled: across the catalogue 79-96% of an assembly's "
+    "departure from planarity is the template's. See structure/assembly.py.")
+
+DISPLAY_MODES = FILL_MODES + (ASSEMBLY_MODE,)
 
 #: Where the filled internal gaps live on the built structure, as
 #: ``chain -> [[first, last], ...]`` in residue numbers.

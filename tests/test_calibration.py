@@ -54,6 +54,8 @@ CHECKING_MODULES = (
     "analysis.homology",
     "analysis.alignment_windows",
     "analysis.homology_structure",
+    "structure.assembly",
+    "structure.clashes",
     "dead_code",
 )
 
@@ -123,6 +125,18 @@ CALIBRATED = {
     "homology.family": "test_homology.py::test_the_family_is_nine_and_every_member_is_committed",
     "homology.member": "test_homology.py (family lookup)",
     "homology.group_of": "test_homology.py::test_no_two_members_share_a_length_or_a_helix_count_architecture",
+
+    # assembly: is a trimer built from one protomer a model of anything?
+    "assembly.assemble_trimer":
+        "test_assembly.py::test_a_protomer_rebuilt_on_its_own_trimer_reproduces_it_exactly",
+    "assembly.borrowed_fraction":
+        "test_assembly.py::test_most_of_an_assembly_s_shape_is_the_template_s_and_it_says_so",
+    "assembly.best_template":
+        "test_assembly.py::test_the_template_is_chosen_by_protein_then_by_coverage",
+    "clashes.count_clashes":
+        "test_assembly.py::test_the_clash_counter_is_near_zero_on_real_trimers",
+    "assembly.is_monomer":
+        "test_assembly.py::test_a_real_trimer_is_refused_rather_than_replaced_by_a_model_of_itself",
 
     # homology_structure: is one entry pair a measurement of two proteins?
     "homology_structure.mode_overlap_spread":
