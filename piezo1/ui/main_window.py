@@ -418,6 +418,9 @@ class MainWindow(AlignmentMixin, CompanionMixin, TabularAnalysisMixin,
         self.pocket_view.clear()
         self.path.reset()
         self.nanodomain.clear()
+        # And the morph, missing from this list until Round 87: it is a stored
+        # displacement field plus a stored base array, both of the old entry.
+        self.morph_controller.reset()
 
         self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.set_species(rec.numbering_species)

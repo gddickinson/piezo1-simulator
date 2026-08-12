@@ -4,6 +4,77 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 87 — The morph never reached the structure it said it reached
+
+Reported from use, not by a guard: *the start and end of the morph do not look
+like the structures they are supposed to be*. They did not, and the reason is
+worth keeping, because the interpolation itself was never wrong.
+
+`tests/test_morph.py` asserts the trajectory hits both endpoints to 1e-9, and it
+does. The controller then draws it — and a morph is drawn as a **displacement
+field**, `frame - frames[0]` added to the coordinates already on screen, which
+is what carries the side chains, lipids and everything else the C-alpha path
+does not describe. A displacement means nothing outside the frame it was
+measured in, and the endpoints were read from disk while the viewport shows the
+canonical frame.
+
+    trajectory centroid (7WLT deposited)   197.6, 197.6, 257.6
+    displayed centroid (canonical)           0.0,   0.0,  -1.5
+    rotation between the two frames         180 degrees
+
+So every atom was pushed the wrong way. Measured against the deposited flat
+structure as a *shape*, so no assumption about frame enters the comparison:
+
+    drawn endpoint vs 7WLU, before   35.98 A
+    drawn endpoint vs 7WLU, after     0.000 A
+    the change being interpolated    19.70 A
+
+**Worse than the change itself** — the far end of the slider was not an
+approximation of the flat state, it was the curved state driven backwards. The
+camera was framed on the trajectory too, 381 A from the model, which is why the
+*start* looked wrong as well while being numerically exact.
+
+### Fixed by removing the possibility, not by rotating the field
+
+The start structure now goes on screen first and the path is built from the
+coordinates that are displayed. Multiplying the field by the frame rotation
+would have worked and would have left the same trap for the next person: two
+sources of coordinates that have to be kept in step. There is now one.
+
+### The second fault, which the first was hiding
+
+Atoms at a residue outside the shared basis were given a site by **residue
+number**. 7WLT's lipids are numbered 2601-2609 and the last shared residue is
+2546, so all 1,407 of them were tied to the C-terminal C-alpha and travelled
+with the CTD tip — one of the largest displacements in the motion.
+
+    lipid to the site it was tied to   median 64.8 A, max 98.9 A
+    lipid to the nearest site          median  6.2 A
+
+They now take the nearest site in space, which is the helix they are actually
+against. A residue *in* the basis still takes its own site, so whole residues
+stay together; a test checks both halves, because "nearest" applied to
+everything would have quietly dissolved the residues.
+
+### A morph is a stored array, and nothing was clearing it
+
+`load_structure` clears the dome, the contacts, the pore, the pockets, the route
+and the calcium field. The morph was not on that list, and it is the only one
+holding a base coordinate array of its own — so after loading another entry the
+slider stayed live and would have pushed 7WLT's motion onto a different
+structure. Added to the list.
+
+### What the last frame still is not
+
+It ends on the target's C-alpha positions; every other atom is carried with its
+residue, so it is not the deposited entry and the status line now says so. The
+**modal** method does not even do that: it is confined to the elastic-network
+subspace, captures 95% of the change on this pair and deliberately stops 6 A
+short. One sentence covering both would have been false for one of them, and the
+modal case is the one a user would report as this same bug.
+
+---
+
 ## Round 85 — The review, and the hole it found
 
 Block R's standing question was whether the discipline held now that results

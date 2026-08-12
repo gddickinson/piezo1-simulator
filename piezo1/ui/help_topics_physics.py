@@ -159,4 +159,16 @@ network gets 0.10 — there the column is the problem, not the model.</p>
 reporting its own bond-geometry error: linear (fast, distorts bonds),
 distance-restrained, and elastic-network-subspace. A morph is an
 <i>interpolation</i>, not a simulated trajectory, and the panel says so.</p>
+<p><b>What the two ends of the slider are.</b> Only C-alphas are interpolated.
+At the far end the restrained and linear methods put every C-alpha exactly on
+the target entry's, but each remaining atom is carried with its own residue and
+keeps the starting structure's side-chain geometry — so the last frame is
+<i>not</i> the deposited target, and loading that entry instead will not look
+identical. The elastic-network method does not even reach the target: it is
+confined to the subspace the network supports, which on 7WLT&nbsp;&rarr;&nbsp;7WLU
+captures 95% of the change and stops about 6&nbsp;&Aring; short. The status line
+states which of the two you are looking at.</p>
+<p>The two endpoints are also reduced to the residues both entries resolve and
+rigid-body superposed onto the displayed one, so the morph shows the target's
+shape where the deposited target sits, not where it was deposited.</p>
 """
