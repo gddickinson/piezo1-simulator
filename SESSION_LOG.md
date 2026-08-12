@@ -6752,3 +6752,217 @@ difference), the two human PIEZO2 entries, dPIEZO, and four AlphaFold models.
 Five new verified references (BLOSUM62, Rost's twilight zone, Smith–Waterman,
 neighbour-joining, Felsenstein's bootstrap); 85 total. Eight new registered
 parameters. The sequence viewer now offers all nine PIEZOs where it offered two.
+
+
+---
+
+## 2026-08-12 — Round 89b: the annotation gap the family made visible
+
+**Reported.** Selecting *plant* in the structure filter crashed the application
+with `KeyError: 'plant_piezo'` in `colormaps.lookup_table`.
+
+**And it was not mine, though my change is how it was found.** `domains.json`,
+`variants.json` and `functional_residues.json` are curated in human and mouse
+PIEZO1 numbering and in nothing else. The registry already carried
+`worm_piezo`, `fly_piezo`, `human_piezo2` and `mouse_piezo2` **before** Round
+89 — since Round 83 — so 6KG7, 9VEE, 9VEF, 9UOY, 9ZIT and 9W7X had all been
+uncloseable in the GUI the whole time. Round 89 added the plant entry, and the
+plant filter put a new numbering one click away.
+
+**Two faces, and the second is much worse than the crash.**
+
+`DomainPalette` indexed `d[self.species]` straight into the domain records, so
+colouring by domain — the default colouring — raised on any non-PIEZO1 entry.
+Loud, and at least unmistakable.
+
+`Annotations` built each functional-residue group with `r["human"] if species
+== "human" else r["mouse"]`. **Every non-human numbering therefore got mouse
+PIEZO1 residue numbers.** Selecting the hydrophobic gate on a *C. elegans*
+structure highlighted whatever sits at mouse 2473, 2476 and 2480. Nothing
+raised, the picture looked right, and the residues were a different protein's.
+
+**The fix is one line stated in one place.** `ANNOTATED_NUMBERINGS = ("human",
+"mouse")` in `core/annotations.py`, with `is_annotated()` and
+`annotation_gap()` beside it. An unannotated numbering yields **nothing** —
+checked before any file is read, because there is no partial answer to give —
+and the reason travels on the object to the status line, which now leads with
+**NO ANNOTATION FOR THIS PROTEIN**. That last part is not decoration: an empty
+domain list drawn as uniform grey reads as *this protein has no domains*, which
+is the opposite of what is true.
+
+**And chasing it found one that was mine.** `piezo1_numbering()` gated on
+`PIEZO1_REFERENCES`, and Round 89 added rat to that tuple — correctly, since a
+rat entry should be identified as rat rather than mis-read as mouse. But every
+caller takes its return value straight to `load_annotations`, so the rat
+AlphaFold model would have reached the component selector, the conduction path
+and the pore charge map as a numbering they find nothing in, and reported an
+empty result rather than a refusal. It gates on `ANNOTATED_NUMBERINGS` now.
+*Which protein is this* has nine answers; *can I read annotation into it* has
+two, and conflating them is how a refusal turns into a null result.
+
+Verified by loading all six previously-crashing entries through a real
+`MainWindow` with a GL context, and pinned in `tests/test_annotation_coverage.py`
+by driving `domain_colors` — the exact call `rebuild` makes — over one entry per
+catalogued numbering.
+
+
+---
+
+## 2026-08-12 — Round 89c: a trimer from one protomer, and what it is worth
+
+**Asked.** When a structure has only one protein, offer to display a trimer
+assembled from it based on similar structures.
+
+**Why it matters here.** Half this project needs three protomers — the dome
+fit, the pore profile, the elastic network, the paralogue comparison all take
+three blocks and refuse anything else. Round 89 recorded the cost as a gap in
+the world: the only structural representation of a non-animal PIEZO is an
+AlphaFold **monomer**, so *is the dome a property of the fold rather than of
+animals?* could not be asked at all.
+
+**Built** (`structure/assembly.py`): place the monomer onto each protomer of a
+deposited trimer. Correspondence through a real alignment, because the point is
+a plant protein on a mouse template and no two PIEZOs share a length. Each
+protomer placed independently rather than by rotating one about the template's
+C3 axis — that would give a trimer whose C3 deviation is a constructed zero,
+indistinguishable on screen from a measured one.
+
+**Two wrong versions before a right one, both caught by the numbers.**
+
+A global superposition placed human PIEZO1's *own* AlphaFold model onto 6B3R at
+**19 Å**, and the plant at 25. The fit is dominated by the distal blade — the
+lesson `hybrid` already learned. So: fit the rigid core, found by outlier
+rejection rather than by naming residues, which matters because the protein this
+exists for has no curated helix ranges to name one with.
+
+Then rejecting a fixed *fraction* per cycle drove the core to its 200-residue
+floor on every entry — 200 of 2,500 fitted to 1.2 Å, which is not a core but
+the 200 that agree best and always exists. A *distance* criterion alone never
+starts, because from a 19 Å fit nothing is within 3 Å. Both: descend by
+fraction until the distance criterion can bite, then converge on it. Cores are
+now 200–948 residues at 1.3–2.9 Å, and `n_core` is a measurement — rat 948 on
+6B3R, the plant only 200, which is flagged **AT THE FLOOR**.
+
+**Calibrated on an exact known answer.** Pull chain A out of 6B3R, hand it back
+as a monomer, rebuild against 6B3R: **0.00 Å over all 1,502 residues and 8
+clashes — 6B3R's own count**. Rebuilt against 7WLT instead: 1.34 Å and 36
+clashes. Both halves needed, or 0.00 Å would be equally consistent with a
+function that returns its input. The clash counter is calibrated the same way,
+and had to be: assemblies score thousands, and that means nothing until a real
+trimer's score is known — 6B3R 8, 7WLT 3, 9ZIS 6.
+
+**And measuring what it is worth is the result, which is less than hoped.**
+`borrowed_fraction` splits the assembly's departure from planarity using
+`structure.planarity`'s existing decomposition: **79% worm, 83% plant, 96%
+rat** of it is the template's arrangement. So a dome radius measured on an
+assembly is mostly a measurement of the template, and this does **not** answer
+the question it was reached for. It narrows "cannot be asked from structure at
+all" to "can be asked, and would be 83% about 9ZIS" — a sharper statement of
+the same gap rather than a way round it. Said in the caveat, on the status
+line, and pinned in a test.
+
+Reachable as **Completeness → Assembled trimer (MODELLED)**, which is the right
+home because it is the existing mechanism for "whatever this produces is what
+every analysis runs on, without any of them knowing" — and therefore the one
+that already understands that provenance cannot be optional. The amber HUD
+banner reads *MODELLED TRIMER — arrangement taken from 9ZIS, not measured*.
+
+---
+
+## 2026-08-12 — Round 90: rendering-style controls for the features that had none
+
+**Asked.** More controls for choosing the type of rendering of structural
+features — including the ability to change the HaloTag to ribbon etc., and the
+other structural elements that were inaccessible.
+
+**What was actually inaccessible.** The primary structure has had a style
+selector since the beginning (Model panel) and the superposition overlay since
+the Overlay panel existed. Everything else drawn as *structure* was hard-coded
+to one representation: the HaloTag fold (half-vdW sphere cloud), the
+full-length graft (1.6 Å sphere cloud), companions (backbone), the component
+highlight (gold ball-and-stick), and the resolved lipids/ligands (vdW spheres,
+with only a visibility toggle).
+
+**The rule that shaped the design: restyling moves no caveat.** The features
+being opened up are exactly the ones this project draws most carefully — a
+fold whose orientation is undetermined, a graft that is 48% low-confidence
+prediction. A cartoon looks *more* like a determined pose than a sphere cloud
+does, so the guards matter more after restyling, not less. Concretely:
+
+- `MolecularView` gained `color_override`, a per-atom RGB that wins over every
+  palette. The fold's contact-red atoms and the graft's pLDDT bands are the
+  visible half of reported numbers; a style change must carry them, not hand
+  the colouring to a palette that knows nothing of them.
+- The **fold styles** (`FOLD_STYLES`) build a real `Structure` of the three
+  placed tags — one chain per copy, so bonds and cartoon traces stay within a
+  tag — and drive the same `MolecularView` machinery that styles the channel.
+  The default is the pinned sphere cloud, bit-for-bit: `test_ui_fusion`'s
+  batch layout is untouched, and the UNDETERMINED status line is asserted
+  across **every** style. The radius-of-gyration sphere is not restylable,
+  because it is a statement about what the model determined, not a preference.
+- The **full-length model** (`HYBRID_STYLES`) can be a backbone tube or trace;
+  `HybridModel` now records its C-alphas (`ca`) so the controller does not
+  re-derive atom names from the two source files. The ribbon reads its colours
+  from the same per-atom array the sphere cloud uses, so grey stays grey and
+  the bands stay bands.
+- **Companions** share one selectable style (persisted; backbone default) —
+  one for all rather than one each, because companions are told apart by
+  colour, and a mixture of styles would hand that job to shape as well.
+- The **component highlight** offers ball-and-stick, sticks and vdW spheres,
+  all gold, and none changes which residues are highlighted.
+- **Ligands** get a style combo in the Model panel (spheres / balls /
+  ball-and-stick), with their bonds in a separate batch so hiding or clearing
+  cannot strand them.
+
+**Where it lives.** `menus.py` was at exactly 500 lines, so the new submenus —
+and the HaloTag submenu itself, which now carries its style group — moved to
+`ui/menus_styles.py`, the same split-at-the-seam `menus_flux.py` used: every
+entry there chooses what is computed, every entry here chooses how a feature
+is drawn.
+
+**Tests** (`test_ui_feature_styles.py`, 21): the default fold style leaves the
+pinned batches alone; every fold style keeps the caveat and the seam; the
+contact-red count survives restyling exactly (`body_contacts × n_tags`); the
+hybrid ribbon must show the flat grey *and* more than one pLDDT band; the
+highlight styles change radii and nothing about which atoms; unknown keys are
+refused everywhere; `color_override` is checked at the layer that implements
+it. The existing pinned suites — `test_ui_fusion`, `test_ui_hybrid`,
+`test_ui_companions`, `test_ui_components`, `test_ui_controls` (which fires
+the new menu actions against a real window), and the pixel-counting render
+suites — all pass unchanged, which is the point: nothing that was pinned
+moved.
+
+---
+
+## 2026-08-12 — Round 90b: tiered test runs, with the full suite as the occasional check
+
+**Asked.** The full suite takes a long time now — shorter versions for
+different situations, keeping the full suite as an occasional check.
+
+**The trap in a shorter suite.** A short run is a *selection*, and a selection
+can silently drop things: a test that no situation runs would decay without
+anyone deciding that, and the only symptom of a selector that quietly runs
+everything is the time the user was trying to save. Both failure modes are
+invisible in a green run, which is what shaped the design:
+
+- **The tiers are a partition** (`tests/tiers.py`): five situations — `quick`
+  (sanity on every edit: imports, registries, resources, pure logic; no Qt, no
+  GL, no heavy computation), `science` (physics/structure/analysis on real
+  coordinates), `ui` (offscreen Qt suites), `render` (real OpenGL, judged in
+  pixels), `records` (documentation, frozen records, reproducibility) — and
+  every test file belongs to exactly one. `test_tiers.py` fails on a file in
+  no tier or two, so assigning a new test file is enforced, not remembered.
+- **Selection is by deselection** (`--suite` in `conftest.py`), so a short
+  run's *real* skips — the ones that mean data is missing — stay visible
+  instead of drowning in a forest of tier skips. An unknown tier name is a
+  usage error, because a typo that selected nothing would report a green run.
+- **The selector is calibrated two-sided**: a science file must vanish from a
+  quick collection *and* a quick file from a science collection, or a hook
+  that selects everything would pass half the check.
+
+**Measured.** `make test-quick` runs 517 tests in ~50 s (measured while the
+full suite was still occupying the machine, so an upper bound). The Makefile
+targets: `test-quick`, `test-science`, `test-ui` (both include quick),
+`test-render`, `test-records` — and `make test` unchanged as the full,
+occasional check. The situational tiers together *are* the full suite, by the
+partition, so nothing can fall between them.

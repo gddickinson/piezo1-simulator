@@ -13,7 +13,8 @@ CONDA_RUN := conda run --no-capture-output -n $(ENV_NAME)
 PY := $(CONDA_RUN) python
 
 .DEFAULT_GOAL := help
-.PHONY: help env lock fetch resources test lint gui reproduce verify quick \
+.PHONY: help env lock fetch resources test test-quick test-science test-ui \
+        test-render test-records lint gui reproduce verify quick \
         figures validate clean-derived sizes params audit \
         notebooks coldclone provenance
 # `notebooks` and `coldclone` name a directory and a script; without .PHONY
@@ -42,8 +43,26 @@ resources:  ## Rebuild the curated annotation resources
 	$(PY) scripts/build_variants.py
 	$(PY) scripts/build_structure_registry.py
 
-test:  ## Run the test suite
+# The tiers partition the suite (tests/tiers.py; test_tiers.py enforces it),
+# so the four situational targets together are the full suite — nothing can
+# fall between them. `make test` remains the occasional full check.
+test:  ## Run the FULL suite — the occasional check; the tiers below are for every day
 	$(PY) -m pytest
+
+test-quick:  ## Sanity in under a minute: imports, registries, resources, pure logic
+	$(PY) -m pytest --suite quick
+
+test-science:  ## Physics, structure and analysis on real coordinates (includes quick)
+	$(PY) -m pytest --suite quick --suite science
+
+test-ui:  ## The Qt suites on the offscreen platform (includes quick)
+	$(PY) -m pytest --suite quick --suite ui
+
+test-render:  ## The suites that need a real OpenGL context and count pixels
+	$(PY) -m pytest --suite render
+
+test-records:  ## Documentation, frozen records and reproducibility guards
+	$(PY) -m pytest --suite records
 
 lint:  ## Static checks
 	$(CONDA_RUN) ruff check piezo1 scripts tests

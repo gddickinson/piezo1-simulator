@@ -15,6 +15,37 @@ from piezo1.config import STRUCTURE_DIR  # noqa: E402
 from piezo1.core import Structure  # noqa: E402
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--suite", action="append", default=None,
+        help="Run one tier of the suite (repeatable): quick, science, ui, "
+             "render, records. See tests/tiers.py. No option runs everything.")
+
+
+def pytest_collection_modifyitems(config, items):
+    """Deselect everything outside the chosen tiers.
+
+    Deselect rather than skip, so a short run reports what it *ran* and the
+    summary line says how much was set aside — a skipped-forest output would
+    bury the real skips, the ones that mean data is missing.
+    """
+    suites = config.getoption("--suite")
+    if not suites:
+        return
+    from tiers import files_for
+    try:
+        wanted = files_for(suites)
+    except KeyError as exc:
+        raise pytest.UsageError(str(exc)) from exc
+    kept, dropped = [], []
+    for item in items:
+        name = Path(str(item.fspath)).name
+        (kept if name in wanted else dropped).append(item)
+    if dropped:
+        config.hook.pytest_deselected(items=dropped)
+        items[:] = kept
+
+
 def _require(pdb: str) -> Path:
     path = STRUCTURE_DIR / f"{pdb}.cif"
     if not path.exists():
