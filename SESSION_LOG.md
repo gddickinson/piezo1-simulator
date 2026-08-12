@@ -4,6 +4,100 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 88 — The tag travels with the morph, and is re-solved rather than carried
+
+Asked for directly: the morph did not include the HaloTags. It could not — the
+fusion is drawn as its own batches from the loaded structure, so flattening the
+channel left three tags hanging in space beside a dome that had moved out from
+under them. They are attached to a C-alpha of the channel; that is the whole
+point of the model.
+
+### Carrying it rigidly would have been the obvious thing, and wrong
+
+The tag's position is not a pose. It is the centroid of the region the tag
+centre can occupy without clashing, so it depends on the channel's shape and not
+only on where the anchor is. Flattening occludes a different part of the
+tether's reach:
+
+    accessible volume   7WLT -> 7WLU   242 -> 177 nm3
+                        7WLT -> 11ZC   242 -> 152
+                        8IXN -> 11ZC   261 -> 154
+
+— a third of it gone, on every pair offered. The anchor-to-centre offset changes
+with it, so a tag translated with its anchor lands about **7 A** out at the far
+end. So the model is **re-solved on every frame**, and a test measures that
+offset change rather than asserting the choice.
+
+### Which needed the envelope to be affordable
+
+One `query_ball_point` — 87k grid points against 32k atoms — is 90% of the cost
+of a fusion model. `workers=-1` takes it from **456 ms to 75 ms**, and a whole
+41-frame path from 25 seconds to about six. It is the same query threaded, so
+`test_performance` asserts the kept set is **identical** on four entries, with
+the guard that the query rejects something on each — "identical" is free if
+nothing is being rejected.
+
+Nothing was added to playback: the models are solved once when the path is
+built, and the drawing costs 0 ms a frame. Scrubbing already costs 783 ms a
+frame, all of it `MolecularView.update_coords` rebuilding the cartoon, which is
+untouched and unrelated.
+
+### The number that must not be quoted
+
+At the far end the tag-to-pore-exit distance reads **3.92 nm** where the
+deposited 7WLU's own model gives **3.59** — 8% apart, in the quantity the
+calcium nanodomain work depends on. The path ends on 7WLU's C-alpha positions,
+but the pore exit is *whichever atom reaches furthest down the axis*, and at
+that frame the atoms are 7WLT's: its side chains, and its residues 7WLU does not
+resolve. So the end entry's own model is measured at build time and both numbers
+go on the status line with the instruction to quote the deposited one.
+
+This is the same lesson as Round 87 one level up. A morph endpoint is exact
+where the interpolation determines it and inherited everywhere else, and every
+derived quantity has to be checked for which of the two it is.
+
+### Interpolating the tag would have been cheaper and could put it inside
+
+`show_frame` takes the **nearest solved frame** rather than blending two. Every
+stored centre is a position the envelope admitted; a point between two of them
+is not, and on a path where the channel closes around the tether it can lie
+inside the channel. At 41 frames the step is 2.5% of the path.
+
+### The speedup exposed a defect that had nothing to do with any of this
+
+`test_ui_controls` started failing: a spliced model's `PART PREDICTED` status
+had been replaced by `bottleneck 0.93 Å · non-conductive`. Stashing the change
+put it back, and stashing *only* `fusion.py` narrowed it to the threading —
+a pure timing shift, no logic involved.
+
+What it exposed is real. The analyses run off the GUI thread and a worker cannot
+be interrupted, so a pore profile launched on one entry can finish after the
+user has loaded another. `load_structure` calls `analysis.reset()`, which clears
+the *stored* result — and the run already in flight then landed on top of the
+new entry. Not merely recorded: `_on_finished` calls `pore_surface.refresh()`
+and `nanodomain.refresh()`, so one entry's bottleneck and calcium source were
+**drawn inside another's lumen**. That is the thing the clearing in
+`load_structure` says in its own comment that it is there to prevent.
+
+Each run is now stamped with the structure object it was launched for, and a
+result whose stamp no longer matches is discarded — reported on the Analysis
+panel, not the status line, which belongs to the load that invalidated it.
+Hijacking it there is what would have replaced `PART PREDICTED`, the one place a
+user is told the model is partly a prediction.
+
+It is in `ui/hazards.py` as the eleventh entry, with the positive control the
+register promises: the situation constructed, the guard watched firing. A hazard
+that only shows when the scheduler is slow enough is not guarded.
+
+### One expression for the drawn coordinates
+
+Writing the tests found that the coordinates the tag was solved on and the ones
+it was drawn on differed by ~0.005 A — `float32 + float32` against `float64`
+then rounded. Both now go through `_coords_at`. Small, but it is the same defect
+as Round 87 in miniature: two routes to the same coordinates.
+
+---
+
 ## Round 87 — The morph never reached the structure it said it reached
 
 Reported from use, not by a guard: *the start and end of the morph do not look

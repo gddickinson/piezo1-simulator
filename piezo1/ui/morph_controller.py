@@ -44,7 +44,16 @@ class MorphController:
         self.residues = None
         self._map = None
         self._base = None
+        self._start = None
         self._phase = 0.0
+        self._fraction = 0.0
+        #: One solved HaloTag model per frame, or None when the tag is not
+        #: shown. Solved rather than interpolated — see `refresh_fusion`.
+        self._fusion_frames = None
+        self._fusion_clashing = 0
+        #: Tag-to-pore-exit on the deposited *end* entry, so the far end of the
+        #: path can be quoted beside the thing it is standing in for.
+        self._fusion_endpoint = None
 
     def reset(self) -> None:
         """Drop a path built on a structure that is no longer on screen.
@@ -66,7 +75,12 @@ class MorphController:
         self.residues = None
         self._map = None
         self._base = None
+        self._start = None
         self._phase = 0.0
+        self._fraction = 0.0
+        self._fusion_frames = None
+        self._fusion_clashing = 0
+        self._fusion_endpoint = None
         panel.morph_slider.blockSignals(True)
         panel.morph_slider.setValue(0)
         panel.morph_slider.blockSignals(False)
@@ -84,6 +98,10 @@ class MorphController:
         self.win._set_status(f"building {params['method']} morph "
                          f"{start_rec.pdb} → {end_rec.pdb}…")
         QApplication.processEvents()
+        # Captured before anything is cleared: loading the start entry runs
+        # `load_structure`, which clears the fusion, so by the time the path
+        # exists there is no way left to ask whether the tag was being shown.
+        wanted_tag = self.win.fusion.visible
         self.reset()
 
         # The start structure goes on screen *first*, and the path is then
@@ -123,12 +141,24 @@ class MorphController:
 
         self.trajectory = traj
         self.residues = common
+        self._start = st_a
         self._phase = 0.0
+        self._fraction = 0.0
         self._build_map(st_a, common)
         self.win.physics_panel.set_morph(traj)
         # Frame on the widest point of the path, so nothing swings out of view
         # as the user drags the slider.
         self._frame_whole_path()
+        # The tag, put back and made to follow. The deposited end entry's own
+        # model is measured first — a distance is invariant under the rigid
+        # placement, so it can be read off the file as deposited — so that the
+        # far end of the path can be quoted beside the thing it stands in for.
+        if wanted_tag:
+            end_model = self.win.fusion.model_for(st_b)
+            self._fusion_endpoint = (
+                None if end_model is None
+                else float(end_model.pore_exit_distances()[0]))
+            self.win.fusion.show(True)     # rebuilds, then calls refresh_fusion
         # What the far end of the slider actually is. `restrained` and `linear`
         # land on the target's C-alpha positions exactly; `modal` is confined
         # to the elastic-network subspace and deliberately stops short, so the
@@ -146,7 +176,8 @@ class MorphController:
             f"{ends}, and every other atom is carried with its residue, so the "
             f"last frame is not the deposited {end_rec.pdb}"
             + (" (protomer order was reversed)"
-               if info["handedness_flipped"] else ""))
+               if info["handedness_flipped"] else "")
+            + self._fusion_note())
 
     def _frame_whole_path(self) -> None:
         """Fit the camera to the union of the first, middle and last frames.
@@ -210,14 +241,110 @@ class MorphController:
         self._map = mapping
         self._base = st.xyz.copy()
 
+    def _coords_at(self, frame: np.ndarray) -> np.ndarray:
+        """The drawn coordinates for one point on the path.
+
+        The one expression both the picture and anything measuring it go
+        through. The cast comes before the addition rather than after, and that
+        is not a detail: `float32 + float32` and `float64 then round` differ by
+        a few thousandths of an Angstrom, and a tag solved against one set of
+        coordinates while drawn on the other is two structures again.
+        """
+        delta = (frame - self.trajectory.frames[0])[self._map]
+        return self._base + delta.astype(np.float32)
+
+    def _frame_structure(self, index: int) -> Structure:
+        """One stored frame as a structure, for anything that measures it.
+
+        The atoms are the start entry's; only their positions differ.
+        """
+        return self._start.copy_with_coords(
+            self._coords_at(self.trajectory.frames[index]))
+
+    def refresh_fusion(self) -> None:
+        """Solve the HaloTag placement once per frame, or drop it.
+
+        The tag is anchored to a C-alpha of the channel, so it has to travel
+        with the morph or it hangs in space beside a flattened dome. Carrying it
+        *rigidly* with its anchor is not enough: the placement is the centroid
+        of the region the tag can occupy without clashing, and flattening takes
+        a third of that region away (242 → 177 nm³ on 7WLT → 7WLU). A rigid
+        carry misses that and lands about 7 Å out at the far end.
+
+        So the model is re-solved on every frame. That costs ~140 ms a frame —
+        the whole path is about six seconds — which is why it is done once, here,
+        rather than in :meth:`show_frame`. It is skipped entirely unless the tag
+        is actually being shown, and it holds each frame's envelope rather than
+        recomputing it when the cloud is switched on: 20-30 MB for a path, which
+        buys a drawing cost of nothing per frame.
+        """
+        if self.trajectory is None or not self.win.fusion.visible:
+            self._fusion_frames = None
+            return
+        n = len(self.trajectory)
+        frames, clashing = [], 0
+        for i in range(n):
+            if i % 8 == 0:
+                self.win._set_status(
+                    f"modelling the HaloTag along the path — frame {i + 1} "
+                    f"of {n}…")
+                QApplication.processEvents()
+            model = self.win.fusion.model_for(self._frame_structure(i))
+            frames.append(model)
+            if model is not None and model.meta.get("clashes"):
+                clashing += 1
+        self._fusion_frames = frames
+        self._fusion_clashing = clashing
+        self.show_frame(self._fraction)
+
+    def _fusion_note(self) -> str:
+        """What the carried tag is and is not, measured rather than asserted."""
+        frames = [f for f in (self._fusion_frames or []) if f is not None]
+        if not frames:
+            return ""
+        first, last = frames[0], frames[-1]
+        note = (f" HaloTag carried on its anchor at residue "
+                f"{first.anchor_residues[0]}: accessible volume "
+                f"{first.volume.volume:.0f} → {last.volume.volume:.0f} nm³ "
+                f"along the path, re-solved at each of {len(frames)} frames")
+        if self._fusion_clashing:
+            note += (f"; the representative position is closer to the channel "
+                     f"than the tag's own radius of gyration at "
+                     f"{self._fusion_clashing} of them, which is a result about "
+                     f"the flattened state and not a drawing error")
+        # The far end carries the *start* entry's side chains and unshared
+        # residues, and the pore exit is whichever atom reaches furthest down
+        # the axis — so the distance there is not the deposited entry's own.
+        if self._fusion_endpoint is not None:
+            note += (f". Tag-to-pore-exit at the far end "
+                     f"{last.pore_exit_distances()[0]:.2f} nm against "
+                     f"{self._fusion_endpoint:.2f} nm on the deposited entry "
+                     f"itself — the gap is the carried side chains, so quote "
+                     f"the deposited value, not this one")
+        # This line replaces whatever the fusion controller last wrote, and a
+        # drawn fold may never be on screen without the statement that its spin
+        # is undetermined. So the statement comes along rather than being lost.
+        if self.win.fusion.show_atoms:
+            note += (". THE SPIN IS UNDETERMINED — the fold is one draw; turn "
+                     "it with View → HaloTag fusion → Turn tag orientation")
+        return note
+
     def show_frame(self, fraction: float) -> None:
         if self.trajectory is None or self.win.view is None:
             return
-        frame = self.trajectory.at(fraction)
-        start = self.trajectory.frames[0]
-        # Carry whole residues with their C-alpha site.
-        delta = (frame - start)[self._map]
-        self.win.view.update_coords(self._base + delta.astype(np.float32))
+        self._fraction = float(np.clip(fraction, 0.0, 1.0))
+        # Whole residues are carried with their C-alpha site — see `_coords_at`.
+        self.win.view.update_coords(
+            self._coords_at(self.trajectory.at(fraction)))
+        if self._fusion_frames is not None:
+            # The nearest solved frame, not an interpolation between two of
+            # them: a tag centre interpolated between two solved positions can
+            # pass through the channel, and every stored one is a position the
+            # envelope actually admitted. At 41 frames the step is 2.5% of the
+            # path.
+            i = int(round(self._fraction * (len(self._fusion_frames) - 1)))
+            self.win.fusion.set_frame(self._fusion_frames[i],
+                                      self.win.view.structure)
         self.win.viewport.update()
 
     def play(self, on: bool) -> None:

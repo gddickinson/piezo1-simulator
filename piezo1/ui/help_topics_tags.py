@@ -52,6 +52,21 @@ it by under a nanometre, so the miss is structural rather than an artefact of th
 assumption. About half the accessible volume does lie in the 4–6 nm band: the
 window describes a reachable position, not the ensemble mean.</p>
 
+<p><b>The tag travels with the morph.</b> Build a gating morph with the tag
+switched on and it follows, because it is anchored to a C-alpha of the channel
+and would otherwise hang in space beside a flattened dome. It is
+<i>re-solved</i> at every frame rather than carried along: flattening occludes a
+different part of the tether's reach, so the accessible volume falls
+<b>242 &rarr; 177 nm³</b> on 7WLT&nbsp;&rarr;&nbsp;7WLU and the tag centre moves
+relative to its own anchor by several Ångström. That costs about six seconds
+once, when the path is built, and nothing during playback.</p>
+<p>One number there must not be quoted: at the far end the tag-to-pore-exit
+distance reads <b>3.92 nm</b> where the deposited 7WLU's own model gives
+<b>3.59 nm</b>. The morph ends on 7WLU's C-alpha positions but carries 7WLT's
+side chains and unshared residues, and the pore exit is set by whichever atom
+reaches furthest down the axis. The status line states both and says which to
+use.</p>
+
 <h3>Labelling — Analysis &rarr; HaloTag labelling</h3>
 <p>The kinetics are <b>imported</b> from the companion
 <tt>halotag_binding_sim</tt> project and reproduced to machine precision, so any

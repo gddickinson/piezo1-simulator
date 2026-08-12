@@ -284,8 +284,15 @@ def accessible_volume(host: Structure, anchor: np.ndarray, tag: HaloTag,
     tree = cKDTree(host.xyz[protein].astype(np.float64))
     # A tag centre closer than (its own radius + clearance) to any channel atom
     # would have the tag body overlapping the channel.
+    #
+    # This one query is 90% of the cost of the whole fusion model — 87k grid
+    # points against 32k atoms — and `workers=-1` takes it from 456 ms to 75 ms,
+    # which is what makes solving the envelope once per morph frame affordable
+    # rather than a 25-second wait. It is the same query threaded, so the result
+    # is bit-identical; `test_performance` asserts that on four entries rather
+    # than trusting it.
     hits = tree.query_ball_point(points, tag_radius + clearance,
-                                 return_length=True)
+                                 return_length=True, workers=-1)
     points = points[hits == 0]
 
     return AccessibleVolume(

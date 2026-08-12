@@ -208,6 +208,62 @@ def test_conservation_cache_key_tracks_content():
 
 
 # --------------------------------------------------------------------------
+# The threaded clash query behind the HaloTag accessible volume
+# --------------------------------------------------------------------------
+
+def test_threaded_clash_query_keeps_every_grid_point(structure_by_id):
+    """`workers=-1` must change the envelope not at all.
+
+    One `query_ball_point` — 87k grid points against 32k atoms — is 90% of the
+    cost of a fusion model, and threading it takes 456 ms to 75 ms. That is
+    what makes the morph able to re-solve the tag once per frame instead of
+    waiting 25 seconds. It is the same query, so the kept set must be identical
+    rather than merely similar, and it is checked on four entries because the
+    envelope is emptier on some than on others.
+    """
+    from scipy.spatial import cKDTree
+
+    from piezo1.structure.frame import canonical_transform, apply_frame
+    from piezo1.structure.fusion import cterm_anchors, load_halotag
+    from piezo1.parameters import PARAMETERS as _P
+
+    try:
+        tag = load_halotag()
+    except FileNotFoundError:
+        pytest.skip("6U32 not downloaded — run python -m piezo1.io.fetch")
+
+    reach = (_P.value("fusion.linker_residues")
+             * _P.value("fusion.residue_extension") + tag.anchor_to_centre)
+    spacing = _P.value("fusion.grid_spacing")
+    radius = tag.radius_of_gyration + _P.value("fusion.clash_clearance")
+    steps = np.arange(-reach, reach + spacing, spacing)
+    offsets = np.stack(np.meshgrid(steps, steps, steps, indexing="ij"),
+                       axis=-1).reshape(-1, 3)
+    offsets = offsets[np.linalg.norm(offsets, axis=1) <= reach]
+
+    checked = 0
+    for pdb in ("7WLT", "7WLU", "8IXO", "11ZC"):
+        st = structure_by_id(pdb)
+        if st is None:
+            continue
+        st = apply_frame(st, canonical_transform(st))
+        anchors, _ = cterm_anchors(st)
+        protein = st.mask_protein() & ~st.hetero
+        tree = cKDTree(st.xyz[protein].astype(np.float64))
+        points = offsets + anchors[0]
+        serial = tree.query_ball_point(points, radius, return_length=True)
+        threaded = tree.query_ball_point(points, radius, return_length=True,
+                                         workers=-1)
+        assert np.array_equal(serial, threaded), pdb
+        # And the query must actually be discriminating on this entry, or
+        # "identical" would hold for a query that rejects nothing.
+        assert 0 < int((serial == 0).sum()) < len(points), pdb
+        checked += 1
+    if not checked:
+        pytest.skip("no structures downloaded — run python -m piezo1.io.fetch")
+
+
+# --------------------------------------------------------------------------
 # Loose ceilings — a machine-independent smoke check, not a pinned runtime
 # --------------------------------------------------------------------------
 

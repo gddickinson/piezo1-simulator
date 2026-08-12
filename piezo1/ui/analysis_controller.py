@@ -144,6 +144,8 @@ class AnalysisController:
         self._thread: QThread | None = None
         self._worker: AnalysisWorker | None = None
         self._active = ""
+        #: The structure the running analysis was launched for — see `_start`.
+        self._for_structure = None
 
     def reset(self) -> None:
         self.scalars.clear()
@@ -163,6 +165,15 @@ class AnalysisController:
         if self.win.structure is None:
             return
         self._active = kind
+        # Which structure this run belongs to, held by identity. A worker cannot
+        # be interrupted, so a result arriving after the structure changed has
+        # to be *dropped* — and it was not. `load_structure` calls `reset()`,
+        # which clears the stored profile, but the run already in flight then
+        # landed on top of the new entry: `_on_finished` sets `self.pore` and
+        # calls `pore_surface.refresh()` and `nanodomain.refresh()`, so one
+        # entry's bottleneck was drawn inside another's lumen — the exact thing
+        # the clearing in `load_structure` says it is there to prevent.
+        self._for_structure = self.win.structure
         self.win.analysis_panel.set_busy(True, kind)
         self.win._set_status(f"computing {kind}…")
 
@@ -212,16 +223,42 @@ class AnalysisController:
             self._thread.wait()
             self._thread = None
             self._worker = None
+        self._for_structure = None
         self.win.analysis_panel.set_busy(False)
 
     # -------------------------------------------------------------- results
 
+    def _is_stale(self) -> bool:
+        """Did the structure change while this run was in flight?"""
+        return (self._for_structure is not None
+                and self._for_structure is not self.win.structure)
+
+    def _discard(self, kind: str) -> None:
+        """Drop a result that belongs to a structure no longer displayed.
+
+        Reported on the Analysis panel rather than the status line, which the
+        load that invalidated it has just written. Hijacking it here would
+        replace "PART PREDICTED" — the one place a user learns that what they
+        are looking at is partly a prediction — with a note about a run they
+        already abandoned.
+        """
+        self.cleanup()
+        self.win.analysis_panel.set_message(
+            kind, "discarded — computed for a structure that is no longer "
+                  "displayed")
+
     def _on_failed(self, kind: str, message: str) -> None:
+        if self._is_stale():
+            self._discard(kind)
+            return
         self.cleanup()
         self.win.analysis_panel.set_message(kind, f"failed — {message}")
         self.win._set_status(f"{kind} failed — {message}")
 
     def _on_finished(self, kind: str, result: dict) -> None:
+        if self._is_stale():
+            self._discard(kind)
+            return
         self.cleanup()
         panel = self.win.analysis_panel
         if kind == "pore":

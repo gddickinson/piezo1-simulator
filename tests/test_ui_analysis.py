@@ -347,3 +347,111 @@ def test_pockets_worker_honours_the_limit(human_structure, qapp):
     assert len(result["pockets"]) == 4
     volumes = [p.volume for p in result["pockets"]]
     assert volumes == sorted(volumes, reverse=True), "pockets must be ranked"
+
+
+# --------------------------------------------------------------------------
+# A result belongs to the structure it was computed on
+# --------------------------------------------------------------------------
+
+def test_a_result_for_a_replaced_structure_is_discarded(human_structure,
+                                                        curved_structure, qapp):
+    """A pore profile must not land on a structure it was not computed from.
+
+    A worker cannot be interrupted, so a run launched on one entry can finish
+    after the user has loaded another. `load_structure` calls `reset()`, which
+    clears the stored profile — but the run already in flight then landed on top
+    of the new entry, and `_on_finished` does not merely record it: it calls
+    `pore_surface.refresh()` and `nanodomain.refresh()`, drawing one entry's
+    bottleneck and calcium source inside another's lumen.
+
+    Found by a timing change, which is the only reason it ever showed. The
+    hazard needs a stated guard rather than a scheduler that happens to be slow.
+    """
+    from piezo1.ui.analysis_controller import AnalysisController
+
+    class _Panel:
+        def __init__(self):
+            self.messages, self.pore = [], "untouched"
+        def set_busy(self, *a, **k): pass
+        def set_message(self, kind, text): self.messages.append((kind, text))
+        def set_pore(self, *a, **k): self.pore = a
+        def set_pockets(self, *a, **k): pass
+        def set_top_residues(self, *a, **k): pass
+
+    class _Refreshable:
+        def __init__(self): self.refreshed = 0
+        def refresh(self): self.refreshed += 1
+
+    class _Win:
+        def __init__(self, structure):
+            self.structure = structure
+            self.analysis_panel = _Panel()
+            self.pore_surface = _Refreshable()
+            self.nanodomain = _Refreshable()
+            self.status = ""
+        def _set_status(self, text): self.status = text
+
+    win = _Win(human_structure)
+    ctl = AnalysisController(win)
+    ctl._for_structure = human_structure          # as `_start` would have
+    win.status = "DEPOSITED 7WLT: loaded"
+    win.structure = curved_structure              # the user loads another entry
+
+    ctl._on_finished("pore", {"profile": object(), "hydration": None,
+                              "hydrophobicity": None})
+    assert ctl.pore is None, "a stale profile was stored"
+    assert win.analysis_panel.pore == "untouched", "a stale profile was plotted"
+    assert win.pore_surface.refreshed == 0, "a stale profile was drawn"
+    assert win.nanodomain.refreshed == 0
+    # The status line belongs to the load that invalidated the run, and losing
+    # it would replace the one place a user is told the model is partly
+    # predicted. The trace goes on the panel instead.
+    assert win.status == "DEPOSITED 7WLT: loaded"
+    assert any("discarded" in text for _, text in win.analysis_panel.messages)
+
+
+def test_a_result_for_the_displayed_structure_is_still_applied(human_structure,
+                                                               qapp):
+    """The calibration: the guard must not discard everything.
+
+    Without this, `_is_stale` returning True unconditionally would pass the test
+    above and break every analysis in the application.
+    """
+    from piezo1.structure.pore import pore_profile
+    from piezo1.structure.superpose import detect_c3_axis
+    from piezo1.ui.analysis_controller import AnalysisController
+    from conftest import protomer_blocks
+
+    blocks, _ = protomer_blocks(human_structure)
+    profile = pore_profile(human_structure, detect_c3_axis(blocks), step=2.0)
+
+    class _Panel:
+        def __init__(self): self.pore = None
+        def set_busy(self, *a, **k): pass
+        def set_message(self, *a, **k): pass
+        def set_pore(self, *a, **k): self.pore = a
+        def set_pockets(self, *a, **k): pass
+        def set_top_residues(self, *a, **k): pass
+
+    class _Refreshable:
+        def __init__(self): self.refreshed = 0
+        def refresh(self): self.refreshed += 1
+
+    class _Win:
+        def __init__(self, st):
+            self.structure = st
+            self.analysis_panel = _Panel()
+            self.pore_surface = _Refreshable()
+            self.nanodomain = _Refreshable()
+            self.status = ""
+        def _set_status(self, text): self.status = text
+
+    win = _Win(human_structure)
+    ctl = AnalysisController(win)
+    ctl._for_structure = human_structure          # unchanged since launch
+    ctl._on_finished("pore", {"profile": profile, "hydration": None,
+                              "hydrophobicity": None})
+    assert ctl.pore is profile
+    assert win.pore_surface.refreshed == 1
+    assert win.nanodomain.refreshed == 1
+    assert "bottleneck" in win.status

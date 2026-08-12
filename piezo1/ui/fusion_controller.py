@@ -63,12 +63,22 @@ class FusionController:
         #: None means "whichever orientation clears the channel best"; once the
         #: user turns it, an explicit angle they chose.
         self.spin = None
+        #: Coordinates to model and measure against, when they are not the
+        #: loaded ones. A morph moves the channel without replacing the
+        #: structure, and the anchor is a C-alpha of the channel — so a tag
+        #: placed against the loaded coordinates would hang in space beside a
+        #: flattened dome. ``None`` means "the loaded structure".
+        self.host = None
 
     # ------------------------------------------------------------- lifecycle
 
     @property
     def visible(self) -> bool:
         return self.model is not None
+
+    @property
+    def _host(self):
+        return self.win.structure if self.host is None else self.host
 
     def toggle(self, on: bool) -> None:
         self.show(on)
@@ -81,6 +91,38 @@ class FusionController:
             self.win._set_status("load a structure first")
             return
         self._build()
+        # If a morph is loaded, the tag has to follow it. Built here it would
+        # sit at the start position while the channel is part-way along the
+        # path — the tag and the anchor it is attached to visibly apart.
+        morph = getattr(self.win, "morph_controller", None)
+        if self.model is not None and morph is not None:
+            morph.refresh_fusion()
+
+    def model_for(self, host):
+        """The fusion model for a given set of coordinates, without drawing.
+
+        Separate from :meth:`_build` because the morph needs one of these per
+        frame and must not touch the status line, the scene or the cached
+        ``self.model`` while doing it.
+        """
+        from ..structure.fusion import build_fusion, load_halotag
+        try:
+            return build_fusion(host, load_halotag())
+        except (FileNotFoundError, ValueError, RuntimeError):
+            return None
+
+    def set_frame(self, model, host) -> None:
+        """Draw a supplied model against supplied coordinates.
+
+        The morph's entry point. Everything else about the drawing — sphere or
+        fold, envelope, dyes, the spin — stays exactly as the user set it, so
+        scrubbing the slider cannot silently change what is being shown.
+        """
+        if model is None:
+            return
+        self.model = model
+        self.host = host
+        self._draw()
 
     def set_envelope(self, on: bool) -> None:
         self.show_envelope = bool(on)
@@ -124,6 +166,10 @@ class FusionController:
                     scene.remove(key)
         self.model = None
         self.pose = None
+        self.host = None
+        morph = getattr(self.win, "morph_controller", None)
+        if morph is not None:
+            morph.refresh_fusion()          # drops the per-frame models
         if self.win.viewport.scene is not None:
             self.win.viewport.update()
 
@@ -140,6 +186,7 @@ class FusionController:
             return
 
         self.win._set_status("modelling the HaloTag fusion…")
+        self.host = None
         try:
             # The channel is already in the canonical frame if the alignment
             # option is on; if it is not, the fusion is still built on whatever
@@ -215,7 +262,10 @@ class FusionController:
         """
         from ..structure.fusion_pose import pose_for_display
 
-        pose = pose_for_display(self.win.structure, self.model, spin=self.spin)
+        # `_host`, not the loaded structure: the contact count is what colours
+        # tag atoms red, and counting them against a channel that is somewhere
+        # else along a morph would report contacts with a shape not on screen.
+        pose = pose_for_display(self._host, self.model, spin=self.spin)
         self.pose = pose
 
         colours = np.tile(np.float32(TAG_COLOR), (pose.n_atoms, 1))

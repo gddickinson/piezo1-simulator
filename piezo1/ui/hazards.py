@@ -171,6 +171,28 @@ HAZARDS: tuple = (
               "empty string in the caveat table.",
         status="guarded",
         where="ui/tabular_analyses.py"),
+
+    Hazard(
+        key="stale_analysis_lands_on_a_new_structure",
+        scenario="Start a pore profile, then load a different entry before it "
+                 "finishes. The analyses run off the GUI thread and a worker "
+                 "cannot be interrupted, so the result arrives after the "
+                 "structure it was computed from has been replaced.",
+        wrong="One entry's bottleneck radius, wetting verdict, probe spheres "
+              "and calcium source point read as the displayed entry's. Not "
+              "merely recorded — `pore_surface.refresh()` and "
+              "`nanodomain.refresh()` draw them, inside a lumen they were "
+              "never measured in, and nothing on screen contradicts it.",
+        guard="Each run is stamped with the structure object it was launched "
+              "for, and a result whose stamp no longer matches is discarded "
+              "with a note on the Analysis panel — not on the status line, "
+              "which belongs to the load that invalidated it. `reset()` "
+              "cleared the stored result but never the run in flight. Found "
+              "in Round 88 by a timing change, which is the only reason it "
+              "ever showed; a hazard that depends on the scheduler being slow "
+              "is not guarded.",
+        status="guarded",
+        where="ui/analysis_controller.py"),
 )
 
 

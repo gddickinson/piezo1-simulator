@@ -268,6 +268,51 @@ def test_sessions_record_what_was_viewed_and_never_a_result():
             f"session.py mentions {banned}; sessions must not carry results")
 
 
+def test_a_stale_analysis_result_never_reaches_the_new_structure(qapp):
+    """The positive control for `stale_analysis_lands_on_a_new_structure`.
+
+    Constructed rather than waited for: a worker's result is delivered after the
+    structure it was launched on has been replaced, and the guard has to drop
+    it. Before Round 88 it was stored, plotted **and drawn** — the pore surface
+    and the calcium field both refresh straight off it.
+    """
+    from piezo1.ui.analysis_controller import AnalysisController
+
+    class _Panel:
+        def __init__(self): self.plotted, self.messages = False, []
+        def set_busy(self, *a, **k): pass
+        def set_message(self, kind, text): self.messages.append(text)
+        def set_pore(self, *a, **k): self.plotted = True
+        def set_pockets(self, *a, **k): pass
+        def set_top_residues(self, *a, **k): pass
+
+    class _Drawn:
+        def __init__(self): self.refreshed = 0
+        def refresh(self): self.refreshed += 1
+
+    class _Win:
+        def __init__(self, st):
+            self.structure = st
+            self.analysis_panel = _Panel()
+            self.pore_surface = _Drawn()
+            self.nanodomain = _Drawn()
+            self.status = "the load's own message"
+        def _set_status(self, text): self.status = text
+
+    launched_on, displayed = object(), object()
+    win = _Win(displayed)
+    ctl = AnalysisController(win)
+    ctl._for_structure = launched_on
+
+    ctl._on_finished("pore", {"profile": object(), "hydration": None,
+                              "hydrophobicity": None})
+    assert ctl.pore is None
+    assert not win.analysis_panel.plotted
+    assert win.pore_surface.refreshed == 0 and win.nanodomain.refreshed == 0
+    assert win.status == "the load's own message"
+    assert any("discarded" in m for m in win.analysis_panel.messages)
+
+
 def test_the_register_covers_the_three_hazards_the_round_named():
     keys = {h.key for h in HAZARDS}
     assert {"cross_species_overlay", "companion_mistaken_for_primary",
