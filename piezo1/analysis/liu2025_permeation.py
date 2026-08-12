@@ -214,8 +214,8 @@ def sweep_voltages(structure, profile=None, pathway: str = "lateral",
     axis — that is the whole point of choosing a pathway, and evaluating it on
     the full axis would refuse every entry however the path was cut.
     """
-    from ..analysis.hydration import load_grid, predict_wetting
-    from ..physics.conduction_path import conduction_path
+    from ..analysis.conduction import conduction_verdict
+    from ..analysis.hydration import load_grid
     from ..physics.permeation import default_species, solve_pnp
     from ..structure.pore import pore_profile
     from ..structure.protomers import protomer_blocks
@@ -226,19 +226,21 @@ def sweep_voltages(structure, profile=None, pathway: str = "lateral",
         blocks, _ = protomer_blocks(structure)
         profile = pore_profile(structure, detect_c3_axis(blocks))
 
-    path = conduction_path(structure, profile, pathway)
+    grid = grid if grid is not None else load_grid()
+    if not grid.available:
+        return PermeationSweep(
+            pathway=pathway, structure=name,
+            refused="CHAP grid not downloaded; run python -m piezo1.io.fetch")
+
+    decision = conduction_verdict(structure, profile, pathway, grid=grid)
+    path = decision.path
     sweep = PermeationSweep(pathway=pathway, structure=name,
                             pathway_caveat=path.caveat())
     if path.refused:
         sweep.refused = path.refused
         return sweep
 
-    grid = grid if grid is not None else load_grid()
-    if not grid.available:
-        sweep.refused = "CHAP grid not downloaded; run python -m piezo1.io.fetch"
-        return sweep
-
-    verdict = predict_wetting(structure, path.profile, grid=grid)
+    verdict = _for_solver(decision)
     species = default_species()
     for voltage in voltages:
         result = solve_pnp(path.profile, verdict, voltage=float(voltage),
@@ -294,3 +296,24 @@ def occupancy_is_not_available() -> str:
             "through every slice by construction and cannot distinguish the "
             "cavities; reporting a number here would be an artefact of the "
             "discretisation, not a measurement.")
+
+
+def _for_solver(decision):
+    """The composed verdict in the shape `solve_pnp` gates on.
+
+    Both halves, each from the profile that decided it. Passing the raw
+    full-axis prediction instead re-imposes the axial steric block on a route
+    that was chosen to avoid it — which silently returned **0.0 pS for 8IXO
+    and 7WLU** on the first attempt at this, while the composed verdict said
+    they conduct. Passing the truncated one would make the opposite mistake and
+    let a pore through whose lining dewets.
+    """
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        available=True,
+        hydrophobic_gate=decision.hydrophobic_gate,
+        sterically_occluded=decision.sterically_occluded,
+        conductive=decision.conductive,
+        score=getattr(decision.wetting, "score", float("nan")),
+        summary=decision.summary)

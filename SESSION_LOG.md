@@ -4,6 +4,199 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 86 — Two entries read in the wrong numbering, and now read right
+
+Round 83 built an instrument that identifies which protein and which numbering a
+deposited file is in, and it found two register errors and **reported the shift
+that would repair each**. Nothing applied it. So five entries were read at
+residue numbers that point at the wrong residue, and everything this project
+reads by number — transmembrane helices, domain boundaries, variants — was wrong
+inside the affected range.
+
+    6LQI                      0.447 -> 1.000   +24 over 765 residues
+    8ZU3, 8YFC, 9VMX          0.932 -> 1.000   +22 over 767-857
+    8YFG                      0.931 -> 0.999   the same, and correctly short
+
+8YFG stopping at 0.999 is the detail worth keeping: it carries R2456H, a genuine
+substitution. A numbering fix that reached 1.000 there would have absorbed a
+real residue change, and the test requires it not to.
+
+### A renumberer is a rewriter, so the null is the load-bearing test
+
+Applied to a file that is already right it would silently corrupt it. **8YEZ
+resolves the same 767-857 region and is numbered correctly throughout**, and it
+has to come back unchanged — by identity, not by equality, so a future edit
+cannot start returning a copy. 7WLT, 3JAC and 6B3R likewise.
+
+### Chance agreement splits a register error
+
+`mismatch_blocks` finds *runs* of disagreement, and a residue that happens to
+agree at the wrong numbering ends a run. On 8ZU3 that split one 91-residue error
+into three blocks — 772-787, 789-834, 839-857 — and correcting only those gave
+0.969 where a uniform read of the whole stretch gives 1.000.
+
+So spans sharing a shift are merged across small gaps and then grown outward one
+residue at a time, keeping each step **only if the corrected identity does not
+fall**. That makes the extension a measurement rather than a guess. It grows past
+the data — 8ZU3's span reaches 713-914 — which looked wrong until I checked:
+that entry resolves *nothing* between 713-766 or 858-914, so the wider span
+moves exactly the 91 residues that exist. The report says the spans are in file
+numbering and may cover unresolved gaps, because the next reader will wonder the
+same thing.
+
+### Which published numbers move, which was the round's actual question
+
+**The dome moves and the pore does not.**
+
+    8ZU3, 8YFC, 9VMX   12.50 -> 11.91 nm      TM helices 25 -> 26
+    8YFG               11.12 -> 10.77 nm      TM helices 25 -> 26
+    6LQI                9.35 -> 11.03 nm      TM helices 23 -> 26
+    pore bottleneck    unchanged to the Angstrom on all five
+
+The dome is fitted to the **annotated** transmembrane helices, so a register
+error inside the blade puts the wrong atoms in the fit — and the correction
+recovers helices that were being missed entirely, which is why the count rises.
+The pore profile reads no residue number at all and is untouched. That contrast
+is the useful statement: it says exactly which quantities the numbering reaches.
+
+**No frozen claim uses any affected entry**, so nothing is superseded — and
+there is a test that fails if one ever starts, rather than a note saying it was
+checked once.
+
+---
+
+## Round 84 — Nothing computed could leave the application
+
+The oldest open item in Block R, and the smallest: conservation, mechanical
+coupling, perturbation response, mode displacement and the wetting score are all
+per-residue scalars, and none of them could be handed to another viewer.
+`to_pdb` writes coordinates. The standard route — put the scalar in the
+**B-factor column** and open the file in PyMOL or ChimeraX — is about twenty
+lines and did not exist, so every number this project computes was trapped in it
+or in a JSON blob.
+
+The twenty lines were the easy part. The rest is what stops the file lying
+somewhere none of this project's guards can reach.
+
+### Unscored is not zero, and the display array is not the data
+
+A residue the analysis could not score must not arrive in PyMOL looking like one
+that scored zero. Unscored atoms go out with **occupancy 0.00** and a B-factor
+at the floor of the column, so either column selects them and the count is in
+the header.
+
+The GUI export needed a second version of that same thought. `view.values` — the
+array actually painted on the model — has unmeasured residues **filled to the
+map floor** so the colour ramp behaves. Exporting that would have shipped a file
+where an unscored residue is indistinguishable from a low-scoring one, with no
+flag at all. The controller now remembers which scalar is on screen and the
+export writes the **raw residue map** instead.
+
+### The field is six characters, and my constant was wrong
+
+The first sentinel was `-1.0`, chosen because "no real value of anything this
+project computes is negative". The wetting energies are negative; the guard
+caught it on the first real analysis, which is the guard working.
+
+The replacement was `-999.99`, the floor of what I believed the column held.
+That is **seven characters in a six-character field**. It overflowed, shifted
+every column after it, and produced a file that still parses and is wrong —
+which is precisely the class of error this module exists to prevent, committed
+by the module itself. `F6.2` actually holds `-99.99` to `999.99`.
+
+So the limit is no longer remembered. `fits_column` formats the value and
+measures the result, and the test checks the **element symbol** still reads out
+of columns 77-78 — the thing a B-factor overflow destroys, and the only
+assertion that would have caught it.
+
+### Reachable, which was the complaint
+
+`piezo1.cli export 8YEZ --scalar wetting` and **File → Export coloured
+structure**, which writes whatever is currently painted. On 8YEZ the wetting
+energies cover 1,125 of 31,599 atoms — a partial scalar, which is exactly the
+case the occupancy flag exists for.
+
+---
+
+## Round 84f — Which profile decides which half
+
+Round 84d made the conduction pathway selectable and reported that the lateral
+route "does not separate open from closed": 8IXO at 53.8 pS, but several curved
+entries at 6-12 pS. That was pinned as an honest negative. Asked why, it turned
+out not to be a property of the channel at all.
+
+### The lateral verdict was close to noise
+
+The wetting verdict has two halves, and on the full axis they do very different
+jobs. **Sterics refuses everything** — including 8IXO and 11ZC — because the cap
+apex and the cytoplasmic neck are shut in every deposited structure; that is a
+constant "no" that only looked decisive. **Hydrophobicity actually separates**:
+8IXO at 0.31 and 11ZC at 0.00 sit below the 0.55 cutoff while 15 of 16 curved
+entries are above it.
+
+Round 84d evaluated both halves on whichever profile the pathway produced.
+Truncating fixes the sterics and *guts the score*, because the Rao score is a
+sum over lining residues and its contributions come almost entirely from narrow
+slices — which is exactly what the truncation removes:
+
+    7WLT   1.35 -> 0.13
+    6B3R   2.05 -> 0.22
+    entries above the cutoff:  13 of 18  ->  0 of 18
+
+With the chemistry disabled the verdict rested entirely on whether a residual
+radius cleared 1.5 A. Measured, that residual was **Y2335, the cap gate, in 14
+of 18 entries, and the transmembrane gate in none**. So the Round 84d lateral
+conductances were not a statement about gating; they are superseded.
+
+### The rule, and the order it was arrived at
+
+    Hydrophobic gate from the COMPLETE AXIAL PROFILE — Rao et al.'s cutoff is
+    a sum over a whole channel's lining and is not comparable between profiles
+    of different length, so applying it to a truncated one is invalid on its
+    own terms.
+
+    Steric occlusion from the CONDUCTION PATH — whether an ion fits is a
+    property of the route it takes.
+
+`analysis/conduction.py`. On the axial pathway the two profiles are the same
+object, so the answer is bit-identical; that is checked on every downloaded
+entry one by one, because a single entry would not exercise a case where they
+differ.
+
+**How it was reached is recorded in the module, because it matters.** Three
+compositions were tried and the third separated the states. That is the wrong
+order. The rule is adopted on the calibration argument, which would hold
+whichever way the numbers came out, and the agreement is reported as a check
+rather than as the derivation. I also tested the obvious alternative first —
+cutting at the cap gate rather than the apex, since the paper says ions enter
+*through* the cap gates — and it made things worse: 17 of 18 pass.
+
+### The check
+
+Under the corrected rule, on the lateral route:
+
+    curved (closed)        refused, 15 of 16     their Fig 5D: ~0 Na+/us
+    flattened (7WLU)       9.2 pS                             ~10
+    intermediate (8IXO)    40.1 pS                            ~20
+
+Same ordering, including the part that is easy to get wrong: the *flattened*
+state conducts, in their data and in ours, because its transmembrane gate is
+dilated while its cap gate is shut. The one curved entry that slips through is
+3JAC — 4.8 A with 346 unnamed residues, so nothing in it is narrow and its
+score is 0.06. A coverage artefact rather than a state, and named in a test so
+that fixing it cannot look like an improvement in the model.
+
+### One mistake on the way, pinned
+
+The first version handed `solve_pnp` the raw full-axis wetting object, which
+re-imposes the axial steric block on a route chosen to avoid it. The sweep
+silently returned **0.0 pS for both 8IXO and 7WLU** while the composed verdict
+said they conduct — a disagreement between two parts of the same answer, which
+is the kind that survives a green test run. It now gets the composed verdict,
+and there is a test that would fail if it stopped.
+
+---
+
 ## Round 84e — Showing one part of it
 
 The request: display selected components of the assembly with the important

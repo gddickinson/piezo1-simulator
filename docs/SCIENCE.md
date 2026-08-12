@@ -1787,10 +1787,29 @@ demonstrably opened.
 
 `physics/conduction_path.py` makes the route selectable. **`axial` is the
 default and returns the same profile object**, so every number recorded before
-it existed is reproduced bit for bit. On the `lateral` route 8IXO conducts at
-53.8 pS — and so do several *closed* entries at 6–12 pS, so opening the ends is
-necessary and not sufficient. The portal itself is not modelled, so a lateral
-current is an upper bound.
+it existed is reproduced bit for bit.
+
+`analysis/conduction.py` then composes the verdict, and **which profile decides
+which half is the whole question**. The hydrophobic gate is read off the
+complete axial profile, because Rao et al.'s cutoff is a sum over a whole
+channel's lining; steric occlusion is read off the route. Evaluating both on
+the truncated profile — as Round 84d did — collapses the score (1.35 → 0.13 on
+7WLT) so that no entry anywhere reaches the cutoff, and the verdict then rests
+on a residual radius that is the *cap gate* in 14 of 18 entries. Those Round
+84d lateral conductances are superseded.
+
+Under the corrected rule the states separate, and in the order Liu et al.'s
+Figure 5D puts them:
+
+| state | our slope conductance, lateral route | their Na⁺ per µs at −0.5 V |
+|---|---|---|
+| curved (closed) | refused, 15 of 16 | ~0 |
+| flattened (7WLU) | 9.2 pS | ~10 |
+| intermediate (8IXO) | 40.1 pS | ~20 |
+
+The one curved entry that slips through is 3JAC, at 4.8 Å with 346 unnamed
+residues — a coverage artefact rather than a state. The portal itself is still
+not modelled, so a lateral current remains an upper bound.
 
 The curvature row is the one disagreement. Our sphere fit reproduces Guo &
 MacKinnon's 10.2 nm on the curved state, where it was calibrated, and saturates

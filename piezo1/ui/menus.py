@@ -59,6 +59,11 @@ def _file_menu(win, bar) -> None:
     _action(menu, "&Load session…", win.session.load, "Ctrl+L",
             "Restore a saved view")
     menu.addSeparator()
+    _action(menu, "Export &coloured structure…", win.session.export_scalar, "",
+            "Write the value currently colouring the model into a PDB\n"
+            "B-factor column, so PyMOL or ChimeraX can colour by it.\n"
+            "Residues the analysis did not score go out with occupancy\n"
+            "0.00 rather than a zero, so they stay distinguishable.")
     _action(menu, "&Export analysis report…", win.session.export_report,
             "Ctrl+E",
             "Write a provenance-stamped report of the analyses that have run, "

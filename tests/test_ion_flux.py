@@ -229,7 +229,14 @@ def test_the_refusal_names_the_constriction_and_the_gate_beside_it():
 
 
 def test_the_refusal_still_carries_the_verdict_it_came_from():
-    """The location is added to the wetting summary, never in place of it."""
+    """The location is added to the verdict, never in place of it.
+
+    Round 84f changed the *form* of that verdict — each criterion is now read
+    off the profile it is calibrated on, and the reason says which — so this
+    checks the substance rather than an exact string. Substring-matching the
+    old format would have passed on a message that quoted the axial bottleneck
+    beside a lateral route, which is the thing 84f exists to stop.
+    """
     from piezo1.analysis.hydration import load_grid, predict_wetting
     from piezo1.render.flux import timebase_for_structure
     from piezo1.structure.pore import pore_profile
@@ -244,7 +251,13 @@ def test_the_refusal_still_carries_the_verdict_it_came_from():
     blocks, _ = protomer_blocks(st)
     profile = pore_profile(st, detect_c3_axis(blocks))
     verdict = predict_wetting(st, profile, grid=grid)
-    assert verdict.summary() in timebase_for_structure(st, profile=profile).reason
+    reason = timebase_for_structure(st, profile=profile).reason
+
+    assert f"{verdict.score:.2f}" in reason, "the score must survive"
+    assert "full axis" in reason, "and say which profile measured it"
+    assert "route" in reason, "and which measured the sterics"
+    assert "non-conductive" in reason
+    assert "2476" in reason, "the gate radius is still reported beside it"
 
 
 # --------------------------------------------- the controller, against real GL

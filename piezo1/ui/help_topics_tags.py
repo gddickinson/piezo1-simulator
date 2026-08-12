@@ -150,14 +150,24 @@ Na⁺ enters the cap vestibule through <b>three lateral cap gates</b> and leaves
 the inner vestibule through <b>intracellular lateral portals</b>, and neither
 closed end is ever traversed.</p>
 <p>The <b>lateral</b> options exclude those ends, which is the smallest change
-that lets the model represent that route. On it, <b>8IXO conducts at 53.8 pS</b>
-where the axial model refuses it. Two things must be read with it. The portal
-is <b>not modelled</b> — the truncated end slice becomes the mouth and its
-radius is the pore's, not the portal's — so the current is an <b>upper
-bound</b>. And it does <b>not</b> separate open from closed: 7WLT, 6B3R, 8IMZ
-and others also conduct at 6–12 pS once the ends are open, against 8IXO's 53.8.
-The right ordering, roughly fivefold, and not the clean contrast their
-simulations show. Opening the ends is necessary and not sufficient.</p>
+that lets the model represent that route. <b>Which profile decides which half
+of the verdict matters as much as the route itself.</b> The hydrophobic-gate
+criterion is read off the <i>complete axial profile</i>, because Rao's cutoff is
+a sum over a whole channel's lining and is not comparable between profiles of
+different length; the steric criterion is read off the <i>route</i>. Evaluating
+both on the truncated profile collapses the score to zero everywhere, and the
+verdict then rests on a residual radius that turns out to be the cap gate
+rather than the transmembrane gate.</p>
+<p>Composed correctly, the states separate in the order Liu et al.'s Figure 5D
+puts them: <b>curved refused</b> in 15 of 16 entries, <b>flattened 9.2 pS</b>,
+<b>intermediate 40.1 pS</b>, against their ~0, ~10 and ~20 Na&#8314; per
+microsecond. The flattened state conducting is not an error &mdash; its
+transmembrane gate is dilated while its cap gate is shut. The one curved entry
+that slips through is 3JAC, at 4.8&nbsp;&#8491; with 346 unnamed residues, so
+nothing in it is narrow &mdash; a coverage artefact rather than a state.</p>
+<p>The portal is still <b>not modelled</b> &mdash; the truncated end slice
+becomes the mouth and its radius is the pore's, not the portal's &mdash; so a
+lateral current is an <b>upper bound</b>.</p>
 <p><b>View &rarr; Ion flux voltage</b> sweeps the four transmembrane potentials
 of their Figure 5A. At 0 V the current is zero and nothing animates, which is
 the correct picture rather than a failure. Across the four, the slope on 8IXO

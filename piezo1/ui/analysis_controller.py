@@ -275,11 +275,21 @@ class AnalysisController:
         if not on or not key or key not in self.scalars:
             view.color_by = self.win._current_color()
             view.values = None
+            self.coloured_key = ""
         else:
             view.values = self.residue_values_to_atoms(self.scalars[key])
             view.color_by = ColorBy.VALUE
+            # Remembered so the export can write the RAW residue map rather
+            # than `view.values`, which has unmeasured residues filled to the
+            # map floor for display. Exporting the filled array would make an
+            # unscored residue indistinguishable from a low-scoring one in
+            # somebody else's viewer.
+            self.coloured_key = key
         view.rebuild()
         self.win.viewport.update()
+
+    #: Which scalar is currently painted on the model, or "".
+    coloured_key = ""
 
     def residue_values_to_atoms(self, values: dict[int, float]) -> np.ndarray:
         """Spread a per-residue scalar over atoms.

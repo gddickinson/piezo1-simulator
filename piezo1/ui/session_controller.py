@@ -32,6 +32,48 @@ class SessionController:
         self.win = window
         self.path: Path | None = None
 
+    def export_scalar(self) -> None:
+        """Write the scalar currently colouring the model into a PDB B-factor.
+
+        Exports the **raw residue map**, not `view.values`: the displayed array
+        has unmeasured residues filled to the map floor, and a reader in PyMOL
+        could not tell those from a genuinely low score. Unscored atoms go out
+        with occupancy 0.00 instead.
+        """
+        from PyQt6.QtWidgets import QFileDialog, QMessageBox
+
+        from ..core.export import write_scalar_pdb
+
+        analysis = getattr(self.win, "analysis", None)
+        key = getattr(analysis, "coloured_key", "")
+        structure = getattr(self.win, "structure", None)
+        if structure is None or not key or key not in analysis.scalars:
+            QMessageBox.information(
+                self.win, "Nothing to export",
+                "Colour the model by a computed value first — Analysis panel, "
+                "then pore, pockets, conservation or the response scan. The "
+                "export writes that scalar into the B-factor column.")
+            return
+
+        path, _ = QFileDialog.getSaveFileName(
+            self.win, "Export coloured structure",
+            f"{structure.name}_{key}.pdb", "PDB (*.pdb)")
+        if not path:
+            return
+        values = analysis.scalars[key]
+        span = max(abs(v) for v in values.values()) or 1.0
+        # Use the column properly: two decimals over a 0-1 score is a hundred
+        # levels, over 0-100 it is ten thousand. The factor goes in the header.
+        scale = 1.0 if span > 50 else 100.0 / span
+        try:
+            report = write_scalar_pdb(structure, values, path, scale=scale,
+                                      name=key)
+        except ValueError as exc:
+            QMessageBox.warning(self.win, "Export failed", str(exc))
+            return
+        self.win._set_status(report.summary())
+
+
     # -------------------------------------------------------------- sessions
 
     def _capture(self) -> Session:

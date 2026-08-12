@@ -125,36 +125,34 @@ def timebase_for_structure(structure, profile=None, grid=None,
     A test that only inspected the controller's source would not have caught
     either, and did not.
     """
-    from ..analysis.hydration import load_grid, predict_wetting
+    from ..analysis.conduction import conduction_verdict
     from ..analysis.pore_regions import describe_bottleneck
     from ..physics.permeation import default_species, solve_pnp
     from ..structure.pore import pore_profile
     from ..structure.protomers import protomer_blocks
     from ..structure.superpose import detect_c3_axis
 
-    from ..physics.conduction_path import conduction_path
-
     if profile is None:
         blocks, _ = protomer_blocks(structure)
         profile = pore_profile(structure, detect_c3_axis(blocks))
 
-    # `axial` returns the same object, so the default path is untouched.
-    path = conduction_path(structure, profile, pathway)
-    profile = path.profile
-
+    # Each criterion off the profile it is calibrated on — chemistry from the
+    # whole axis, sterics from the route. On the axial pathway those are the
+    # same object and the answer is unchanged. See `analysis.conduction.RULE`.
     try:
-        verdict = predict_wetting(structure, profile,
-                                  grid=grid if grid is not None else load_grid())
+        decision = conduction_verdict(structure, profile, pathway, grid=grid)
     except Exception as exc:
         return timebase(0.0, conducting=False,
                         reason=f"wetting not evaluated: {exc}")
+    path, verdict = decision.path, decision.wetting
+    profile = path.profile
 
-    if verdict.hydrophobic_gate or verdict.sterically_occluded:
+    if not decision.conductive:
         # Say where. Every refusal in the catalogue is on a constriction BEYOND
         # the gate, which the axial model must pass and the real channel leaves
         # sideways before reaching — so a bare "sterically occluded" reads as a
         # shut gate and is wrong about which constriction it is.
-        reason = verdict.summary()
+        reason = decision.summary()
         try:
             reason += " · " + describe_bottleneck(structure, profile).sentence()
         except Exception:                      # never lose the verdict itself

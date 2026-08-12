@@ -127,6 +127,68 @@ def cmd_liu2025(args) -> int:
     return 0
 
 
+def cmd_export(args) -> int:
+    """Write a computed per-residue scalar into a PDB B-factor column.
+
+    The point of the command is that the number leaves. Every scalar this
+    project computes was reachable only from inside it or from a JSON blob,
+    and the standard interoperability route is this file.
+    """
+    from .core.export import write_scalar_pdb
+
+    st = _load(args.structure)
+    scalars = _scalar_sources()
+    if args.scalar not in scalars:
+        print(f"unknown scalar {args.scalar!r}; choose from "
+              f"{', '.join(sorted(scalars))}")
+        return 2
+    values, default_scale, label = scalars[args.scalar](st, args)
+    if not values:
+        print(f"{args.scalar} scored nothing on {st.name}")
+        return 1
+    scale = args.scale if args.scale is not None else default_scale
+    report = write_scalar_pdb(st, values, args.out, scale=scale, name=label)
+    print(report.summary())
+    return 0
+
+
+def _scalar_sources() -> dict:
+    """The per-residue scalars that can be exported, and their natural scale.
+
+    A registry rather than a chain of ifs, so adding one is a line here and the
+    CLI help lists it automatically.
+    """
+    def wetting(st, args):
+        from .analysis.hydration import load_grid, predict_wetting
+        from .structure.pore import pore_profile
+        from .structure.protomers import protomer_blocks
+        from .structure.superpose import detect_c3_axis
+
+        blocks, _ = protomer_blocks(st)
+        profile = pore_profile(st, detect_c3_axis(blocks))
+        prediction = predict_wetting(st, profile, grid=load_grid())
+        return ({p.residue: p.energy for p in prediction.points}, 10.0,
+                "wetting energy kJ/mol")
+
+    def conservation(st, args):
+        from .analysis.conservation import conservation_profile
+
+        profile = conservation_profile()
+        return ({int(r): float(v) for r, v in
+                 zip(profile.residues, profile.conservation)}, 100.0,
+                "conservation")
+
+    def fluctuation(st, args):
+        from .analysis.fluctuations import predicted_msf
+
+        values = predicted_msf(st)
+        return ({int(r): float(v) for r, v in values.items()}, 1.0,
+                "predicted mean-square fluctuation")
+
+    return {"wetting": wetting, "conservation": conservation,
+            "fluctuation": fluctuation}
+
+
 def cmd_guo2017(args) -> int:
     """Replicate Guo & MacKinnon 2017 panel by panel."""
     from .analysis.guo2017 import (PANELS, coverage, panel_by_key, replicate,
@@ -336,6 +398,19 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--coverage", action="store_true",
                    help="only report how much of the paper is reachable")
     p.set_defaults(func=cmd_guo2017)
+
+    p = sub.add_parser("export", parents=[common],
+                       help="write a computed per-residue scalar into a PDB "
+                            "B-factor column, for PyMOL or ChimeraX")
+    p.add_argument("structure", nargs="?", default="8YEZ")
+    p.add_argument("--scalar", default="wetting",
+                   help="which scalar to write (wetting, conservation, "
+                        "fluctuation)")
+    p.add_argument("--out", default="scalar.pdb", help="output path")
+    p.add_argument("--scale", type=float,
+                   help="multiply before writing; the B-factor column carries "
+                        "two decimals, so a 0-1 score needs scaling to use it")
+    p.set_defaults(func=cmd_export)
 
     p = sub.add_parser("liu2025", parents=[common],
                        help="replicate the figures of Liu et al. 2025, the "
