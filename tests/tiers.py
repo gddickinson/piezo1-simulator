@@ -151,6 +151,7 @@ TIERS: dict[str, tuple[str, tuple[str, ...]]] = {
             "test_ui_morph.py",
             "test_ui_nanodomain.py",
             "test_ui_path.py",
+            "test_ui_picking.py",
             "test_ui_pockets.py",
             "test_ui_pore_surface.py",
             "test_ui_shell.py",

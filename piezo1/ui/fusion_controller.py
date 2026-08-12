@@ -196,6 +196,9 @@ class FusionController:
         self._draw()
 
     def clear(self) -> None:
+        unregister = getattr(self.win, "unregister_pick_feature", None)
+        if callable(unregister):
+            unregister(NAME)
         scene = self.win.viewport.scene
         if scene is not None:
             for key in list(scene.batches):
@@ -275,6 +278,8 @@ class FusionController:
         seam_batch.upload(starts, ends, np.full(len(starts), 1.2, np.float32),
                           colour, colour)
 
+        self._register_picking(centres)
+
         if self.show_envelope:
             self._draw_envelope(scene)
         if self.show_dyes:
@@ -326,6 +331,48 @@ class FusionController:
             f"the channel (red). {clear} of {pose.meta['spins_sampled']} "
             f"orientations clear it. THE SPIN IS UNDETERMINED — this is one "
             f"draw; turn it with View → HaloTag fusion → Turn tag orientation.")
+
+    def _register_picking(self, centres: np.ndarray) -> None:
+        """Let clicks identify the drawn tag, saying what it is.
+
+        The describe text leads with MODELLED and, for the fold, repeats that
+        the spin is undetermined — a click is an identification, and a tag
+        atom identified like a deposited one would be the confident wrong
+        answer the status line exists to prevent.
+        """
+        register = getattr(self.win, "register_pick_feature", None)
+        if not callable(register):
+            return
+        if self.show_atoms and self.pose is not None:
+            pose = self.pose
+            labels = self._fold_labels(pose.n_atoms)
+
+            def describe(i, labels=labels, n=pose.n_atoms):
+                return (f"{labels[i % n]} (tag {i // n + 1}) — MODELLED "
+                        f"position of the deposited 6U32 fold; the spin about "
+                        f"the linker is UNDETERMINED")
+            register(NAME, pose.coords.reshape(-1, 3), describe)
+        else:
+            def describe(i):
+                return (f"HaloTag tag {i + 1} centre — MODELLED position "
+                        f"(radius-of-gyration sphere); no structure of the "
+                        f"fusion exists")
+            register(NAME, centres, describe)
+
+    def _fold_labels(self, n_atoms: int) -> list:
+        from ..structure.fusion import load_halotag
+        from ..structure.fusion_pose import drawable_mask
+
+        try:
+            tag = load_halotag().structure
+            base = tag.subset(drawable_mask(tag))
+        except (FileNotFoundError, ValueError):
+            base = None
+        if base is None or base.n_atoms != n_atoms:
+            return [f"HaloTag atom {i}" for i in range(n_atoms)]
+        return [f"HaloTag {rn}{int(rs)} atom {an}"
+                for rn, rs, an in zip(base.res_name, base.res_seq,
+                                      base.atom_name, strict=True)]
 
     def _draw_fold_view(self, scene, pose, colours: np.ndarray) -> bool:
         """The fold in a chosen representation, through the same machinery

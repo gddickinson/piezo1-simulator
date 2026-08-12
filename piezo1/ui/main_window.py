@@ -118,6 +118,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         self.viewport.scene_ready.connect(self._on_scene_ready)
         self.viewport.status.connect(self._set_status)
         self.viewport.atom_picked.connect(self._on_pick)
+        self.viewport.feature_picked.connect(self._on_feature_pick)
         self.viewport.context_requested.connect(self._show_context_menu)
 
         self._build_docks()
@@ -364,6 +365,10 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         self.physics.reset()
         self.analysis.reset()
         self.fusion.clear()
+        # The full-length overlay is a model of the entry being replaced, and
+        # was missing from this list: it survived a structure change, drawn
+        # (and, now that features answer clicks, pickable) over the new entry.
+        self.hybrid.clear()
         # The surface was fitted to the structure being replaced, so
         # leaving it up would draw one model's dome over another's.
         self.dome_surface.clear()

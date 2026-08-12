@@ -157,6 +157,18 @@ class CompanionMixin:
         self._companions()[pdb] = Companion(
             pdb=pdb, structure=structure, view=view, color=color,
             species=species)
+
+        # A companion's atoms answer clicks like the primary's do — but the
+        # answer must say which structure was hit, and that the analyses are
+        # not running on it.
+        register = getattr(self, "register_pick_feature", None)
+        if callable(register):
+            def describe(i, st=structure, pdb=pdb):
+                return (f"{st.res_name[i]}{int(st.res_seq[i])} chain "
+                        f"{st.chain[i]} atom {st.atom_name[i]} — extra "
+                        f"structure {pdb}; analyses run on the primary")
+            register(f"extra:{pdb}", structure.xyz, describe)
+
         self._refresh_displayed()
         self.viewport.update()
 
@@ -198,16 +210,23 @@ class CompanionMixin:
         if companion is None:
             return
         companion.view.clear()
+        self._unregister_companion_picking(pdb)
         self._refresh_displayed()
         self.viewport.update()
 
     def clear_companions(self) -> None:
         for companion in list(self._companions().values()):
             companion.view.clear()
+            self._unregister_companion_picking(companion.pdb)
         self._companions().clear()
         self._refresh_displayed()
         if self.viewport.scene is not None:
             self.viewport.update()
+
+    def _unregister_companion_picking(self, pdb: str) -> None:
+        unregister = getattr(self, "unregister_pick_feature", None)
+        if callable(unregister):
+            unregister(f"extra:{pdb}")
 
     # -------------------------------------------------------------- reporting
 

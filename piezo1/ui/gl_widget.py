@@ -22,7 +22,8 @@ from ..config import RenderSettings
 from ..render.scene import Scene
 from .hud import HudOverlay
 
-__all__ = ["ViewportWidget", "configure_surface_format", "CLICK_SLOP"]
+__all__ = ["ViewportWidget", "configure_surface_format", "CLICK_SLOP",
+           "nearest_hit", "PRIMARY_SOURCE"]
 
 #: How far the mouse may move between press and release and still count as a
 #: click rather than a drag, in pixels. A few pixels of tremor is normal on a
@@ -33,6 +34,43 @@ CLICK_SLOP = 3
 #: Generous relative to a carbon so that a cartoon ribbon — which draws no atom
 #: where the ray lands — still picks the residue the user aimed at.
 PICK_RADIUS = 2.2
+
+#: The name the primary structure's atoms are picked under. Every other pick
+#: source is a drawn feature — a modelled tag, an extra structure — registered
+#: by whichever controller drew it, so that clicking anything on screen
+#: identifies it rather than silently identifying whatever primary atom
+#: happens to lie behind it.
+PRIMARY_SOURCE = "structure"
+
+
+def nearest_hit(sources: dict, origin: np.ndarray, direction: np.ndarray,
+                radius: float = PICK_RADIUS):
+    """The atom nearest the camera along a pick ray, across named sources.
+
+    ``sources`` maps a name to an ``(n, 3)`` coordinate array. Returns
+    ``(name, index)`` for the winning atom, or ``None`` when the ray passes
+    nothing. Pure geometry, deliberately free of Qt and GL, so the rule that
+    decides *which* thing a click hits — nearest wins, whatever drew it — can
+    be tested on arrays whose answer is known by construction.
+    """
+    best = None                                   # (along, name, index)
+    for name, coords in sources.items():
+        if coords is None or len(coords) == 0:
+            continue
+        rel = np.asarray(coords, np.float64) - origin
+        along = rel @ direction
+        valid = along > 0                          # in front of the camera
+        if not valid.any():
+            continue
+        perp = np.linalg.norm(rel - np.outer(along, direction), axis=1)
+        perp[~valid] = np.inf
+        hits = np.flatnonzero(perp < radius)
+        if len(hits) == 0:
+            continue
+        i = int(hits[np.argmin(along[hits])])
+        if best is None or along[i] < best[0]:
+            best = (float(along[i]), name, i)
+    return None if best is None else (best[1], best[2])
 
 
 def configure_surface_format(settings: RenderSettings | None = None) -> None:
@@ -59,6 +97,10 @@ class ViewportWidget(QOpenGLWidget):
     scene_ready = pyqtSignal(object)
     #: Emitted with an atom index (or -1) when the user clicks.
     atom_picked = pyqtSignal(int)
+    #: Emitted with a feature name and atom index when the click lands on a
+    #: registered feature — a modelled tag, an extra structure — instead of
+    #: the primary model.
+    feature_picked = pyqtSignal(str, int)
     #: Emitted with a human-readable status string.
     status = pyqtSignal(str)
     #: Right-click: the position to pop up at, and the atom under it (-1 none).
@@ -73,6 +115,10 @@ class ViewportWidget(QOpenGLWidget):
         self._press_pos: QPoint | None = None
         self._buttons = Qt.MouseButton.NoButton
         self._pick_source: np.ndarray | None = None
+        #: Extra pickable coordinate sets, keyed by feature name. Registered
+        #: by the controller that draws each feature and dropped when it
+        #: clears, so a click can never identify something not on screen.
+        self._feature_sources: dict[str, np.ndarray] = {}
         self._spin_speed = 0.0
         self.setMouseTracking(True)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
@@ -257,11 +303,52 @@ class ViewportWidget(QOpenGLWidget):
         """Supply the coordinate array that clicks should be tested against."""
         self._pick_source = None if coords is None else np.asarray(coords, np.float64)
 
+    def set_feature_pick_source(self, name: str,
+                                coords: np.ndarray | None) -> None:
+        """Register (or, with ``None``, drop) a feature's pickable atoms."""
+        if coords is None:
+            self._feature_sources.pop(name, None)
+        else:
+            self._feature_sources[name] = np.asarray(coords, np.float64)
+
+    def clear_feature_pick_sources(self) -> None:
+        self._feature_sources.clear()
+
+    def hit_at(self, pos: QPoint):
+        """What is under ``pos``, across everything pickable on screen.
+
+        Returns ``(source_name, index)`` — ``PRIMARY_SOURCE`` for the loaded
+        structure — or ``None`` when nothing is hit. Nearest to the camera
+        wins whatever drew it, because "what did I click" has one honest
+        answer: the thing in front.
+        """
+        if self.scene is None:
+            return None
+        sources: dict[str, np.ndarray] = {}
+        if self._pick_source is not None and len(self._pick_source):
+            sources[PRIMARY_SOURCE] = self._pick_source
+        sources.update(self._feature_sources)
+        if not sources:
+            return None
+        x_ndc = 2.0 * pos.x() / max(self.width(), 1) - 1.0
+        y_ndc = 1.0 - 2.0 * pos.y() / max(self.height(), 1)
+        origin, direction = self.scene.camera.ray_through_pixel(x_ndc, y_ndc)
+        return nearest_hit(sources, origin, direction)
+
     def _pick_at(self, pos: QPoint) -> None:
-        """Identify the atom under ``pos`` and announce it as a selection."""
-        index = self.atom_at(pos)
-        if index is not None:
-            self.atom_picked.emit(index)
+        """Identify the thing under ``pos`` and announce it as a selection."""
+        hit = self.hit_at(pos)
+        if hit is not None:
+            name, index = hit
+            if name == PRIMARY_SOURCE:
+                self.atom_picked.emit(index)
+            else:
+                self.feature_picked.emit(name, index)
+        elif ((self._pick_source is not None and len(self._pick_source))
+              or self._feature_sources):
+            # Something is pickable and the click missed it all; the status
+            # line should say so rather than leave the click unanswered.
+            self.atom_picked.emit(-1)
 
     def atom_at(self, pos: QPoint) -> int | None:
         """The atom under ``pos``, or -1 for none — without announcing it.

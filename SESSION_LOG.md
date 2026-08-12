@@ -6966,3 +6966,52 @@ targets: `test-quick`, `test-science`, `test-ui` (both include quick),
 `test-render`, `test-records` — and `make test` unchanged as the full,
 occasional check. The situational tiers together *are* the full suite, by the
 partition, so nothing can fall between them.
+
+---
+
+## 2026-08-12 — Round 90c: a click answers for everything drawn
+
+**Asked.** Select atoms in any structure — as for the main structure: the
+HaloTag, ligands, and the rest.
+
+**What a click could and could not do.** The pick source was the primary
+structure's atom array and nothing else. The HaloTag, the extra structures
+and the full-length graft were mute — worse, a click aimed at them
+identified whatever primary atom lay *behind* them, which is a wrong answer
+delivered confidently. And a click on a lipid worked but then looked the
+lipid's author-assigned residue number up in the **curated protein
+annotation**: mouse numbering runs to 2547, the lipids' numbers land inside
+it, and the status line named a domain the lipid is not part of.
+
+**Two rules carry the feature.**
+
+- **Nearest wins, whatever drew it.** `nearest_hit` in `gl_widget.py` takes
+  named coordinate sets and answers "what did I click" by the one honest
+  rule: the thing in front. Pure geometry, Qt-free, calibrated on rays whose
+  answer is known by construction. Controllers register their drawn atoms
+  (`register_pick_feature`) and unregister when they clear, so a click can
+  never identify something not on screen — which is also why `load_structure`
+  now clears the full-length overlay: it survived a structure change, drawn
+  over the new entry, and was one registration away from *answering clicks*
+  for it.
+- **A feature identifies as what it is.** The describe text is part of the
+  registration, and it must say what the thing *is*, not only which atom: a
+  tag atom answers MODELLED with the spin UNDETERMINED, a graft atom answers
+  PREDICTED with its pLDDT (its experimental half answers experimental), a
+  companion names itself and adds that the analyses run on the primary. A
+  tag atom identified like a deposited one would be the confident wrong
+  answer the rest of this project spends its guards on.
+
+An armed measure click on a feature **refuses out loud** — swallowing the
+click silently would break inspection, and a distance to a modelled position
+would be a measurement of a guess. A feature pick marks the atom exactly as
+a primary pick marks its residue, one current selection at a time in either
+direction.
+
+**Tests** (`test_ui_picking.py`, 15): the geometry both ways round (a nearer
+feature beats the primary *and* a nearer primary beats the feature), the
+identify-as-what-it-is texts for all three features, the loud refusal, the
+marker dropping with its source, and the HETATM fix pinned on a real 7WLT
+lipid. The `ui` and `render` tiers pass, `test_ui_controls`' pinned
+click-versus-drag behaviour among them — one situational run each, which is
+what Round 90b was for.

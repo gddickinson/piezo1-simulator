@@ -54,6 +54,9 @@ class SelectionMixin:
         # Highlight is drawn by the sphere shader, so show the selected atoms
         # as spheres on top of whatever representation is active.
         self.viewport.scene.remove(f"{self.view.name}:selection")
+        # One current selection at a time: marking a residue on the primary
+        # structure replaces any marked feature atom, and vice versa.
+        self.viewport.scene.remove("feature:selection")
         if residues:
             mask = self.view.highlight
             n = int(mask.sum())
@@ -128,15 +131,23 @@ class SelectionMixin:
             return
         res = int(st.res_seq[index])
         chain = str(st.chain[index])
-        info = self.annotations.annotate_residue(res)
         bits = [f"{st.res_name[index]}{res} chain {chain} "
                 f"atom {st.atom_name[index]}"]
-        if info["domain"]:
-            bits.append(f"domain: {info['domain']}")
-        if info["groups"]:
-            bits.append("sites: " + ", ".join(info["groups"]))
-        for v in info["variants"]:
-            bits.append(f"variant {v['label']} ({v['classification']})")
+        if st.hetero[index]:
+            # The curated domains, sites and variants are protein annotation,
+            # looked up by residue number. A lipid's author-assigned number can
+            # land inside the protein's range, so looking it up would confidently
+            # name a domain the lipid is not part of.
+            bits.append("HETATM — a resolved ligand, lipid, glycan or ion; "
+                        "modelled density, not a docked pose")
+        else:
+            info = self.annotations.annotate_residue(res)
+            if info["domain"]:
+                bits.append(f"domain: {info['domain']}")
+            if info["groups"]:
+                bits.append("sites: " + ", ".join(info["groups"]))
+            for v in info["variants"]:
+                bits.append(f"variant {v['label']} ({v['classification']})")
 
         # Mark it on the model. Without this a click changed only the status
         # bar, so there was no way to tell which atom had been hit — or that
@@ -147,3 +158,67 @@ class SelectionMixin:
         if not self.measure_panel.armed and self._pick_hints <= PICK_HINTS:
             bits.append("to measure, press Start picking in the Measure panel")
         self._set_status("   ·   ".join(bits))
+
+    # -------------------------------------------------------- feature picks
+
+    #: Marker drawn on a picked feature atom, Angstrom. Fixed rather than van
+    #: der Waals because a feature source is bare coordinates — the tag's
+    #: sphere centre has no element to look a radius up by.
+    FEATURE_MARK_RADIUS = 2.0
+
+    def _feature_registry(self) -> dict:
+        # Lazy, so the mixin needs nothing from __init__.
+        if not hasattr(self, "_pick_feature_map"):
+            self._pick_feature_map: dict = {}
+        return self._pick_feature_map
+
+    def register_pick_feature(self, name: str, coords, describe) -> None:
+        """Make a drawn feature's atoms answer clicks like the model's do.
+
+        ``describe(index) -> str`` must say **what the thing is**, not only
+        which atom — a modelled tag, an extra structure, a predicted residue —
+        because the click's whole job is identification, and a feature
+        identified as if it were the loaded structure would be the confident
+        wrong answer this project spends most of its guards on.
+        """
+        coords = np.asarray(coords, np.float64).reshape(-1, 3)
+        self._feature_registry()[name] = (coords, describe)
+        self.viewport.set_feature_pick_source(name, coords)
+
+    def unregister_pick_feature(self, name: str) -> None:
+        """Drop a feature's atoms from picking; safe to call when absent."""
+        self._feature_registry().pop(name, None)
+        self.viewport.set_feature_pick_source(name, None)
+        scene = self.viewport.scene
+        if scene is not None:
+            # Its marker may be the current selection; a marker outliving the
+            # thing it marked would float in empty space.
+            scene.remove("feature:selection")
+
+    def _on_feature_pick(self, name: str, index: int) -> None:
+        entry = self._feature_registry().get(name)
+        if entry is None:
+            return
+        coords, describe = entry
+        if not (0 <= index < len(coords)):
+            return
+        text = str(describe(int(index)))
+        if self.measure_panel.armed:
+            # Refuse out loud rather than swallow the click: measurements are
+            # atom indices into the primary structure, and a distance to a
+            # modelled position would be a measurement of a guess.
+            self._set_status("measurements are taken on the primary structure"
+                             f"   ·   this click hit {text}")
+            return
+        # Mark it, exactly as a primary click marks its residue — replacing
+        # the previous selection, whichever kind it was.
+        self._highlight([], "")
+        scene = self.viewport.scene
+        if scene is not None:
+            batch = scene.spheres("feature:selection")
+            batch.upload(coords[[index]].astype(np.float32),
+                         np.full(1, self.FEATURE_MARK_RADIUS, np.float32),
+                         np.array([[1.0, 0.83, 0.2]], np.float32),
+                         np.ones(1, np.float32))
+        self._set_status(text)
+        self.viewport.update()

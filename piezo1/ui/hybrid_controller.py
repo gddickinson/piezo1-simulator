@@ -88,6 +88,9 @@ class HybridController:
         self._build()
 
     def clear(self) -> None:
+        unregister = getattr(self.win, "unregister_pick_feature", None)
+        if callable(unregister):
+            unregister(NAME)
         scene = self.win.viewport.scene
         if scene is not None:
             for key in list(scene.batches):
@@ -146,8 +149,31 @@ class HybridController:
                           np.float32([SEAM_RADIUS]),
                           np.float32([SEAM_COLOR]), np.float32([1.0]))
 
+        self._register_picking()
         self.win._set_status(self.status_line())
         self.win.viewport.update()
+
+    def _register_picking(self) -> None:
+        """Clicks on the drawn model say which half of it they hit.
+
+        The describe text is the point: a predicted atom identifies itself as
+        PREDICTED with its pLDDT, because a click is an identification and
+        the graft must never identify like an experiment.
+        """
+        register = getattr(self.win, "register_pick_feature", None)
+        if not callable(register) or self.model is None:
+            return
+        model = self.model
+
+        def describe(i, model=model):
+            res = int(model.res_seq[i])
+            if bool(model.predicted[i]):
+                return (f"full-length model residue {res} — PREDICTED "
+                        f"(AlphaFold, pLDDT {float(model.plddt[i]):.0f}); "
+                        f"no experiment resolves this atom")
+            return (f"full-length model residue {res} — experimental core, "
+                    f"chain {model.meta.get('chain', '?')}")
+        register(NAME, model.xyz, describe)
 
     def _draw_ribbon(self, scene) -> bool:
         """The model as a backbone ribbon through its recorded C-alphas.
