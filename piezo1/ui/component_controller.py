@@ -24,7 +24,7 @@ from __future__ import annotations
 import numpy as np
 
 __all__ = ["ComponentController", "HIGHLIGHT_COLOR", "HIGHLIGHT_RADIUS",
-           "BOND_RADIUS"]
+           "BOND_RADIUS", "HIGHLIGHT_STYLES"]
 
 NAME = "component"
 
@@ -42,6 +42,15 @@ BOND_RADIUS = 0.28
 #: where bond geometry is decided.
 _BOND_CUTOFF = 1.95
 
+#: How the highlighted residues are drawn. All three stay gold — the colour is
+#: what says "annotation, not structure" — and none changes which residues are
+#: highlighted, which comes from the curated groups alone.
+HIGHLIGHT_STYLES = (
+    ("ball_and_stick", "Ball and stick"),
+    ("sticks", "Sticks"),
+    ("spheres", "Spheres (van der Waals)"),
+)
+
 
 class ComponentController:
     """Draws one named component and the curated residues on it."""
@@ -50,6 +59,16 @@ class ComponentController:
         self.win = window
         self.key = "whole"
         self.selection = None
+        #: A key from HIGHLIGHT_STYLES.
+        self.highlight_style = "ball_and_stick"
+
+    def set_style(self, key: str) -> None:
+        """Restyle the highlighted residues. Changes nothing about which."""
+        if key not in {k for k, _label in HIGHLIGHT_STYLES}:
+            return
+        self.highlight_style = key
+        if self.selection is not None:
+            self._draw()
 
     # ------------------------------------------------------------ lifecycle
 
@@ -108,16 +127,27 @@ class ComponentController:
             return
 
         xyz = structure.xyz[mask].astype(np.float32)
+        if self.highlight_style == "spheres":
+            radii = structure.vdw_radii()[mask].astype(np.float32)
+        elif self.highlight_style == "sticks":
+            # Joint spheres at the bond radius, so the sticks meet cleanly
+            # without reading as balls — the same convention the main view's
+            # sticks style follows.
+            radii = np.full(len(xyz), BOND_RADIUS, np.float32)
+        else:
+            radii = np.full(len(xyz), HIGHLIGHT_RADIUS, np.float32)
         scene.spheres(f"{NAME}:atoms").upload(
-            xyz, np.full(len(xyz), HIGHLIGHT_RADIUS, np.float32),
+            xyz, radii,
             np.tile(np.array(HIGHLIGHT_COLOR, np.float32), (len(xyz), 1))
               .reshape(len(xyz), 3))
 
-        starts, ends = self._bonds(structure, mask)
-        colour = np.tile(np.array(HIGHLIGHT_COLOR, np.float32),
-                         (len(starts), 1)).reshape(len(starts), 3)
-        scene.cylinders(f"{NAME}:bonds").upload(
-            starts, ends, np.full(len(starts), BOND_RADIUS, np.float32), colour)
+        if self.highlight_style != "spheres":
+            starts, ends = self._bonds(structure, mask)
+            colour = np.tile(np.array(HIGHLIGHT_COLOR, np.float32),
+                             (len(starts), 1)).reshape(len(starts), 3)
+            scene.cylinders(f"{NAME}:bonds").upload(
+                starts, ends, np.full(len(starts), BOND_RADIUS, np.float32),
+                colour)
         self.win.viewport.update()
 
     def _bonds(self, structure, mask: np.ndarray):

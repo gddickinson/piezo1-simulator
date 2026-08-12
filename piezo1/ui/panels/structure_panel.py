@@ -8,8 +8,8 @@ from PyQt6.QtWidgets import (QCheckBox, QComboBox, QFormLayout, QGroupBox,
                              QWidget)
 
 from ...io.registry import StructureRecord, load_registry
-from ...structure.full_length import FILL_MODES
-from ...render.representations import ColorBy, Style
+from ...structure.full_length import DISPLAY_MODES as FILL_MODES
+from ...render.representations import ColorBy, LIGAND_STYLES, Style
 
 __all__ = ["StructurePanel", "FILTERS"]
 
@@ -64,6 +64,7 @@ class StructurePanel(QWidget):
     style_changed = pyqtSignal(object)
     color_changed = pyqtSignal(object)
     ligands_toggled = pyqtSignal(bool)
+    ligand_style_changed = pyqtSignal(str)
     radius_changed = pyqtSignal(float)
     entities_changed = pyqtSignal(object)      # frozenset of visible classes
     spin_toggled = pyqtSignal(bool)
@@ -195,6 +196,18 @@ class StructurePanel(QWidget):
             "densities, not docked poses.")
         self.ligand_check.toggled.connect(self.ligands_toggled.emit)
         form.addRow(self.ligand_check)
+
+        self.ligand_style_combo = QComboBox()
+        for _key, label in LIGAND_STYLES:
+            self.ligand_style_combo.addItem(label)
+        self.ligand_style_combo.setToolTip(
+            "How the resolved lipids and ligands are drawn when they are\n"
+            "shown at all: van der Waals spheres, small balls, or ball and\n"
+            "stick with bonds. Display only — they stay modelled densities,\n"
+            "not docked poses, whichever way they are drawn.")
+        self.ligand_style_combo.currentIndexChanged.connect(
+            lambda i: self.ligand_style_changed.emit(LIGAND_STYLES[i][0]))
+        form.addRow("Ligand style", self.ligand_style_combo)
 
         self.spin_check = QCheckBox("Auto-rotate")
         self.spin_check.setToolTip(
@@ -340,6 +353,9 @@ class StructurePanel(QWidget):
 
     def current_style(self):
         return STYLE_LABELS[self.style_combo.currentIndex()][1]
+
+    def current_ligand_style(self) -> str:
+        return LIGAND_STYLES[max(self.ligand_style_combo.currentIndex(), 0)][0]
 
     def current_color(self):
         return COLOR_LABELS[self.color_combo.currentIndex()][1]

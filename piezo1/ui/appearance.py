@@ -60,6 +60,13 @@ class AppearanceMixin:
         self.view.rebuild()
         self.viewport.update()
 
+    def _set_ligand_style(self, key: str) -> None:
+        if self.view is None:
+            return
+        self.view.ligand_style = key
+        self.view.rebuild()
+        self.viewport.update()
+
     def _set_radius(self, scale: float) -> None:
         if self.viewport.scene is not None:
             self.viewport.scene.radius_scale = scale

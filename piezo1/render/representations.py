@@ -19,7 +19,7 @@ from .geometry_builders import Mesh, build_cartoon, build_tube
 from .scene import Scene
 from .spline import assign_secondary_structure
 
-__all__ = ["Style", "ColorBy", "MolecularView"]
+__all__ = ["Style", "ColorBy", "MolecularView", "LIGAND_STYLES"]
 
 
 #: Ball radius in ball-and-stick, Angstrom. Roughly a quarter of a carbon's
@@ -41,6 +41,17 @@ class Style(str, Enum):
     STICKS = "sticks"
     BALL_AND_STICK = "ball_and_stick"
     SURFACE_POINTS = "surface_points"
+
+
+#: How resolved ligands and lipids may be drawn. A list of (key, label) rather
+#: than a second Enum: these are variations on where `_build_ligands` puts its
+#: radii, not styles of the whole model, and a key that fell out of this list
+#: falls back to spheres rather than raising mid-frame.
+LIGAND_STYLES = [
+    ("spheres", "Spheres (van der Waals)"),
+    ("balls", "Balls"),
+    ("ball_and_stick", "Ball and stick"),
+]
 
 
 class ColorBy(str, Enum):
@@ -90,6 +101,9 @@ class MolecularView:
     style: Style = Style.CARTOON
     color_by: ColorBy = ColorBy.DOMAIN
     ligands_as_spheres: bool = True
+    #: How the resolved ligands and lipids are drawn when they are drawn at
+    #: all. A key from `LIGAND_STYLES`; anything else falls back to spheres.
+    ligand_style: str = "spheres"
     #: Entity categories to draw. Empty means "everything", so existing callers
     #: are unaffected. See :mod:`piezo1.core.entities` — a deposited PIEZO1 file
     #: also contains lipids, detergent, glycan and, in six entries, the MDFIC
@@ -102,6 +116,11 @@ class MolecularView:
     visible_residues: frozenset | None = None
     values: np.ndarray | None = None          # per-atom scalar for ColorBy.VALUE
     highlight: np.ndarray | None = None       # per-atom bool
+    #: Per-atom RGB that wins over `color_by` when set. For overlays whose
+    #: colours carry meaning of their own — the HaloTag fold's contact atoms,
+    #: a graft's confidence bands — so that meaning survives any style change
+    #: instead of being re-derived from a palette that knows nothing of it.
+    color_override: np.ndarray | None = None
     #: Colour used by :attr:`ColorBy.UNIFORM`. Per-view rather than global, so
     #: several structures shown together can be told apart.
     uniform_color: tuple = (0.55, 0.62, 0.75)
@@ -138,6 +157,8 @@ class MolecularView:
 
     def atom_colors(self) -> np.ndarray:
         st = self.structure
+        if self.color_override is not None:
+            return np.asarray(self.color_override, dtype=np.float32)
         if self.color_by is ColorBy.DOMAIN:
             return colormaps.domain_colors(st, self._palette)
         if self.color_by is ColorBy.CHAIN:
@@ -248,7 +269,9 @@ class MolecularView:
             self._build_bonds(colors, mask=mask)
 
     def _build_bonds(self, colors: np.ndarray, cutoff: float = 1.95,
-                     mask: np.ndarray | None = None) -> None:
+                     mask: np.ndarray | None = None,
+                     batch_name: str = "bonds",
+                     radius: float | None = None) -> None:
         """Covalent bonds as cylinders, coloured from each end's atom.
 
         ``mask`` is the atom selection actually drawn. Bonds used to be built
@@ -268,8 +291,9 @@ class MolecularView:
         pairs = pairs[keep]
         if len(pairs) == 0:
             return
-        radius = STICK_RADIUS if self.style is Style.STICKS else BOND_RADIUS
-        batch = self.scene.cylinders(f"{self.name}:bonds")
+        if radius is None:
+            radius = STICK_RADIUS if self.style is Style.STICKS else BOND_RADIUS
+        batch = self.scene.cylinders(f"{self.name}:{batch_name}")
         batch.upload(st.xyz[pairs[:, 0]], st.xyz[pairs[:, 1]],
                      np.full(len(pairs), radius, np.float32),
                      colors[pairs[:, 0]], colors[pairs[:, 1]])
@@ -296,10 +320,20 @@ class MolecularView:
         mask = self._entity_filter(st.mask_ligands())
         if not mask.any():
             return
+        colors = (np.asarray(self.color_override, np.float32)
+                  if self.color_override is not None else st.element_colors())
+        keys = {key for key, _label in LIGAND_STYLES}
+        style = self.ligand_style if self.ligand_style in keys else "spheres"
+        if style == "spheres":
+            radii = st.vdw_radii()[mask] * 0.85
+        else:
+            radii = np.full(int(mask.sum()), BALL_RADIUS, dtype=np.float32)
         batch = self.scene.spheres(f"{self.name}:ligands")
-        batch.upload(st.xyz[mask], st.vdw_radii()[mask] * 0.85,
-                     st.element_colors()[mask],
+        batch.upload(st.xyz[mask], radii, colors[mask],
                      np.zeros(int(mask.sum()), np.float32))
+        if style == "ball_and_stick":
+            self._build_bonds(colors, mask=mask, batch_name="ligbonds",
+                              radius=BOND_RADIUS)
 
     # ------------------------------------------------------------- animation
 
@@ -326,9 +360,9 @@ class MolecularView:
     # ------------------------------------------------------------------ misc
 
     def clear(self) -> None:
-        for suffix in ("ribbon", "atoms", "bonds", "ligands"):
+        for suffix in ("ribbon", "atoms", "bonds", "ligands", "ligbonds"):
             self.scene.remove(f"{self.name}:{suffix}")
 
     def set_visible(self, visible: bool) -> None:
-        for suffix in ("ribbon", "atoms", "bonds", "ligands"):
+        for suffix in ("ribbon", "atoms", "bonds", "ligands", "ligbonds"):
             self.scene.set_visible(f"{self.name}:{suffix}", visible)

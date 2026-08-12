@@ -26,7 +26,7 @@ from __future__ import annotations
 import numpy as np
 
 __all__ = ["FusionController", "TAG_COLOR", "SEAM_COLOR", "ENVELOPE_COLOR",
-           "DYE_COLOR", "CONTACT_COLOR", "TAG_ATOM_SCALE"]
+           "DYE_COLOR", "CONTACT_COLOR", "TAG_ATOM_SCALE", "FOLD_STYLES"]
 
 #: Chosen to sit apart from the channel — but only *mostly*, and the difference
 #: matters now the fold is drawn. Measured against the chain palette, TAG_COLOR
@@ -49,6 +49,21 @@ TAG_ATOM_SCALE = 0.5
 
 NAME = "halotag"
 
+#: How the tag's real fold may be drawn once it is shown at all. Keys other
+#: than the default name a :class:`~piezo1.render.representations.Style`, so
+#: the fold is restyled by the same machinery as the channel and cannot drift
+#: from it. Presentation only: every style is the same rigidly placed 6U32,
+#: at the same undetermined spin, with the same status-line caveat — a cartoon
+#: of the fold is no more a determined pose than a sphere cloud of it.
+FOLD_STYLES = (
+    ("atoms", "Atom spheres"),
+    ("cartoon", "Cartoon"),
+    ("tube", "Ribbon tube"),
+    ("backbone", "Backbone trace"),
+    ("sticks", "Sticks"),
+    ("ball_and_stick", "Ball and stick"),
+)
+
 
 class FusionController:
     """Builds and draws the fusion model for the currently loaded structure."""
@@ -60,6 +75,10 @@ class FusionController:
         self.show_envelope = False
         self.show_dyes = False
         self.show_atoms = False
+        #: A key from FOLD_STYLES. Applies only while the fold is drawn; the
+        #: radius-of-gyration sphere is not a style but a statement, and it
+        #: stays a sphere.
+        self.fold_style = "atoms"
         #: None means "whichever orientation clears the channel best"; once the
         #: user turns it, an explicit angle they chose.
         self.spin = None
@@ -140,6 +159,24 @@ class FusionController:
         self.spin = None
         if self.visible:
             self._draw()
+
+    def set_fold_style(self, key: str) -> None:
+        """Choose how the fold is drawn — cartoon, sticks, or the atom cloud.
+
+        Stored even when nothing is on screen, so the choice survives toggling
+        the fold off and on. It never applies to the radius-of-gyration
+        sphere, which is drawn that way to claim exactly what the model
+        determined, not as a preference.
+        """
+        if key not in {k for k, _label in FOLD_STYLES}:
+            return
+        self.fold_style = key
+        if self.visible and self.show_atoms:
+            self._draw()
+        elif self.visible:
+            self.win._set_status(
+                "fold style stored — it applies once the tag structure is "
+                "shown (View → HaloTag fusion → Show tag structure)")
 
     def rotate_tags(self) -> None:
         """Turn the tag about the seam by one sampling step.
@@ -272,12 +309,15 @@ class FusionController:
         colours[pose.ligand] = DYE_COLOR
         colours[pose.touching & pose.body] = CONTACT_COLOR
 
-        batch = scene.spheres(f"{NAME}:fold")
-        batch.upload(
-            pose.coords.reshape(-1, 3).astype(np.float32),
-            np.tile(pose.radii * TAG_ATOM_SCALE, pose.n_tags).astype(np.float32),
-            np.tile(colours, (pose.n_tags, 1)),
-            np.zeros(pose.n_atoms * pose.n_tags, np.float32))
+        if self.fold_style == "atoms" or not self._draw_fold_view(scene, pose,
+                                                                  colours):
+            batch = scene.spheres(f"{NAME}:fold")
+            batch.upload(
+                pose.coords.reshape(-1, 3).astype(np.float32),
+                np.tile(pose.radii * TAG_ATOM_SCALE,
+                        pose.n_tags).astype(np.float32),
+                np.tile(colours, (pose.n_tags, 1)),
+                np.zeros(pose.n_atoms * pose.n_tags, np.float32))
 
         clear = pose.meta["clear_spins"]
         return np.asarray(pose.seams, dtype=np.float32), (
@@ -286,6 +326,57 @@ class FusionController:
             f"the channel (red). {clear} of {pose.meta['spins_sampled']} "
             f"orientations clear it. THE SPIN IS UNDETERMINED — this is one "
             f"draw; turn it with View → HaloTag fusion → Turn tag orientation.")
+
+    def _draw_fold_view(self, scene, pose, colours: np.ndarray) -> bool:
+        """The fold in a chosen representation, through the same machinery
+        that styles the channel.
+
+        Builds a real :class:`Structure` of the three placed tags — one chain
+        per copy, so bonds and cartoon traces stay within a tag — and hands it
+        to a `MolecularView` whose `color_override` carries the same per-atom
+        colours the sphere cloud uses. The contact atoms stay red and the dye
+        stays its own colour in every style, because those colours are the
+        visible half of the reported numbers, not decoration.
+
+        Returns False when the placed atoms cannot be matched back to the tag
+        file, in which case the caller draws the sphere cloud instead: a fold
+        silently missing from the screen is worse than one in the wrong style.
+        """
+        from ..core.structure import Structure
+        from ..render.representations import MolecularView, Style
+        from ..structure.fusion import load_halotag
+        from ..structure.fusion_pose import drawable_mask
+
+        try:
+            style = Style(self.fold_style)
+            tag = load_halotag().structure
+            base = tag.subset(drawable_mask(tag))
+        except (FileNotFoundError, ValueError):
+            return False
+        if base.n_atoms != pose.n_atoms:
+            return False
+
+        fields = {f: np.concatenate([getattr(base, f)] * pose.n_tags)
+                  for f in Structure._ARRAY_FIELDS if f != "xyz"}
+        # One chain label per copy: cross-chain bonds are skipped and cartoon
+        # traces are per chain, so this is what keeps the three tags separate.
+        fields["chain"] = np.concatenate(
+            [np.full(base.n_atoms, str(i + 1)) for i in range(pose.n_tags)])
+        placed = Structure(
+            xyz=pose.coords.reshape(-1, 3).astype(np.float32),
+            name="halotag-fold", **fields)
+        placed._build_residue_index()
+
+        view = MolecularView(
+            scene, placed, name=f"{NAME}:fold", style=style,
+            color_override=np.tile(colours, (pose.n_tags, 1)))
+        # In ribbon styles the dye would vanish with the side chains; the
+        # ligand pass keeps it, in its own colour. In atom styles it is
+        # already in the atoms batch, and drawing it twice adds nothing.
+        view.ligands_as_spheres = style in (Style.CARTOON, Style.TUBE,
+                                            Style.BACKBONE)
+        view.rebuild()
+        return True
 
     def _draw_envelope(self, scene) -> None:
         """The accessible volume, as a thinned point cloud.

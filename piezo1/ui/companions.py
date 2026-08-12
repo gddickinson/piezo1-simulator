@@ -63,6 +63,34 @@ class CompanionMixin:
         return bool(self.settings.value("options/multi_structure", False,
                                         type=bool))
 
+    def companion_style(self) -> Style:
+        """How extra structures are drawn. Backbone unless the user chose.
+
+        One choice for all companions rather than one each: they exist to be
+        told apart from the primary by *colour*, and a mixture of styles would
+        hand that job to shape as well, which nothing explains on screen.
+        """
+        stored = self.settings.value("options/companion_style",
+                                     Style.BACKBONE.value, type=str)
+        try:
+            return Style(stored)
+        except ValueError:
+            return Style.BACKBONE
+
+    def set_companion_style(self, key: str) -> None:
+        """Restyle every companion, now and for the rest of the session."""
+        try:
+            style = Style(key)
+        except ValueError:
+            return
+        self.settings.setValue("options/companion_style", style.value)
+        for companion in self._companions().values():
+            companion.view.style = style
+            companion.view.rebuild()
+        if self._companions():
+            self.viewport.update()
+            self._set_status(f"extra structures drawn as {style.value.replace('_', ' ')}")
+
     def set_multi_structure(self, on: bool) -> None:
         """Turn multi-structure display on or off.
 
@@ -120,7 +148,7 @@ class CompanionMixin:
 
         view = MolecularView(self.viewport.scene, structure, name=f"extra:{pdb}")
         view.set_species(species)
-        view.style = Style.BACKBONE
+        view.style = self.companion_style()
         view.color_by = ColorBy.UNIFORM
         view.uniform_color = color
         view.ligands_as_spheres = False

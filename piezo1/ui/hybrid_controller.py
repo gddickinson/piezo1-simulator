@@ -29,7 +29,18 @@ from __future__ import annotations
 import numpy as np
 
 __all__ = ["HybridController", "EXPERIMENTAL_COLOR", "SEAM_COLOR",
-           "SEAM_RADIUS", "PLDDT_BANDS"]
+           "SEAM_RADIUS", "PLDDT_BANDS", "HYBRID_STYLES"]
+
+#: How the model may be drawn. Presentation only — every style keeps the
+#: grey-versus-pLDDT colouring, the seam marker and the status line, because
+#: those are what stop a complete-looking trimer from reading as measured.
+#: The ribbon styles run through the C-alphas the model records, so they show
+#: the chain's path where the sphere cloud shows its bulk.
+HYBRID_STYLES = (
+    ("spheres", "Atom spheres"),
+    ("tube", "Backbone tube"),
+    ("backbone", "Backbone trace"),
+)
 
 #: Flat and dull on purpose: the experimental part is context here, and any of
 #: the real colourings would compete with the confidence bands that matter.
@@ -52,10 +63,20 @@ class HybridController:
     def __init__(self, window) -> None:
         self.win = window
         self.model = None
+        #: A key from HYBRID_STYLES.
+        self.style = "spheres"
 
     @property
     def visible(self) -> bool:
         return self.model is not None
+
+    def set_style(self, key: str) -> None:
+        """Redraw the model in a chosen representation. Display only."""
+        if key not in {k for k, _label in HYBRID_STYLES}:
+            return
+        self.style = key
+        if self.visible:
+            self._draw()
 
     def show(self, on: bool) -> None:
         if not on:
@@ -111,11 +132,12 @@ class HybridController:
             if key.startswith(f"{NAME}:"):
                 scene.remove(key)
 
-        model = self.model
-        xyz = np.asarray(model.xyz, dtype=np.float32)
-        batch = scene.spheres(f"{NAME}:atoms")
-        batch.upload(xyz, np.full(len(xyz), 1.6, np.float32),
-                     self._colors(), np.zeros(len(xyz), np.float32))
+        if self.style == "spheres" or not self._draw_ribbon(scene):
+            model = self.model
+            xyz = np.asarray(model.xyz, dtype=np.float32)
+            batch = scene.spheres(f"{NAME}:atoms")
+            batch.upload(xyz, np.full(len(xyz), 1.6, np.float32),
+                         self._colors(), np.zeros(len(xyz), np.float32))
 
         seam = self._seam_point()
         if seam is not None:
@@ -126,6 +148,47 @@ class HybridController:
 
         self.win._set_status(self.status_line())
         self.win.viewport.update()
+
+    def _draw_ribbon(self, scene) -> bool:
+        """The model as a backbone ribbon through its recorded C-alphas.
+
+        The colours are the same per-atom array the sphere cloud uses, read at
+        the C-alphas — grey stays grey and each pLDDT band keeps its colour,
+        so restyling cannot soften the prediction's own uncertainty signal.
+        Returns False when the model carries no usable C-alpha record, and the
+        caller falls back to the sphere cloud rather than drawing nothing.
+        """
+        from ..render.geometry_builders import Mesh, build_tube
+
+        model = self.model
+        ca = getattr(model, "ca", None)
+        if ca is None or int(np.asarray(ca).sum()) < 4:
+            return False
+        ca = np.asarray(ca, dtype=bool)
+        res = model.res_seq[ca]
+        order = np.argsort(res, kind="stable")
+        xyz = np.asarray(model.xyz, np.float64)[ca][order]
+        col = self._colors()[ca][order].astype(np.float64)
+        res = res[order]
+
+        # Split at unmodelled gaps, exactly as the main view does, so the
+        # ribbon does not draw a straight bar across a missing loop.
+        breaks = np.flatnonzero(np.diff(res) > 1) + 1
+        mesh = Mesh.empty()
+        for seg in np.split(np.arange(len(res)), breaks):
+            if len(seg) < 4:
+                continue
+            if self.style == "tube":
+                part = build_tube(xyz[seg], col[seg], radius=0.85, sides=10)
+            else:
+                part = build_tube(xyz[seg], col[seg], radius=0.35, sides=6,
+                                  subdivisions=3)
+            mesh = mesh.concat(part)
+        if not mesh.n_vertices:
+            return False
+        scene.mesh(f"{NAME}:ribbon", two_sided=True).upload(
+            mesh.positions, mesh.normals, mesh.colors, mesh.indices)
+        return True
 
     def _seam_point(self) -> np.ndarray | None:
         model = self.model

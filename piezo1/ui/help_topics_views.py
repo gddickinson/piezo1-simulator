@@ -35,9 +35,11 @@ from <tt>functional_residues.json</tt>, so what you see is what the analyses
 read.</p>
 <p>The one to start with is <b>Pore module</b> — Liu et al. 2025's Figure 2E
 view. Outer helix, cap, spring linker, inner helix and CTD, with all four gates
-in ball-and-stick: 26% of the atoms, and the only view in which their argument
-is legible. <b>MD construct</b> is exactly what they simulated and nothing
-else.</p>
+in ball-and-stick (or sticks, or van der Waals spheres — View &rarr;
+Highlighted residues style; all three stay gold, because the colour is what
+says these are annotation rather than structure): 26% of the atoms, and the
+only view in which their argument is legible. <b>MD construct</b> is exactly
+what they simulated and nothing else.</p>
 <p><b>It hides; it does not subset.</b> Every analysis still runs on the whole
 assembly — the pore profile, the dome, the normal modes — and the status line
 says so on every switch. A selector that quietly changed what the dome fit

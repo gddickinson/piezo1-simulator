@@ -92,6 +92,10 @@ class HybridModel:
     res_seq: np.ndarray
     source: np.ndarray                 # "experimental" | "predicted", per atom
     plddt: np.ndarray                  # NaN where experimental
+    #: Per-atom C-alpha mask, carried so a consumer can draw or measure a
+    #: backbone trace without re-deriving atom names from the two source
+    #: files. None on models built before it existed.
+    ca: np.ndarray | None = None
     seam_residue: int | None = None
     overlap_rmsd: float = float("nan")   # A, over the seam-local anchor
     global_rmsd: float = float("nan")    # A, over the whole shared region
@@ -238,8 +242,11 @@ def build_hybrid_model(experimental, predicted=None, chain: str | None = None,
     plddt = np.concatenate([np.full(int(keep.sum()), np.nan),
                             predicted.b_factor[graft]])
 
+    ca = np.concatenate([experimental.mask_ca()[keep],
+                         predicted.mask_ca()[graft]])
+
     return HybridModel(
-        xyz=xyz, res_seq=res_seq, source=source, plddt=plddt,
+        xyz=xyz, res_seq=res_seq, source=source, plddt=plddt, ca=ca,
         seam_residue=seam, overlap_rmsd=rmsd, global_rmsd=global_rmsd,
         meta={"experimental": getattr(experimental, "name", ""),
               "chain": chain, "predicted_model": predicted_name,

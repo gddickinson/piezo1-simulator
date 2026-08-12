@@ -31,6 +31,14 @@ dangerous, because a drawn fold reads as a determined pose. It is not: the
 rotates it 10° at a time so you can see that for yourself — the fold turns and
 nothing else moves. Atoms inside the channel are drawn red, and the status line
 says how many of the 36 sampled orientations clear it.</p>
+<p>The fold has a style of its own — <b>Tag structure style</b>: the atom
+cloud, cartoon, tube, backbone, sticks or ball-and-stick. Presentation only.
+Every style is the same rigidly placed 6U32 at the same undetermined spin, the
+contact atoms stay red, the dye keeps its colour, and the status line keeps
+its caveat — a cartoon of the fold is no more a determined pose than a sphere
+cloud of it, however much more finished it looks. The radius-of-gyration
+sphere is deliberately not restylable: it is a statement about what the model
+determined, not a preference.</p>
 <p>Colour is <i>not</i> what keeps a modelled tag from reading as experimental
 structure: the tag's orange sits 0.10 from the chain palette's orange, and every
 colour genuinely distant from the eight chain hues is too dark to see. The
