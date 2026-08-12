@@ -1,0 +1,250 @@
+{
+ "accession": "F4IN58",
+ "id": "PIEZO_ARATH",
+ "organism": "Arabidopsis thaliana",
+ "gene": null,
+ "length": 2462,
+ "mass_da": 282275,
+ "sequence": "MASFLVGFLLPSLLLAAALINWSVISFLDLIAFLLVHYIAPEIGYRFQRRHWLLWPIFIFSFAVFLAQVVYLVIWAALGQDWDTPDTGWMRVIGFMILKSWRNPTVMYFLALQLLTSLVALADIYSSRFGFARWRDTWWSHFSGIFEHLGSHLRVASCLLLPAVQLAVGICNPSWVSLPFFIGSCAGLVDWSLTSNVSGLFRWWRVLYIYAGFNIVLLYLYQLPINFSDMIRWIASFIGLFRISLETEGPDICSGLFLVLFYIMLSYVRSDLEDMDFIMSTSENNLAERLLPPKYSFFIRESRAGVRHTNVLLRGAVFKTFSINFFTYGFPVSLFALSFWSFHFASLCAFGLLAYVGYIIYAFPSLFQLHRLNGLLLVFILLWAVSTYIFNVAFSFLNTKVGKFGLGMLVALGNLVNNSVFLYLSEESSRSSNERSYVEADEETKVLVVATIAWGLRKCSRAIMLALIFLIAMKPGFFHAVYVIFFLMYLLSHNINRKIRKSLILLCEVHFALLYILEIDLVSNSLKQEGSASREVLFQLGLLRSESSWDFLEIALLACFCAIHNHGFEVLFSFSAIVRHTPSPPIGFSILKAGLNKSVLLSVYSSPSSSYSQDNTTYERHIASFLSAIGQKFLSMYRSCGTYIAFITILISVYLVKPNYVSFGYIFLLLLWITGRQLFEETKRRLWFPLKAYAVLVFMFIYCLSSFVSLQLWLSGFIDLYFYLGYNSKAPLLDNVWESLAVLIVMQLYSYERRQSGHYIPGQSSLLHPGVFGFFERFLAWHGQKILFAALFYASLSPISVFGFVYLLGLVICTTFPKSSSIPSKSFLIYTGFLVSAEYLFQLWGMQAQMFPGQKYAELSFYLGLRVYEPGFWGIESGLRGKVLVVAACTLQYNVFRWLERTSGLTVIKGKYEEPCPLFVSAEDTTASVSSSNGENPSSTDHASISMKQGEATSNSWPFFSPRGNQGAGFLHPKTGGSESGSSRKFSFGHFWGSIKESHRWNRRRILALKKERFETQKNLLKIYLKFWIENMFNLYGLEINMIALLLASFALLNAISMVYIALLAACVLLRRRVIQKLWPVVVFLFASILAIEYVATWNSFLPSDQAPSETSVHCHDCWSIAALYFKFCRECWLGVRVDDPRTLISYFVVFMLACFKLRADHISSFSESSTYHQMKSQRKNSFVWRDLSFETKSMWTVLDYLRLYCYVHLLDVVLILILITGTLEYDILHLGYLAFALVFARMRLEILKKKNKIFRFLRVYNFVLIIFSLAYQSPFVGNFNDGKCETVDYIYEVIGFYKYDYGFRITARSALVEIIIFMLVSLQSYMFSSQEFDYVSRYLEAEQIGAIVREQEKKAARKTEQLQQIREAEEKKRQRNLQVEKMKSEMLNLRVQLHRMNSDSNFGVASPRTEGLRRRKSPYLIPDSGAASPEIDGVVHRKEEQPIDEDSQYPFEAHEFPVSTTPEALDSPEYSFGASPCEITEVQQDLDVMSMERERKQKSEGKENPLISAVQLIGDGVSQVQFIGNQAVNNLVNFLNISPENSDTNEQSSVDDEVYDEMESQKRKHTPFERSTSLQSDRSSDGTSFQIGRIFRHIWSRMQSNNDIVCYCCFIIAFLWNFSLLSMVYLAALFLYALCVHTGPTHIFWVIMLMYTEIYILLQYLYQIIIQHCGLSIDAPLLHELGFPTQRIKSSFVVSSLPLFLIYIFTLIQSSITVKDGDWVPSADFTSRRNARGSQKDLTRIRLSQRILDVFKKLRDSAKLVIRSIYRYWISLTRGAESPPYFVQVTMDVHMWPEDGIQPERVECRMNQLLRLVHNERCEKGNPDLCPYSSRVHVQSIERSTETPNEALVVLEVEYASPTNGCSSAEWYKSLTPASDVAKEIRKAQHSGLGEGTGFPYPILSVIGGGKRDTDLYAYIFGADLIVFFLVAIFYQSVIKNKSEFIDVYQLEDQFPFDFVIILMVIFFLIVVDRVIYLCSFATGKVVYYLFSLILFTYAVTEYAWSIYPTQQHAAGLALRIIFLAKAMSLALQAIQIRYGLPHKSTLYRQFLTSEVSRINYYGYRLYRALPFLYELRCVLDWSCTATSLTMYDWLKLEDVNASLYLVKCDTVLNRATHKHGEKQTKMTKCCNGICLFFILLCVIWAPMLMYSSGNPTNIANPIKDASVQIDLKTVGGKLTLYQTTLCERISGDNIDLGLDLGSQSFLPTYNKNDIQLICCQADASVLWLVPDTVVTRFIQSLDWDTDMDITFTWVLNRDRPKGKETVKYERSVDPLDLPKRSDIQMVLNGSMDGFRVHNLYPKFFRVTGSGDVRSFEDQTDEVSADILINHANFKWWWSFHNLKASENISACEGMDGPVAIIMSEETPPQGFLGDTLSKFSIWGLYITFVLAVGRFIRLQCSDLRMRIPYENLPSCDRLIAICEDLYAARAEGELGVEEVLYWTLVKIYRSPHMLLEYTKLDYDA",
+ "entry_version": 78,
+ "sequence_version": 1,
+ "last_modified": "2011-06-28",
+ "transmembrane": [
+  {
+   "start": 5,
+   "end": 25,
+   "description": "Helical; Name=1",
+   "name": "TM1"
+  },
+  {
+   "start": 27,
+   "end": 47,
+   "description": "Helical; Name=2",
+   "name": "TM2"
+  },
+  {
+   "start": 57,
+   "end": 77,
+   "description": "Helical; Name=3",
+   "name": "TM3"
+  },
+  {
+   "start": 105,
+   "end": 125,
+   "description": "Helical; Name=4",
+   "name": "TM4"
+  },
+  {
+   "start": 163,
+   "end": 183,
+   "description": "Helical; Name=5",
+   "name": "TM5"
+  },
+  {
+   "start": 207,
+   "end": 227,
+   "description": "Helical; Name=6",
+   "name": "TM6"
+  },
+  {
+   "start": 248,
+   "end": 268,
+   "description": "Helical; Name=7",
+   "name": "TM7"
+  },
+  {
+   "start": 325,
+   "end": 345,
+   "description": "Helical; Name=8",
+   "name": "TM8"
+  },
+  {
+   "start": 347,
+   "end": 367,
+   "description": "Helical; Name=9",
+   "name": "TM9"
+  },
+  {
+   "start": 374,
+   "end": 394,
+   "description": "Helical; Name=10",
+   "name": "TM10"
+  },
+  {
+   "start": 404,
+   "end": 424,
+   "description": "Helical; Name=11",
+   "name": "TM11"
+  },
+  {
+   "start": 467,
+   "end": 487,
+   "description": "Helical; Name=12",
+   "name": "TM12"
+  },
+  {
+   "start": 502,
+   "end": 522,
+   "description": "Helical; Name=13",
+   "name": "TM13"
+  },
+  {
+   "start": 554,
+   "end": 574,
+   "description": "Helical; Name=14",
+   "name": "TM14"
+  },
+  {
+   "start": 653,
+   "end": 673,
+   "description": "Helical; Name=15",
+   "name": "TM15"
+  },
+  {
+   "start": 694,
+   "end": 714,
+   "description": "Helical; Name=16",
+   "name": "TM16"
+  },
+  {
+   "start": 730,
+   "end": 750,
+   "description": "Helical; Name=17",
+   "name": "TM17"
+  },
+  {
+   "start": 792,
+   "end": 812,
+   "description": "Helical; Name=18",
+   "name": "TM18"
+  },
+  {
+   "start": 826,
+   "end": 846,
+   "description": "Helical; Name=19",
+   "name": "TM19"
+  },
+  {
+   "start": 1027,
+   "end": 1047,
+   "description": "Helical; Name=20",
+   "name": "TM20"
+  },
+  {
+   "start": 1050,
+   "end": 1070,
+   "description": "Helical; Name=21",
+   "name": "TM21"
+  },
+  {
+   "start": 1078,
+   "end": 1098,
+   "description": "Helical; Name=22",
+   "name": "TM22"
+  },
+  {
+   "start": 1143,
+   "end": 1160,
+   "description": "Helical; Name=23",
+   "name": "TM23"
+  },
+  {
+   "start": 1204,
+   "end": 1224,
+   "description": "Helical; Name=24",
+   "name": "TM24"
+  },
+  {
+   "start": 1228,
+   "end": 1248,
+   "description": "Helical; Name=25",
+   "name": "TM25"
+  },
+  {
+   "start": 1260,
+   "end": 1280,
+   "description": "Helical; Name=26",
+   "name": "TM26"
+  },
+  {
+   "start": 1310,
+   "end": 1330,
+   "description": "Helical; Name=27",
+   "name": "TM27"
+  },
+  {
+   "start": 1611,
+   "end": 1631,
+   "description": "Helical; Name=28",
+   "name": "TM28"
+  },
+  {
+   "start": 1647,
+   "end": 1667,
+   "description": "Helical; Name=29",
+   "name": "TM29"
+  },
+  {
+   "start": 1916,
+   "end": 1936,
+   "description": "Helical; Name=30",
+   "name": "TM30"
+  },
+  {
+   "start": 1956,
+   "end": 1976,
+   "description": "Helical; Name=31",
+   "name": "TM31"
+  },
+  {
+   "start": 1984,
+   "end": 2004,
+   "description": "Helical; Name=32",
+   "name": "TM32"
+  },
+  {
+   "start": 2012,
+   "end": 2032,
+   "description": "Helical; Name=33",
+   "name": "TM33"
+  },
+  {
+   "start": 2130,
+   "end": 2150,
+   "description": "Helical; Name=34",
+   "name": "TM34"
+  },
+  {
+   "start": 2369,
+   "end": 2389,
+   "description": "Helical; Name=35",
+   "name": "TM35"
+  }
+ ],
+ "topology": [],
+ "regions": [
+  {
+   "start": 927,
+   "end": 947,
+   "description": "Disordered"
+  },
+  {
+   "start": 1543,
+   "end": 1583,
+   "description": "Disordered"
+  }
+ ],
+ "coiled_coil": [
+  {
+   "start": 1347,
+   "end": 1400,
+   "description": ""
+  }
+ ],
+ "disulfide": [],
+ "modified_residues": [],
+ "glycosylation": [],
+ "natural_variants": [],
+ "mutagenesis": [],
+ "n_transmembrane": 35
+}

@@ -68,6 +68,19 @@ FLY_PIEZO_ACC = "M9MSG8"             # Drosophila Piezo, 2551 aa
 #: entry — the two differ by 70 residues and no constant offset relates them.
 MOUSE_PIEZO2_ACC = "Q8CD54"
 
+#: The three reviewed PIEZOs with no deposited structure. They exist here for
+#: the *sequence* comparison, which is a different question from which
+#: numbering a coordinate file is in — see ``core.numbering_check``.
+#:
+#: Rat is the third mammalian PIEZO1 and much of the electrophysiology
+#: literature is rat. The other two are why the family is worth enumerating at
+#: all: PIEZO is not a metazoan invention. A plant has one and an amoeba has
+#: one, which pushes the generality question this project asks with PIEZO2
+#: (mammals) and PEZO-1/dPIEZO (~800 Myr) out to the root of the eukaryotes.
+RAT_ACC = "Q0KL00"                   # Rattus norvegicus Piezo1, 2535 aa
+PLANT_PIEZO_ACC = "F4IN58"           # Arabidopsis thaliana PIEZO, 2462 aa
+DICTY_PIEZO_ACC = "Q54S52"           # Dictyostelium discoideum pzoA, 3080 aa
+
 HUMAN_LENGTH = 2521
 MOUSE_LENGTH = 2547
 

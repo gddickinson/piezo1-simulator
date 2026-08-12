@@ -6583,3 +6583,172 @@ the minimum — driven over 200 random profiles rather than argued, because that
 is the kind of argument that stays right until the rule changes. The profile
 object, the plot and the bottleneck are untouched, and the status line says how
 many slices went and that nothing moved.
+
+---
+
+## 2026-08-12 — Round 89: the family, and what a sequence can say about it
+
+**Asked.** Find the other homologues, orthologs, isoforms and related PIEZOs and
+add them so they can be compared. Decide whether the application needs BLAST
+searches built in, and improve the alignment tool. Bring across what is useful
+from the sister project at `../piezo_genes`.
+
+### The family is nine, which is the answer to the BLAST question
+
+One UniProt query — `reviewed:true AND protein_name:piezo` — returns exactly
+nine entries and that is the whole reviewed family. This project held six. The
+three missing are **rat Piezo1** (Q0KL00, most of the electrophysiology
+literature is rat), ***Arabidopsis* PIEZO** (F4IN58) and ***Dictyostelium*
+pzoA** (Q54S52). The last two matter most: PIEZO is not a metazoan invention,
+and they take the generality question from one vertebrate duplication out to the
+root of the eukaryotes.
+
+A search tool is for when the answer set is unknown. It is not, and swapping a
+pinned nine-row table for a live query would trade something reproducible for
+something that is not. **No BLAST client**, recorded as a decision in
+`docs/HOMOLOGY_SEARCH.md` in the form `NOT_PREREGISTERED_ROUND64.md` uses.
+
+### What was missing was BLAST's *statistic*, and the measurement is stark
+
+Aligning each pair, then re-aligning against **composition-matched shuffles of
+the same partner**:
+
+- **15 of the 36 pairs fall below Rost's 30% twilight line.**
+- PEZO-1 against Arabidopsis PIEZO: **23.8% identical, and a scrambled
+  Arabidopsis sequence of the same composition gives 22.5%** — z = 1.5. The
+  percentage carries essentially nothing.
+- The **local alignment score on the same pair is z = 64.** The homology is not
+  marginal at all.
+
+So the conclusion is not that these proteins are distantly related. It is that
+**percent identity is the wrong statistic below that line**, which is what the
+line means. `analysis.homology` refuses to report either statistic alone, and
+`Relationship.verdict` says in words which one a pair is entitled to.
+
+### Two instruments got it wrong before they were calibrated
+
+`homology_sites` asks whether the curated gate, glutamates and PIP2 lysines
+survive across the family. Its reliability gate was wrong twice:
+
+1. **It used window identity** — self-contradicting, since the module next to it
+   argues identity is the weak statistic. Now the BLOSUM62 window score.
+2. **The width was chosen by taste and had no power.** At 31 residues the gate's
+   z runs 1.3–2.6 in *every* non-mammalian member — refusing a mapping that is
+   visibly right (human I2447/V2450/F2454 land on V2363/V2366/L2371 in the worm
+   at a constant −84 register, and on F/L/F at offset 0 in the fly). A power
+   scan across widths 21–201 put it at **101**, where the worm, fly and plant
+   clear 3σ and Dictyostelium — correctly — still does not. The cost is stated:
+   at 101 columns it answers *is this region in register*, not *is this residue*.
+
+Split into `analysis/alignment_windows.py` at the 500-line limit, along a real
+seam: that module is about a pair of sequences and has nothing to do with PIEZO.
+
+### What the sites measure
+
+- **The cap does not travel.** All three curated cap groups become unreadable
+  outside the vertebrates. A limit on this project's own annotation, since every
+  cap-gate distance in `liu2025_panels` is quoted from mouse residue numbers.
+- **The gate erodes rather than switching off:** 3/3 identical in the mammals,
+  2/3 in PIEZO2, 1/3 in worm/fly/plant. A gate made of a *property* rather than
+  a contact would look exactly like that.
+- **One group is identical everywhere it can be read, Dictyostelium included,
+  and it is not the pore** — the anchor brake, human P2113/F2114.
+
+A group with nothing readable returns `None`, not 0%. Perfect non-conservation
+is the most confident possible way of saying nothing.
+
+### The structural comparison, generalised
+
+`paralogue.compare` refused anything that was not one PIEZO1 and one PIEZO2 —
+right when PIEZO2 was the only other structure, wrong now four PIEZOs are
+deposited. `analysis/homology_structure.py` removes that restriction and keeps
+every guard, adding two `paralogue` never needed: it **renumbers first** (9W7X
+is in a dPIEZO isoform's own numbering, +3 after residue 1570) and it **refuses
+to pair helices by index** where the counts differ — 36, 38, 40, 35, 35, so all
+four non-vertebrates. Reporting "2 of 38 agree" there would be a fact about
+counting dressed as one about structure.
+
+**And the first version of this reported a cherry-pick.** Comparing 7WLT with
+9W7X gives a gating-mode overlap of **0.980** with dPIEZO — a striking sentence
+at 30% sequence identity, and it was already written into the decision
+document. Comparing **8YEZ** with the same 9W7X gives **0.189**. Same two
+proteins, same method. Running the full 3x5 grid before believing it:
+
+| partner | overlap over 3 PIEZO1 entries | beats control | |
+|---|---|---|---|
+| PIEZO2 (6KG7, 9VEE) | **0.80 – 0.98** | 6 / 6 | stable |
+| PEZO-1 (9UOY, 9ZIS) | **0.18 – 0.98** | 5 / 6 | not stable |
+| dPIEZO (9W7X) | **0.19 – 0.98** | 2 / 3 | not stable |
+
+So `OverlapSpread` reports a range and a stability verdict, and the report entry
+and the CLI show that rather than any single pair. PIEZO2 is the **positive
+control** that makes this an instability rather than a broken instrument — the
+method can say *stable*, and does, for the paralogue. This is the Round 85 rule
+working in the direction it was added for.
+
+The coverage-matched dome radius is 9.25 nm for mouse PIEZO1 against **9.24**
+for PEZO-1, which does hold.
+
+**The plant cannot join.** Its only structural representation is an AlphaFold
+*monomer*, and Dictyostelium has not even that. So whether the dome is a property
+of the fold rather than of animals **cannot be asked from structure at all** with
+what exists. Reported as a gap in the world, not worked around.
+
+### Defects this found
+
+- **`fetch_alphafold` took `entries[0]`.** The endpoint returns one entry *per
+  isoform*. For human PIEZO2 there is **no canonical model at all** — only
+  isoform 3 (**709 aa**) and isoform 2 (2,689) — and `entries[0]` is the
+  709-residue one, arriving as a well-formed mmCIF of the right protein that
+  nothing downstream could question. For PEZO-1 the endpoint returns **twelve**
+  entries and the canonical happened to be first, so this was right by luck.
+  Now selected by exact accession and **refused** when there is no canonical
+  model, naming the isoforms it was offered.
+
+  This is precisely the lesson `piezo_genes` was built around — its own run
+  flagged AlphaFold reporting 709 aa for PIEZO2 where every sequence database
+  said ~2,800 — arriving in this codebase on the same protein.
+
+- **`prediction_confidence` picked its model with `sorted(glob)[-1]`.** Right
+  only because human PIEZO1 happened to sort last among two files. `AF-Q9H5I5`
+  sorts *after* `AF-Q92508`, so adding the family would have silently changed
+  the default to a different protein, read in human numbering. Named now.
+
+- **`ModeComparison.summary` had "PIEZO2" as a literal** in both slots. The
+  moment it could be handed a dPIEZO entry it printed an overlap with
+  *Drosophila* PIEZO as an overlap with PIEZO2. Numbers right, sentence wrong,
+  nothing raises.
+
+- **4PKE/4PKX were excluded for the wrong stated reason.** The note said "a
+  Piezo domain from a distant organism ... cataloguing it would need a seventh
+  reference". Both halves wrong: the RCSB cross-references them to A0A061ACU2,
+  so they are C. elegans PEZO-1, the same protein as 9UOY — and adding the
+  reference does not help, because they are numbered in the expression
+  construct's own coordinates (14-278, scoring 0.081) that no shift repairs.
+  `EXCLUDED` now carries a reason per file.
+
+- **`compare_sequences(method="positional")` had no numbering guard.** Harmless
+  while the viewer offered only human and mouse; a live hazard the moment it
+  offered nine, since pairing human 2447 with plant 2447 would report about two
+  thousand confident substitutions. It raises now, and a structure chain carries
+  the numbering `identify_numbering` measures rather than defaulting to human.
+
+### The one that looked certain to break and did not
+
+Rat Piezo1 is **94.2% identical to mouse** as a sequence, so adding it to
+`REFERENCES` looked certain to collapse the margin `NumberingIdentity.confident`
+requires and make eleven catalogue entries unreadable. It scores **0.066**
+against a mouse entry. The identification is not a similarity test — it reads
+each residue's name at its own *number*, and the twelve-residue length
+difference puts everything past the first indel out of register. Measured on
+7WLT, 3JAC and 6B3R, whose margins are unchanged to three decimals, and pinned.
+
+### Also
+
+Catalogue 28 → 34 entries. Added the two missing PEZO-1 isoform structures
+(9ZIS isoform g, 9UOX isoform k — giving the catalogue its **only replicate
+pair**, which is what lets an isoform difference be told from a dataset
+difference), the two human PIEZO2 entries, dPIEZO, and four AlphaFold models.
+Five new verified references (BLOSUM62, Rost's twilight zone, Smith–Waterman,
+neighbour-joining, Felsenstein's bootstrap); 85 total. Eight new registered
+parameters. The sequence viewer now offers all nine PIEZOs where it offered two.

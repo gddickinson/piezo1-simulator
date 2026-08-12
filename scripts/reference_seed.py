@@ -97,6 +97,19 @@ SEED = [
     ("kabsch1976", "DOI:10.1107/S0567739476001873", "Optimal rotation superposition", "rotation"),
     ("jumper2021", "PMID:34265844", "AlphaFold", "protein structure prediction"),
     ("varadi2024", "PMID:37933859", "AlphaFold DB", "alphafold"),
+    # --- sequence homology, Round 89 ---------------------------------------
+    # The family comparison needs the conventions it is scored against to be
+    # cited rather than remembered, because the distant PIEZOs land exactly on
+    # the boundary these papers define.
+    ("henikoff1992", "PMID:1438297",
+     "BLOSUM62 - the substitution matrix every alignment here scores with",
+     "amino acid substitution"),
+    ("rost1999", "PMID:10195279",
+     "The twilight zone: below ~30% identity, a pairwise alignment stops "
+     "distinguishing homology from chance", "twilight"),
+    ("smith1981", "DOI:10.1016/0022-2836(81)90087-5",
+     "Smith-Waterman local alignment - the statistic that survives the "
+     "twilight zone where percent identity does not", "molecular subsequences"),
     # --- external variant predictors, reached through ProtVar (CC BY 4.0) ---
     # Free-text queries rather than remembered PMIDs: six citations in Round 8
     # were resolved from memory to entirely unrelated papers, so every entry

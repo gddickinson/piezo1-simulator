@@ -46,6 +46,14 @@ CHECKING_MODULES = (
     "analysis.provenance_chain",
     "analysis.parameter_effect",
     "analysis.fluctuations",
+    # Round 89. Both are instruments in the strict sense: neither measures a
+    # property of PIEZO1, both exist to decide whether another number may be
+    # believed. ``alignment_windows`` earns its place twice over — it was
+    # wrong twice before it was calibrated, once in its statistic and once in
+    # its width.
+    "analysis.homology",
+    "analysis.alignment_windows",
+    "analysis.homology_structure",
     "dead_code",
 )
 
@@ -103,6 +111,42 @@ CALIBRATED = {
     "validation.bootstrap_cliffs_delta": "test_validation.py",
     "validation.auroc": "test_validation.py::test_auroc_known_cases",
     "validation.interpret_delta": "test_validation.py::test_delta_interpretation_thresholds",
+
+    # homology: the family, and whether a percentage may be believed
+    "homology.align_pair":
+        "test_homology.py::test_the_null_is_calibrated_on_two_known_answers",
+    "homology.shuffled_null":
+        "test_homology.py::test_the_null_can_say_no_when_there_is_no_homology",
+    "homology.relationship":
+        "test_homology.py::test_at_least_one_pair_has_an_identity_indistinguishable_from_chance",
+    "homology.family_matrix": "test_homology.py (36 pairs, each against its null)",
+    "homology.family": "test_homology.py::test_the_family_is_nine_and_every_member_is_committed",
+    "homology.member": "test_homology.py (family lookup)",
+    "homology.group_of": "test_homology.py::test_no_two_members_share_a_length_or_a_helix_count_architecture",
+
+    # homology_structure: is one entry pair a measurement of two proteins?
+    "homology_structure.mode_overlap_spread":
+        "test_homology_structure.py::test_the_spread_reports_instability_and_piezo2_is_the_positive_control",
+    "homology_structure.compare_structures":
+        "test_homology_structure.py::test_a_single_entry_pair_is_not_a_measurement_of_the_two_proteins",
+    "homology_structure.index_pairing_valid":
+        "test_homology_structure.py::test_index_pairing_is_refused_where_the_helix_counts_differ",
+    "homology_structure.comparable_entries":
+        "test_homology_structure.py::test_comparable_entries_are_best_resolved_first",
+    "homology_structure.helix_counts":
+        "test_homology.py::test_no_two_members_share_a_length_or_a_helix_count_architecture",
+
+    # alignment_windows: is the alignment in register here?
+    "alignment_windows.window_score":
+        "test_homology.py::test_the_window_finds_a_planted_block_that_whole_sequence_identity_misses",
+    "alignment_windows.window_identity":
+        "test_homology.py::test_the_window_is_calibrated_on_a_sequence_against_itself",
+    "alignment_windows.alignment_windows":
+        "test_homology.py::test_the_window_refuses_a_composition_matched_shuffle",
+    "alignment_windows.column_scores":
+        "test_homology.py (self-alignment scores above its own null)",
+    "alignment_windows.window_null_distribution":
+        "test_homology.py::test_window_width_was_chosen_by_a_power_scan_not_by_taste",
 
     # design
     "design.power_curve":

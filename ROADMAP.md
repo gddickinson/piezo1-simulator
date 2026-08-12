@@ -3,8 +3,9 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: no open items.** Block R is finished. The next block
-has not been written; see `docs/CONCLUSION.md` before adding one.
+**Status: no open items.** Block R is finished, and Round 89 was added on
+request after it. The next block has not been written; see
+`docs/CONCLUSION.md` before adding one.
 Rounds **84b** through **84f** were added mid-block on request and completed
 out of order; Round 84 itself is still open. Their records are in the archive.
 Everything finished — 382 items across 83 rounds, each carrying the result it
@@ -250,3 +251,56 @@ would repair what it finds. Nothing applied it.*
       frozen claim uses any affected entry**, so nothing is superseded, and a
       test fails if one ever starts.
 
+
+
+### Round 89 — The family is nine and we held six (added on request)
+*Asked directly: find the other homologues, orthologs, isoforms and related
+PIEZOs; decide whether the application needs BLAST built in; improve the
+alignment tool; bring across what is useful from `../piezo_genes`.*
+
+- [x] Add the three reviewed PIEZOs this project did not hold — **rat Piezo1**
+      (Q0KL00), ***Arabidopsis* PIEZO** (F4IN58) and ***Dictyostelium* pzoA**
+      (Q54S52) — and the six deposited structures it was missing. **Done:**
+      catalogue 28 → 34 entries across five proteins; `REFERENCES` six → nine.
+      Adding rat looked certain to break `identify_numbering` (94.2% identical
+      to mouse) and does not: it scores **0.066** against a mouse entry,
+      because the identification reads residue names at their own *numbers* and
+      a twelve-residue length difference puts everything past the first indel
+      out of register.
+- [x] Decide the BLAST question with a measurement rather than a preference.
+      **No BLAST client**, recorded in `docs/HOMOLOGY_SEARCH.md` in the form
+      `NOT_PREREGISTERED_ROUND64.md` uses. The family is enumerable — one query
+      returns exactly nine — and **percent identity is the wrong statistic at
+      the distances that matter**: 15 of 36 pairs fall below Rost's line, and
+      PEZO-1 against AtPIEZO is 23.8% identical against a composition-matched
+      shuffle's 22.5% (z = 1.5) while the *local* score on the same pair is
+      z = 64. What was missing was BLAST's statistic, not BLAST.
+- [x] *Validate:* every instrument calibrated before it is believed, including
+      on inputs where it must say **no**. **Done, and two of them were wrong
+      first.** The site-reliability gate used window *identity* — the statistic
+      the module next to it argues against — and its width had no power at the
+      family's divergence: the gate's z runs 1.3–2.6 at width 31 in every
+      non-mammalian member, refusing a mapping that is visibly right. A power
+      scan across 21–201 set it at **101**, where the worm, fly and plant clear
+      3σ and Dictyostelium correctly does not.
+- [x] Generalise the structural comparison past PIEZO2. **Done, and the result
+      is a null the first pair would have hidden.** 7WLT against 9W7X gives a
+      gating-mode overlap of **0.980** with dPIEZO; **8YEZ against the same
+      entry gives 0.189** and does not clear its own control. `OverlapSpread`
+      now runs every combination: PIEZO2 **0.80–0.98, 6 of 6, stable** — the
+      positive control that makes the rest a finding — against PEZO-1
+      0.18–0.98 and dPIEZO 0.19–0.98, neither stable. What does hold is the
+      dome: 9.25 nm for mouse PIEZO1 against PEZO-1's **9.24**.
+- [x] Four defects found on the way, each recorded in `SESSION_LOG.md`:
+      `fetch_alphafold` took `entries[0]` and for human PIEZO2 that is a
+      **709-residue isoform** (the `piezo_genes` lesson, arriving here on the
+      same protein); `prediction_confidence` picked its model by
+      `sorted(glob)[-1]`, right only by luck; `ModeComparison.summary` had
+      "PIEZO2" as a literal and printed it for dPIEZO; and 4PKE/4PKX were
+      excluded with a stated reason that was wrong in both halves.
+
+**What this does not do.** The plant and amoebal PIEZOs cannot enter the
+structural comparison at all — the only representation either has is an
+AlphaFold *monomer*, and everything here needs three protomers. So whether the
+dome is a property of the fold rather than of animals is **not answerable from
+structure with what exists**. That is a gap in the world, not in this code.

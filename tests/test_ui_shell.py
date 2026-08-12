@@ -243,6 +243,7 @@ def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
                "hybrid": "show_hybrid",
                "fluctuations": "show_fluctuations",
                "paralogue": "show_paralogue",
+               "homology": "show_homology",
                "guo2017": "show_guo2017",
                "liu2025": "show_liu2025"}
 

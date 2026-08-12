@@ -1,6 +1,6 @@
 {
  "note": "Bibliography for the PIEZO1 simulator. Metadata resolved from Europe PMC, not hand-typed. Regenerate with scripts/build_references.py.",
- "n_references": 80,
+ "n_references": 83,
  "unresolved": [],
  "references": [
   {
@@ -633,6 +633,23 @@
    "section": "Lipids and pharmacology"
   },
   {
+   "key": "henikoff1992",
+   "topic": "BLOSUM62 - the substitution matrix every alignment here scores with",
+   "title": "Amino acid substitution matrices from protein blocks",
+   "authors": "Henikoff S, Henikoff JG.",
+   "journal": "Proceedings of the National Academy of Sciences of the United States of America",
+   "year": "1992",
+   "volume": "89",
+   "pages": "10915-10919",
+   "pmid": "1438297",
+   "pmcid": "PMC50453",
+   "doi": "10.1073/pnas.89.22.10915",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1073/pnas.89.22.10915",
+   "section": "Other"
+  },
+  {
    "key": "jumper2021",
    "topic": "AlphaFold",
    "title": "Highly accurate protein structure prediction with AlphaFold",
@@ -1025,6 +1042,23 @@
    "section": "Lipids and pharmacology"
   },
   {
+   "key": "rost1999",
+   "topic": "The twilight zone: below ~30% identity, a pairwise alignment stops distinguishing homology from chance",
+   "title": "Twilight zone of protein sequence alignments",
+   "authors": "Rost B.",
+   "journal": "Protein engineering",
+   "year": "1999",
+   "volume": "12",
+   "pages": "85-94",
+   "pmid": "10195279",
+   "pmcid": null,
+   "doi": "10.1093/protein/12.2.85",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1093/protein/12.2.85",
+   "section": "Other"
+  },
+  {
    "key": "saotome2018",
    "topic": "Piezo1 structure 6BPZ",
    "title": "Structure of the mechanically activated ion channel Piezo1",
@@ -1108,6 +1142,23 @@
    "has_pdf": false,
    "url": "https://doi.org/10.1016/s0263-7855(97)00009-x",
    "section": "Methods"
+  },
+  {
+   "key": "smith1981",
+   "topic": "Smith-Waterman local alignment - the statistic that survives the twilight zone where percent identity does not",
+   "title": "Identification of common molecular subsequences",
+   "authors": "Smith TF, Waterman MS.",
+   "journal": "Journal of molecular biology",
+   "year": "1981",
+   "volume": "147",
+   "pages": "195-197",
+   "pmid": "7265238",
+   "pmcid": null,
+   "doi": "10.1016/0022-2836(81)90087-5",
+   "is_open_access": false,
+   "has_pdf": false,
+   "url": "https://doi.org/10.1016/0022-2836(81)90087-5",
+   "section": "Other"
   },
   {
    "key": "stephenson2024protvar",

@@ -408,7 +408,7 @@ from .report_tags import (analysis_hybrid,   # noqa: E402
                           analysis_paired_variant,
                           analysis_permeation, analysis_prediction_record)
 from .report_validation import (analysis_fluctuations,   # noqa: E402
-                                analysis_paralogue)
+                                analysis_homology, analysis_paralogue)
 
 ANALYSES = {
     "dome": analysis_dome,
@@ -425,6 +425,7 @@ ANALYSES = {
     "modes": analysis_modes,
     "fluctuations": analysis_fluctuations,
     "paralogue": analysis_paralogue,
+    "homology": analysis_homology,
     "pockets": analysis_pockets,
     "interactions": analysis_interactions,
     "guo2017": analysis_guo2017,

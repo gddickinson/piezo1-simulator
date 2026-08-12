@@ -1,10 +1,10 @@
 """Every figure panel of Guo & MacKinnon 2017, and what this project can do with it.
 
 Guo & MacKinnon, *Structure-based membrane dome mechanism for Piezo
-mechanosensitivity*, eLife 2017;6:e33660 (PMID 29231809, PDB 6B3R,
-EMD-7042) is the paper this project's central claim comes from. The dome, the
-10.2 nm radius, the 120 nm² of projected area, the two-state energetics — all
-of it is Figure 7 and its supplement.
+mechanosensitivity*, eLife 2017;6:e33660 (PMID 29231809, PDB 6B3R, EMD-7042) is
+the paper this project's central claim comes from. The dome, the 10.2 nm radius,
+the 120 nm² of projected area, the two-state energetics — all of it is Figure 7
+and its supplement.
 
 This is the registry of its panels. Each :class:`Panel` records what the
 published panel shows, whether it can be reproduced **from coordinates**, and
@@ -16,15 +16,13 @@ project does not hold. That count is stated in five places — here, the menu
 tooltip, the README, ``docs/SCIENCE.md`` and the in-application help — and a
 test makes a new panel move all of them or fail.
 
-**Why the refusals are in the registry rather than left out.** Twelve of the
-thirty-one panels need experimental data this project does not have and never
-will: a Fourier shell correlation needs two half-maps, a local-resolution map
-needs the map, and micrographs of proteoliposomes need the liposomes. Listing
-them as ``not_replicable`` with the reason is the difference between a tool
-that covers the paper and a tool that covers the tractable parts of it and
-lets a reader assume the rest. The same is true of the ``analogue`` panels: a
-projection of an atomic model is *not* a 2D class average, and filing it as one
-would be the most misleading thing in the module.
+**Why the refusals are in the registry rather than left out.** Twelve panels
+need experimental data this project does not have and never will — a Fourier
+shell correlation needs two half-maps, micrographs need the liposomes. Listing
+them as ``not_replicable`` with the reason is the difference between covering
+the paper and covering its tractable parts while letting a reader assume the
+rest. Same for ``analogue``: a projection of an atomic model is *not* a 2D
+class average, and filing it as one would be the most misleading thing here.
 
 Statuses:
 

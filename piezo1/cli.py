@@ -26,6 +26,7 @@ from pathlib import Path
 import numpy as np
 
 from .analysis.report import ANALYSES, build_report
+from .cli_homology import add_homology_parser
 from .config import STRUCTURE_DIR
 from .core.annotations import load_annotations
 from .core.structure import Structure
@@ -431,6 +432,10 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("conservation", parents=[common], help="ortholog conservation")
     p.add_argument("--top", type=int, default=20)
     p.set_defaults(func=cmd_conservation)
+
+    # Registered from its own module: every command here answers a question
+    # about one loaded entry, and these answer questions about the family.
+    add_homology_parser(sub, common)
 
     p = sub.add_parser("report", parents=[common], help="full report with provenance")
     p.add_argument("structure")

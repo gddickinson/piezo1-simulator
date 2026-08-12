@@ -145,12 +145,23 @@ class ConfidenceReport:
                 f"experimentally-resolved core")
 
 
+#: The model these two loaders mean when no path is given.
+#:
+#: Named rather than globbed. Both took ``sorted(glob(...))[-1]`` and were
+#: right only because human PIEZO1 happened to sort last among the two models
+#: that were downloaded. The family fetch now brings six, and ``AF-Q9H5I5``
+#: (PIEZO2) sorts *after* ``AF-Q92508`` — so the default would have silently
+#: become a different protein, and ``assess_seam``, whose numbering is human
+#: PIEZO1's 2,521 residues, would have read it without complaint.
+DEFAULT_MODEL_ACCESSION = "Q92508"
+
+
 def load_pae(path=None) -> PAEMatrix | None:
     from ..config import STRUCTURE_DIR
 
     if path is None:
         matches = sorted(STRUCTURE_DIR.glob(
-            "AF-*-predicted_aligned_error*.json"))
+            f"AF-{DEFAULT_MODEL_ACCESSION}-*predicted_aligned_error*.json"))
         if not matches:
             return None
         path = matches[-1]
@@ -167,7 +178,8 @@ def load_plddt(n_residues: int = 2521, path=None) -> np.ndarray | None:
     from ..core.structure import Structure
 
     if path is None:
-        matches = sorted(STRUCTURE_DIR.glob("AF-*-model*.cif"))
+        matches = sorted(STRUCTURE_DIR.glob(
+            f"AF-{DEFAULT_MODEL_ACCESSION}-*model*.cif"))
         if not matches:
             return None
         path = matches[-1]

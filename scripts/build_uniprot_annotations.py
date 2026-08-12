@@ -22,8 +22,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from piezo1.config import (FLY_PIEZO_ACC, HUMAN_ACC,  # noqa: E402
-                           HUMAN_PIEZO2_ACC, MOUSE_ACC, MOUSE_PIEZO2_ACC,
+from piezo1.config import (DICTY_PIEZO_ACC, FLY_PIEZO_ACC,  # noqa: E402
+                           HUMAN_ACC, HUMAN_PIEZO2_ACC, MOUSE_ACC,
+                           MOUSE_PIEZO2_ACC, PLANT_PIEZO_ACC, RAT_ACC,
                            RESOURCE_DIR, SEQUENCE_DIR, WORM_PIEZO_ACC)
 
 #: The PIEZO2 entries are here because 6KG7 is a PIEZO2 structure and the
@@ -31,9 +32,18 @@ from piezo1.config import (FLY_PIEZO_ACC, HUMAN_ACC,  # noqa: E402
 #: PIEZO1's comes from — otherwise the two dome measurements would differ by
 #: how their membrane surfaces were defined rather than by their shape. Mouse
 #: as well as human because 6KG7 is deposited in mouse numbering.
-SPECIES = {"human": HUMAN_ACC, "mouse": MOUSE_ACC,
+#:
+#: The last three have no deposited structure. They are here because the family
+#: is small enough to hold in full — a single UniProt query for reviewed PIEZOs
+#: returns exactly these nine — and because an enumerated family is the reason
+#: this project does not need a homology search. Distilling them from the same
+#: script means their transmembrane annotation comes from the same source as
+#: PIEZO1's, which is what makes a cross-species helix comparison a measurement
+#: rather than a comparison of two annotation conventions.
+SPECIES = {"human": HUMAN_ACC, "mouse": MOUSE_ACC, "rat": RAT_ACC,
            "human_piezo2": HUMAN_PIEZO2_ACC, "mouse_piezo2": MOUSE_PIEZO2_ACC,
-           "worm_piezo": WORM_PIEZO_ACC, "fly_piezo": FLY_PIEZO_ACC}
+           "worm_piezo": WORM_PIEZO_ACC, "fly_piezo": FLY_PIEZO_ACC,
+           "plant_piezo": PLANT_PIEZO_ACC, "dicty_piezo": DICTY_PIEZO_ACC}
 
 #: UniProt feature types we keep, mapped to the key used in the output file.
 KEEP_RANGES = {

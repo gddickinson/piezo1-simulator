@@ -49,17 +49,41 @@ __all__ = ["NumberingIdentity", "SpliceShift", "MismatchBlock",
            "identify_numbering", "piezo1_numbering", "detect_splice", "mismatch_blocks",
            "Renumbering", "canonical_renumbering", "apply_renumbering", "renumber",
            "reference_entry", "REFERENCES", "PIEZO1_REFERENCES",
-           "PIEZO2_REFERENCES", "INVERTEBRATE_REFERENCES"]
+           "PIEZO2_REFERENCES", "INVERTEBRATE_REFERENCES",
+           "NON_ANIMAL_REFERENCES", "PROTEIN_NAMES"]
 
-#: The committed UniProt resources an entry can be scored against.
-REFERENCES = ("human", "mouse", "human_piezo2", "mouse_piezo2",
-              "worm_piezo", "fly_piezo")
-PIEZO1_REFERENCES = ("human", "mouse")
+#: The committed UniProt resources an entry can be scored against — all nine
+#: reviewed PIEZOs, including the three with no deposited structure.
+#:
+#: Adding rat looked certain to break this and does not. Rat and mouse Piezo1
+#: are **94.2% identical as sequences**, so a rat reference might have been
+#: expected to score near 1.0 against a mouse structure and collapse the margin
+#: :attr:`NumberingIdentity.confident` requires. It scores **0.066**: this is
+#: not a similarity test, it reads each residue's name at its own *number*, and
+#: a twelve-residue length difference puts everything past the first indel out
+#: of register. Pinned in ``tests/test_homology.py``.
+REFERENCES = ("human", "mouse", "rat", "human_piezo2", "mouse_piezo2",
+              "worm_piezo", "fly_piezo", "plant_piezo", "dicty_piezo")
+PIEZO1_REFERENCES = ("human", "mouse", "rat")
 PIEZO2_REFERENCES = ("human_piezo2", "mouse_piezo2")
 #: The invertebrate PIEZOs. Neither is a PIEZO1 or a PIEZO2 — the duplication
 #: that produced those two is vertebrate — so they are their own category and
 #: the generality question they answer is a wider one.
 INVERTEBRATE_REFERENCES = ("worm_piezo", "fly_piezo")
+#: A plant and an amoeba, so the generality question reaches the root of the
+#: eukaryotes rather than one branch. Neither has a deposited structure, so
+#: both reach the comparison through sequence alone.
+NON_ANIMAL_REFERENCES = ("plant_piezo", "dicty_piezo")
+
+#: What each reference is called on screen. One table rather than a literal
+#: inside a property: the registry, the report and the sequence viewer all
+#: name the same proteins and three copies would drift.
+PROTEIN_NAMES = {
+    "human": "PIEZO1", "mouse": "PIEZO1", "rat": "PIEZO1",
+    "human_piezo2": "PIEZO2", "mouse_piezo2": "PIEZO2",
+    "worm_piezo": "PEZO-1", "fly_piezo": "dPIEZO",
+    "plant_piezo": "AtPIEZO", "dicty_piezo": "pzoA",
+}
 
 
 def reference_entry(name: str) -> dict:
@@ -179,12 +203,13 @@ class NumberingIdentity:
         return self.reference in INVERTEBRATE_REFERENCES
 
     @property
+    def is_non_animal(self) -> bool:
+        return self.reference in NON_ANIMAL_REFERENCES
+
+    @property
     def protein(self) -> str:
-        """PIEZO1, PIEZO2, PEZO-1 or dPIEZO — what to call this on screen."""
-        return {"human": "PIEZO1", "mouse": "PIEZO1",
-                "human_piezo2": "PIEZO2", "mouse_piezo2": "PIEZO2",
-                "worm_piezo": "PEZO-1", "fly_piezo": "dPIEZO",
-                }.get(self.reference, "unknown")
+        """What to call this on screen — PIEZO1, PEZO-1, AtPIEZO and so on."""
+        return PROTEIN_NAMES.get(self.reference, "unknown")
 
     @property
     def confident(self) -> bool:
@@ -377,181 +402,14 @@ def piezo1_numbering(structure) -> str | None:
     return identity.reference
 
 
-@dataclass(frozen=True)
-class Renumbering:
-    """A correction from a file's own numbering to its reference's.
+# The renumbering half moved to :mod:`piezo1.core.renumbering` at the 500-line
+# limit. Re-exported here because eleven call sites and four tests import these
+# names from this module, and a split that breaks its callers is a rename
+# wearing a refactor's clothes.
+def __getattr__(name):
+    if name in ("Renumbering", "canonical_renumbering", "apply_renumbering",
+                "renumber"):
+        from . import renumbering
 
-    Detection already existed — :func:`detect_splice` and
-    :func:`mismatch_blocks` both report the shift that would repair what they
-    find. Nothing applied it, so five entries were read at residue numbers that
-    point at the wrong residue: every transmembrane helix, domain boundary and
-    variant inside the affected range.
-    """
-
-    reference: str
-    #: ``(first, last, shift)`` in the file's own numbering. Add ``shift`` to a
-    #: deposited number in that range to get the canonical one.
-    shifts: tuple = ()
-    n_corrected: int = 0          # ATOMS whose number changed
-    n_residues: int = 0           # distinct residues, which is the readable count
-    identity_before: float = float("nan")
-    identity_after: float = float("nan")
-    reason: str = ""
-
-    @property
-    def needed(self) -> bool:
-        return bool(self.shifts)
-
-    def summary(self) -> str:
-        if not self.needed:
-            return (f"{self.reference} numbering, no correction needed "
-                    f"({self.identity_before:.3f} as deposited)")
-        parts = ", ".join(f"{lo}-{hi} read {sh:+d}" for lo, hi, sh in self.shifts)
-        return (f"{self.reference} numbering with {self.n_residues} residues "
-                f"({self.n_corrected} atoms) corrected ({parts}); identity "
-                f"{self.identity_before:.3f} -> {self.identity_after:.3f}. "
-                f"The spans are in the FILE's numbering and may cover "
-                f"unresolved gaps; only resolved residues move.")
-
-
-def canonical_renumbering(structure) -> Renumbering:
-    """What correction, if any, this entry's residue numbers need.
-
-    Returns an empty correction for a file that is already right — which is the
-    case that makes it a measurement rather than a rewriter. 8YEZ resolves the
-    same 767-857 region as the four entries that carry the register error and
-    needs nothing; if this returned a shift for it, it would be inventing one.
-    """
-    identity = identify_numbering(structure)
-    if identity.reference not in REFERENCES:
-        return Renumbering(reference="", reason="no reference matches this file")
-
-    sequence = reference_entry(identity.reference)["sequence"]
-    shifts = []
-    if identity.splice is not None:
-        shifts.append((identity.splice.breakpoint + 1, 10 ** 9,
-                       int(identity.splice.offset)))
-    else:
-        for block in identity.blocks:
-            if block.repaired_by is None:
-                continue
-            shifts.append((int(block.start), int(block.end),
-                           int(block.repaired_by)))
-
-    if not shifts:
-        return Renumbering(reference=identity.reference,
-                           identity_before=identity.identity,
-                           identity_after=identity.identity)
-
-    shifts = _consolidate(structure, sequence, shifts)
-    corrected = apply_renumbering(structure.res_seq, shifts)
-    after = _identity_of(structure, corrected, sequence)
-    changed = corrected != np.asarray(structure.res_seq)
-    return Renumbering(
-        reference=identity.reference, shifts=tuple(shifts),
-        n_corrected=int(changed.sum()),
-        n_residues=int(len(set(int(v) for v in
-                               np.asarray(structure.res_seq)[changed]))),
-        identity_before=identity.identity, identity_after=after)
-
-
-def _consolidate(structure, sequence: str, shifts) -> tuple:
-    """Merge and extend the detected spans, keeping only what helps.
-
-    `mismatch_blocks` finds *runs* of disagreement, and a residue that agrees
-    by chance at the wrong numbering ends a run. On 8ZU3 that split one
-    91-residue register error into three blocks and left 772-787, 789-834 and
-    839-857 corrected with the gaps between them untouched — identity 0.969
-    where a uniform read of 767-857 gives 1.000.
-
-    So spans sharing a shift are merged across small gaps and then grown
-    outward one residue at a time, and **every step is kept only if the
-    corrected identity does not fall**. That makes the extension a measurement
-    rather than a guess: on an entry that needs no correction there is nothing
-    to extend, and on one that does, the boundary lands where the agreement
-    stops improving.
-    """
-    numbers = np.asarray(structure.res_seq).astype(int)
-    if not len(numbers):
-        return tuple(shifts)
-    low_limit, high_limit = int(numbers.min()), int(numbers.max())
-
-    by_shift: dict[int, list] = {}
-    for low, high, shift in shifts:
-        by_shift.setdefault(int(shift), []).append(
-            [int(low), min(int(high), high_limit)])
-
-    out = []
-    for shift, spans in by_shift.items():
-        spans.sort()
-        merged = [spans[0]]
-        for low, high in spans[1:]:
-            if low - merged[-1][1] <= _MERGE_GAP:
-                merged[-1][1] = max(merged[-1][1], high)
-            else:
-                merged.append([low, high])
-        for span in merged:
-            out.append([span[0], span[1], shift])
-
-    score = lambda proposal: _identity_of(                       # noqa: E731
-        structure, apply_renumbering(numbers, proposal), sequence)
-    best = score(out)
-    for i, (low, high, shift) in enumerate(out):
-        for step, index in ((-1, 0), (1, 1)):
-            while True:
-                trial = [list(x) for x in out]
-                edge = trial[i][index] + step
-                if not low_limit <= edge <= high_limit:
-                    break
-                trial[i][index] = edge
-                value = score(trial)
-                if value < best:
-                    break
-                best, out = value, trial
-    return tuple(tuple(x) for x in out)
-
-
-#: Residues of chance agreement tolerated inside one register error before it
-#: is treated as two. Not a physical quantity — a run-joining tolerance.
-_MERGE_GAP = 10
-
-
-def apply_renumbering(res_seq, shifts) -> "np.ndarray":
-    """Residue numbers with each shift applied over its own range."""
-    out = np.asarray(res_seq).astype(int).copy()
-    for low, high, shift in shifts:
-        inside = (out >= int(low)) & (out <= int(high))
-        out[inside] += int(shift)
-    return out
-
-
-def renumber(structure):
-    """``(corrected structure, Renumbering)``.
-
-    The structure is returned **unchanged** when no correction is needed, so a
-    caller cannot tell a corrected file from an uncorrected one by identity
-    alone — it has to read the report, which is the point.
-    """
-    correction = canonical_renumbering(structure)
-    if not correction.needed:
-        return structure, correction
-    fixed = dataclasses.replace(
-        structure, res_seq=apply_renumbering(structure.res_seq,
-                                             correction.shifts),
-        name=f"{structure.name}(renumbered)")
-    return fixed, correction
-
-
-def _identity_of(structure, numbers, sequence: str) -> float:
-    mask = structure.mask_ca()
-    if structure.chains:
-        mask = mask & (structure.chain == structure.chains[0])
-    hit = total = 0
-    for number, residue in zip(numbers[mask], structure.res_name[mask]):
-        if not _named(residue):
-            continue
-        index = int(number) - 1
-        if 0 <= index < len(sequence):
-            total += 1
-            hit += AA3TO1[str(residue)] == sequence[index]
-    return hit / total if total else float("nan")
+        return getattr(renumbering, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -50,6 +50,42 @@ def read_fasta(path) -> str:
                    if not line.startswith(">"))
 
 
+def _family_sequences():
+    """``(key, label, letters, numbering, accession)`` for every family member.
+
+    Reads the committed UniProt resources directly rather than importing
+    ``analysis.homology``: this is ``core``, and the dependency arrow points
+    the other way. The cost is that the ordering is stated here — human and
+    mouse first, because they are what a PIEZO1 viewer is usually comparing —
+    and a test checks the two lists hold the same members.
+    """
+    import json
+
+    from ..config import RESOURCE_DIR
+
+    order = ["human", "mouse", "rat", "human_piezo2", "mouse_piezo2",
+             "worm_piezo", "fly_piezo", "plant_piezo", "dicty_piezo"]
+    for key in order:
+        path = RESOURCE_DIR / f"uniprot_{key}.json"
+        if not path.exists():
+            continue
+        try:
+            data = json.loads(path.read_text())
+        except (ValueError, OSError):
+            continue
+        from .numbering_check import PROTEIN_NAMES
+
+        # UniProt gives Arabidopsis PIEZO no gene name at all, so the label
+        # falls back to what this project calls the protein rather than to the
+        # resource key, which would put "plant_piezo" in a combo box.
+        gene = data.get("gene") or PROTEIN_NAMES.get(key, key)
+        organism = data.get("organism") or "?"
+        yield (f"uniprot_{key}",
+               f"{gene} — {organism} ({data['accession']}, "
+               f"{data['length']} aa)",
+               data["sequence"], key, data["accession"])
+
+
 @dataclass
 class NamedSequence:
     """One sequence with the numbering it is expressed in."""
@@ -153,7 +189,22 @@ def compare_sequences(a: NamedSequence, b: NamedSequence,
     honest choice when both sequences are already in the same numbering — an
     alignment can slide a run of residues to buy score, and then a "difference"
     is an alignment artefact rather than a substitution.
+
+    And it is nonsense when they are not, which is why positional **raises**
+    across different numbering systems. Since the viewer began offering all
+    nine reviewed PIEZOs this stopped being hypothetical: no two of the nine
+    share a length, so pairing human residue 2447 with plant residue 2447
+    would compare two unrelated positions and report about 2,000 confident
+    substitutions. A global alignment is the only defensible route there, and
+    below Rost's line even that needs the reliability gate in
+    ``analysis.alignment_windows``.
     """
+    if method == "positional" and a.numbering != b.numbering:
+        raise ValueError(
+            f"cannot compare {a.label!r} and {b.label!r} position by position: "
+            f"they are numbered in different systems ({a.numbering!r} and "
+            f"{b.numbering!r}), so equal residue numbers are not corresponding "
+            f"residues. Use method='global'.")
     if method == "positional":
         shared = sorted(set(a.positions) & set(b.positions))
         aligned_a = "".join(a.at(p) or "-" for p in shared)
@@ -194,23 +245,22 @@ def compare_sequences(a: NamedSequence, b: NamedSequence,
 
 
 def load_named_sequences(structure=None) -> list[NamedSequence]:
-    """Everything available to compare: references, translations, structure.
+    """Everything available to compare: the family, translations, structure.
 
     Missing downloads are skipped rather than raising, so the viewer opens with
     whatever is present and says what is not.
-    """
-    from .sequence import human_sequence, mouse_sequence
 
+    **All nine reviewed PIEZOs are offered, not just human and mouse.** Until
+    Round 89 this returned two references, so the comparison tool could align
+    human against mouse and nothing else — while the project held annotation
+    for six proteins and the family has nine. Each carries its own
+    ``numbering``, which is the whole reason they can be listed together
+    safely: no two of the nine share a length, so a residue number means
+    nothing without the sequence it belongs to, and ``compare_sequences``
+    refuses to pair them positionally across different numbering.
+    """
     out: list[NamedSequence] = []
-    for key, label, getter, numbering, accession in (
-            ("uniprot_human", "UniProt human (Q92508)", human_sequence,
-             "human", "Q92508"),
-            ("uniprot_mouse", "UniProt mouse (E2JF22)", mouse_sequence,
-             "mouse", "E2JF22")):
-        try:
-            letters = getter()
-        except Exception:
-            continue
+    for key, label, letters, numbering, accession in _family_sequences():
         out.append(NamedSequence(key=key, label=label, letters=letters,
                                  numbering=numbering,
                                  source=f"UniProt {accession}"))
@@ -229,6 +279,18 @@ def load_named_sequences(structure=None) -> list[NamedSequence]:
             note="translation of the reference-genome transcript"))
 
     if structure is not None:
+        # Which numbering the file is actually in, measured from its own
+        # residue names. It used to take the default "human", which was
+        # harmless while the only references offered were human and mouse and
+        # became a live hazard the moment nine were: a worm entry labelled
+        # "human" could be compared position-by-position against human PIEZO1
+        # and would report two thousand confident substitutions.
+        try:
+            from .numbering_check import identify_numbering
+
+            chain_numbering = identify_numbering(structure).reference
+        except Exception:
+            chain_numbering = "unknown"
         for chain in structure.chains:
             # Residue-level, not atom-level: one letter and one number per
             # residue, taken from the same mask so they cannot fall out of
@@ -244,6 +306,8 @@ def load_named_sequences(structure=None) -> list[NamedSequence]:
                 key=f"structure_{chain}",
                 label=f"{structure.name} chain {chain} (resolved)",
                 letters=letters, positions=positions,
+                numbering=chain_numbering,
                 source=f"PDB {structure.name}",
-                note="resolved residues only — has gaps"))
+                note=f"resolved residues only — has gaps; numbered as "
+                     f"{chain_numbering}"))
     return out

@@ -9,7 +9,7 @@ Open-access full texts are downloaded to `ref/papers/` with
 git-ignored: the papers are other people's copyright, and the
 bibliography here is enough to retrieve them.
 
-**80 references.** 39 are open access.
+**83 references.** 39 are open access.
 
 ## Structure
 
@@ -171,12 +171,18 @@ bibliography here is enough to retrieve them.
   <sub>Used for: Access resistance of a circular pore mouth - the term that limits a short wide pore</sub>
 - **`tsien1980bapta`** — Tsien RY. *New calcium indicators and buffers with high selectivity against magnesium and protons: design, synthesis, and properties of prototype structures.* Biochemistry 1980;19:2396-2404. [PMID 6770893](https://pubmed.ncbi.nlm.nih.gov/6770893/) · [doi:10.1021/bi00552a018](https://doi.org/10.1021/bi00552a018)  
   <sub>Used for: BAPTA - the chelator scaffold of the JF646-BAPTA sensor, and its Kd</sub>
+- **`smith1981`** — Smith TF, Waterman MS. *Identification of common molecular subsequences.* Journal of molecular biology 1981;147:195-197. [PMID 7265238](https://pubmed.ncbi.nlm.nih.gov/7265238/) · [doi:10.1016/0022-2836(81)90087-5](https://doi.org/10.1016/0022-2836(81)90087-5)  
+  <sub>Used for: Smith-Waterman local alignment - the statistic that survives the twilight zone where percent identity does not</sub>
 - **`allbritton1992`** — Allbritton NL, Meyer T, Stryer L. *Range of messenger action of calcium ion and inositol 1,4,5-trisphosphate.* Science (New York, N.Y.) 1992;258:1812-1815. [PMID 1465619](https://pubmed.ncbi.nlm.nih.gov/1465619/) · [doi:10.1126/science.1465619](https://doi.org/10.1126/science.1465619)  
   <sub>Used for: Cytosolic calcium diffusion coefficient and buffering range</sub>
+- **`henikoff1992`** — Henikoff S, Henikoff JG. *Amino acid substitution matrices from protein blocks.* Proceedings of the National Academy of Sciences of the United States of America 1992;89:10915-10919. [PMID 1438297](https://pubmed.ncbi.nlm.nih.gov/1438297/) · [doi:10.1073/pnas.89.22.10915](https://doi.org/10.1073/pnas.89.22.10915)  
+  <sub>Used for: BLOSUM62 - the substitution matrix every alignment here scores with</sub>
 - **`stern1992`** — Stern MD. *Buffering of calcium in the vicinity of a channel pore.* Cell calcium 1992;13:183-192. [PMID 1315621](https://pubmed.ncbi.nlm.nih.gov/1315621/) · [doi:10.1016/0143-4160(92)90046-u](https://doi.org/10.1016/0143-4160(92)90046-u)  
   <sub>Used for: The steady-state buffered-diffusion Green's function this model uses</sub>
 - **`naraghi1997`** — Naraghi M, Neher E. *Linearized buffered Ca2+ diffusion in microdomains and its implications for calculation of [Ca2+] at the mouth of a calcium channel.* The Journal of neuroscience : the official journal of the Society for Neuroscience 1997;17:6961-6973. [PMID 9278532](https://pubmed.ncbi.nlm.nih.gov/9278532/) · [doi:10.1523/jneurosci.17-18-06961.1997](https://doi.org/10.1523/jneurosci.17-18-06961.1997)  
   <sub>Used for: Linearised buffered diffusion; the screening length and its validity</sub>
+- **`rost1999`** — Rost B. *Twilight zone of protein sequence alignments.* Protein engineering 1999;12:85-94. [PMID 10195279](https://pubmed.ncbi.nlm.nih.gov/10195279/) · [doi:10.1093/protein/12.2.85](https://doi.org/10.1093/protein/12.2.85)  
+  <sub>Used for: The twilight zone: below ~30% identity, a pairwise alignment stops distinguishing homology from chance</sub>
 - **`los2008halotag`** — Los GV, Encell LP, McDougall MG, Hartzell DD, Karassina N, Zimprich C, Wood MG, Learish R, Ohana RF, Urh M, Simpson D, Mendez J, Zimmerman K, Otto P, Vidugiris G, Zhu J, Darzins A, Klaubert DH, Bulleit RF, Wood KV. *HaloTag: a novel protein labeling technology for cell imaging and protein analysis.* ACS chemical biology 2008;3:373-382. [PMID 18533659](https://pubmed.ncbi.nlm.nih.gov/18533659/) · [doi:10.1021/cb800025k](https://doi.org/10.1021/cb800025k)  
   <sub>Used for: HaloTag chemistry; source of the covalent on-rate and its irreversibility</sub>
 - **`coste2010piezo`** — Coste B, Mathur J, Schmidt M, Earley TJ, Ranade S, Petrus MJ, Dubin AE, Patapoutian A. *Piezo1 and Piezo2 are essential components of distinct mechanically activated cation channels.* Science (New York, N.Y.) 2010;330:55-60. [PMID 20813920](https://pubmed.ncbi.nlm.nih.gov/20813920/) · [doi:10.1126/science.1193270](https://doi.org/10.1126/science.1193270)  

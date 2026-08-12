@@ -485,7 +485,7 @@
    "species": "worm",
    "state": "curved",
    "gating": "closed",
-   "note": "C. elegans PEZO-1 isoform K.",
+   "note": "C. elegans PEZO-1 isoform K, which begins at residue 757 and so lacks a third of the blade. Deposited in CANONICAL numbering (identity 1.000 over 801-2442), not the isoform's own \u2014 unlike 6LQI and 9W7X, which are not, and unlike 4PKE/4PKX, which are in a construct's. Three conventions in one catalogue is why the numbering is measured on every load.",
    "recommended_for": [
     "invertebrate",
     "isoform"
@@ -587,6 +587,55 @@
    "recommended_for": [
     "morph_start",
     "dome_reference"
+   ]
+  },
+  {
+   "pdb": "9ZIS",
+   "file": "9ZIS.cif",
+   "resolution": 3.5,
+   "released": "2025-12-24",
+   "title": "C. elegans PEZO-1 Isoform G",
+   "journal": "Cell Rep",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-74281"
+   ],
+   "n_atoms": 44505,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1944,
+     "first": 1,
+     "last": 2442
+    },
+    {
+     "chain": "B",
+     "n_ca": 1944,
+     "first": 1,
+     "last": 2442
+    },
+    {
+     "chain": "C",
+     "n_ca": 1944,
+     "first": 1,
+     "last": 2442
+    }
+   ],
+   "ligands": [],
+   "protein": "PEZO-1",
+   "numbering": "worm_piezo",
+   "species": "worm",
+   "state": "curved",
+   "gating": "closed",
+   "note": "C. elegans PEZO-1 isoform G, the full-length 2,442 residue product \u2014 an independent 3.5 A dataset of the same isoform as 9UOY. The catalogue's only replicate pair, which is what lets an isoform difference be told apart from a dataset difference.",
+   "recommended_for": [
+    "invertebrate",
+    "generality",
+    "isoform",
+    "replicate"
    ]
   },
   {
@@ -869,6 +918,54 @@
     "piezo2",
     "distal_blade",
     "paralogue"
+   ]
+  },
+  {
+   "pdb": "9UOX",
+   "file": "9UOX.cif",
+   "resolution": 3.8,
+   "released": "2025-12-24",
+   "title": "Structure of C. elegans piezo channel isoform k",
+   "journal": "Cell Rep",
+   "year": 2025,
+   "pmid": null,
+   "doi": null,
+   "emdb": [
+    "EMD-64384"
+   ],
+   "n_atoms": 32331,
+   "n_protomers": 3,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 1324,
+     "first": 808,
+     "last": 2437
+    },
+    {
+     "chain": "B",
+     "n_ca": 1324,
+     "first": 808,
+     "last": 2437
+    },
+    {
+     "chain": "C",
+     "n_ca": 1324,
+     "first": 808,
+     "last": 2437
+    }
+   ],
+   "ligands": [],
+   "protein": "PEZO-1",
+   "numbering": "worm_piezo",
+   "species": "worm",
+   "state": "curved",
+   "gating": "closed",
+   "note": "C. elegans PEZO-1 isoform K at 3.8 A, the replicate of 9ZIT. Also canonical numbering, 808-2437.",
+   "recommended_for": [
+    "invertebrate",
+    "isoform",
+    "replicate"
    ]
   },
   {
@@ -1257,6 +1354,39 @@
    ]
   },
   {
+   "pdb": "AF-A0A061ACU2-F1-MODEL_V6",
+   "file": "AF-A0A061ACU2-F1-model_v6.cif",
+   "resolution": null,
+   "released": "",
+   "title": "AlphaFold DB predicted model",
+   "journal": "Nucleic Acids Res",
+   "year": 2024,
+   "pmid": null,
+   "doi": "10.1093/nar/gkad1011",
+   "emdb": [],
+   "n_atoms": 19539,
+   "n_protomers": 1,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 2442,
+     "first": 1,
+     "last": 2442
+    }
+   ],
+   "ligands": [],
+   "protein": "PEZO-1",
+   "numbering": "worm_piezo",
+   "species": "worm",
+   "state": "predicted",
+   "gating": "unknown",
+   "note": "AlphaFold DB model of C. elegans PEZO-1 isoform g, 2,442 residues. Held beside the deposited 9UOY/9ZIS so the prediction can be scored against experiment for the same protein \u2014 the control the human and mouse models have never had.",
+   "recommended_for": [
+    "predicted",
+    "family"
+   ]
+  },
+  {
    "pdb": "AF-E2JF22-F1-MODEL_V6",
    "file": "AF-E2JF22-F1-model_v6.cif",
    "resolution": null,
@@ -1287,6 +1417,106 @@
    "recommended_for": [
     "predicted",
     "full_length_source"
+   ]
+  },
+  {
+   "pdb": "AF-F4IN58-F1-MODEL_V6",
+   "file": "AF-F4IN58-F1-model_v6.cif",
+   "resolution": null,
+   "released": "",
+   "title": "AlphaFold DB predicted model",
+   "journal": "Nucleic Acids Res",
+   "year": 2024,
+   "pmid": null,
+   "doi": "10.1093/nar/gkad1011",
+   "emdb": [],
+   "n_atoms": 19948,
+   "n_protomers": 1,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 2462,
+     "first": 1,
+     "last": 2462
+    }
+   ],
+   "ligands": [],
+   "protein": "AtPIEZO",
+   "numbering": "plant_piezo",
+   "species": "plant",
+   "state": "predicted",
+   "gating": "unknown",
+   "note": "AlphaFold DB model of Arabidopsis PIEZO, 2,462 residues. The only structural representation of a non-animal PIEZO that exists \u2014 Dictyostelium pzoA has neither a structure nor a model \u2014 and therefore the only way to ask whether the dome is a property of the fold rather than of animals. A PREDICTION and a MONOMER: read the pLDDT before believing the blade.",
+   "recommended_for": [
+    "predicted",
+    "family",
+    "generality"
+   ]
+  },
+  {
+   "pdb": "AF-M9MSG8-F1-MODEL_V6",
+   "file": "AF-M9MSG8-F1-model_v6.cif",
+   "resolution": null,
+   "released": "",
+   "title": "AlphaFold DB predicted model",
+   "journal": "Nucleic Acids Res",
+   "year": 2024,
+   "pmid": null,
+   "doi": "10.1093/nar/gkad1011",
+   "emdb": [],
+   "n_atoms": 20423,
+   "n_protomers": 1,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 2551,
+     "first": 1,
+     "last": 2551
+    }
+   ],
+   "ligands": [],
+   "protein": "dPIEZO",
+   "numbering": "fly_piezo",
+   "species": "fly",
+   "state": "predicted",
+   "gating": "unknown",
+   "note": "AlphaFold DB model of Drosophila PIEZO, 2,551 residues. In CANONICAL numbering, where the deposited 9W7X is not.",
+   "recommended_for": [
+    "predicted",
+    "family"
+   ]
+  },
+  {
+   "pdb": "AF-Q0KL00-F1-MODEL_V6",
+   "file": "AF-Q0KL00-F1-model_v6.cif",
+   "resolution": null,
+   "released": "",
+   "title": "AlphaFold DB predicted model",
+   "journal": "Nucleic Acids Res",
+   "year": 2024,
+   "pmid": null,
+   "doi": "10.1093/nar/gkad1011",
+   "emdb": [],
+   "n_atoms": 20468,
+   "n_protomers": 1,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 2535,
+     "first": 1,
+     "last": 2535
+    }
+   ],
+   "ligands": [],
+   "protein": "PIEZO1",
+   "numbering": "rat",
+   "species": "rat",
+   "state": "predicted",
+   "gating": "unknown",
+   "note": "AlphaFold DB model of rat Piezo1, 2,535 residues. The third mammalian PIEZO1 and the only structural representation it has; much of the mechanosensitivity electrophysiology is rat.",
+   "recommended_for": [
+    "predicted",
+    "family"
    ]
   }
  ]

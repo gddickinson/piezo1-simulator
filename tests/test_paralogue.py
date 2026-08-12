@@ -283,9 +283,14 @@ def test_the_registry_contains_only_piezo_structures():
     """
     from piezo1.io.registry import load_registry
 
+    from piezo1.core.numbering_check import PROTEIN_NAMES
+
     for record in load_registry():
-        assert record.protein in ("PIEZO1", "PIEZO2", "PEZO-1", "dPIEZO"), \
-            record.pdb
+        # Read from the naming table rather than a list copied into the test:
+        # the family grew from four proteins to five when Arabidopsis PIEZO
+        # was added, and a copied list makes that a test failure instead of a
+        # fact about the catalogue.
+        assert record.protein in set(PROTEIN_NAMES.values()), record.pdb
         if not record.available:
             continue
         identity = identify_numbering(Structure.from_file(record.path))
@@ -426,16 +431,23 @@ def test_the_piezo2_annotation_resources_are_committed_and_parallel():
         helices[name] = data["n_transmembrane"]
         lengths[name] = data["length"]
 
-    # The four vertebrate PIEZOs share the 38-helix architecture this project's
-    # domain table is built on. The invertebrates do NOT — 36 and 40 — which is
-    # exactly why they are the interesting control and why nothing here may
-    # transfer a helix index to them by number.
+    # The five vertebrate PIEZOs share the 38-helix architecture this project's
+    # domain table is built on. Nothing else does — 36 for the worm, 40 for the
+    # fly, 35 for the plant and the amoeba — which is exactly why they are the
+    # interesting control and why nothing here may transfer a helix index to
+    # them by number.
     assert all(helices[n] == 38 for n in
-               ("human", "mouse", "human_piezo2", "mouse_piezo2"))
-    assert helices["worm_piezo"] != 38 and helices["fly_piezo"] != 38
-    assert lengths == {"human": 2521, "mouse": 2547, "human_piezo2": 2752,
-                       "mouse_piezo2": 2822, "worm_piezo": 2442,
-                       "fly_piezo": 2551}
+               ("human", "mouse", "rat", "human_piezo2", "mouse_piezo2"))
+    assert all(helices[n] != 38 for n in
+               ("worm_piezo", "fly_piezo", "plant_piezo", "dicty_piezo"))
+    assert lengths == {"human": 2521, "mouse": 2547, "rat": 2535,
+                       "human_piezo2": 2752, "mouse_piezo2": 2822,
+                       "worm_piezo": 2442, "fly_piezo": 2551,
+                       "plant_piezo": 2462, "dicty_piezo": 3080}
+    # Nine lengths, no two the same and no constant offset between any pair.
+    # The point of stating it: every one of these is a numbering system, and a
+    # residue number quoted without one is not a residue.
+    assert len(set(lengths.values())) == len(lengths)
 
 
 def test_compare_refuses_the_arguments_the_wrong_way_round():

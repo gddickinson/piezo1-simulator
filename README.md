@@ -27,6 +27,7 @@ that carries blade motion to the gate.*
 
 - [What PIEZO1 is](#what-piezo1-is-and-why-its-shape-is-the-mechanism)
 - [What the software does](#what-the-software-does)
+- [The PIEZO family](#compare-piezo1-with-the-rest-of-its-family)
 - [Numbers it reproduces](#numbers-it-reproduces)
 - [Installing](#installing)
 - [Running it](#running-it)
@@ -249,6 +250,45 @@ Helices the entry does not resolve are drawn **dashed, never dropped**. Dropping
 one would put TM13 where TM1 belongs and silently renumber every helix after it.
 6B3R greys out TM1–12; 7WLT greys out TM1–16; both are read from the
 coordinates.
+
+### Compare PIEZO1 with the rest of its family
+
+**Analysis → PIEZO family comparison** compares the loaded entry with every
+other PIEZO in the catalogue; `python -m piezo1.cli homology` works on the
+family itself.
+
+The reviewed family is **nine proteins**, which is small enough to hold in full:
+PIEZO1 (human, mouse, rat), PIEZO2 (human, mouse), *C. elegans* PEZO-1,
+*Drosophila* PIEZO, *Arabidopsis* PIEZO and *Dictyostelium* pzoA. All nine ship
+as committed annotation, and the sequence viewer will align any two of them.
+
+Two things the comparison insists on, both because a number here is easy to
+misread:
+
+**Percent identity stops being evidence before the family ends.** Fifteen of the
+thirty-six pairs fall below the ~30% "twilight zone" boundary. PEZO-1 and
+*Arabidopsis* PIEZO are 23.8% identical — and a *scrambled* Arabidopsis sequence
+of the same amino-acid composition is 22.5% identical to PEZO-1. The homology is
+real (the local alignment score is 64 standard deviations above the same null),
+but the percentage is nearly all noise. Every identity is reported beside its
+shuffled null for that reason.
+
+This is also why the application has **no BLAST search** and does not need one:
+the family is enumerable, and what was actually missing was BLAST's *statistic*.
+The reasoning is recorded as a decision in
+[`docs/HOMOLOGY_SEARCH.md`](docs/HOMOLOGY_SEARCH.md).
+
+**One pair of structures is not a measurement of two proteins.** Comparing mouse
+PIEZO1 7WLT with *Drosophila* 9W7X gives a gating-mode overlap of 0.98; human
+8YEZ against the same entry gives 0.19. So the comparison reports a **range**
+over every available entry pair, with the fraction clearing a shuffled control:
+PIEZO2 comes back 0.80–0.98 and stable, the invertebrates 0.18–0.98 and not. The
+paralogue result holds; the extension to invertebrates does not, with these
+structures.
+
+Neither non-animal PIEZO can join at all — the only structural representation
+either has is an AlphaFold *monomer*, and the dome, the pore and the elastic
+network all need three protomers.
 
 ### Build the full-length model
 

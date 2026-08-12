@@ -100,6 +100,18 @@ CAVEATS = {
         "screened-Coulomb surface is not APBS. Read the reason beside any "
         "panel that is not marked replicated before putting it beside the "
         "original."),
+    "homology": (
+        "THE WIDEST GENERALITY CONTROL THERE IS, and the column to read is the "
+        "OVERLAP, not the identity. Sequence identity to the invertebrate "
+        "PIEZOs is ~0.30, inside Rost's twilight zone, where a percentage is "
+        "barely distinguishable from what a shuffled sequence of the same "
+        "composition gives — see docs/HOMOLOGY_SEARCH.md. The gating-mode "
+        "overlap does not depend on it and carries a shuffled-correspondence "
+        "control. Every partner here is a separate deposited structure with "
+        "its own coverage, so the overlaps are not directly comparable with "
+        "each other; and the family's two non-animal members (plant, amoeba) "
+        "are ABSENT, because the only structural representation either has is "
+        "an AlphaFold MONOMER and the elastic network needs three protomers."),
     "variant_structures": (
         "A null result, reported rather than worked around: every deposited "
         "human PIEZO1 structure is closed, so no difference in conductance can "
@@ -163,6 +175,10 @@ class TabularAnalysisMixin:
     def show_paralogue(self) -> None:
         self._run_registry_analysis(
             "paralogue", "PIEZO1 against PIEZO2 — is this the fold?")
+
+    def show_homology(self) -> None:
+        self._run_registry_analysis(
+            "homology", "Against every PIEZO in the catalogue")
 
     def show_fluctuations(self) -> None:
         self._run_registry_analysis(

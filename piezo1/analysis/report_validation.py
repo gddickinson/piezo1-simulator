@@ -16,7 +16,8 @@ from __future__ import annotations
 
 from ..core.structure import Structure
 
-__all__ = ["analysis_fluctuations", "analysis_paralogue"]
+__all__ = ["analysis_fluctuations", "analysis_paralogue",
+           "analysis_homology"]
 
 
 def analysis_fluctuations(st: Structure, species: str,
@@ -108,4 +109,71 @@ def analysis_paralogue(st: Structure, species: str, **kw) -> dict:
                  "proteins are indistinguishable, and PIEZO1's candidate "
                  "gating mode is present in PIEZO2 — this mechanism is a "
                  "property of the fold rather than of PIEZO1"),
+    }
+
+
+def analysis_homology(st: Structure, species: str, **kw) -> dict:
+    """The loaded entry against every PIEZO the catalogue can reach.
+
+    The widest form of the question ``analysis_paralogue`` asks of PIEZO2
+    alone. It belongs in this file for the same reason that one does: it tests
+    the model against something it was never fitted to — and it is the only
+    entry in the registry whose answer can *fall*, since a mode overlap that
+    survives one duplication need not survive 800 Myr.
+
+    **It reports a range per protein, not one comparison, and that is the
+    result.** Run against a single partner it produced 0.980 for dPIEZO from
+    7WLT and **0.189** for the same two proteins from 8YEZ. Which entry is
+    picked decides the number, so a representative pair is a cherry-pick and
+    the range is the measurement. PIEZO2 comes back 0.80-0.98 across six pairs
+    with every one beating its control, which is the positive control that
+    makes the invertebrate spread an instability rather than a broken
+    instrument.
+
+    Runs no sequence matrix: that costs two minutes for the nulls and is a
+    property of the family rather than of the loaded structure, so it lives at
+    ``piezo1.cli homology`` where it is asked for deliberately.
+    """
+    from ..core.numbering_check import identify_numbering
+    from .homology_structure import comparable_entries, mode_overlap_spread
+
+    identity = identify_numbering(st)
+    partners = {protein: entries
+                for protein, entries in comparable_entries().items()
+                if protein != identity.protein and entries}
+    if not partners:
+        return {"error": f"no catalogued homologue of {identity.protein} with "
+                         f"three protomers is downloaded"}
+
+    rows = []
+    for protein, entries in partners.items():
+        spread = mode_overlap_spread([st.name], entries, protein)
+        if not spread.n_pairs:
+            continue
+        rows.append({
+            "protein": protein, "n_entries": spread.n_pairs,
+            "entries": [b for _a, b in spread.pairs],
+            "gating_mode_overlap_low": round(spread.low, 3),
+            "gating_mode_overlap_high": round(spread.high, 3),
+            "shuffled_control_max": round(max(spread.controls), 3),
+            "n_beating_control": spread.n_beating_control,
+            "stable": spread.stable,
+            "verdict": spread.summary(),
+        })
+    return {
+        "loaded": {"pdb": st.name, "protein": identity.protein,
+                   "numbering": identity.reference},
+        "homologues": rows,
+        "caveat": ("Read the RANGE, not a number. The overlap depends on which "
+                   "deposited entry each side uses — across the catalogue the "
+                   "same two proteins give anywhere from 0.18 to 0.98 for the "
+                   "invertebrates — so a single pair is not a property of the "
+                   "proteins. Sequence identity is not the column to read "
+                   "either: below 0.30 it is inside Rost's twilight zone and "
+                   "barely above what a shuffled sequence gives (see "
+                   "docs/HOMOLOGY_SEARCH.md)."),
+        "note": ("PIEZO2 is the positive control and it is stable, so the "
+                 "instrument can say yes. Where the invertebrate range is "
+                 "wide, that is a real limit on what these structures "
+                 "support — a result, not a failure."),
     }

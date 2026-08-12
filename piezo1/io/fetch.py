@@ -18,15 +18,50 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
-from ..config import (DERIVED_DIR, FLY_PIEZO_ACC, HUMAN_ACC,
+from ..config import (DERIVED_DIR, DICTY_PIEZO_ACC, FLY_PIEZO_ACC, HUMAN_ACC,
                       HUMAN_PIEZO2_ACC, LIGAND_DIR, MOUSE_ACC,
-                      MOUSE_PIEZO2_ACC, SEQUENCE_DIR, STRUCTURE_DIR,
-                      WORM_PIEZO_ACC, ensure_dirs)
+                      MOUSE_PIEZO2_ACC, PLANT_PIEZO_ACC, RAT_ACC, SEQUENCE_DIR,
+                      STRUCTURE_DIR, WORM_PIEZO_ACC, ensure_dirs)
 
 __all__ = ["fetch_pdb", "fetch_alphafold", "fetch_uniprot", "fetch_ligand",
            "fetch_all", "fetch_chap_grid", "fetch_cds", "CDS_TRANSCRIPTS",
-           "DEFAULT_PDB_IDS", "DEFAULT_LIGANDS",
+           "DEFAULT_PDB_IDS", "DEFAULT_LIGANDS", "FAMILY_ACCESSIONS",
+           "ALPHAFOLD_ACCESSIONS", "ALPHAFOLD_UNAVAILABLE",
            "CHAP_GRID_URL", "CHAP_LICENCE", "CONTENT_CHECKS"]
+
+#: Every reviewed PIEZO, keyed by the short name its resource file carries.
+#:
+#: Nine, and that is the whole family — ``reviewed:true AND protein_name:piezo``
+#: against UniProt returns exactly this set. Recorded as a list rather than
+#: re-queried at runtime because a pinned accession is provenance and a live
+#: query is not: the same call next year may return ten, and the difference is
+#: something to notice deliberately rather than absorb silently.
+FAMILY_ACCESSIONS = {
+    "human": HUMAN_ACC, "mouse": MOUSE_ACC, "rat": RAT_ACC,
+    "human_piezo2": HUMAN_PIEZO2_ACC, "mouse_piezo2": MOUSE_PIEZO2_ACC,
+    "worm_piezo": WORM_PIEZO_ACC, "fly_piezo": FLY_PIEZO_ACC,
+    "plant_piezo": PLANT_PIEZO_ACC, "dicty_piezo": DICTY_PIEZO_ACC,
+}
+
+#: The family members AlphaFold DB holds a model of the **canonical** sequence
+#: for. Five of nine, and the two absences are facts about the database rather
+#: than failures of this fetch, so they are named in
+#: :data:`ALPHAFOLD_UNAVAILABLE` and not requested.
+ALPHAFOLD_ACCESSIONS = (HUMAN_ACC, MOUSE_ACC, RAT_ACC,
+                        WORM_PIEZO_ACC, FLY_PIEZO_ACC, PLANT_PIEZO_ACC)
+
+#: What AlphaFold DB does not have, and why. Recorded rather than left as a
+#: gap in the list above, because "no model" and "nobody asked" look identical
+#: once a name is simply missing.
+ALPHAFOLD_UNAVAILABLE = {
+    HUMAN_PIEZO2_ACC: ("no model of the canonical 2,752-residue sequence; the "
+                       "database holds isoform 2 (2,689 aa) and isoform 3 "
+                       "(709 aa) only"),
+    DICTY_PIEZO_ACC: ("no model at any length; at 3,080 residues pzoA is past "
+                      "the ceiling of the whole-proteome predictions"),
+    MOUSE_PIEZO2_ACC: "not requested; the mouse PIEZO2 structure 6KG7 resolves "
+                      "all 38 transmembrane helices, so nothing needs one",
+}
 
 #: The water free-energy landscape underlying the Rao et al. 2019 hydrophobic
 #: gating heuristic, as published in the CHAP repository. 100x100 grid over
@@ -42,6 +77,11 @@ USER_AGENT = "piezo1-simulator/0.1 (research use)"
 TIMEOUT = 300
 
 #: Structures the application ships a registry entry for.
+#:
+#: The list is the answer to a structured RCSB query — every entry whose
+#: polymer cross-references one of the nine reviewed PIEZO accessions — rather
+#: than a full-text search for "piezo", which returns 200 entries of which most
+#: are unrelated crystals that merely mention the word.
 DEFAULT_PDB_IDS = [
     # human PIEZO1, including three disease variants
     "8YEZ", "8ZU3", "8ZU8", "8YFC", "8YFG", "9VMX",
@@ -51,6 +91,20 @@ DEFAULT_PDB_IDS = [
     "6B3R", "6BPZ", "5Z10", "3JAC", "8IMZ", "6LQI", "4RAX", "9VED",
     # PIEZO2, for comparison and for the distal blade
     "6KG7",
+    # C. elegans PEZO-1, deposited as two *isoforms*: g is the full-length
+    # 2442-residue product and k starts at 757. Two entries each, which is
+    # what makes them worth holding — an isoform pair with a replicate is the
+    # only place in the catalogue where "the difference between these two
+    # models" can be separated from "the difference between two datasets".
+    "9UOY", "9ZIS",      # isoform g
+    "9ZIT", "9UOX",      # isoform k
+    # The beta-sandwich domain of PEZO-1 at 2.5 A, in two crystal forms. The
+    # only atomic-resolution PIEZO coordinates that exist.
+    "4PKE", "4PKX",
+    # Drosophila PIEZO
+    "9W7X",
+    # human PIEZO2
+    "9VEE", "9VEF",
 ]
 
 #: PubChem compounds, by name and CID.
@@ -169,25 +223,57 @@ def fetch_pdb(pdb_id: str, force: bool = False) -> FetchResult:
 
 def fetch_alphafold(accession: str, force: bool = False,
                     with_pae: bool = False) -> list[FetchResult]:
-    """Download the current AlphaFold DB model for a UniProt accession.
+    """Download the AlphaFold DB model **for the canonical sequence**.
 
     The version number is discovered from the API rather than guessed. This is
     not pedantry: the v4 URLs that most documentation still shows now return
     404, and the current model for PIEZO1 is v6.
+
+    Neither is the isoform check. The endpoint returns one entry *per isoform*
+    and the canonical is not first — it is not always present at all — and this
+    took ``entries[0]``:
+
+    * **Q9H5I5, human PIEZO2**: two entries, isoform 3 (**709 aa**) and isoform
+      2 (2,689 aa). AlphaFold DB has no model for the canonical 2,752-residue
+      sequence. ``entries[0]`` is the 709-residue one, a quarter of the
+      protein, which arrives named ``AF-Q9H5I5-3-F1`` and parses perfectly.
+    * **A0A061ACU2, PEZO-1**: **twelve** entries, one per annotated isoform,
+      from 1,038 to 2,442 residues. The canonical happens to be first, so this
+      was right by luck rather than by construction.
+
+    A model of a different isoform read in canonical numbering is wrong
+    everywhere past its first splice difference, and nothing downstream could
+    tell: it is a well-formed mmCIF of the right protein. So the entry is
+    selected by exact accession — an isoform carries a ``-N`` suffix — and if
+    there is no canonical model this **refuses and says what it found**,
+    because substituting the nearest isoform is the failure mode, not the
+    fallback.
     """
     api = f"https://alphafold.ebi.ac.uk/api/prediction/{accession}"
+    dest_hint = STRUCTURE_DIR / f"AF-{accession}.cif"
     try:
         req = urllib.request.Request(api, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
             entries = json.loads(r.read())
     except Exception as exc:
-        return [FetchResult(STRUCTURE_DIR / f"AF-{accession}.cif", False, 0,
-                            f"AlphaFold API failed: {exc}")]
+        return [FetchResult(dest_hint, False, 0, f"AlphaFold API failed: {exc}")]
     if not entries:
-        return [FetchResult(STRUCTURE_DIR / f"AF-{accession}.cif", False, 0,
-                            "no AlphaFold entry")]
+        return [FetchResult(dest_hint, False, 0, "no AlphaFold entry")]
 
-    entry = entries[0]
+    canonical = [e for e in entries
+                 if e.get("uniprotAccession", "") == accession]
+    if not canonical:
+        offered = ", ".join(
+            f"{e.get('uniprotAccession')} ({len(e.get('uniprotSequence', ''))} aa)"
+            for e in entries)
+        return [FetchResult(
+            dest_hint, False, 0,
+            f"AlphaFold DB has no model for canonical {accession}; it offers "
+            f"only isoforms ({offered}). Refused rather than substituted — an "
+            f"isoform model read in canonical numbering is wrong past its "
+            f"first splice difference and nothing downstream could tell.")]
+
+    entry = canonical[0]
     out = []
     cif_url = entry["cifUrl"]
     out.append(_download(cif_url, STRUCTURE_DIR / Path(cif_url).name, force,
@@ -291,11 +377,7 @@ def fetch_all(force: bool = False, structures: bool = True,
 
     if sequences:
         print("UniProt sequences")
-        for acc, sp in ((HUMAN_ACC, "human"), (MOUSE_ACC, "mouse"),
-                        (HUMAN_PIEZO2_ACC, "human_piezo2"),
-                        (MOUSE_PIEZO2_ACC, "mouse_piezo2"),
-                        (WORM_PIEZO_ACC, "worm_piezo"),
-                        (FLY_PIEZO_ACC, "fly_piezo")):
+        for sp, acc in FAMILY_ACCESSIONS.items():
             for r in fetch_uniprot(acc, sp, force):
                 note(f"{acc} {r.path.suffix}", r)
                 results.append(r)
@@ -308,9 +390,12 @@ def fetch_all(force: bool = False, structures: bool = True,
             results.append(r)
 
     if alphafold:
-        print("AlphaFold DB models")
-        for acc in (HUMAN_ACC, MOUSE_ACC):
-            for r in fetch_alphafold(acc, force, with_pae=pae):
+        print(f"AlphaFold DB models ({len(ALPHAFOLD_ACCESSIONS)})")
+        for acc in ALPHAFOLD_ACCESSIONS:
+            # PAE only for the two the full-length graft is built from; the
+            # matrices are ~50 MB each and nothing reads the others.
+            want_pae = pae and acc in (HUMAN_ACC, MOUSE_ACC)
+            for r in fetch_alphafold(acc, force, with_pae=want_pae):
                 note(f"AF {acc}", r)
                 results.append(r)
 

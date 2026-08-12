@@ -129,12 +129,24 @@ def test_human_and_mouse_are_about_eighty_percent_identical(sequences):
 
 def test_positional_comparison_refuses_mixed_numbering_silently_wrong(sequences):
     """Human and mouse share no numbering, so pairing by residue number is
-    meaningless — it must not merely look plausible."""
+    meaningless — and since Round 89 it **raises** rather than merely looking
+    implausible.
+
+    The old behaviour was to run and let the identity collapse to something a
+    reader would notice. That was tolerable while the viewer offered two
+    sequences; it is not now that it offers nine, because human against plant
+    PIEZO would report about two thousand confident substitutions between
+    positions that have nothing to do with each other, and 'the number looks
+    low' is not a guard.
+    """
+    with pytest.raises(ValueError, match="different systems"):
+        compare_sequences(sequences["uniprot_human"],
+                          sequences["uniprot_mouse"], "positional")
+
+    # The redirection has to work, or the refusal is just a removed feature.
     result = compare_sequences(sequences["uniprot_human"],
-                               sequences["uniprot_mouse"], "positional")
-    # It runs, but the identity collapses, which is the signal the UI uses to
-    # refuse this combination before offering it.
-    assert result.identity < 0.5
+                               sequences["uniprot_mouse"], "global")
+    assert result.identity > 0.8
 
 
 def test_structure_sequence_is_gapped_and_starts_where_the_model_does(

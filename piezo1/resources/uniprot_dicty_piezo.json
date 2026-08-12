@@ -1,0 +1,480 @@
+{
+ "accession": "Q54S52",
+ "id": "Y2801_DICDI",
+ "organism": "Dictyostelium discoideum",
+ "gene": "pzoA",
+ "length": 3080,
+ "mass_da": 356339,
+ "sequence": "MIGYFFVSLIYPFSLICSSVFRSNVVSYIYFIFFLLSILCLPHKSLILKNKISKTLPIITLVLSMFSLILQLLVNVVKVFQEQDELSVNILTAFGFYKYNSFWIVFRNVLPDVIVFVISLFTIILWFKNLVYPASINIKDSLKKTTSLNNVDQILNSPYVHGGSGNFNSGSNNNNNNNNIVYRPAGRGLTGFSFLMLTLSSISYPSIINVIYFVFTILIILLLASKLSIHKVMLKCYPILLITSLCHLLFVYLNQIEYFYMKYTVFKEQKWYGVLNYTEWDVTYWPLVIGYITVLLLYISTCILFRKQQLFNRTKPRYKQKLDKLGIMSDSNNNNNNNNKSRTTKLAIIFSKHGWTICCSQILVVCFFLTASVASAILLASGLICTLLPLKVFKKVIYIILLYFLVFISAQYIFNIPFSYSETDLQSYGLFSFNNSKWLYIGVQIVVSLTLSLYCFYSDIKDDDLGTIKKDQQSQQSQPQPQQQQQQQQSSQNNQIQQSPLQYQQPLPPTPISNKSLPSSPMSTKSTTVHIQNNNNGGGGGIIRPRKPLPPVPLGMIGKSSMAMTSNSSFGSNKPLNYIQQQQLQLQQQKVIGYQTSASINQLDINDSFSIAFPSLMLLTSGIGKGYDTFRGKYGGTFSKITSSLKAIAEITFLAIIGQSYRLALVGLFFCGLTSINLLNAGYMLFFIVFVISESLASRFWMCLIIYAQMVLLTLYIWQLSWISSYENDLTVLIGMTNYYGSPLWVGLIWHIIIITFSIIQWNVNKLYQRGLFSSSSSSSSSSNNNQNNNQNNQNNSYEDKFKNIPNFLLVFGDFIYRSVQQLSLPFCYLVIVIVSIFTKISLINIVYMATVFLCLLIHHISANGSIHIKRFWIIIILSQGVVLVARYIMQFNQVSHWLNSIFPKSNYISLSDIGLRNYSSSDRFIELFGCSSILVVCVFQLTVFFSIGQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQLNTSNNNNQNNNNLIIKKYTFFDSLLYIVKRICYLHGPKFVLWMVFAISIAEYNFFNFIYLIMIVISMSFKKGTYRIGSFLLFYSQLWVLTQLAALLPTVQSFNSDKFFMDWVGLRQPNVSTPWDAVKLNLAIILVISIQQTSYWWNKEIQNEKLEIKKKKQLKKQQQQQRKLEEHEEEYEEEEDQFGNKKNNDKLSLLSNDSIEIILDDGNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNQSNNENNENNNNSKKENLKKRLFWYISNFYELYGLECVFLVLAFALFWRLNILGMIYLIIIAVGLNIDKRNLHKLIYVSALLAPTILIQYLLILVVPTKENSYPWLDHPFFLNHKTIDNLLLLSIPDRYVLVIDFLVLFFSMLLFKQRNGYYLYKDFELHQQQQLNQQLNQQQHDSLKSIASSNSSSQKPLHPKNFFKFNSSIDGGDDDFTKEPRSWSNELRYMIIRYSSQVILIVIFLAGTAECDILSCFYVFFSVYVLFSGNAHSRKWSYLWKSLHIYNWLVLMAQIIFQVAVILYFQFKFNSNQMFEGHNHNHNHNHSSSSSSSSSGSIIDILSSQSSAIGIGGGNSSGSDSSYEVIENSLPTELYNIAVVFGFKIETGPLSISTISDVIIMVLLAYQKMIFQSRDFHILEEHLKAKRDLNYETAREFYKIRRNARIEQLNSIQDKITQRRSRLQHLKLKRINRRKNRHNHYYNNNPNNNYNNNNNNNNSNSSNSNNNNNDDDSNEPLSLGDNSFVPPKNTTNQNATNSTYSPFANSTMHMPPYENNNNNNNNNNNFNNNPLSNSSSTVSSFGVIEKPLEKKNWVKIYLNKILDWLDPLPDILIENYKKQQLQQQQKLEMNQSLLFGDQLQQEQQQQQEQQQQLNPQQQQSQSSKELPPILEQFEHNDDDFEISLNQAPGDYRNSIFIDSEQMRNAMQQMEQRRQQRLQQSIDASQLLQQQQQQQQASSSNTNTNSNNNNYNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNEIPKPNQTSSSTITLEPIEDEEEFLYKEKTQYFKRIIRGFSRIARDESKWLVFMACIANGVFYNSIISLVYLLAVFLYGRLFESPRPSKNFWRFMIGYSSLIICLKYVFQIPKNYYNCNENYHNSNNGTILMTSTSVYNTNNNINNNNQLNNNENYEWWQCPNTLLSEQNLLLTLPYVFGLYIIDGHFISGAFWDLAILLCCLWHRHVYRSKGLWNFQEKDFYVDQKQQSPLNLFNLDQQHFDQQQIDQIQNQQDLNNSPISLNSSNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNDQTLIDINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNIIIDQILVDCSNEYDEEDQQQFNEFYDEEFDDRNEQEKENDEQEIQVIKKSSKSIAKIIIYPFKWLFVSIIEYVWLAIRTDEKPGRDYYMPLLFTDFACLFFLVIFPQNFTGIPSSDIAEFLEQNVIPRQYIVILLAQFGVIILDRIIYLYKSVKAKFVLQIVLTVLYHVFLFFYFPDLIVKPFSFGYTWPLVVFYLMKCIYLYYSALQICYGYPILSQNRFLMDGYSDFHNIGYALYKAIPFVYELRTLLDWIATDTTMLFYDWLKFEDLYSTIFSVKCRLEWIKRQGRQKGHKQPKFEKFVTGVTFFIGLVILLWFPLIILSSGLPGSNIEPVNNIQIEVSVVGWNPFLKINQDLSLESGDGDSTMDQNSFNNLKEDYSFLTTDDRQGIQNISINTFSEEIWNLSPPAKAQLINYLLTNTSLQIEVSYTLTRSGGVNSVIVGSNSVQLKPDQELNFYNILTRVQSNNSNNSNNPNENSSSGSDDNNNNSNNNIGSNSFIVEGLFYKFIKLPGVSGNPIYPTDNNGNVLALDALFTMNSTNFNNSNQPPQYFWQVNAYDSTKTYNISTLESIQFYTISSKLPNGITSTLVSAGIIGLYVSVVLSVGRFLRLSITQISIKIQLENLDSCDEILKMIDDVFIAREYGDLVLEEELYHELIQVFRQPQLLYSLTTFKNNQLNLPTTPTINSTLNNQNNQNNNNNNNNNHEKIN",
+ "entry_version": 89,
+ "sequence_version": 1,
+ "last_modified": "2005-05-24",
+ "transmembrane": [
+  {
+   "start": 28,
+   "end": 48,
+   "description": "Helical",
+   "name": "TM1"
+  },
+  {
+   "start": 57,
+   "end": 77,
+   "description": "Helical",
+   "name": "TM2"
+  },
+  {
+   "start": 86,
+   "end": 106,
+   "description": "Helical",
+   "name": "TM3"
+  },
+  {
+   "start": 113,
+   "end": 133,
+   "description": "Helical",
+   "name": "TM4"
+  },
+  {
+   "start": 204,
+   "end": 224,
+   "description": "Helical",
+   "name": "TM5"
+  },
+  {
+   "start": 232,
+   "end": 252,
+   "description": "Helical",
+   "name": "TM6"
+  },
+  {
+   "start": 285,
+   "end": 305,
+   "description": "Helical",
+   "name": "TM7"
+  },
+  {
+   "start": 362,
+   "end": 382,
+   "description": "Helical",
+   "name": "TM8"
+  },
+  {
+   "start": 396,
+   "end": 416,
+   "description": "Helical",
+   "name": "TM9"
+  },
+  {
+   "start": 438,
+   "end": 458,
+   "description": "Helical",
+   "name": "TM10"
+  },
+  {
+   "start": 672,
+   "end": 692,
+   "description": "Helical",
+   "name": "TM11"
+  },
+  {
+   "start": 700,
+   "end": 720,
+   "description": "Helical",
+   "name": "TM12"
+  },
+  {
+   "start": 740,
+   "end": 760,
+   "description": "Helical",
+   "name": "TM13"
+  },
+  {
+   "start": 827,
+   "end": 847,
+   "description": "Helical",
+   "name": "TM14"
+  },
+  {
+   "start": 849,
+   "end": 869,
+   "description": "Helical",
+   "name": "TM15"
+  },
+  {
+   "start": 872,
+   "end": 892,
+   "description": "Helical",
+   "name": "TM16"
+  },
+  {
+   "start": 928,
+   "end": 948,
+   "description": "Helical",
+   "name": "TM17"
+  },
+  {
+   "start": 1036,
+   "end": 1056,
+   "description": "Helical",
+   "name": "TM18"
+  },
+  {
+   "start": 1067,
+   "end": 1087,
+   "description": "Helical",
+   "name": "TM19"
+  },
+  {
+   "start": 1281,
+   "end": 1301,
+   "description": "Helical",
+   "name": "TM20"
+  },
+  {
+   "start": 1316,
+   "end": 1336,
+   "description": "Helical",
+   "name": "TM21"
+  },
+  {
+   "start": 1360,
+   "end": 1380,
+   "description": "Helical",
+   "name": "TM22"
+  },
+  {
+   "start": 1472,
+   "end": 1492,
+   "description": "Helical",
+   "name": "TM23"
+  },
+  {
+   "start": 1519,
+   "end": 1539,
+   "description": "Helical",
+   "name": "TM24"
+  },
+  {
+   "start": 1619,
+   "end": 1639,
+   "description": "Helical",
+   "name": "TM25"
+  },
+  {
+   "start": 2078,
+   "end": 2098,
+   "description": "Helical",
+   "name": "TM26"
+  },
+  {
+   "start": 2112,
+   "end": 2132,
+   "description": "Helical",
+   "name": "TM27"
+  },
+  {
+   "start": 2199,
+   "end": 2219,
+   "description": "Helical",
+   "name": "TM28"
+  },
+  {
+   "start": 2427,
+   "end": 2447,
+   "description": "Helical",
+   "name": "TM29"
+  },
+  {
+   "start": 2457,
+   "end": 2477,
+   "description": "Helical",
+   "name": "TM30"
+  },
+  {
+   "start": 2500,
+   "end": 2520,
+   "description": "Helical",
+   "name": "TM31"
+  },
+  {
+   "start": 2530,
+   "end": 2550,
+   "description": "Helical",
+   "name": "TM32"
+  },
+  {
+   "start": 2553,
+   "end": 2573,
+   "description": "Helical",
+   "name": "TM33"
+  },
+  {
+   "start": 2671,
+   "end": 2691,
+   "description": "Helical",
+   "name": "TM34"
+  },
+  {
+   "start": 2955,
+   "end": 2975,
+   "description": "Helical",
+   "name": "TM35"
+  }
+ ],
+ "topology": [],
+ "regions": [
+  {
+   "start": 469,
+   "end": 548,
+   "description": "Disordered"
+  },
+  {
+   "start": 1158,
+   "end": 1185,
+   "description": "Disordered"
+  },
+  {
+   "start": 1199,
+   "end": 1253,
+   "description": "Disordered"
+  },
+  {
+   "start": 1704,
+   "end": 1812,
+   "description": "Disordered"
+  },
+  {
+   "start": 1873,
+   "end": 1899,
+   "description": "Disordered"
+  },
+  {
+   "start": 1958,
+   "end": 2032,
+   "description": "Disordered"
+  },
+  {
+   "start": 2277,
+   "end": 2367,
+   "description": "Disordered"
+  },
+  {
+   "start": 2835,
+   "end": 2863,
+   "description": "Disordered"
+  },
+  {
+   "start": 3054,
+   "end": 3080,
+   "description": "Disordered"
+  }
+ ],
+ "coiled_coil": [],
+ "disulfide": [],
+ "modified_residues": [],
+ "glycosylation": [
+  {
+   "position": 276,
+   "end": 276,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 312,
+   "end": 312,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 339,
+   "end": 339,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 434,
+   "end": 434,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 514,
+   "end": 514,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 567,
+   "end": 567,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 606,
+   "end": 606,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 795,
+   "end": 795,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 918,
+   "end": 918,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 992,
+   "end": 992,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1109,
+   "end": 1109,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1191,
+   "end": 1191,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1240,
+   "end": 1240,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1251,
+   "end": 1251,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1424,
+   "end": 1424,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1440,
+   "end": 1440,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1559,
+   "end": 1559,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1589,
+   "end": 1589,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1731,
+   "end": 1731,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1734,
+   "end": 1734,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1763,
+   "end": 1763,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1768,
+   "end": 1768,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1771,
+   "end": 1771,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1779,
+   "end": 1779,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1807,
+   "end": 1807,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 1864,
+   "end": 1864,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2027,
+   "end": 2027,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2148,
+   "end": 2148,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2285,
+   "end": 2285,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2478,
+   "end": 2478,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2762,
+   "end": 2762,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2790,
+   "end": 2790,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2837,
+   "end": 2837,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2840,
+   "end": 2840,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2848,
+   "end": 2848,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2858,
+   "end": 2858,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2908,
+   "end": 2908,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2913,
+   "end": 2913,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 2935,
+   "end": 2935,
+   "description": "N-linked (GlcNAc...) asparagine"
+  },
+  {
+   "position": 3057,
+   "end": 3057,
+   "description": "N-linked (GlcNAc...) asparagine"
+  }
+ ],
+ "natural_variants": [],
+ "mutagenesis": [],
+ "n_transmembrane": 35
+}

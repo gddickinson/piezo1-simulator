@@ -59,17 +59,61 @@ PREDICTED_MODELS = {
         note="AlphaFold DB model of mouse Piezo1, 2,547 residues. Monomer, "
              "prediction, pLDDT in the B-factor column.",
         recommended_for=["predicted", "full_length_source"]),
+    "AF-Q0KL00-F1-MODEL_V6": dict(
+        species="rat", state="predicted", gating="unknown",
+        note="AlphaFold DB model of rat Piezo1, 2,535 residues. The third "
+             "mammalian PIEZO1 and the only structural representation it has; "
+             "much of the mechanosensitivity electrophysiology is rat.",
+        recommended_for=["predicted", "family"]),
+    "AF-A0A061ACU2-F1-MODEL_V6": dict(
+        species="worm", state="predicted", gating="unknown",
+        note="AlphaFold DB model of C. elegans PEZO-1 isoform g, 2,442 "
+             "residues. Held beside the deposited 9UOY/9ZIS so the prediction "
+             "can be scored against experiment for the same protein — the "
+             "control the human and mouse models have never had.",
+        recommended_for=["predicted", "family"]),
+    "AF-M9MSG8-F1-MODEL_V6": dict(
+        species="fly", state="predicted", gating="unknown",
+        note="AlphaFold DB model of Drosophila PIEZO, 2,551 residues. In "
+             "CANONICAL numbering, where the deposited 9W7X is not.",
+        recommended_for=["predicted", "family"]),
+    "AF-F4IN58-F1-MODEL_V6": dict(
+        species="plant", state="predicted", gating="unknown",
+        note="AlphaFold DB model of Arabidopsis PIEZO, 2,462 residues. The "
+             "only structural representation of a non-animal PIEZO that "
+             "exists — Dictyostelium pzoA has neither a structure nor a "
+             "model — and therefore the only way to ask whether the dome is "
+             "a property of the fold rather than of animals. A PREDICTION and "
+             "a MONOMER: read the pLDDT before believing the blade.",
+        recommended_for=["predicted", "family", "generality"]),
 }
 
-NOT_A_PIEZO = {
-    "6U32",   # HaloTag bound to its tetramethylrhodamine ligand
-    # 4PKE is a Piezo *domain* from a distant organism — 211 residues, no
-    # protomer, and it matches none of the six references above 0.08. It is a
-    # real homologue and cataloguing it would need a seventh reference for one
-    # fragment that no analysis here can use, so it is left out on purpose
-    # rather than added as an entry of "unknown" protein.
-    "4PKE",
+#: Downloaded coordinate files that do not become catalogue entries, each with
+#: the reason. A refusal with a stated reason is a record; a name quietly
+#: missing from a glob is a gap nobody can tell from an oversight.
+EXCLUDED = {
+    "6U32": "HaloTag bound to tetramethylrhodamine — not a PIEZO at all. It is "
+            "downloaded because the fusion model needs the tag's own fold.",
+    # These two were previously excluded with the wrong reason on file: "a
+    # Piezo domain from a distant organism ... cataloguing it would need a
+    # seventh reference". Both halves were wrong. The RCSB cross-references
+    # them to A0A061ACU2, which this project has held all along — they are
+    # C. elegans PEZO-1, the same protein as 9UOY — and adding the reference
+    # does not help, because they still score 0.081 and 0.077 against every
+    # one of the nine. The numbering is the construct's own, running 14-278
+    # for a 291-residue expression fragment, and `canonical_renumbering` finds
+    # no shift that repairs it, correctly: recovering canonical numbers from a
+    # construct needs an alignment, not an offset.
+    "4PKE": "C. elegans PEZO-1 beta-sandwich domain, 211 modelled residues in "
+            "the construct's own numbering (14-278, matching no reference "
+            "above 0.081). A monomer, so the dome, the pore and the elastic "
+            "network all refuse it; and unreadable by residue number, so no "
+            "annotation can be applied to it either.",
+    "4PKX": "The second crystal form of the same domain, 235 residues, same "
+            "construct numbering (0.077).",
 }
+
+NOT_A_PIEZO = set(EXCLUDED)
 
 CURATION = {
     "8YEZ": dict(species="human", state="curved", gating="closed",
@@ -160,9 +204,27 @@ CURATION = {
                       "PIEZO1 nor a PIEZO2 — the duplication that made those "
                       "two is vertebrate. The most distant structure available.",
                  recommended_for=["invertebrate", "generality"]),
+    "9ZIS": dict(species="worm", state="curved", gating="closed",
+                 note="C. elegans PEZO-1 isoform G, the full-length 2,442 "
+                      "residue product — an independent 3.5 A dataset of the "
+                      "same isoform as 9UOY. The catalogue's only replicate "
+                      "pair, which is what lets an isoform difference be told "
+                      "apart from a dataset difference.",
+                 recommended_for=["invertebrate", "generality", "isoform",
+                                  "replicate"]),
     "9ZIT": dict(species="worm", state="curved", gating="closed",
-                 note="C. elegans PEZO-1 isoform K.",
+                 note="C. elegans PEZO-1 isoform K, which begins at residue "
+                      "757 and so lacks a third of the blade. Deposited in "
+                      "CANONICAL numbering (identity 1.000 over 801-2442), "
+                      "not the isoform's own — unlike 6LQI and 9W7X, which "
+                      "are not, and unlike 4PKE/4PKX, which are in a "
+                      "construct's. Three conventions in one catalogue is why "
+                      "the numbering is measured on every load.",
                  recommended_for=["invertebrate", "isoform"]),
+    "9UOX": dict(species="worm", state="curved", gating="closed",
+                 note="C. elegans PEZO-1 isoform K at 3.8 A, the replicate of "
+                      "9ZIT. Also canonical numbering, 808-2437.",
+                 recommended_for=["invertebrate", "isoform", "replicate"]),
     "9W7X": dict(species="fly", state="curved", gating="closed",
                  note="Drosophila PIEZO. Deposited in an isoform's own "
                       "numbering, +3 after residue 1570 — found by the "

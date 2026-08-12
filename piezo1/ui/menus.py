@@ -333,11 +333,12 @@ def _analysis_menu(win, bar) -> None:
             "with the quality of the column itself, because a grouped or\n"
             "predicted-model column cannot answer the question.")
     _action(menu, "PIEZO&2 comparison…", win.show_paralogue, "",
-            "The paralogue control: PIEZO2 is the only structure that can\n"
-            "separate 'PIEZO1 does this' from 'a PIEZO does this'. Compares\n"
-            "the dome geometry and the gating-mode symmetry, coverage-matched\n"
-            "through a real alignment because 6KG7 resolves all 38 TM helices\n"
-            "where a PIEZO1 entry resolves 22-26.")
+            "The paralogue control. Dome and gating-mode symmetry,\n"
+            "coverage-matched through a real alignment: 6KG7 resolves all\n"
+            "38 TM helices where a PIEZO1 entry resolves 22-26.")
+    _action(menu, "PIEZO &family comparison…", win.show_homology, "",
+            "The same question across the catalogue — PIEZO2, PEZO-1, dPIEZO.\n"
+            "Reports a RANGE: one entry pair gives 0.98 and another 0.19.")
     _action(menu, "&Interactions…", win.show_interactions, "",
             "Hydrogen bonds, salt bridges, hydrophobic contacts, pi-stacking,\n"
             "cation-pi and disulfides, using published geometric criteria.")

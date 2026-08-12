@@ -508,6 +508,72 @@ that. 9W7X turned out to be a third splice-isoform case — deposited in an
 isoform's own numbering, **+3 after residue 1570** — found by the numbering
 check rather than by reading the paper.
 
+### The whole family, and what one entry pair is worth (Round 89)
+
+The reviewed PIEZO family is **nine proteins** — one UniProt query returns
+exactly them — and this project held six. The three added are **rat Piezo1**
+(Q0KL00, 2,535 aa), ***Arabidopsis* PIEZO** (F4IN58, 2,462 aa) and
+***Dictyostelium* pzoA** (Q54S52, 3,080 aa). The last two matter most: PIEZO is
+not a metazoan invention, so the generality question widens from one vertebrate
+duplication to the root of the eukaryotes. **No two of the nine share a length,
+and four helix counts appear across them — 35, 36, 38, 40** — so neither a
+residue number nor a helix index transfers between them by arithmetic.
+
+**Sequence identity stops being evidence before the family ends.** Fifteen of
+the thirty-six pairs fall below Rost's 30% twilight line. Measured against
+composition-matched shuffles of the same partner:
+
+| pair | identity | shuffled null | z | local score z |
+|---|---|---|---|---|
+| human PIEZO1 vs PEZO-1 | 0.317 | 0.221 | 10.2 | 408 |
+| human PIEZO1 vs AtPIEZO | 0.263 | 0.222 | 6.0 | 85 |
+| human PIEZO1 vs pzoA | 0.238 | 0.208 | 3.5 | 102 |
+| PEZO-1 vs AtPIEZO | **0.238** | **0.225** | **1.5** | **64** |
+
+A *scrambled* Arabidopsis sequence is 22.5% identical to PEZO-1 and the real one
+is 23.8%. The homology is not in doubt — the local alignment score is 64σ above
+its null — but the percentage is nearly all noise, which is what the twilight
+line means. Every number in `analysis.homology` is therefore reported beside its
+null, and this is why the application ships **no BLAST client**
+(`docs/HOMOLOGY_SEARCH.md`).
+
+**Extending the mode comparison past PIEZO2 produced a null, and it took a
+second entry pair to see it.** Mouse PIEZO1 7WLT against dPIEZO 9W7X gives a
+gating-mode overlap of **0.980**. Human PIEZO1 8YEZ against the *same* dPIEZO
+entry gives **0.189**, and does not clear its own shuffled control. Run over
+every combination of three PIEZO1 entries against each partner:
+
+| partner | overlap range | clearing control | |
+|---|---|---|---|
+| PIEZO2 (6KG7, 9VEE) | 0.80 – 0.98 | 6 / 6 | **stable** |
+| PEZO-1 (9UOY, 9ZIS) | 0.18 – 0.98 | 5 / 6 | not stable |
+| dPIEZO (9W7X) | 0.19 – 0.98 | 2 / 3 | not stable |
+
+PIEZO2 is the positive control that makes this an instability rather than a
+broken instrument. **The paralogue result stands and the invertebrate extension
+does not**: with these structures, which deposited entry is used decides the
+number. What does survive is the dome — coverage-matched, mouse PIEZO1 gives a
+radius of curvature of 9.25 nm against PEZO-1's **9.24**.
+
+**And the question that motivated the additions cannot be asked at all.**
+Whether the dome is a property of the fold rather than of animals needs a
+non-animal PIEZO with three protomers. Arabidopsis PIEZO has only an AlphaFold
+**monomer**; Dictyostelium pzoA has neither a structure nor a model, being past
+the length AlphaFold DB predicted whole proteomes to. That is a gap in what
+exists, and it is recorded rather than approximated.
+
+**Where the curated machinery stops being readable.** Every functional-residue
+group was looked up in all nine members through a real alignment, gated by
+whether the alignment is in register at that position (`analysis.homology_sites`,
+`analysis.alignment_windows`). Three results: the **cap** does not travel — all
+three curated cap groups become unreadable outside the vertebrates, which is a
+limit on this project's own annotation; the **transmembrane gate erodes
+gradually** rather than switching off (3/3 identical in the mammalian PIEZO1s,
+2/3 in PIEZO2, 1/3 in the worm, fly and plant, with the survivors hydrophobic
+throughout); and the one group identical in every member where it can be read,
+*Dictyostelium* included, is the **anchor brake** (human P2113/F2114) — not the
+pore.
+
 **Two deposited entries are not in the numbering this project reads them in.**
 The identification built for the paralogue comparison found both, and both are
 live — domains, helices, variants and functional residues are all applied by

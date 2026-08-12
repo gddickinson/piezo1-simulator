@@ -92,9 +92,15 @@ def test_the_count_says_how_much_is_hidden(panel):
     assert f"of {total}" in panel.count.text()
     assert panel.count.text().startswith(f"{total} of")
 
+    # Derived from the registry rather than typed, because the count of
+    # C. elegans entries went from two to five in Round 89 when the two
+    # missing PEZO-1 isoform structures and the AlphaFold model were added.
+    # A literal here makes cataloguing a structure a test failure.
+    n_worm = sum(1 for r in load_registry().available()
+                 if r.protein == "PEZO-1")
     panel.filter_combos["protein"].setCurrentText("PEZO-1")
-    assert panel.count.text().startswith("2 of"), (
-        "two C. elegans entries; the count must follow the data")
+    assert panel.count.text().startswith(f"{n_worm} of"), (
+        "the count must follow the data")
 
 
 def test_an_empty_combination_says_so_rather_than_leaving_stale_detail(panel):
@@ -160,11 +166,14 @@ def test_the_protein_field_is_measured_and_present_on_every_entry():
     from piezo1.core.numbering_check import identify_numbering
     from piezo1.core import Structure
 
+    from piezo1.core.numbering_check import PROTEIN_NAMES
+
     records = load_registry().available()
     assert records, "no structures downloaded"
     for record in records:
-        assert record.protein in ("PIEZO1", "PIEZO2", "PEZO-1", "dPIEZO"), \
-            record.pdb
+        # Read from the naming table, not a copied list: the catalogue gained
+        # a fifth protein (AtPIEZO) in Round 89.
+        assert record.protein in set(PROTEIN_NAMES.values()), record.pdb
         measured = identify_numbering(Structure.from_file(record.path))
         assert record.protein == measured.protein, (
             f"{record.pdb}: registry says {record.protein}, the coordinates "

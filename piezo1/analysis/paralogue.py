@@ -168,7 +168,16 @@ def dome_comparison(piezo1_structure: Structure, piezo2_structure: Structure,
 
 @dataclass
 class ModeComparison:
-    """Whether PIEZO2's normal modes contain PIEZO1's gating coordinate."""
+    """Whether the partner's normal modes contain PIEZO1's gating coordinate.
+
+    ``first_protein`` and ``second_protein`` are carried because the summary
+    used to say "PIEZO2" in both places as a literal, which was true for the
+    only comparison that could be run and became false the moment
+    ``homology_structure`` could hand this a PEZO-1 or a dPIEZO entry: the
+    overlap with *Drosophila* PIEZO was being printed as an overlap with
+    PIEZO2. The numbers were right and the sentence was wrong, which is the
+    worst combination — nothing raises and a reader has no way to tell.
+    """
 
     n_sites: int
     protomer_order: tuple
@@ -181,6 +190,8 @@ class ModeComparison:
     best_symmetry: str
     symmetric_subspace_overlap: float
     shuffled_control: float
+    first_protein: str = "PIEZO1"
+    second_protein: str = "PIEZO2"
     meta: dict = field(default_factory=dict)
 
     @property
@@ -188,10 +199,11 @@ class ModeComparison:
         return self.best_overlap > 3.0 * self.shuffled_control
 
     def summary(self) -> str:
-        return (f"PIEZO1's gating mode overlaps PIEZO2 mode {self.best_index} "
+        return (f"{self.first_protein}'s gating mode overlaps "
+                f"{self.second_protein} mode {self.best_index} "
                 f"({self.best_symmetry}) at {self.best_overlap:.3f}, "
-                f"{self.symmetric_subspace_overlap:.3f} of it inside PIEZO2's "
-                f"symmetric subspace; shuffled control "
+                f"{self.symmetric_subspace_overlap:.3f} of it inside "
+                f"{self.second_protein}'s symmetric subspace; shuffled control "
                 f"{self.shuffled_control:.3f}")
 
 
@@ -219,8 +231,10 @@ def mode_comparison(piezo1_structure: Structure, piezo2_structure: Structure,
     from ..structure.superpose import kabsch, match_protomers
 
     n_modes = int(_P.value("anm.n_modes")) if n_modes is None else n_modes
-    numbering = paralogue_map(identify_numbering(piezo1_structure).reference,
-                              identify_numbering(piezo2_structure).reference)
+    first_identity = identify_numbering(piezo1_structure)
+    second_identity = identify_numbering(piezo2_structure)
+    numbering = paralogue_map(first_identity.reference,
+                              second_identity.reference)
 
     blocks_1, residues_1 = protomer_blocks(piezo1_structure)
     blocks_2, residues_2 = protomer_blocks(piezo2_structure)
@@ -275,6 +289,8 @@ def mode_comparison(piezo1_structure: Structure, piezo2_structure: Structure,
         piezo1_gating_index=gating, best_overlap=float(overlaps[best]),
         best_index=best, best_symmetry=str(modes_2.symmetry[best]),
         symmetric_subspace_overlap=symmetric_share, shuffled_control=control,
+        first_protein=first_identity.protein,
+        second_protein=second_identity.protein,
         meta={"n_modes": n_modes, "alignment_identity": numbering.identity,
               "note": "site correspondence from a global alignment, protomer "
                       "order searched, PIEZO2 modes rotated into PIEZO1's frame"})
