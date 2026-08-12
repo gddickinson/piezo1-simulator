@@ -184,3 +184,39 @@ test.
 
 The apparatus is what makes a null informative. That is the case for building
 it before you need it, rather than after a result you did not like.
+
+## A null needs a positive control
+
+Every mechanism above is aimed at not over-claiming: calibrate the instrument
+before believing it, suspect the checker first, report a null as a null. They
+work. Between them they caught an electrostatics constant 10¹⁰ too large, a
+spheroid fitter that would have reported 89% model error, a helix detector that
+passed 41% of a random walk, and a numbering test that read one protein as
+another.
+
+Not one of them fires at a negative result.
+
+A negative from a broken instrument passes every guard in this repository,
+because a guard that asks *are you sure?* only ever fires at confidence. That is
+not hypothetical here. One round reported that a conduction pathway "does not
+separate open from closed", recorded it as an honest null, and **pinned it with
+a test**. It was an artefact of how that round composed two criteria: the
+discriminating one was a sum over a truncated profile and had collapsed to zero
+on every input. Nobody would have looked again, because nothing in the project
+looks at a "no".
+
+    A null needs a positive control — an input on which the instrument MUST
+    return "yes" — exactly as a checking instrument needs an input on which it
+    must say "no". A null from an instrument that has never returned a positive
+    is not a result; it is an untested instrument.
+
+Pre-registered statistical nulls tend to satisfy this already without naming it:
+a power curve states what effect the test *would* have detected, which is
+precisely a positive control. Engineering negatives — "this pathway does not
+separate", "this signal is not there", "no entry passes" — usually do not, and
+they are exactly the ones nobody re-examines.
+
+The cheap version is a planted signal. Put a known answer into the instrument
+and require it to come back out, in the same run that reports the null. If it
+cannot, the null says nothing about the world.
+

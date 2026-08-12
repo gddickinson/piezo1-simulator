@@ -167,29 +167,44 @@ def test_the_lateral_route_opens_the_intermediate_structure(intermediate):
     assert lateral.profile.radius.min() / 10.0 >= WATER_RADIUS_NM
 
 
-def test_the_lateral_route_does_not_separate_open_from_closed():
-    """The honest half, pinned so it cannot be quietly forgotten.
+def test_composing_the_verdict_on_the_truncated_profile_fails_to_separate():
+    """Why `analysis.conduction` exists, demonstrated rather than asserted.
 
-    Opening the ends is necessary and not sufficient: several curved, closed
-    entries also conduct once the closed ends are excluded. The intermediate
-    is several times higher, which is the right ordering and not the clean
-    open/shut contrast their simulations show.
+    Round 84d evaluated **both** halves of the wetting verdict on the truncated
+    profile and reported "the lateral route does not separate open from closed"
+    as an honest negative, pinned by a test. It was not a property of the
+    channel. The Rao score is a sum over lining residues carried by narrow
+    slices, and the truncation removes them, so no entry anywhere reaches the
+    cutoff and the verdict falls back on a residual radius.
+
+    This keeps the broken composition as a *demonstration*: curved entries
+    still pass it, which is the defect. The composed verdict in
+    `analysis.conduction` refuses them, and `test_conduction_verdict` checks
+    that against Liu et al.'s Figure 5D ordering.
     """
     grid = load_grid()
     if not grid.available:
         pytest.skip("CHAP grid not downloaded — run python -m piezo1.io.fetch")
 
-    conducting = []
+    from piezo1.analysis.conduction import conduction_verdict
+
+    naive, composed = [], []
     for pdb in ("8IXO", "7WLT", "6B3R", "8IMZ"):
         structure = _load(pdb)
-        path = conduction_path(structure, _profile(structure), "lateral")
+        profile = _profile(structure)
+        path = conduction_path(structure, profile, "lateral")
         if predict_wetting(structure, path.profile, grid=grid).conductive:
-            conducting.append(pdb)
+            naive.append(pdb)
+        if conduction_verdict(structure, profile, "lateral",
+                              grid=grid).conductive:
+            composed.append(pdb)
 
-    assert "8IXO" in conducting
-    assert len(conducting) > 1, (
-        "the lateral route now separates the states cleanly — that is a real "
-        "change and this test should be the thing that surfaces it")
+    assert "8IXO" in naive and "8IXO" in composed
+    assert len(naive) > 1, (
+        "the broken composition no longer lets curved entries through, so this "
+        "demonstration has stopped demonstrating anything")
+    assert composed == ["8IXO"], (
+        f"the composed verdict should refuse every curved entry; got {composed}")
 
 
 def test_the_caveat_says_the_portal_is_not_modelled(intermediate):

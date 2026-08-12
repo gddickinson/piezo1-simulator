@@ -129,8 +129,20 @@ def test_the_completed_count_cannot_fall():
 
 
 def test_the_open_items_are_all_in_the_live_roadmap():
-    open_items = items(ROADMAP.read_text(), "- [ ]")
-    assert open_items, "the roadmap lists nothing to do; is Block Q finished?"
+    """An empty roadmap is allowed, and only if it says so.
+
+    This used to require at least one open item, on the assumption there is
+    always work. Block R finished it. An empty list is a legitimate state and a
+    meaningful one — but it is indistinguishable from a file that lost its
+    contents, so the file has to *declare* it rather than merely be empty.
+    """
+    text = ROADMAP.read_text()
+    open_items = items(text, "- [ ]")
+    if not open_items:
+        assert "no open items" in text.lower(), (
+            "the roadmap lists nothing to do and does not say so; a finished "
+            "block and a truncated file look identical otherwise")
+        return
     assert len(open_items) <= OPEN_AT_SPLIT + 40, \
         "the roadmap has grown a great deal; check a block was not duplicated"
 

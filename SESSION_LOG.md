@@ -4,6 +4,71 @@ Running record of what was done and — more importantly — *why*. Newest first
 
 ---
 
+## Round 85 — The review, and the hole it found
+
+Block R's standing question was whether the discipline held now that results
+could come back *positive*, after seventy rounds of establishing what this
+project cannot do.
+
+For positives it held, and visibly. Every new instrument in the block was
+calibrated on a known answer before it was believed, and every calibration
+caught something: an electrostatics constant 10^10 too large, a helix detector
+passing 41% of a random walk's windows, a numbering test that read mouse PIEZO2
+as human PIEZO1, a gate-radius claim confounded with resolution.
+
+**For negatives it did not, and that is the review.**
+
+Round 84d reported that the lateral conduction pathway "does not separate open
+from closed". It recorded that as an honest negative — the sort of thing this
+project is proud of — and **pinned it with a test**. It was wrong. It was an
+artefact of evaluating both halves of the wetting verdict on a truncated
+profile, which collapses the Rao score to zero on every entry. Round 84f found
+it, and only because the question was asked directly.
+
+Round 84c has the same shape a step earlier: "17 of 19 refused" was reported as
+an honest outcome while the stated reason for it was wrong.
+
+The pattern is worth stating plainly, because it is not obvious from inside.
+Every guard here — calibrate the checker, suspect the checker first, report a
+null as a null, a checker that cannot say no is not a calibration — is aimed at
+**not over-claiming**. A guard that asks "are you sure?" only ever fires at
+confidence. A negative from a broken instrument sails through all of them,
+because nothing in this repository interrogates a "no".
+
+    A null needs a positive control — an input on which the instrument MUST
+    return "yes" — exactly as a checking instrument needs an input on which it
+    must say "no".
+
+The pre-registered statistical nulls already satisfy this without calling it
+that: a power curve is a positive control. Round 82's planted fluctuation is
+one. The engineering negatives of 84c and 84d had neither, and those are the two
+that turned out to be wrong.
+
+Applied rather than noted: the test that pinned 84d's negative now keeps the
+broken composition as a *demonstration* of the defect, beside the composed
+verdict that refuses the same entries, and the separation is checked against Liu
+et al.'s Figure 5D ordering rather than against a stored copy of our own
+numbers. The rule is in `docs/METHODS_NOTE.md`, which is the file meant to be
+useful to somebody else's project.
+
+### The roadmap is empty, and that had to be made a legitimate state
+
+`test_the_open_items_are_all_in_the_live_roadmap` required at least one open
+item, on the assumption there is always work. Block R finished it. An empty list
+is meaningful — but indistinguishable from a file that lost its contents, so the
+guard now accepts an empty roadmap **only if the file says so**.
+
+### One observation about where the corrections came from
+
+Three of this block's corrections came from being asked a question rather than
+from a guard firing: why does 8IXO not conduct, why does the lateral route not
+separate, does this need further work. Each time the honest answer required
+measuring something nobody had measured. That is not a substitute for a guard.
+It is evidence that the most valuable input to this project is still somebody
+asking why a number is what it is.
+
+---
+
 ## Round 86 — Two entries read in the wrong numbering, and now read right
 
 Round 83 built an instrument that identifies which protein and which numbering a

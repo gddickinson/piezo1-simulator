@@ -3,7 +3,8 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: 1 open item, all in Block R.**
+**Status: no open items.** Block R is finished. The next block
+has not been written; see `docs/CONCLUSION.md` before adding one.
 Rounds **84b** through **84f** were added mid-block on request and completed
 out of order; Round 84 itself is still open. Their records are in the archive.
 Everything finished — 382 items across 83 rounds, each carrying the result it
@@ -215,12 +216,16 @@ verdict are composed. **Their records are in
 in `SESSION_LOG.md`.
 
 ### Round 85 — Review after Rounds 81–84
-- [ ] Five-round review. The standing question for this block: the project has
-      spent seventy rounds proving what it *cannot* establish, and these four
-      items are the first in a while that could each return a positive result.
-      Check that the same discipline held — pre-registration where a comparison
-      is involved, a calibrated instrument before any cross-check is believed,
-      and a null reported as a null.
+- [x] Five-round review. **Done, and it found a hole.** The discipline held for
+      positives — every new instrument was calibrated first and each calibration
+      caught something. It did **not** hold for negatives: Round 84d recorded
+      "the lateral route does not separate open from closed" as an honest null
+      and pinned it with a test, and it was an artefact of its own composition.
+      Every guard in this repository is aimed at not over-claiming; nothing
+      interrogates a "no". The rule added: **a null needs a positive control**,
+      an input on which the instrument must return "yes", exactly as a checker
+      needs an input on which it must say "no". Written up in
+      `docs/ROADMAP_COMPLETED.md` and `docs/METHODS_NOTE.md`.
 
 ### Round 86 — Two deposited entries are not in the numbering we read them in
 *Found by Round 83's identification instrument, which reports the shift that

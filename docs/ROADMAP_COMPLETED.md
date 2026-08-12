@@ -2914,3 +2914,68 @@ from closed, and does it need work?" It did.*
 - [x] Supersede rather than edit. **Done**: the Round 84d lateral conductances
       are marked superseded in the module, `INTERFACE.md` and `docs/SCIENCE.md`
       rather than quietly replaced.
+
+## Review after Rounds 81–86
+
+**What the rounds did.** 81: gave the pore its charge and measured a selectivity
+that has the right direction and not the right value. 82: ran the standard
+elastic-network validation the project had never run, against the deposited
+B-factors. 83: made PIEZO2 a generality control instead of an exclusion. 84:
+let a computed scalar leave the application. 84b–84f, requested mid-block:
+replicated two papers panel by panel, found an ion animation that had never
+drawn an ion, made the conduction pathway a choice, added a component viewer,
+and corrected how the two halves of the conduction verdict are composed. 86:
+applied two numbering corrections that had been detected and never used.
+
+**The standing question was whether the discipline held when a result could be
+positive.** For positives it did, and visibly: every new instrument in the block
+was calibrated on a known answer before it was believed, and each calibration
+caught something — an electrostatics constant 10¹⁰ too large, a helix detector
+passing 41% of a random walk, a numbering test that read mouse PIEZO2 as human
+PIEZO1, a gate-radius claim confounded with resolution.
+
+**It did not hold for negatives, and that is the finding of this review.**
+
+Round 84d reported that the lateral conduction pathway "does not separate open
+from closed", recorded it as an honest negative, and **pinned it with a test**.
+It was not a property of the channel. It was an artefact of evaluating both
+halves of the wetting verdict on a truncated profile, which collapses the Rao
+score to zero on every entry. Round 84f found it — only because it was asked
+directly why the negative held.
+
+Round 84c has the same shape one step earlier: "17 of 19 entries are refused"
+was reported as an honest outcome while the stated *reason* was wrong.
+
+Look at what this project's guards are for. Calibrate the checker. Suspect the
+checker first. Report a null as a null. Every one of them is aimed at not
+over-claiming. **Nothing anywhere interrogates a "no".** A negative from a
+broken instrument passes every guard in the repository, because a guard that
+asks "are you sure?" only ever fires at confidence.
+
+**The rule this block adds.**
+
+    A null needs a positive control — an input on which the instrument MUST
+    return "yes" — exactly as a checking instrument needs an input on which it
+    must say "no". A null from an instrument that has never returned a positive
+    is not a result; it is an untested instrument.
+
+The pre-registered statistical nulls already satisfy this without calling it
+that: `design.power_curve` establishes what effect the test *would* have
+detected, which is precisely a positive control. Round 82 satisfies it too — a
+planted fluctuation recovered by the right network and not by one built on
+shuffled coordinates. The engineering negatives of 84c and 84d had neither, and
+those are the two that were wrong.
+
+**Applied here.** The test that pinned 84d's negative now keeps the broken
+composition as a *demonstration* — curved entries still pass it, which is the
+defect — beside the composed verdict, which refuses them. And
+`test_conduction_verdict` checks the separation against Liu et al.'s Figure 5D
+ordering rather than against a stored copy of our own numbers.
+
+**One more habit worth naming.** Three of this block's corrections came from
+being asked a question rather than from a guard firing: why does 8IXO not
+conduct, why does the lateral route not separate, does this need further work.
+Each time the honest answer required measuring something nobody had measured.
+That is not a substitute for a guard, but it is evidence that the most valuable
+input to this project is still someone asking why a number is what it is.
+
