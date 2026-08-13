@@ -26,11 +26,25 @@ class AppearanceMixin:
         from .panels.structure_panel import COLOR_LABELS
         return COLOR_LABELS[self.structure_panel.color_combo.currentIndex()][1]
 
+    def _refresh_pick_mask(self) -> None:
+        """Keep picking in step with what is drawn.
+
+        Called by every handler that changes visibility. Without it a hidden
+        category stays pickable, and a click identifies an invisible lipid in
+        front of the visible helix the user aimed at — the same
+        confident-wrong-answer class the feature picks were built to avoid.
+        """
+        if getattr(self, "viewport", None) is None:
+            return
+        self.viewport.set_pick_mask(
+            None if self.view is None else self.view.pickable_mask())
+
     def _set_style(self, style: Style) -> None:
         if self.view is None:
             return
         self.view.style = style
         self.view.rebuild()
+        self._refresh_pick_mask()
         self.viewport.update()
 
     def _set_color(self, color: ColorBy) -> None:
@@ -48,6 +62,7 @@ class AppearanceMixin:
             return
         self.view.visible_entities = frozenset(visible)
         self.view.rebuild()
+        self._refresh_pick_mask()
         self.viewport.update()
         hidden = [k for k in self.view.entity_map().present() if k not in visible]
         self._set_status("showing everything in the file" if not hidden
@@ -58,6 +73,7 @@ class AppearanceMixin:
             return
         self.view.ligands_as_spheres = on
         self.view.rebuild()
+        self._refresh_pick_mask()
         self.viewport.update()
 
     def _set_ligand_style(self, key: str) -> None:

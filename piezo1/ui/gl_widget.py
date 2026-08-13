@@ -44,14 +44,17 @@ PRIMARY_SOURCE = "structure"
 
 
 def nearest_hit(sources: dict, origin: np.ndarray, direction: np.ndarray,
-                radius: float = PICK_RADIUS):
+                radius: float = PICK_RADIUS, masks: dict | None = None):
     """The atom nearest the camera along a pick ray, across named sources.
 
-    ``sources`` maps a name to an ``(n, 3)`` coordinate array. Returns
+    ``sources`` maps a name to an ``(n, 3)`` coordinate array. ``masks``, when
+    given, maps a source name to a boolean per-atom array; atoms marked False
+    cannot be hit — they are the ones the user has hidden, and a click must
+    answer for what is *on screen*, not for what the arrays hold. Returns
     ``(name, index)`` for the winning atom, or ``None`` when the ray passes
     nothing. Pure geometry, deliberately free of Qt and GL, so the rule that
-    decides *which* thing a click hits — nearest wins, whatever drew it — can
-    be tested on arrays whose answer is known by construction.
+    decides *which* thing a click hits — nearest visible wins, whatever drew
+    it — can be tested on arrays whose answer is known by construction.
     """
     best = None                                   # (along, name, index)
     for name, coords in sources.items():
@@ -60,6 +63,9 @@ def nearest_hit(sources: dict, origin: np.ndarray, direction: np.ndarray,
         rel = np.asarray(coords, np.float64) - origin
         along = rel @ direction
         valid = along > 0                          # in front of the camera
+        mask = None if masks is None else masks.get(name)
+        if mask is not None:
+            valid = valid & np.asarray(mask, dtype=bool)
         if not valid.any():
             continue
         perp = np.linalg.norm(rel - np.outer(along, direction), axis=1)
@@ -115,6 +121,11 @@ class ViewportWidget(QOpenGLWidget):
         self._press_pos: QPoint | None = None
         self._buttons = Qt.MouseButton.NoButton
         self._pick_source: np.ndarray | None = None
+        #: Which primary atoms are actually drawn. The pick source is the full
+        #: atom array; hiding a category or choosing a component must also
+        #: stop the hidden atoms answering clicks, or a click identifies an
+        #: invisible lipid in front of the visible helix the user aimed at.
+        self._pick_mask: np.ndarray | None = None
         #: Extra pickable coordinate sets, keyed by feature name. Registered
         #: by the controller that draws each feature and dropped when it
         #: clears, so a click can never identify something not on screen.
@@ -241,8 +252,16 @@ class ViewportWidget(QOpenGLWidget):
             # distinction the left button already makes between picking and
             # rotating. A user who drags to zoom never gets a menu they did
             # not ask for.
-            index = self.atom_at(pos)
-            self.context_requested.emit(pos, -1 if index is None else index)
+            #
+            # Resolved across every pick source, not only the primary: the
+            # menu's residue entries are annotation read by primary atom
+            # index, so when a drawn feature is nearest the click the menu
+            # opens generic (-1) rather than naming the occluded residue
+            # behind the tag the user actually aimed at.
+            hit = self.hit_at(pos)
+            index = (hit[1] if hit is not None and hit[0] == PRIMARY_SOURCE
+                     else -1)
+            self.context_requested.emit(pos, index)
         self._press_pos = None
         self._buttons = Qt.MouseButton.NoButton
 
@@ -302,6 +321,17 @@ class ViewportWidget(QOpenGLWidget):
     def set_pick_source(self, coords: np.ndarray | None) -> None:
         """Supply the coordinate array that clicks should be tested against."""
         self._pick_source = None if coords is None else np.asarray(coords, np.float64)
+        self._pick_mask = None                     # a new array, a new mask
+
+    def set_pick_mask(self, mask: np.ndarray | None) -> None:
+        """Restrict picking to the atoms currently drawn. None means all."""
+        if (mask is not None and self._pick_source is not None
+                and len(mask) != len(self._pick_source)):
+            # A mask for a different array would silently shift every pick;
+            # dropping it fails towards "everything pickable", which is the
+            # pre-mask behaviour rather than a new wrong one.
+            mask = None
+        self._pick_mask = None if mask is None else np.asarray(mask, dtype=bool)
 
     def set_feature_pick_source(self, name: str,
                                 coords: np.ndarray | None) -> None:
@@ -333,7 +363,9 @@ class ViewportWidget(QOpenGLWidget):
         x_ndc = 2.0 * pos.x() / max(self.width(), 1) - 1.0
         y_ndc = 1.0 - 2.0 * pos.y() / max(self.height(), 1)
         origin, direction = self.scene.camera.ray_through_pixel(x_ndc, y_ndc)
-        return nearest_hit(sources, origin, direction)
+        masks = ({PRIMARY_SOURCE: self._pick_mask}
+                 if self._pick_mask is not None else None)
+        return nearest_hit(sources, origin, direction, masks=masks)
 
     def _pick_at(self, pos: QPoint) -> None:
         """Identify the thing under ``pos`` and announce it as a selection."""
@@ -363,20 +395,11 @@ class ViewportWidget(QOpenGLWidget):
         x_ndc = 2.0 * pos.x() / max(self.width(), 1) - 1.0
         y_ndc = 1.0 - 2.0 * pos.y() / max(self.height(), 1)
         origin, direction = self.scene.camera.ray_through_pixel(x_ndc, y_ndc)
-
-        rel = self._pick_source - origin
-        along = rel @ direction
-        # Only consider atoms in front of the near plane.
-        valid = along > 0
-        if not valid.any():
-            return -1
-        perp = np.linalg.norm(rel - np.outer(along, direction), axis=1)
-        perp[~valid] = np.inf
-        # Among atoms the ray passes close to, take the nearest to the camera.
-        hits = np.flatnonzero(perp < PICK_RADIUS)
-        if len(hits) == 0:
-            return -1
-        return int(hits[np.argmin(along[hits])])
+        masks = ({PRIMARY_SOURCE: self._pick_mask}
+                 if self._pick_mask is not None else None)
+        hit = nearest_hit({PRIMARY_SOURCE: self._pick_source},
+                          origin, direction, masks=masks)
+        return -1 if hit is None else hit[1]
 
 
 class _LabelOverlay(QWidget):

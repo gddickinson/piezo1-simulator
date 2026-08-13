@@ -49,6 +49,17 @@ class ElectrostaticColourController:
     def visible(self) -> bool:
         return self._on
 
+    def reset(self) -> None:
+        """Forget the colouring without repainting anything.
+
+        For the structure-replacement path: the view this would repaint is
+        about to be discarded, but ``result`` and ``_on`` describe the old
+        entry, and a stale result is a status line quoting one structure's
+        potential over another.
+        """
+        self._on = False
+        self.result = None
+
     def show(self, on: bool) -> None:
         window = self.win
         if window.view is None or window.structure is None:

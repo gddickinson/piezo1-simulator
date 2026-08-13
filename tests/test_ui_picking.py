@@ -1,19 +1,16 @@
 """Clicking anything drawn, and what the click is entitled to say.
 
-Before this, the pick source was the primary structure's atoms and nothing
-else: the HaloTag, the extra structures and the full-length graft were mute,
-and a click aimed at them identified whatever primary atom lay behind. Two
-rules carry the feature. **Nearest wins, whatever drew it** — "what did I
-click" has one honest answer, the thing in front — tested here on rays whose
-answer is known by construction. And **a feature identifies as what it is**:
-a modelled tag says MODELLED, a graft atom says PREDICTED with its pLDDT, an
-extra structure names itself and says the analyses do not run on it. A tag
-atom identified like a deposited one would be the confident wrong answer the
-rest of this project spends its guards on.
+Two rules carry the feature. **Nearest visible wins, whatever drew it** —
+"what did I click" has one honest answer, the thing in front that is on
+screen — tested on rays whose answer is known by construction. And **a
+feature identifies as what it is**: a modelled tag says MODELLED, a graft
+atom says PREDICTED with its pLDDT, an extra structure names itself and says
+the analyses do not run on it.
 
-Also pinned: the HETATM fix. A lipid's author-assigned residue number can
-land inside the protein's range, and the old click looked it up in the
-curated annotation — confidently naming a domain the lipid is not part of.
+Also pinned: the HETATM fix (a lipid's author number lands inside the
+protein's range, and the old click confidently named a domain for it), the
+visibility mask (a hidden category must stop answering clicks), and the
+right-click routing through every source.
 """
 
 from __future__ import annotations
@@ -79,6 +76,138 @@ def test_within_one_source_the_nearest_along_the_ray_wins():
 def test_empty_sources_hit_nothing():
     assert nearest_hit({}, ORIGIN, FORWARD) is None
     assert nearest_hit({"x": np.zeros((0, 3))}, ORIGIN, FORWARD) is None
+
+
+def test_a_hidden_atom_in_front_cannot_be_hit():
+    """The invisible-lipid case: hiding must remove an atom from picking, or
+    a click identifies something not on screen."""
+    sources = {PRIMARY_SOURCE: np.array([[0.0, 0.0, 5.0], [0.3, 0.0, 9.0]])}
+    masks = {PRIMARY_SOURCE: np.array([False, True])}
+    assert nearest_hit(sources, ORIGIN, FORWARD, masks=masks) == \
+        (PRIMARY_SOURCE, 1)
+    # And the same click without the mask hits the front atom — the mask is
+    # doing the work, not the geometry.
+    assert nearest_hit(sources, ORIGIN, FORWARD) == (PRIMARY_SOURCE, 0)
+
+
+def test_a_mask_on_one_source_does_not_shadow_another():
+    sources = {
+        PRIMARY_SOURCE: np.array([[0.0, 0.0, 4.0]]),
+        "halotag": np.array([[0.2, 0.0, 8.0]]),
+    }
+    masks = {PRIMARY_SOURCE: np.array([False])}
+    assert nearest_hit(sources, ORIGIN, FORWARD, masks=masks) == ("halotag", 0)
+
+
+# --------------------------------------------------- what is drawn is pickable
+
+@pytest.fixture(scope="module")
+def lipid_view():
+    from piezo1.render.representations import MolecularView
+
+    st = _structure("7WLT")
+    if not st.mask_ligands().any():
+        pytest.skip("no ligands in this entry")
+    return MolecularView(_Scene(), st, name="m")
+
+
+def test_everything_is_pickable_until_something_is_hidden(lipid_view):
+    assert lipid_view.pickable_mask().all()
+
+
+def test_a_hidden_entity_category_stops_answering_clicks(lipid_view):
+    entities = lipid_view.entity_map()
+    if "lipid" not in entities.present():
+        pytest.skip("no lipid category in this entry")
+    lipid = entities.mask("lipid")
+    lipid_view.visible_entities = frozenset(
+        k for k in entities.present() if k != "lipid")
+    try:
+        mask = lipid_view.pickable_mask()
+        assert not mask[lipid].any(), "hidden lipids still answer clicks"
+        assert mask[~lipid].all(), "hiding lipids silenced something else"
+    finally:
+        lipid_view.visible_entities = frozenset()
+
+
+def test_a_component_selection_restricts_picking_to_its_residues(lipid_view):
+    st = lipid_view.structure
+    residue = int(st.res_seq[st.mask_ca()][0])
+    lipid_view.visible_residues = frozenset([residue])
+    try:
+        mask = lipid_view.pickable_mask()
+        chosen = st.res_seq == residue
+        assert mask[chosen].all()
+        assert not mask[~chosen].any(), \
+            "atoms a component hides still answer clicks"
+    finally:
+        lipid_view.visible_residues = None
+
+
+def test_ligands_toggled_off_in_a_ribbon_style_are_unpickable(lipid_view):
+    from piezo1.render.representations import Style
+
+    st = lipid_view.structure
+    lipid_view.ligands_as_spheres = False
+    try:
+        lipid_view.style = Style.CARTOON
+        assert not lipid_view.pickable_mask()[st.mask_ligands()].any(), (
+            "a ribbon style draws ligands only through the ligand pass; "
+            "toggled off they are invisible and must not answer clicks")
+        # In an atom style every atom is in the atoms batch regardless of the
+        # ligand toggle, so the same toggle must NOT silence them there.
+        lipid_view.style = Style.SPHERES
+        assert lipid_view.pickable_mask()[st.mask_ligands()].all()
+    finally:
+        lipid_view.ligands_as_spheres = True
+        lipid_view.style = Style.CARTOON
+
+
+# ------------------------------------------------------- right-click routing
+
+def test_a_right_click_through_a_feature_does_not_name_the_atom_behind(qapp_):
+    """The context menu's residue entries are annotation read by primary atom
+    index; when a drawn feature is nearest, the menu must open generic
+    rather than describing the occluded residue behind the tag."""
+    from PyQt6.QtCore import QPointF, Qt
+    from PyQt6.QtGui import QMouseEvent
+
+    from piezo1.ui.gl_widget import ViewportWidget
+
+    view = ViewportWidget()
+    got = []
+    view.context_requested.connect(lambda pos, index: got.append(index))
+
+    def click(hit):
+        view.hit_at = lambda pos: hit
+        press = QMouseEvent(QMouseEvent.Type.MouseButtonPress,
+                            QPointF(50, 50), Qt.MouseButton.RightButton,
+                            Qt.MouseButton.RightButton,
+                            Qt.KeyboardModifier.NoModifier)
+        release = QMouseEvent(QMouseEvent.Type.MouseButtonRelease,
+                              QPointF(50, 50), Qt.MouseButton.RightButton,
+                              Qt.MouseButton.NoButton,
+                              Qt.KeyboardModifier.NoModifier)
+        view.mousePressEvent(press)
+        view.mouseReleaseEvent(release)
+
+    click((PRIMARY_SOURCE, 7))
+    click(("halotag", 3))
+    click(None)
+    assert got == [7, -1, -1]
+
+
+@pytest.fixture(scope="module")
+def qapp_():
+    from PyQt6.QtWidgets import QApplication
+
+    instance = QApplication.instance()
+    if instance is None:
+        try:
+            instance = QApplication([])
+        except Exception as exc:                       # pragma: no cover
+            pytest.skip(f"no Qt platform available: {exc}")
+    return instance
 
 
 # --------------------------------------------------- the selection behaviour

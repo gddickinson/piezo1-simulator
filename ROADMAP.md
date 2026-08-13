@@ -3,9 +3,10 @@
 Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
-**Status: no open items.** Block R is finished, and Round 89 was added on
-request after it. The next block has not been written; see
-`docs/CONCLUSION.md` before adding one.
+**Status: one open item** — session persistence for the Round 90 style
+controls, at the end of the Rounds 90–91 section. Block R is finished;
+Rounds 89–91 were added on request after it. The next block has not been
+written; see `docs/CONCLUSION.md` before adding one.
 Rounds **84b** through **84f** were added mid-block on request and completed
 out of order; Round 84 itself is still open. Their records are in the archive.
 Everything finished — 382 items across 83 rounds, each carrying the result it
@@ -344,3 +345,31 @@ request to display an assembled trimer where only one protomer exists.*
       the fold rather than of animals. It narrows Round 89's "cannot be asked
       from structure at all" to "can be asked, and would be 83% about 9ZIS" —
       a sharper statement of the same gap, not a way round it.
+
+### Rounds 90–91 — display controls, universal picking, and load hygiene
+*90 and 90c asked directly (restyle the HaloTag and the other fixed-form
+features; select atoms in any structure); 90b asked directly (tiered test
+runs); 91 was "research improvements", answered by auditing the new seams.*
+
+- [x] **90.** Per-feature rendering styles — the fold, the graft, the
+      companions, the component highlight, the ligands — with the rule that
+      restyling moves no caveat, and `color_override` so the meaning-bearing
+      colours survive any style. **90b.** The suite partitioned into five
+      situational tiers behind `--suite`, with the partition enforced and the
+      selector calibrated two-sided. **90c.** A click answers for everything
+      drawn, each answer saying what the thing is (MODELLED, PREDICTED, an
+      extra structure); the HETATM annotation lie fixed.
+- [x] **91.** The stale-overlay class closed: four more controllers were
+      missing from `load_structure`'s clear list (micelle, planar membrane,
+      potential colouring, and the **ion stream, which kept animating the old
+      entry's ions over the new structure**), and the open-a-file path had a
+      two-entry copy of the list plus the documented resurrection ordering
+      live in a second place. One shared list now; the guard is an
+      *equivalence* (loading B after using A must equal loading B fresh) over
+      overlays found by discovery, calibrated by removing one clear and
+      watching it name the survivor. Picking follows visibility (a hidden
+      atom must not answer clicks) and the right-click routes through every
+      pick source.
+- [ ] Session persistence for the Round 90 style controls: fold, companion,
+      hybrid, highlight and ligand styles are not saved in sessions. Needs
+      `session.py`'s format guards extended, not just keys added.

@@ -314,8 +314,10 @@ class FusionController:
         colours[pose.ligand] = DYE_COLOR
         colours[pose.touching & pose.body] = CONTACT_COLOR
 
-        if self.fold_style == "atoms" or not self._draw_fold_view(scene, pose,
-                                                                  colours):
+        from .fold_view import draw_fold_view
+
+        if self.fold_style == "atoms" or not draw_fold_view(
+                scene, pose, colours, self.fold_style, name=f"{NAME}:fold"):
             batch = scene.spheres(f"{NAME}:fold")
             batch.upload(
                 pose.coords.reshape(-1, 3).astype(np.float32),
@@ -344,8 +346,10 @@ class FusionController:
         if not callable(register):
             return
         if self.show_atoms and self.pose is not None:
+            from .fold_view import fold_labels
+
             pose = self.pose
-            labels = self._fold_labels(pose.n_atoms)
+            labels = fold_labels(pose.n_atoms)
 
             def describe(i, labels=labels, n=pose.n_atoms):
                 return (f"{labels[i % n]} (tag {i // n + 1}) — MODELLED "
@@ -358,72 +362,6 @@ class FusionController:
                         f"(radius-of-gyration sphere); no structure of the "
                         f"fusion exists")
             register(NAME, centres, describe)
-
-    def _fold_labels(self, n_atoms: int) -> list:
-        from ..structure.fusion import load_halotag
-        from ..structure.fusion_pose import drawable_mask
-
-        try:
-            tag = load_halotag().structure
-            base = tag.subset(drawable_mask(tag))
-        except (FileNotFoundError, ValueError):
-            base = None
-        if base is None or base.n_atoms != n_atoms:
-            return [f"HaloTag atom {i}" for i in range(n_atoms)]
-        return [f"HaloTag {rn}{int(rs)} atom {an}"
-                for rn, rs, an in zip(base.res_name, base.res_seq,
-                                      base.atom_name, strict=True)]
-
-    def _draw_fold_view(self, scene, pose, colours: np.ndarray) -> bool:
-        """The fold in a chosen representation, through the same machinery
-        that styles the channel.
-
-        Builds a real :class:`Structure` of the three placed tags — one chain
-        per copy, so bonds and cartoon traces stay within a tag — and hands it
-        to a `MolecularView` whose `color_override` carries the same per-atom
-        colours the sphere cloud uses. The contact atoms stay red and the dye
-        stays its own colour in every style, because those colours are the
-        visible half of the reported numbers, not decoration.
-
-        Returns False when the placed atoms cannot be matched back to the tag
-        file, in which case the caller draws the sphere cloud instead: a fold
-        silently missing from the screen is worse than one in the wrong style.
-        """
-        from ..core.structure import Structure
-        from ..render.representations import MolecularView, Style
-        from ..structure.fusion import load_halotag
-        from ..structure.fusion_pose import drawable_mask
-
-        try:
-            style = Style(self.fold_style)
-            tag = load_halotag().structure
-            base = tag.subset(drawable_mask(tag))
-        except (FileNotFoundError, ValueError):
-            return False
-        if base.n_atoms != pose.n_atoms:
-            return False
-
-        fields = {f: np.concatenate([getattr(base, f)] * pose.n_tags)
-                  for f in Structure._ARRAY_FIELDS if f != "xyz"}
-        # One chain label per copy: cross-chain bonds are skipped and cartoon
-        # traces are per chain, so this is what keeps the three tags separate.
-        fields["chain"] = np.concatenate(
-            [np.full(base.n_atoms, str(i + 1)) for i in range(pose.n_tags)])
-        placed = Structure(
-            xyz=pose.coords.reshape(-1, 3).astype(np.float32),
-            name="halotag-fold", **fields)
-        placed._build_residue_index()
-
-        view = MolecularView(
-            scene, placed, name=f"{NAME}:fold", style=style,
-            color_override=np.tile(colours, (pose.n_tags, 1)))
-        # In ribbon styles the dye would vanish with the side chains; the
-        # ligand pass keeps it, in its own colour. In atom styles it is
-        # already in the atoms batch, and drawing it twice adds nothing.
-        view.ligands_as_spheres = style in (Style.CARTOON, Style.TUBE,
-                                            Style.BACKBONE)
-        view.rebuild()
-        return True
 
     def _draw_envelope(self, scene) -> None:
         """The accessible volume, as a thinned point cloud.

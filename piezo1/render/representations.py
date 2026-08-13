@@ -298,6 +298,26 @@ class MolecularView:
                      np.full(len(pairs), radius, np.float32),
                      colors[pairs[:, 0]], colors[pairs[:, 1]])
 
+    def pickable_mask(self) -> np.ndarray:
+        """Which atoms a click may answer for: the ones this view draws.
+
+        The pick source is the full atom array, so without this a hidden
+        lipid stays pickable in front of the visible helix the user aimed at
+        — an identification of something not on screen. Residues whose side
+        chains a ribbon style omits stay pickable, deliberately: the residue
+        is visible as ribbon, and picking is generous for exactly that case.
+        """
+        st = self.structure
+        mask = self._entity_filter(np.ones(st.n_atoms, dtype=bool))
+        if self.style in (Style.CARTOON, Style.TUBE, Style.BACKBONE):
+            # Ligand atoms are not part of any trace; they are on screen only
+            # through the ligand pass, so its toggle decides their picking.
+            if not self.ligands_as_spheres:
+                mask &= ~st.mask_ligands()
+        elif self.style is Style.SURFACE_POINTS and not self.ligands_as_spheres:
+            mask &= ~st.hetero
+        return mask
+
     def entity_map(self):
         """Cached per-atom entity classification for this structure."""
         if getattr(self, "_entities", None) is None:

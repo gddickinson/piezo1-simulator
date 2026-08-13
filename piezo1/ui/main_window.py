@@ -313,6 +313,45 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         else:
             self._set_status("No structures found — run scripts/fetch_data.py")
 
+    def _clear_structure_overlays(self) -> None:
+        """Everything drawn from, or computed for, the structure being
+        replaced — one list, shared by both ways a structure arrives.
+
+        The history of this list is a history of omissions: the morph was
+        missing until Round 87, the full-length overlay until Round 90c, and
+        the micelle, the planar membrane, the ion stream and the potential
+        colouring until Round 91 — each one a picture of the previous entry
+        left drawn (or, for the ion stream, *animating*) over the new one.
+        Worse, `_open_file` had a list of its own with almost everything
+        missing. A controller cleared in one path and not the other is how
+        every one of those survived, so there is now exactly one list, and
+        `test_ui_load_hygiene` holds both paths to it.
+        """
+        self.physics.reset()
+        self.analysis.reset()
+        self.fusion.clear()
+        self.hybrid.clear()
+        self.dome_surface.clear()
+        self.contacts.clear()
+        # Everything drawn from a measurement belongs to the structure being
+        # replaced: one entry's bottleneck drawn inside another's lumen is a
+        # picture nothing on screen would contradict.
+        self.pore_surface.clear()
+        self.pocket_view.clear()
+        self.path.reset()
+        self.nanodomain.clear()
+        self.micelle.clear()
+        self.planar_membrane.clear()
+        # The ion stream is an *animation*: left running it keeps streaming
+        # the old entry's ions along the old entry's path over the new one,
+        # with the old current on the HUD — over 8YEZ, the very structure the
+        # wetting model refuses to animate.
+        self.ion_flux.clear()
+        self.electrostatics.reset()
+        # The morph holds a displacement field plus a base coordinate array,
+        # both of the old entry.
+        self.morph_controller.reset()
+
     def _reload_for_fill(self, _mode: str) -> None:
         """Rebuild the current entry at the newly chosen completeness."""
         if self.record is not None:
@@ -362,28 +401,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         self.structure = st
         self.modes = None
         self.physics_panel.set_modes(None)
-        self.physics.reset()
-        self.analysis.reset()
-        self.fusion.clear()
-        # The full-length overlay is a model of the entry being replaced, and
-        # was missing from this list: it survived a structure change, drawn
-        # (and, now that features answer clicks, pickable) over the new entry.
-        self.hybrid.clear()
-        # The surface was fitted to the structure being replaced, so
-        # leaving it up would draw one model's dome over another's.
-        self.dome_surface.clear()
-        self.contacts.clear()
-        # Same rule for everything else drawn from a measurement: the pore, the
-        # pockets, the route and the calcium field all belong to the structure
-        # being replaced, and one entry's bottleneck drawn inside another's
-        # lumen is a picture nothing on screen would contradict.
-        self.pore_surface.clear()
-        self.pocket_view.clear()
-        self.path.reset()
-        self.nanodomain.clear()
-        # And the morph, missing from this list until Round 87: it is a stored
-        # displacement field plus a stored base array, both of the old entry.
-        self.morph_controller.reset()
+        self._clear_structure_overlays()
 
         self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.set_species(rec.numbering_species)
@@ -393,6 +411,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         self.view.rebuild()
 
         self.viewport.set_pick_source(st.xyz)
+        self._refresh_pick_mask()
         self.structure_panel.set_entities(self.view.entity_map())
         self._show_provenance()
         # A component chosen on the previous entry is re-applied to this one,

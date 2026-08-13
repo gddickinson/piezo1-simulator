@@ -115,6 +115,12 @@ class ComponentController:
         selection = self.selection
         view.set_visible_residues(None if selection.component.is_whole
                                   else selection.residues)
+        # The hidden residues must stop answering clicks too: a component
+        # hides, it does not subset, and a pick of an invisible blade atom in
+        # front of the visible pore module would identify off-screen atoms.
+        refresh = getattr(self.win, "_refresh_pick_mask", None)
+        if callable(refresh):
+            refresh()
 
     def _draw(self) -> None:
         self.clear()

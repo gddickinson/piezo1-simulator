@@ -98,22 +98,55 @@ class AlignmentMixin:
         except Exception as exc:
             QMessageBox.warning(self, "Load failed", f"{path}\n\n{exc}")
             return
+        self.show_opened_structure(st)
 
+    def show_opened_structure(self, st) -> None:
+        """Display a structure opened from outside the catalogue.
+
+        Split from the dialog so the whole path can be driven in a test —
+        which is how Round 91 found that this path cleared almost nothing:
+        it had a two-entry copy of `load_structure`'s clear list, so every
+        overlay it lacked survived opening a file, and its ordering ran
+        `overlay.clear()` after the old view was cleared, which is the
+        documented resurrection bug alive in a second place.
+        """
         # An opened file has no registry record, so it has no declared numbering
         # species. Assume human — every reference alignment then goes through
         # the same check as a catalogued entry rather than skipping it.
         species = self.record.numbering_species if self.record else "human"
         st, frame = self._standardise(st, _OpenedFile(st.name, species))
 
+        # Overlay first, while the old view still exists — its clear ends by
+        # rebuilding the primary view to undo deviation colouring, and run
+        # after `view.clear()` it would put the old batches straight back.
+        # That is the exact resurrection `load_structure` documents; this
+        # path had it live until Round 91.
+        self.overlay.clear()
+        if self.multi_structure:
+            self.demote_to_companion(incoming=None)
+        # Demotion needs a registry record to name the companion by; a
+        # previous *opened* file has none, so the old view can still be live
+        # here and must not be left drawn under the new one.
         if self.view is not None:
             self.view.clear()
+            self.view = None
+        if not self.multi_structure:
+            self.clear_companions()
         self.record = None
         self.structure = st
         self.modes = None
+        # An opened file is deposited coordinates: any spliced-model or
+        # assembly state left from the previous entry would put the amber
+        # PART PREDICTED banner over a file it does not describe.
+        self.full_length = None
+        self.assembly = None
+        self._fill_refusal = ""
         self.physics_panel.set_modes(None)
-        self.physics.reset()
-        self.analysis.reset()
-        self.overlay.clear()
+        # The same list `load_structure` clears, not a shorter copy: this
+        # path's own list once held two entries, and every overlay it lacked
+        # survived opening a file — the dome, the contacts, the morph, all
+        # drawn for a structure no longer on screen.
+        self._clear_structure_overlays()
 
         self.view = MolecularView(self.viewport.scene, st, name=st.name)
         self.view.set_species(species)
@@ -122,7 +155,13 @@ class AlignmentMixin:
         self.view.rebuild()
 
         self.viewport.set_pick_source(st.xyz)
+        self._refresh_pick_mask()
         self.structure_panel.set_entities(self.view.entity_map())
+        # A component chosen on the previous entry is re-applied, exactly as
+        # `load_structure` does: the new view shows everything, and a menu
+        # saying one part while the picture shows the whole is worse than
+        # losing the selection.
+        self.components.refresh()
         self.presentation.refresh()
         self.overlay_panel.set_choices(self.registry.entries)
         if self._sequence_window is not None:

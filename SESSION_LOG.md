@@ -7015,3 +7015,63 @@ marker dropping with its source, and the HETATM fix pinned on a real 7WLT
 lipid. The `ui` and `render` tiers pass, `test_ui_controls`' pinned
 click-versus-drag behaviour among them — one situational run each, which is
 what Round 90b was for.
+
+---
+
+## 2026-08-12 — Round 91: what survives a load, and what a click may claim
+
+**Asked.** Research further improvements and implement them. The roadmap has
+no open items, so the research was an audit of the seams the last three
+rounds exposed — and it found one bug *class* with five live instances, plus
+two picking gaps of the class Round 90c fixed.
+
+**The stale-overlay class.** `load_structure`'s clear list has a history of
+omissions: the morph was missing until Round 87, the full-length overlay
+until Round 90c. This round found four more — the **micelle**, the **planar
+membrane**, the **potential colouring**, and worst, the **ion stream**: left
+running across a load it keeps animating the old entry's ions along the old
+entry's path over the new structure, with the old current on the HUD — over
+8YEZ, the very entry the wetting model refuses to animate. And the
+open-a-file path (`_open_file`) had a two-entry copy of the list, so *every*
+overlay it lacked survived opening a file; it also carried the documented
+overlay-resurrection ordering bug live in a second place, and left
+spliced-model state that could put the amber PART PREDICTED banner over a
+deposited file.
+
+**The fix is one list** — `_clear_structure_overlays`, shared by both entry
+points — **and the guard is not a list**, because lists are what decayed.
+`test_ui_load_hygiene` holds both paths to an *equivalence*: loading B after
+using A must leave the same scene as loading B fresh, whatever was drawn in
+between. Overlays are switched on by discovery (has `show`, and
+`clear`/`reset`), with a ratchet on the discovery count so the sweep cannot
+quietly find nothing. Calibrated the way this project calibrates checkers:
+with `micelle.clear()` deliberately removed, the guard fails naming
+`micelle_envelope` as the survivor.
+
+**Picking follows visibility.** The pick source was the full atom array, so
+a hidden entity category — or everything a component hides — kept answering
+clicks: click where an invisible lipid is, get told about the invisible
+lipid instead of the visible helix behind it. `MolecularView.pickable_mask`
+now states which atoms are on screen (entity filter, component residues, the
+ligand toggle — which silences ligands in ribbon styles and not in atom
+styles, because that is what is drawn), every visibility handler refreshes
+the viewport's pick mask, and `nearest_hit` takes the mask with the rule
+sharpened to **nearest visible wins**. The unmasked control is asserted
+beside the masked case, so the test shows the mask doing the work.
+
+**The right-click joins the rule.** It resolved against the primary only, so
+right-clicking through a drawn tag named the occluded residue behind it —
+the menu's residue entries are annotation read by primary atom index. It now
+routes through `hit_at`: a feature in front opens the generic menu rather
+than describing an atom the user did not aim at.
+
+**Hygiene.** `fusion_controller.py` (489 lines) split along the
+lifecycle-versus-geometry seam: `fold_view.py` owns drawing and labelling
+the placed fold, as pure functions of the pose. `_open_file` gained
+`show_opened_structure`, split from the dialog so the whole path can be
+driven in a test — which is how its gaps were found.
+
+**Not done, recorded rather than dropped:** session persistence for the
+Round 90 style controls (fold, companion, hybrid, highlight, ligand styles
+are not saved in sessions). A candidate for a future round; it needs
+`session.py`'s format guards extended, not just keys added.
