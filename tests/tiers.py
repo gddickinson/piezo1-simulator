@@ -166,6 +166,7 @@ TIERS: dict[str, tuple[str, tuple[str, ...]]] = {
             "test_ion_flux.py",
             "test_render_impostors.py",
             "test_ui_load_hygiene.py",
+            "test_ui_options.py",
             "test_ui_controls.py",
             "test_ui_morph_fusion.py",
             "test_ui_overlays_render.py",

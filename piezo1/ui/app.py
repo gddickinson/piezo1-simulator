@@ -12,7 +12,8 @@ from PyQt6.QtWidgets import QApplication
 
 from ..config import SETTINGS
 from .main_window import MainWindow
-from .theme import apply_dark_theme
+from .menus import make_settings
+from .theme import apply_theme
 
 __all__ = ["main"]
 
@@ -37,7 +38,10 @@ def main(argv: list[str] | None = None) -> int:
 
     configure_surface_format(SETTINGS.render)
     app = QApplication(sys.argv[:1])
-    apply_dark_theme(app)
+    # The stored choice, not the default: applied before the window exists so
+    # a light-theme user does not watch the chrome flash dark while it builds.
+    apply_theme(app, make_settings().value("options/ui_theme", "dark",
+                                           type=str))
     win = MainWindow()
 
     if args.geometry:

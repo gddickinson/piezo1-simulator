@@ -7075,3 +7075,54 @@ driven in a test — which is how its gaps were found.
 Round 90 style controls (fold, companion, hybrid, highlight, ligand styles
 are not saved in sessions). A candidate for a future round; it needs
 `session.py`'s format guards extended, not just keys added.
+
+---
+
+## 2026-08-13 — Round 92: viewer appearance options, and one rule for the Options menu
+
+**Asked.** Options for the viewer — background colour, GUI style — and all
+options consolidated into the Options menu, each tested to make an actual
+change.
+
+**The consolidation needed a rule, not a tidy-up.** Four persisted
+preferences had accreted under View — the structure alignment mode, the
+multi-structure toggle, the companion style and the display-options dialog —
+so where to change a remembered behaviour depended on which menu a feature
+had happened to be added to. The rule, stated in `menus_options.py` where
+the menu is built: **Options holds what is remembered across sessions; View
+holds what is shown right now.** Two things that look like options
+deliberately stay put, and the test pins them staying: the ion-flux pathway
+and voltage change what is *computed* (the reasoning recorded in
+`menus_flux.py` when they were placed), and the per-feature style submenus
+are choices about a feature, made while looking at it.
+
+**The two new options.**
+
+- **Viewport background** — five steps from midnight to white, no colour
+  picker: the useful question is dark room versus manuscript figure. The
+  background is also the depth-cue fog colour, and the two share one
+  settings object precisely so they cannot disagree — a background change
+  that left the fog behind would haze every atom toward the old colour, and
+  a test reads the fog uniform beside the clear colour. The "default" entry
+  is asserted at import to *be* the `RenderSettings` default, because two
+  copies of one colour drift. The scale bar and readouts already carry dark
+  halos, which is what keeps them legible on white.
+- **Interface theme** — dark (default), light, system. The existing dark
+  stylesheet became one template over a per-theme token table, so the
+  themes cannot drift apart in structure and a missing token raises at
+  import instead of borrowing the other theme's colour. Applied at startup
+  before the window builds (no dark flash for a light-theme user), on
+  change, and on Restore-defaults — a reset that left a white viewport or
+  light chrome behind would not be a reset.
+
+**Tested to the pixel** (`test_ui_options.py`, 9, render tier): the
+background choice is verified in the rendered framebuffer's corner pixel
+(white > 240, midnight < 40) and in the fog uniform; the theme in the
+application palette's lightness and the stylesheet's presence or absence;
+every moved option through the state it stores; every simple option through
+its observable effect (hint visibility, spin speed, focus mode, layout
+memory); and the consolidation itself as a menu-placement guard. The
+fixture snapshots and restores every setting and the application style, so
+running the suite cannot restyle the user's next session. The scripted GUI
+smoke test passes over the refactored menus — the check that exists because
+mechanical Qt refactors have broken the app silently twice.

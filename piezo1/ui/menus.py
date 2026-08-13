@@ -8,7 +8,7 @@ nothing to do with what the window *is*.
 from __future__ import annotations
 
 from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QAction, QActionGroup, QKeySequence
+from PyQt6.QtGui import QAction, QKeySequence
 
 __all__ = ["build_menus", "SETTINGS_ORG", "SETTINGS_APP"]
 
@@ -107,9 +107,6 @@ def _view_menu(win, bar) -> None:
     _action(menu, "&Presentation mode (full screen)", win._toggle_fullscreen,
             "F11",
             "Hide the panels and menu so the 3-D view fills the screen")
-    _action(menu, "&Display options…", win._show_display_options, "Ctrl+D",
-            "Choose what the overlay shows: scale bar, animation clock, "
-            "orientation axes and which measured values")
     menu.addSeparator()
     build_component_menu_stub(win, menu)
     menu.addSeparator()
@@ -122,8 +119,7 @@ def _view_menu(win, bar) -> None:
                 "A pore the wetting model calls shut shows no ions at all -\n"
                 "which is 17 of the 19 deposited entries on the default\n"
                 "AXIAL pathway, because PIEZO1's axis is closed at both ends.")
-    from .menus_flux import (build_component_menu, build_flux_settings,
-                             build_pore_opacity_menu)
+    from .menus_flux import build_flux_settings, build_pore_opacity_menu
     build_flux_settings(win, menu, _action)
     build_pore_opacity_menu(win, menu, _action)
 
@@ -233,49 +229,16 @@ def _view_menu(win, bar) -> None:
                 "as measured. The seam is marked, and the status line gives the\n"
                 "75 A by which the two models disagree away from it.")
 
-    from .menus_styles import (build_companion_style_menu,
-                               build_halotag_menu, build_hybrid_style_menu)
+    from .menus_styles import build_halotag_menu, build_hybrid_style_menu
     build_hybrid_style_menu(win, menu, _action)
     build_halotag_menu(win, menu, _action)
 
     menu.addSeparator()
 
-    _action(menu, "Show &multiple structures at once", win.set_multi_structure,
-            checkable=True, checked=win.multi_structure,
-            tip="Keep the current structure on screen when another is loaded, "
-                "drawn in its own colour in the same frame. Off by default: "
-                "two entries in the same frame sit on top of each other, and a "
-                "structure left behind reads as extra density. Analyses always "
-                "run on the primary structure, whatever else is drawn.")
     _action(menu, "Remove e&xtra structures", win.clear_companions, "",
-            tip="Drop everything except the primary structure")
-    build_companion_style_menu(win, menu, _action)
-
-    menu.addSeparator()
-
-    align = menu.addMenu("Structure &alignment")
-    align.setToolTipsVisible(True)
-    align_group = QActionGroup(align)
-    align_group.setExclusive(True)
-    for label, key, tip in (
-            ("As deposited", "deposited",
-             "Use the coordinate frame from the file. Different entries were "
-             "refined in unrelated frames, so they will not overlap."),
-            ("Canonical (three-fold axis on z)", "canonical",
-             "Put each structure in a frame defined by its own C3 symmetry: "
-             "axis vertical, cytosolic side down, centred on the origin. Works "
-             "for any trimer, including PIEZO2 and mouse entries."),
-            ("Superpose on the loaded structure", "reference",
-             "Least-squares fit onto the first structure loaded, over the "
-             "C-alphas they share. Maximises overlap, but needs a shared "
-             "residue numbering — falls back to canonical across species.")):
-        action = _action(align, label,
-                         lambda on, k=key: on and win.set_alignment_mode(k),
-                         checkable=True,
-                         checked=(win.alignment_mode == key), tip=tip)
-        align_group.addAction(action)
-
-    menu.addSeparator()
+            tip="Drop everything except the primary structure. Whether "
+                "loading keeps or replaces what is on screen is an option: "
+                "Options → Show multiple structures at once.")
 
     menu.addSeparator()
     _action(menu, "Reset &camera", win._reset_camera, "",
@@ -391,61 +354,15 @@ def _analysis_menu(win, bar) -> None:
 
 
 def _options_menu(win, bar) -> None:
-    menu = bar.addMenu("&Options")
-    menu.setToolTipsVisible(True)
-    settings = win.settings
+    """Every preference the application remembers, in one menu.
 
-    _action(menu, "Remember &layout on exit",
-            win._set_remember_layout, "",
-            "Reopen with the panel arrangement and window size you left",
-            checkable=True,
-            checked=settings.value("options/remember_layout", True, type=bool))
-    _action(menu, "Show status-bar &hints", win._set_show_hints, "",
-            "The mouse and keyboard reminder in the status bar",
-            checkable=True,
-            checked=settings.value("options/show_hints", True, type=bool))
-    menu.addSeparator()
+    Built in `menus_options.py`: the rule (Options holds what is remembered
+    across sessions, View holds what is shown right now) and the two
+    deliberate exceptions are documented there.
+    """
+    from .menus_options import build_options_menu
 
-    focus = menu.addMenu("When something is &selected")
-    focus.setToolTipsVisible(True)
-    focus_group = QActionGroup(focus)
-    focus_group.setExclusive(True)
-    mode = win.focus_mode()
-    for label, key, tip in (
-            ("Keep the view still", "none",
-             "Highlight the selection without moving the camera"),
-            ("Centre on the selection", "centre",
-             "Move the pivot to the selection, keeping the zoom"),
-            ("Centre and zoom to the selection", "frame",
-             "Move and zoom so the selection fills the viewport, keeping "
-             "the current orientation")):
-        action = _action(focus, label,
-                         lambda on, k=key: on and win._set_focus_mode(k),
-                         checkable=True, checked=(mode == key), tip=tip)
-        focus_group.addAction(action)
-
-    menu.addSeparator()
-
-    spin = menu.addMenu("&Spin speed")
-    spin.setToolTipsVisible(True)
-    group = QActionGroup(spin)
-    group.setExclusive(True)
-    current = settings.value("options/spin_speed", 28.0, type=float)
-    for label, value in (("Off", 0.0), ("Slow", 12.0), ("Normal", 28.0),
-                         ("Fast", 60.0)):
-        action = _action(spin, label,
-                         lambda on, v=value: on and win._set_spin_speed(v),
-                         checkable=True, checked=abs(current - value) < 1e-6,
-                         tip=f"Rotate at {value:.0f} degrees per second")
-        group.addAction(action)
-
-    menu.addSeparator()
-    _action(menu, "&Parameters…", win._show_parameters, "Ctrl+P",
-            "Every number the calculations use, with its default, its unit "
-            "and the paper it came from. Editable.")
-    menu.addSeparator()
-    _action(menu, "&Restore default options", win._reset_options, "",
-            "Forget every remembered setting and layout")
+    build_options_menu(win, bar, _action)
 
 
 def _help_menu(win, bar) -> None:

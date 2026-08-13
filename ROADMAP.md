@@ -4,8 +4,8 @@ Planned work, in ~20-minute rounds. Each round: implement, test, fix, update
 the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
 **Status: one open item** — session persistence for the Round 90 style
-controls, at the end of the Rounds 90–91 section. Block R is finished;
-Rounds 89–91 were added on request after it. The next block has not been
+controls, at the end of the Rounds 90–92 section. Block R is finished;
+Rounds 89–92 were added on request after it. The next block has not been
 written; see `docs/CONCLUSION.md` before adding one.
 Rounds **84b** through **84f** were added mid-block on request and completed
 out of order; Round 84 itself is still open. Their records are in the archive.
@@ -346,10 +346,11 @@ request to display an assembled trimer where only one protomer exists.*
       from structure at all" to "can be asked, and would be 83% about 9ZIS" —
       a sharper statement of the same gap, not a way round it.
 
-### Rounds 90–91 — display controls, universal picking, and load hygiene
+### Rounds 90–92 — display controls, universal picking, load hygiene, viewer options
 *90 and 90c asked directly (restyle the HaloTag and the other fixed-form
 features; select atoms in any structure); 90b asked directly (tiered test
-runs); 91 was "research improvements", answered by auditing the new seams.*
+runs); 91 was "research improvements", answered by auditing the new seams;
+92 asked directly (viewer appearance options, consolidated and tested).*
 
 - [x] **90.** Per-feature rendering styles — the fold, the graft, the
       companions, the component highlight, the ligands — with the rule that
@@ -370,6 +371,17 @@ runs); 91 was "research improvements", answered by auditing the new seams.*
       watching it name the survivor. Picking follows visibility (a hidden
       atom must not answer clicks) and the right-click routes through every
       pick source.
+- [x] **92.** Viewer appearance options, and one rule for the Options menu:
+      *Options holds what is remembered across sessions; View holds what is
+      shown right now.* Four persisted preferences moved out of View; two new
+      options added — **viewport background** (five steps to white, shared
+      with the depth-cue fog so the two cannot disagree, the default asserted
+      against `RenderSettings` at import) and **interface theme** (dark /
+      light / system, one stylesheet template over per-theme tokens). Each
+      option tested to make an actual change — the background to the rendered
+      corner pixel and the fog uniform, the theme to the palette — and the
+      two deliberate exceptions (flux pathway and voltage, which change what
+      is computed) pinned staying beside their animation.
 - [ ] Session persistence for the Round 90 style controls: fold, companion,
       hybrid, highlight and ligand styles are not saved in sessions. Needs
       `session.py`'s format guards extended, not just keys added.

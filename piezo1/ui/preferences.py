@@ -18,7 +18,30 @@ from PyQt6.QtWidgets import QTabWidget
 
 from .help_dialog import HelpDialog, open_document
 
-__all__ = ["PreferencesMixin"]
+__all__ = ["PreferencesMixin", "BACKGROUNDS"]
+
+#: Viewport background choices, as (key, label, RGBA). The default is the
+#: RenderSettings default, asserted below rather than assumed: two copies of
+#: one colour drift, and a "default" that silently differed from a fresh
+#: start would make the option lie. Coarse steps on purpose — the useful
+#: question is dark room versus manuscript figure, not a colour picker.
+BACKGROUNDS = (
+    ("midnight", "Midnight (default)", (0.055, 0.063, 0.086, 1.0)),
+    ("black", "Black", (0.0, 0.0, 0.0, 1.0)),
+    ("slate", "Dark grey", (0.16, 0.17, 0.20, 1.0)),
+    ("pearl", "Light grey", (0.82, 0.84, 0.87, 1.0)),
+    ("white", "White", (1.0, 1.0, 1.0, 1.0)),
+)
+
+
+def _assert_default_matches() -> None:
+    from ..config import RenderSettings
+    assert BACKGROUNDS[0][2] == RenderSettings().background, (
+        "the 'default' background option differs from RenderSettings — "
+        "choosing it would change the picture")
+
+
+_assert_default_matches()
 
 
 class PreferencesMixin:
@@ -40,6 +63,56 @@ class PreferencesMixin:
             "frame": "the view will centre and zoom on each selection",
         }[mode])
 
+
+    # ----------------------------------------------------------- appearance
+
+    def background_key(self) -> str:
+        key = str(self.settings.value("options/background", "midnight",
+                                      type=str))
+        return key if any(k == key for k, _l, _c in BACKGROUNDS) else "midnight"
+
+    def _set_background(self, key: str) -> None:
+        if not any(k == key for k, _l, _c in BACKGROUNDS):
+            return
+        self.settings.setValue("options/background", key)
+        self._apply_background()
+        self._set_status(f"viewport background: {key}. The scale bar and "
+                         f"readouts keep their dark halo, so they stay "
+                         f"legible on any of these.")
+
+    def _apply_background(self) -> None:
+        """Push the stored choice into the render settings.
+
+        The scene reads ``settings.background`` every frame for both the
+        clear and the depth-cue fog — the fog *is* the background colour, so
+        changing one without the other would haze everything toward the old
+        colour. Sharing the settings object is what keeps them one value.
+        """
+        colour = dict((k, c) for k, _l, c in BACKGROUNDS)[self.background_key()]
+        self.viewport.settings.background = tuple(colour)
+        self.viewport.update()
+
+    def ui_theme(self) -> str:
+        from .theme import THEMES
+        key = str(self.settings.value("options/ui_theme", "dark", type=str))
+        return key if any(k == key for k, _l in THEMES) else "dark"
+
+    def _set_ui_theme(self, key: str) -> None:
+        from .theme import THEMES
+        if not any(k == key for k, _l in THEMES):
+            return
+        self.settings.setValue("options/ui_theme", key)
+        self._apply_ui_theme()
+        self._set_status(f"interface theme: {key}. The viewport background "
+                         f"is a separate option, beside this one.")
+
+    def _apply_ui_theme(self) -> None:
+        from PyQt6.QtWidgets import QApplication
+
+        from .theme import apply_theme
+        app = QApplication.instance()
+        if app is not None:
+            apply_theme(app, self.ui_theme())
 
     # ------------------------------------------------------- menu handlers
 
@@ -90,6 +163,11 @@ class PreferencesMixin:
         self.settings.clear()
         self.docks.reset()
         self._size_to_screen()
+        # The two appearance options act immediately when chosen, so they
+        # must also act immediately when forgotten — a reset that left a
+        # white viewport behind would not be a reset.
+        self._apply_background()
+        self._apply_ui_theme()
         self._set_status("options and layout restored to defaults")
 
     # ------------------------------------------------------- presentation

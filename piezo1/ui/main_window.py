@@ -79,6 +79,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         self._size_to_screen()
 
         self.settings = make_settings()
+        self._apply_ui_theme()
         self._help = None
         self._sequence_window = None
         self._topology_window = None
@@ -114,6 +115,10 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         self._pick_hints = 0
 
         self.viewport = ViewportWidget(SETTINGS.render)
+        # The stored background lands in the render settings the scene will
+        # read every frame; applied before the scene exists because they
+        # share the settings object.
+        self._apply_background()
         self.setCentralWidget(self.viewport)
         self.viewport.scene_ready.connect(self._on_scene_ready)
         self.viewport.status.connect(self._set_status)
