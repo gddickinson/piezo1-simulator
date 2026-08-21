@@ -134,6 +134,18 @@ numbers with the new settings. `verify_claims` goes further and **refuses to
 run** against a modified registry, because the documented numbers were produced
 at the defaults and any comparison would report drift the user caused.
 
+The rule travels one window further. The exploration window opened from a
+result is **handed** the result and its stamp rather than reading either again,
+and its charts are built from that dict rather than from a second run — two
+windows side by side disagreeing about which run the numbers came from is worse
+than one window with no numbers at all. Its simulations pass slider values per
+call and write nothing to the registry.
+
+**What forced that:** an override survives the window. A slider that set one
+would leave every later report carrying the amber non-default banner and
+`verify_claims` refusing to run — correctly, and for a reason the user could
+not possibly connect to a curve they moved ten minutes earlier.
+
 ---
 
 ## 7. Downloads are never committed; authored content is
@@ -184,7 +196,23 @@ A split made only to satisfy the counter produces two files nobody can name.
 
 ---
 
-## 10. What this architecture is not for
+## 10. A picture presses the control the user would press
+
+Nothing that draws on the 3-D view has two ways in. An exhibit in the
+exploration window that offers to draw the pore surface **presses the View menu
+entry**, not the controller behind it; the drawn overlays read the analysis
+object the panel already computed rather than re-running it.
+
+**What forced it:** the constraint is that a picture is more persuasive than
+the number it came from, so two sources of truth for what is drawn is two
+answers to "what am I looking at". A controller called directly would leave the
+menu entry unticked while its overlay was on screen — and the cost of the rule
+is real: the table of which control each exhibit presses can drift when a menu
+entry is renamed, so a test resolves every one of them against a real window.
+
+---
+
+## 11. What this architecture is not for
 
 It is **not a general-purpose viewer**. PyMOL and ChimeraX exist and are better
 at that; this is PIEZO-specific and opinionated, and that is what lets it ship

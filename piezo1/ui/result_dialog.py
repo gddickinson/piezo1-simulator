@@ -9,14 +9,24 @@ text, so nothing computable is command-line-only.
 Deliberately generic: it takes whatever dict the analysis returns. A bespoke
 panel per analysis would look better and would be one more thing to fall out of
 step with the function it displays.
+
+Every one of these windows carries an **Explore** button. The table is where a
+piece of reasoning ends, and the figure it came from, the model behind the
+number and the same result drawn on the structure were all reachable only from
+``docs/img`` and the scripts — which is the gap Round 34 closed for the
+analyses themselves. What each analysis has to show is declared in
+:mod:`piezo1.ui.exhibits`; the button opens
+:class:`piezo1.ui.explore_window.ExploreWindow` and hands it the result already
+displayed here, so nothing is recomputed and the two windows cannot be of
+different runs.
 """
 
 from __future__ import annotations
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import (QDialog, QDialogButtonBox, QLabel, QTextEdit,
-                             QVBoxLayout)
+from PyQt6.QtWidgets import (QDialog, QDialogButtonBox, QLabel, QPushButton,
+                             QTextEdit, QVBoxLayout)
 
 __all__ = ["ResultDialog", "format_result", "provenance_line"]
 
@@ -83,7 +93,8 @@ class ResultDialog(QDialog):
     """Non-modal window showing one analysis result."""
 
     def __init__(self, title: str, data, caveat: str = "", parent=None,
-                 structure_name: str = "", species: str = "") -> None:
+                 structure_name: str = "", species: str = "",
+                 explore=None, n_exhibits: int = 0) -> None:
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setModal(False)
@@ -121,5 +132,22 @@ class ResultDialog(QDialog):
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
         buttons.rejected.connect(self.close)
         buttons.accepted.connect(self.close)
+
+        # A table is the end of a piece of reasoning; the button is the rest of
+        # it. Added on the left of the box rather than as a link in the text,
+        # because a result that has figures and a live model behind it should
+        # not depend on the reader knowing they exist.
+        self.explore_button = QPushButton("Explore these findings…")
+        self.explore_button.setToolTip(
+            "Figures, charts built from these very numbers, models you can "
+            "drive, and the same result drawn on the structure.")
+        if explore is None or n_exhibits == 0:
+            self.explore_button.setEnabled(False)
+            self.explore_button.setToolTip(
+                "Nothing is registered to illustrate this result yet.")
+        else:
+            self.explore_button.clicked.connect(lambda: explore())
+        buttons.addButton(self.explore_button,
+                          QDialogButtonBox.ButtonRole.ActionRole)
         layout.addWidget(buttons)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, False)

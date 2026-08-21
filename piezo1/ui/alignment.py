@@ -14,6 +14,7 @@ import numpy as np
 from PyQt6.QtWidgets import QFileDialog, QMessageBox
 
 from ..config import STRUCTURE_DIR
+from ..core.annotations import load_annotations
 from ..core.structure import Structure
 from ..render.representations import MolecularView
 from ..structure.frame import ALIGNMENT_MODES, Frame
@@ -170,6 +171,10 @@ class AlignmentMixin:
         # would silently point at different atoms.
         self.measure_panel.set.clear()
         self._refresh_measurements()
+        # The same numbering the view was told, so the panel cannot be reading
+        # one protein's annotation onto another's coordinates.
+        self.annotations = load_annotations(species)
+        self.annotation_panel.set_species(species)
         self.annotation_panel.set_structure_context(st.name, modelled_residues(st))
         self._mode_blocks, self._mode_residues = protomer_blocks(st)
         self._reset_camera()

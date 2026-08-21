@@ -20,6 +20,11 @@ OVERLAY_STYLES = [("Backbone trace", Style.BACKBONE),
 SUPERPOSITION_MODES = [
     ("Match protomers, then fit", "protomer"),
     ("Fit on chain A only", "chain"),
+    # Round 95. Not a better fit — a different question. The other two ask how
+    # different two entries are; this one puts the pore modules on top of each
+    # other and asks where the blades land, which is the comparison the family
+    # results are made of and the only one that works across paralogues.
+    ("Fit on the pore module only", "core"),
 ]
 
 
@@ -51,7 +56,14 @@ class OverlayPanel(QWidget):
         self.mode_combo.setToolTip(
             "Deposited entries do not label protomers in a consistent\n"
             "rotational order. Matching them first puts 7WLU onto 7WLT at\n"
-            "12.3 Å instead of 90.7 Å.")
+            "12.3 Å instead of 90.7 Å.\n\n"
+            "PORE MODULE ONLY is a different question rather than a better\n"
+            "fit: it superposes the outer helix, cap, inner helix and CTD and\n"
+            "then MEASURES the blades, reporting the splay between them. It is\n"
+            "also the only mode that works across paralogues, because it\n"
+            "corresponds residues through a real alignment instead of by\n"
+            "residue number — 7WLT on PIEZO2's 6KG7 gives a 3.7 Å core with\n"
+            "4.7 Å blades, where matching by number gives a confident 47.9 Å.")
         form.addRow("Superposition", self.mode_combo)
         box.addWidget(chooser)
 
@@ -110,6 +122,27 @@ class OverlayPanel(QWidget):
             return
         if result is None:
             self.result_label.setText("no overlay")
+            return
+        if result.meta.get("mode") == "core":
+            # A core-only fit has two numbers and a ratio, and reporting the
+            # first alone would read as "these two agree to 3.7 Å" — which is
+            # true of the pore module and not of the protein.
+            blades = result.meta.get("periphery_rmsd")
+            splay = result.meta.get("splay_ratio")
+            text = (f"<b>Core {result.rmsd:.2f} Å</b> over {result.n_common} "
+                    f"C-alphas, fitted<br>"
+                    + (f"blades <b>{blades:.2f} Å</b> over "
+                       f"{result.meta.get('n_periphery', 0)}, measured"
+                       if blades is not None else
+                       "blades: too few shared to measure")
+                    + (f"<br><b>splay {splay:.1f}×</b>" if splay else
+                       "<br><span style='color:#f2a65a'>no splay ratio — the "
+                       "pore modules did not superpose</span>"))
+            if result.meta.get("cross_paralogue"):
+                text += ("<br><span style='color:#7f8798'>"
+                         + str(result.meta.get("correspondence", "")) +
+                         "</span>")
+            self.result_label.setText(text)
             return
         text = (f"<b>RMSD {result.rmsd:.2f} Å</b> over {result.n_common} "
                 f"common C-alphas<br>max deviation "

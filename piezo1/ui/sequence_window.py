@@ -210,12 +210,12 @@ class SequenceWindow(QMainWindow):
                                                    tooltip=entry.get("name", ""))
         elif mode == "variants":
             for variant in self.annotations.variants:
-                if variant.residue is None:
+                if variant.position is None:
                     continue
                 colour = {"GoF": "#f26d6d", "LoF": "#6fb1ff",
                           "engineered": "#8a919e"}.get(
                               variant.classification, "#f2a65a")
-                styles[variant.residue] = ResidueStyle(
+                styles[variant.position] = ResidueStyle(
                     background=colour, tooltip=variant.label)
         elif mode == "sites":
             for group in self.annotations.residue_groups:
@@ -260,7 +260,7 @@ class SequenceWindow(QMainWindow):
         if domain is not None:
             parts.append(f"domain <b>{domain.name}</b>")
         for variant in self.annotations.variants:
-            if variant.residue == residue:
+            if variant.position == residue:
                 parts.append(f"variant <b>{variant.label}</b> "
                              f"({variant.classification})")
         for group in self.annotations.residue_groups:

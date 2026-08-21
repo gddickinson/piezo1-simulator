@@ -526,7 +526,13 @@ surface is more persuasive than the number it came from.
 
 Other windows: **Overlay** superposes a second structure and reports where the
 two differ, searching protomer correspondence rather than trusting chain labels
-(7WLU on 7WLT gives 12.3 Å matched, against 90.7 Å by label). **Sequences**
+(7WLU on 7WLT gives 12.3 Å matched, against 90.7 Å by label). Its third mode,
+**fit on the pore module only**, is not a better fit but a different question:
+it puts the two pore modules on top of each other and then *measures* where the
+blades land. That is the only mode that works across paralogues — by residue
+number PIEZO1 against PIEZO2 is refused, and rightly, because that pairing
+gives a confident 47.9 Å — and it is what the family results are made of.
+PIEZO1's own curved-to-flat pair comes out at a splay of 19×. **Sequences**
 (`Ctrl+Shift+S`) shows protein and coding sequences, with selection linked to
 the 3-D view. **Presentation mode** (`F11`) fills the screen, and `Ctrl+D`
 chooses what the overlay shows, so a screenshot carries its own scale bar and
@@ -534,6 +540,34 @@ its own numbers.
 
 Sessions save and reload what you were looking at — never results. Analysis
 reports export to Markdown or JSON with the provenance of every number attached.
+
+### Explore the finding behind the number
+
+Every analysis window — ion permeation, the family census, the two paper
+replications, all of them — carries an **Explore these findings…** button. A
+number in a table is where a piece of reasoning ends; the button is the rest of
+it. Four kinds of exhibit, and the window says which kind you are looking at,
+because on screen they are indistinguishable:
+
+| Kind | What it is | The rule it follows |
+|---|---|---|
+| **Figure** | A generated picture from `docs/img` | A clone that has not built one shows the command that builds it, not a broken image |
+| **Chart** | Drawn from the result *already in the window* | Never recomputed, so the picture and the table are always of one run |
+| **Simulation** | A model you drive with sliders | Controls that are registered parameters start at the registry's own value; **nothing here writes to the registry**, so reports and the claims verifier are untouched |
+| **On the model** | One of 53 structural displays — load the entry a result is about, superpose a partner, show one component, mark the residues a finding is made of, recolour, morph | Each presses the same control you would, so the menus can never disagree with what is drawn, and pressing it *moves* that control so you can see where a selection came from |
+
+The simulations are the part worth opening first. How far would the
+constriction have to open before the model passes the published single-channel
+conductance — with this entry's own bottleneck marked, and the two unmeasured
+inputs on sliders that move the answer by a factor of six? What does the
+calcium field look like against the sensor's own K_D? Guo & MacKinnon's Figure
+7c, flattened at constant membrane area, with the released area and the
+bending energy following the slider.
+
+Every exhibit ends on a line in amber saying what it must **not** be read as,
+and a moved slider is labelled a sensitivity rather than a measurement — the
+distinction `docs/SCIENCE.md` and the uncertainty machinery already keep, and
+the one a curve you have just produced yourself most invites you to forget.
 
 ### Domain colour key
 

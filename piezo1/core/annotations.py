@@ -96,6 +96,15 @@ class Variant:
     mouse_residue: int | None
     conserved: bool | None
     sequence_verified: bool
+    #: The residue number **in the numbering this set was loaded for**, which
+    #: is what anything looking the variant up in coordinates must use. Kept
+    #: apart from :attr:`residue` deliberately: ``residue`` is the variant's
+    #: identity — R2456H is R2456H in every paper, record and document here —
+    #: while its position on a mouse entry is 2482. Conflating the two is the
+    #: defect that put human numbers on mouse coordinates in the Annotation
+    #: panel, and a non-constant offset reaching 26 residues means it lands on
+    #: a real, wrong residue rather than on nothing.
+    position: int | None = None
 
     @property
     def label(self) -> str:
@@ -233,6 +242,8 @@ class Annotations:
                     mouse_residue=v.get("mouse_residue"),
                     conserved=v.get("conserved"),
                     sequence_verified=bool(v.get("sequence_verified", False)),
+                    position=(v.get("mouse_residue") if self.species == "mouse"
+                              else v.get("residue")),
                 ))
 
     # ------------------------------------------------------------- queries

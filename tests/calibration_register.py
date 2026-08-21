@@ -54,6 +54,13 @@ CALIBRATED = {
         "test_family_structure.py::test_the_core_and_periphery_sets_do_not_overlap",
     "core_periphery.correspondence":
         "test_family_structure.py::test_an_entry_against_itself_gives_a_zero_core_and_no_splay",
+    # The fit with its transform kept. Calibrated on a known answer the
+    # instrument cannot fake: the same pair must fit the same either way
+    # round, because a rigid fit on one residue set is symmetric — and it did
+    # not, until the core stopped being selected in whichever numbering the
+    # mobile happened to be in.
+    "core_periphery.core_fit":
+        "test_family_structure.py::test_the_same_pair_fits_the_same_either_way_round",
 
     # --- equivalent_positions: the register, not the distance
     "equivalent_positions.locate":

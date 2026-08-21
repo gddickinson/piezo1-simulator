@@ -442,6 +442,10 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         self._refresh_measurements()
         self._reset_camera()
 
+        # Annotation in the entry's OWN numbering, here and in the panel; both
+        # were pinned to human at construction (AnnotationPanel.set_species).
+        self.annotations = load_annotations(rec.numbering_species)
+        self.annotation_panel.set_species(rec.numbering_species)
         modelled = modelled_residues(st)
         self.annotation_panel.set_structure_context(rec.pdb, modelled)
         self._mode_blocks, self._mode_residues = protomer_blocks(st)

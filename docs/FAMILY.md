@@ -187,11 +187,24 @@ a core-only fit:
 | 7WLT → 7WLU (PIEZO1 curved → flattened) | 2.20 Å | 41.9 Å | **19.0×** |
 | **AF mouse Piezo1 → 6B3R (same protein!)** | 4.90 Å | 44.6 Å | **9.1×** |
 | AF mouse Piezo1 → 7WLT (same protein) | 4.60 Å | 33.2 Å | 7.2× |
-| piezo3 model → 6B3R (cross-paralogue) | 5.26 Å | 16.4 Å | 3.1× |
-| 6KG7 → 9VEE (PIEZO2, mouse → human) | 1.17 Å | 2.38 Å | 2.0× |
+| piezo3 model → 6B3R (prediction vs experiment) | 5.06 Å | 22.9 Å | 4.5× |
+| 6KG7 → 9VEE (PIEZO2, mouse → human) | 1.61 Å | 3.82 Å | 2.4× |
 | 7WLT → 6KG7 (PIEZO1 → PIEZO2) | 3.74 Å | 4.68 Å | 1.2× |
 | 7WLT → 9VEE (PIEZO1 → PIEZO2) | 3.57 Å | 3.01 Å | **0.8×** |
-| 8YEZ → 9VEE (PIEZO1 → PIEZO2) | 3.79 Å | 9.46 Å | 2.5× |
+| 8YEZ → 9VEE (PIEZO1 → PIEZO2) | 3.78 Å | 9.46 Å | 2.5× |
+
+> **Two rows moved in Round 95, and the reason is worth stating.** The core was
+> selected by *the mobile entry's own residue numbers* whatever the mobile was,
+> and `"mouse" in "mouse_piezo2"` is true — so a pair whose mobile is not
+> PIEZO1 had PIEZO1's domain ranges indexed straight into another protein's
+> numbering and fitted a different set of residues. It affected exactly the two
+> rows with a non-PIEZO1 mobile: piezo3 → 6B3R was 5.26 / 16.4 / 3.1× and
+> 6KG7 → 9VEE was 1.17 / 2.38 / 2.0×. The curated ranges are now *carried* into
+> the frame through the same alignment the correspondence uses, and the
+> calibration is symmetry — a rigid fit on one residue set gives the same RMSD
+> whichever entry is moved, which it did not before. Both corrections move the
+> prediction-versus-experiment reading further apart from the experimental
+> pairs, not closer.
 
 An AlphaFold monomer splays **7.2–9.1×** from an experimental structure of the
 protein it is a model *of*. Three experimental cross-paralogue pairs splay
@@ -199,7 +212,9 @@ protein it is a model *of*. Three experimental cross-paralogue pairs splay
 least blade. So the splay in the census's picture is a
 prediction-versus-experiment artefact, not paralogue divergence — and the core
 agreement it reports (3.9 Å) is matched by two experimental paralogues at
-3.6–3.7 Å, which is the stronger version of the same claim.
+3.6–3.7 Å, which is the stronger version of the same claim. The piezo3 model
+against an experimental PIEZO1 sits at 4.5×, above every experimental pair in
+the table and below the two predictions of PIEZO1 itself.
 
 The 19× at the top of the table is PIEZO1's own gating motion: the pore module
 stays put and the blades sweep. Core-conserved and periphery-free is what

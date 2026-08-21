@@ -7276,3 +7276,199 @@ the ranked control against the raw one rather than asserting the choice.
 boundaries (mouse 1300, its human equivalent, and where its proximal band ends)
 are exempt rather than registered: they are quoted to reproduce somebody else's
 number, and an override would silently stop the reproduction being one.
+
+## Round 94 — the reasoning behind the number, one button away
+
+**What this round is.** Every analysis in the Analysis menu opens a window of
+numbers. A number is where a piece of reasoning *ends*, and until now the rest
+of it — the figure it is drawn in, the model it came out of, the same result on
+the structure — lived in `docs/img` and in `scripts/`, reachable only by
+somebody who already knew it was there. That is the gap Round 34 closed one
+level up, when analyses reachable only from the command line got menu entries.
+So every result window now carries **Explore these findings…**, and each
+analysis declares what exploring it means: 58 exhibits across all 20 windows,
+with a guard that a window with nothing to explore fails the suite.
+
+**Four kinds, because they are not the same evidence.** On screen a published
+figure, a chart of this entry's own measurement, a curve the user has just
+produced with a slider and a picture of the structure are indistinguishable —
+which is the standing hazard every overlay controller in this project was
+written around, and it applies harder here. So the kind and the **basis** are
+printed on every exhibit (measured here / modelled / imported / curated /
+published / recorded), and every one ends on an amber line saying what it must
+not be read as. The catalogue **refuses to load** without that line, the way
+`ui/theme` refuses a missing token: an exhibit with no warning is a window that
+opens in front of a user, and the failure would otherwise be invisible until
+somebody clicked it.
+
+**Three rules, each borrowed from a defect this project already had.**
+
+*Nothing is recomputed.* A chart is built from the result dict already on
+screen, handed across rather than re-derived — the rule `pore_controller`
+follows for the same reason, that a picture and a table of two different runs is
+the kind of disagreement nobody notices.
+
+*No reference line is a literal typed into a chart.* Every one comes from the
+parameter registry or from the result. A number written into a plot would be a
+fourth home for it beside the code, the documentation and the claims registry,
+which is exactly what `tour.py` refuses by computing every number it states.
+Where a control range is recorded only in prose — the splay bands, say — the
+note points at the window's caveat rather than repeating it.
+
+*No simulation writes to the parameter registry.* Every model function in this
+project takes its inputs explicitly, so a slider passes a value per call. An
+override would survive the window: reports would carry the amber banner and
+`verify_claims` would refuse to run, correctly, for a reason the user could not
+see. The test plants an override first to show the guard can notice one.
+
+**What the simulations are.** Six, all closed-form or a small solve so they can
+be *moved*: the conductance of the measured pore against how far its
+constriction is opened (with this entry's own bottleneck marked, and the two
+unmeasured inputs — in-pore diffusivity and ion radius — on sliders that move
+the answer sixfold), labelling in time with the reactive-fraction ceiling, the
+calcium nanodomain against distance with the sensor K_D and the 90%-occupancy
+distance drawn on it, dose–response through the three measured potencies, and
+Guo & MacKinnon's Figure 7c and 7d. A control that *is* a registered parameter
+starts at the registry's value, resolved at call time and marked on the panel;
+an untouched control reports the registry value **exactly** rather than the
+nearest of 400 slider steps, so the opening curve is the model at its
+documented defaults.
+
+**One control for anything drawn on the model.** A `model` exhibit presses the
+same menu entry or panel button the user would press — never the controller
+behind it — so the View menu cannot say an overlay is off while it is on, and a
+second press reports "already drawn" instead of toggling it away. The table of
+eleven actions is resolved against a real window in a test, which is what stops
+it drifting silently when a menu entry is renamed.
+
+**Three defects found by looking rather than by testing.** The first was found
+by the pixel test and is the familiar shape: bars on a **logarithmic** axis
+painted nothing at all, because a bar is read from zero and log(0) is not a
+number — while the axis, the grid and the labels all came out perfectly. The
+other two only appeared in the running application on macOS, and the offscreen
+suite was perfectly happy with both: a widget inside a *nested* layout survived
+the panel rebuild and went on painting over a blank panel, and the rebuilt
+panel was never shown or laid out, so every widget sat at its default 640×480
+at the origin. The first is now calibrated by planting a stray widget and
+watching it disappear; the second cannot be caught on the offscreen platform at
+all, so it is checked in the **source** — the discipline check `test_martini`
+uses to count its single construction site — with the docstring saying plainly
+that the behavioural guard beside it passes either way.
+
+**Ten new modules, all under the limit.** The catalogue splits along the seam
+`report_tags`/`report_family` already use — what this project measured, and
+what it imported — because the two fail differently. The chart builders split
+the same way. The widget, the panes and the window split at the seam
+`fusion_controller`/`fold_view` use: lifecycle in one place, geometry of
+drawing in another. The chart is QPainter in `profile_plot`'s idiom, and adds
+what the exhibits needed and the pore profile never did — bars, points, log
+axes and reference bands — with its ink taken from the palette, so it follows
+the interface theme Round 92 added rather than baking in dark-theme grey.
+
+## Round 95 — the structure doing the talking, and two numbering defects on the way
+
+**What this round is.** Round 94 gave every result window an Explore button;
+what it mostly had behind it was charts. This project's claim is that PIEZO1's
+*shape* is its mechanism, so a result that can only be read as a table is doing
+half its job. There are now **53 structural displays**, offered 67 times across all twenty
+windows — load the entry a result is about, draw a second beside it, superpose
+one on the other, show one part of the assembly up close, mark the residues a
+finding is made of, recolour by the quantity being discussed, build the gating
+motion — and each is triggerable from the main GUI as well as from the result
+it belongs to.
+
+**A new comparison, and it is the one the family results are made of.** The
+Overlay panel has a third superposition mode: **fit on the pore module only**.
+Not a better fit — a different question. The other two ask how different two
+entries are; this puts the pore modules on top of each other and then
+*measures* where the blades land. It is also the only mode that works across
+paralogues, because it corresponds residues through a real global alignment
+rather than by residue number: by number, PIEZO1 against PIEZO2 is refused, and
+rightly — that pairing gives a confident 47.9 Å. On the pore module 7WLT
+against 6KG7 is a 3.7 Å core with 4.7 Å blades, and PIEZO1's own gating pair,
+7WLT against 7WLU, comes out at **19×**, which is the number `docs/FAMILY.md`
+already records for it.
+
+The fit is `analysis.core_periphery.core_fit`, split out of `compare` so the
+transform survives — `compare` is now literally `core_fit(...).comparison`.
+Two implementations of one fit is the disagreement `pore_controller` and
+`interaction_controller` are both written to avoid, and here it would have been
+a picture and a number of two different superpositions.
+
+**One control, still.** Every display presses the control a user would press:
+the Model panel's entry selector, the Overlay panel's button, the View menu's
+component group, the Annotation panel's own Sites row. Pressing it *moves* that
+control, which is how a reader finds where a selection came from and how to
+switch it off. The imported census positions had no control of their own, so
+they were given one — **View → Mark census positions** — rather than being
+called directly from the exhibit.
+
+**And then the round found what it was standing on.** A highlight is a set of
+residue numbers, so the first question was which numbering they are in. Two
+answers were wrong:
+
+*The Annotation panel loaded human annotation once, at construction, and never
+asked again.* On a mouse entry — most of the catalogue — every domain range,
+every site and every variant a user could click was a human number applied to
+mouse coordinates. The offset is not constant and reaches 26 residues, so the
+marker landed on a real, wrong residue: the hydrophobic gate is mouse
+2473/2476/2480 against human 2447/2450/2454. A PIEZO2 entry was shown PIEZO1's
+annotation outright, which Round 89b had fixed for the *colouring* and the
+functional-residue loader and left in the panel a user reads first.
+
+*And a variant's `residue` is its identity, not its position.* R2456H is R2456H
+in every paper and every record here, and `variants.json` is human-numbered;
+domains and residue groups were resolved per species from the start and
+variants never were. On 7WLT the variant's own arginine is at **2482**, and
+2456 there is a **proline** — which is exactly why nobody noticed. `Variant`
+now carries `position` beside `residue`: the identity stays put and everything
+that looks the variant up in coordinates uses the position.
+
+Both are recorded in `ui/hazards.py`, and both are calibrated in the tests
+against the wrong answer rather than only the right one — the proline is the
+whole point.
+
+**And drawing the superposition found a third, in the measurement itself.** The
+core-only fit selected its residues by *the mobile entry's* own numbers,
+whatever the mobile was — and `"mouse" in "mouse_piezo2"` is true. So loading a
+**PIEZO2** entry and running Core and periphery indexed PIEZO1's mouse domain
+ranges straight into PIEZO2's numbering, fitted a different 287 residues, and
+returned 2.36 Å where the same pair the other way round gives 3.74. It is the
+mis-framing `paralogue_identity` refuses outright, where it moves the cap
+identity from 0.35 to 0.85 and announces nothing; here it was reachable from
+the Analysis menu. The core is now framed in whichever entry has curated
+domains and carried to the other through the correspondence, and a pair with
+none on either side is refused rather than fitted on something.
+
+The calibration is the one an instrument cannot fake: **a rigid fit on one
+residue set is symmetric**, so the same pair must give the same core RMSD
+whichever entry is moved. It now does — 3.74 Å either way round — and the
+worm-against-PIEZO1 pair comes back as "the pore modules do not superpose
+(8.85 Å, ceiling 6.0); no splay", which is a refusal rather than a number.
+
+**What the displays refuse.** An entry whose numbering cannot be read gets
+nothing: a PIEZO2 structure asked for the census's pathogenic positions is
+refused with the reason, rather than marked at whatever sits at those numbers.
+A protein with no curated annotation gets empty lists and the reason. And the
+core-only overlay says on the status line that the blades are a **measurement**
+rather than part of the fit, because a superposition is the most persuasive
+picture this application can produce and the easiest to over-read.
+
+**A note for whoever picks this up next: the census has moved.** During this
+session the sibling `piezo_genes` project committed `864f59b`, *"put the anchor
+and outer helix back where the structure says they are"* — which is it acting
+on the disagreement Round 93 exported to it. Its constraint, identity,
+selection and structure-stats tables all changed with it, so
+`scripts/build_family_findings.py` now **refuses to write**, and
+`test_family_findings.py::test_the_build_verifies_against_the_census_when_it_is_present`
+fails: the resource here quotes `bb3943c`, and fourteen of the thirty-two
+re-read numbers no longer match.
+
+That is the import gate doing exactly what it was built for, and it is not a
+defect in this round — the same test fails identically on unmodified `HEAD`
+with the current census on disk, which was checked in a clean worktree rather
+than assumed. Re-importing is a deliberate act with consequences: the pore
+module's own boundaries have moved on their side, which is the thing
+`docs/FAMILY.md` §3.2 reports a disagreement about, and their disease
+enrichment is now OR 2.31 at P = 0.061 where the imported copy says 3.92 at
+P = 0.00135. Re-run the import, re-read §3, and supersede rather than edit.

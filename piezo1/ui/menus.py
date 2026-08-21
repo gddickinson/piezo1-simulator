@@ -234,6 +234,24 @@ def _view_menu(win, bar) -> None:
                 "model is a point source in free solution and does not know\n"
                 "the protein is there. A shut structure draws NOTHING and\n"
                 "says why: no current is borrowed from another entry.")
+    marks = menu.addMenu("Mark &census positions")
+    marks.setToolTipsVisible(True)
+    _action(marks, "&Pathogenic pore positions",
+            lambda: win.mark_imported_positions("family:pathogenic_pore"), "",
+            tip="The nine PIEZO1 positions the piezo_genes census records as\n"
+                "pathogenic in the pore module (its other five are PIEZO2's),\n"
+                "converted into this entry's own numbering through the\n"
+                "alignment map rather than by an offset.\n"
+                "NOT MEASURED HERE, and not a map of where disease can occur:\n"
+                "variants are found where people look.")
+    _action(marks, "Positions &equivalent to a PIEZO2 disease residue",
+            lambda: win.mark_imported_positions("family:equivalent"), "",
+            tip="PIEZO1 R2456 and R2488 — the two columns the census finds\n"
+                "carrying a pathogenic variant in BOTH disease genes.\n"
+                "Confirmed here by an independent alignment and by register\n"
+                "after a pore-module fit; proximity alone is not the evidence,\n"
+                "because after that fit the median core pair is 2.5 A apart.")
+
     _action(menu, "&Full-length model", win.hybrid.show, "",
             checkable=True, checked=False,
             tip="Graft the AlphaFold distal blade onto the experimental core.\n"

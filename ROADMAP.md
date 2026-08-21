@@ -5,13 +5,15 @@ the docs, commit. Items are `[ ]` planned, `[~]` in progress, `[x]` done.
 
 **Status: one open item** — session persistence for the Round 90 style
 controls, at the end of the Rounds 90–92 section. Block R is finished;
-Rounds 89–92 were added on request after it. The next block has not been
+Rounds 89–95 were added on request after it. The next block has not been
 written; see `docs/CONCLUSION.md` before adding one.
 Rounds **84b** through **84f** were added mid-block on request and completed
 out of order; Round 84 itself is still open. Their records are in the archive.
-Everything finished — 382 items across 83 rounds, each carrying the result it
-measured — is in
-[`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md).
+Everything finished — **453** items, each carrying the result it measured — is
+in [`docs/ROADMAP_COMPLETED.md`](docs/ROADMAP_COMPLETED.md). The count is the
+one `tests/test_roadmap.py` ratchets, counted the same way across both files;
+the round total that used to sit beside it had drifted from two different
+counting rules and is not restated.
 
 Round 75 split the two apart. This file had grown to 2,702 lines of which 96%
 was a record of work already done, duplicating `SESSION_LOG.md`, and the thing

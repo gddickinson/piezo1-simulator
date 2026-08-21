@@ -11,6 +11,7 @@ from .help_topics_physics import PHYSICS
 from .help_topics_tags import TAGS_AND_CURRENT
 from .help_topics_paper import PAPER
 from .help_topics_family import FAMILY
+from .help_topics_explore import EXPLORE
 from .help_topics_views import VIEWS
 
 __all__ = ["TOPICS", "DOC_LINKS", "SHORTCUTS", "topic_html"]
@@ -396,6 +397,7 @@ TOPICS: list[tuple[str, str]] = [
     ("Analysis panel", _ANALYSIS),
     ("Measure panel — selecting atoms", _MEASURE),
     ("Drawing what was measured", VIEWS),
+    ("Explore these findings", EXPLORE),
     ("HaloTag and ion current", TAGS_AND_CURRENT),
     ("The PIEZO family census", FAMILY),
     ("Reproducing Guo & MacKinnon 2017", PAPER),

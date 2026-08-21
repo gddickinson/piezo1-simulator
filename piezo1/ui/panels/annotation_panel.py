@@ -15,7 +15,8 @@ from PyQt6.QtWidgets import (QAbstractItemView, QComboBox, QHBoxLayout,
                              QListWidgetItem, QTableWidget, QTableWidgetItem,
                              QTabWidget, QVBoxLayout, QWidget)
 
-from ...core.annotations import Annotations, load_annotations
+from ...core.annotations import (Annotations, annotation_gap,
+                                 load_annotations)
 
 __all__ = ["AnnotationPanel"]
 
@@ -38,6 +39,7 @@ class AnnotationPanel(QWidget):
 
     def __init__(self, species: str = "human", parent=None) -> None:
         super().__init__(parent)
+        self._species = species
         self.annotations: Annotations = load_annotations(species)
         self._modelled: set[int] = set()
         self._current_pdb = ""
@@ -68,6 +70,13 @@ class AnnotationPanel(QWidget):
         v = QVBoxLayout(w)
         v.setContentsMargins(4, 4, 4, 4)
         self.domain_list = QListWidget()
+        self._refill_domains()
+        self.domain_list.currentItemChanged.connect(self._on_domain)
+        v.addWidget(self.domain_list)
+        return w
+
+    def _refill_domains(self) -> None:
+        self.domain_list.clear()
         for d in self.annotations.domains:
             if d.start is None:
                 continue
@@ -77,9 +86,6 @@ class AnnotationPanel(QWidget):
             if d.confidence != "high":
                 item.setToolTip(f"confidence: {d.confidence}")
             self.domain_list.addItem(item)
-        self.domain_list.currentItemChanged.connect(self._on_domain)
-        v.addWidget(self.domain_list)
-        return w
 
     def _on_domain(self, item: QListWidgetItem | None) -> None:
         if item is None:
@@ -104,6 +110,13 @@ class AnnotationPanel(QWidget):
         v = QVBoxLayout(w)
         v.setContentsMargins(4, 4, 4, 4)
         self.site_list = QListWidget()
+        self._refill_sites()
+        self.site_list.currentItemChanged.connect(self._on_site)
+        v.addWidget(self.site_list)
+        return w
+
+    def _refill_sites(self) -> None:
+        self.site_list.clear()
         for g in self.annotations.residue_groups:
             res = ", ".join(str(r) for r in g.residues[:6])
             more = "…" if len(g.residues) > 6 else ""
@@ -111,9 +124,6 @@ class AnnotationPanel(QWidget):
             item.setData(Qt.ItemDataRole.UserRole, g.id)
             item.setForeground(QBrush(QColor(g.color)))
             self.site_list.addItem(item)
-        self.site_list.currentItemChanged.connect(self._on_site)
-        v.addWidget(self.site_list)
-        return w
 
     def _on_site(self, item: QListWidgetItem | None) -> None:
         if item is None:
@@ -191,7 +201,7 @@ class AnnotationPanel(QWidget):
 
         self.variant_table.setRowCount(len(rows))
         for r, var in enumerate(rows):
-            resolved = (not self._modelled) or (var.residue in self._modelled)
+            resolved = (not self._modelled) or (var.position in self._modelled)
             for c, text in enumerate((var.label, var.classification or "",
                                       var.domain or "", var.phenotype or "")):
                 item = QTableWidgetItem(str(text))
@@ -200,12 +210,13 @@ class AnnotationPanel(QWidget):
                 if not resolved:
                     item.setForeground(QBrush(QColor("#565d6b")))
                     item.setToolTip(
-                        f"residue {var.residue} is not modelled in {self._current_pdb}")
+                        f"residue {var.position} is not modelled in "
+                        f"{self._current_pdb}")
                 self.variant_table.setItem(r, c, item)
 
         if self._modelled:
             missing = sum(1 for v in rows
-                          if v.residue not in self._modelled)
+                          if v.position not in self._modelled)
             self.coverage_note.setText(
                 f"{len(rows) - missing} of {len(rows)} shown variants are "
                 f"resolved in {self._current_pdb}; {missing} greyed out are not "
@@ -216,11 +227,14 @@ class AnnotationPanel(QWidget):
         if not rows:
             return
         var = self._variant_rows[rows[0].row()]
-        if var.residue is None:
+        if var.position is None:
             self.info.setText(f"<b>{var.label}</b> — no mapped residue number.")
             return
-        self.residues_selected.emit([var.residue], var.label)
-        self.focus_requested.emit([var.residue])
+        # The variant keeps its published name and is marked at its position
+        # in THIS entry's numbering — R2456H is R2456H everywhere, and on a
+        # mouse entry it sits at 2482.
+        self.residues_selected.emit([var.position], var.label)
+        self.focus_requested.emit([var.position])
 
         modelled = ", ".join(var.modelled_in) if var.modelled_in else None
         warn = ("" if modelled else
@@ -276,6 +290,45 @@ class AnnotationPanel(QWidget):
         return text
 
     # -------------------------------------------------------------- context
+
+    def set_species(self, species: str) -> None:
+        """Read the annotation in **this entry's** numbering.
+
+        The panel used to load human annotation once, at construction, and
+        never ask again — so on a mouse entry, which is most of the catalogue,
+        every domain range, site and variant in it was a human residue number
+        applied to mouse coordinates. The offset is not constant and reaches 26
+        residues: picking "Transmembrane hydrophobic gate" highlighted human
+        2447/2450/2454 where the gate of the structure on screen is mouse
+        2473/2476/2480. It is the same defect Round 93 found in
+        ``analysis/features.py`` and Round 89b found in the functional-residue
+        loader, in the one panel a user reads first.
+
+        A numbering with no curated annotation — PIEZO2, PEZO-1, dPIEZO — now
+        yields **empty lists and the reason**, rather than PIEZO1's annotation
+        drawn on another protein.
+        """
+        if species == self._species:
+            return
+        self._species = species
+        self.annotations = load_annotations(species)
+        self._refill_domains()
+        self._refill_sites()
+        self.class_filter.blockSignals(True)
+        self.class_filter.clear()
+        self.class_filter.addItem("all classes")
+        self.class_filter.addItems(self.annotations.variant_classes())
+        self.class_filter.blockSignals(False)
+        self._refill_variants()
+        gap = annotation_gap(species)
+        self.info.setText(
+            f"<span style='color:#ffb454'>No curated annotation in {species} "
+            f"numbering.</span><br>{gap}" if gap else
+            f"Annotation shown in <b>{species}</b> numbering — the numbering "
+            f"of the structure on screen.")
+
+    def species(self) -> str:
+        return self._species
 
     def set_structure_context(self, pdb: str, modelled_residues: set[int]) -> None:
         """Tell the panel which residues the displayed structure resolves."""

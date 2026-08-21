@@ -8,10 +8,16 @@ the variant-structure survey at all.
 They run on the **primary** structure, whatever else is displayed, and each
 carries the caveat its result needs rather than leaving it in a docstring the
 user will not read.
+
+Each result window also carries an **Explore** button, opening the figures,
+charts, drivable models and 3-D overlays registered for that analysis in
+:mod:`piezo1.ui.exhibits`. The result is passed across rather than recomputed,
+so the picture and the table are always of one run.
 """
 
 from __future__ import annotations
 
+from .exhibits import exhibits_for
 from .result_dialog import ResultDialog
 
 __all__ = ["TabularAnalysisMixin"]
@@ -182,14 +188,41 @@ class TabularAnalysisMixin:
                       f"({model.confident_fraction:.0%} above pLDDT 70). "
                       f"Switch Completeness to 'Deposited only' in the Model "
                       f"panel for experiment alone.\n\n") + caveat
-        dialog = ResultDialog(title, data, caveat, self,
-                              structure_name=name, species=species)
+        exhibits = exhibits_for(key)
+        dialog = ResultDialog(
+            title, data, caveat, self, structure_name=name, species=species,
+            explore=lambda: self._explore(key, title, data, dialog.provenance),
+            n_exhibits=len(exhibits))
         # Held on the window so it is not garbage-collected while open.
         if not hasattr(self, "_result_dialogs"):
             self._result_dialogs = []
         self._result_dialogs = [d for d in self._result_dialogs if d.isVisible()]
         self._result_dialogs.append(dialog)
         dialog.show()
+
+    def _explore(self, key: str, title: str, data, provenance: str) -> None:
+        """Open the exploration window for a result already on screen.
+
+        The result is **handed over**, not recomputed: a chart built from a
+        second run of the same analysis would be a second answer, and the two
+        windows would sit side by side disagreeing about which one the numbers
+        belong to. The provenance stamp travels with it for the same reason it
+        is recorded at construction in the result window — both are non-modal,
+        and the registry can move underneath either.
+        """
+        from .explore_window import ExploreWindow
+
+        window = ExploreWindow(
+            key, title, data, window=self, provenance=provenance,
+            structure=self.structure,
+            species=(self.record.numbering_species if self.record else "human"))
+        if not hasattr(self, "_explore_windows"):
+            self._explore_windows = []
+        self._explore_windows = [w for w in self._explore_windows
+                                 if w.isVisible()]
+        self._explore_windows.append(window)
+        window.show()
+        window.raise_()
 
     def _run_registry_analysis(self, key: str, title: str) -> None:
         from ..analysis.report import ANALYSES

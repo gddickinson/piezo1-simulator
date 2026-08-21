@@ -3053,3 +3053,84 @@ test, tested.
   Two calibrations were wrong first and are recorded: a random-walk planted
   signal that correctly failed to clear the null, and a rank-partialling test
   that claimed the wrong reason for ranking.
+
+## Round 94 — the reasoning behind the number, one button away
+
+Every analysis window is a table; the figure it is drawn in, the model it came
+out of and the same result on the structure were reachable only from `docs/img`
+and `scripts/`. Added on request.
+
+- [x] **An Explore button on every result window, with something behind it.**
+  58 exhibits across all **20** analysis windows, in four kinds — a generated
+  figure, a chart built from the result already on screen, a simulation the
+  user drives, and a button that turns on the matching 3-D overlay. A window
+  with nothing registered fails the suite, so a new analysis cannot ship
+  without one.
+- [x] **Say what each exhibit is evidence of.** The kind and the basis
+  (measured here / modelled / imported / curated / published / recorded) are
+  printed on every one, and the catalogue **refuses to load** without the amber
+  line saying what it must not be read as — the rule `ui/theme` applies to a
+  missing token, for the same reason: the failure would otherwise appear in
+  front of a user.
+- [x] **Nothing recomputed, nothing written.** Charts come from the result dict
+  the window already holds, no reference value is a literal typed into a plot
+  (registry or result only), and no simulation writes to the parameter
+  registry — calibrated by planting an override so the guard is shown to notice
+  one. Six simulations, all fast enough to move: pore conductance against how
+  far the constriction is opened, labelling in time, calcium against distance,
+  dose–response through the measured potencies, and Figures 7c and 7d.
+- [x] **One control for anything drawn on the model.** Eleven model actions
+  press the menu entry or panel button the user would press, never the
+  controller, so the View menu cannot disagree with what is drawn; a second
+  press reports "already drawn" rather than toggling it off. The table is
+  resolved against a real window in a test.
+- [x] **Three defects found, two of them invisible to the offscreen suite.**
+  Bars on a **logarithmic** axis painted nothing (a bar is read from zero, and
+  log(0) is not a number) — caught in pixels. A widget in a *nested* layout
+  survived the panel rebuild and painted over a blank panel; the rebuilt panel
+  was never shown or laid out, every widget at its default 640×480 at the
+  origin. Offscreen Qt lays both out correctly, so the first is calibrated by
+  planting a stray widget and the second is checked in the source, with the
+  behavioural guard beside it labelled as passing either way.
+
+## Round 95 — the structure doing the talking
+
+The Explore button had charts behind it; this project is about shape. Added on
+request.
+
+- [x] **53 structural displays, offered 67 times across all twenty result
+  windows.** Load the
+  entry a result is about, draw a second beside it, superpose, show one
+  component, mark a residue set, recolour, morph — each pressing the control a
+  user would press, and each resolved against a real window in a test so the
+  table cannot drift when a control is renamed.
+- [x] **A pore-module-only superposition mode, in the Overlay panel.** Not a
+  better fit, a different question: cores on top of each other, blades
+  measured. The only mode that works across paralogues, because it corresponds
+  through a real alignment — by residue number the same pair is refused, and
+  rightly. 7WLT on 6KG7 gives a **3.7 Å core with 4.7 Å blades**; PIEZO1's own
+  gating pair gives **19×**. Drawn from `core_fit`, which `compare` now returns
+  the comparison half of, so the picture and the number are one computation.
+- [x] **Fix the Annotation panel's numbering.** It loaded human annotation at
+  construction and never asked again: on a mouse entry every domain, site and
+  variant was a human number on mouse coordinates — the gate is mouse
+  2473/2476/2480 against human 2447/2450/2454 — and a PIEZO2 entry was shown
+  PIEZO1's annotation outright. Now reloaded per entry, with empty lists and a
+  reason for a protein that has none.
+- [x] **Separate a variant's identity from its position.** R2456H is R2456H in
+  every record here and `variants.json` is human-numbered; on 7WLT that
+  arginine is at **2482** and 2456 is a **proline**. `Variant.position` is the
+  number in the numbering the set was loaded for, and is what the panel, the
+  sequence window and every structural mark now use.
+- [x] **Fix the core fit's framing, found by drawing it.** The core was
+  selected by the mobile entry's own residue numbers whatever the mobile was,
+  and `"mouse" in "mouse_piezo2"` is true: loading a PIEZO2 entry and running
+  Core and periphery fitted a different 287 residues and returned **2.36 Å**
+  where the same pair the other way round gives **3.74**. Framed now in
+  whichever entry has curated domains; a pair with none either side is
+  refused. Calibrated by symmetry — a rigid fit on one residue set gives the
+  same RMSD whichever entry moves.
+- [x] **Give the imported census positions their own control.** View → Mark
+  census positions, so an imported result is reachable from the main GUI and an
+  exhibit can press the entry rather than calling the highlight itself. An
+  entry whose numbering cannot carry them is refused with the reason.

@@ -18,8 +18,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from piezo1.analysis.core_periphery import (Refusal, compare, core_residues,
-                                            periphery_residues)
+from piezo1.analysis.core_periphery import (Refusal, compare, core_fit,
+                                            core_residues, periphery_residues)
 from piezo1.analysis.equivalent_positions import alignment_agrees, locate
 from piezo1.core.family import load_family_findings
 
@@ -41,6 +41,120 @@ def test_an_entry_against_itself_gives_a_zero_core_and_no_splay(structure_by_id)
     assert result
     assert result.core_rmsd < 1e-6
     assert result.periphery_rmsd < 1e-6
+
+
+def test_the_fit_and_the_number_come_out_of_one_computation(structure_by_id):
+    """`core_fit` exists so the GUI can draw the superposition this result
+    describes. If it were a second implementation the picture and the table
+    could disagree, which is the failure `pore_controller` and
+    `interaction_controller` are both written around — so `compare` is now
+    literally `core_fit(...).comparison` and this checks it.
+    """
+    a, b = structure_by_id("7WLT"), structure_by_id("6KG7")
+    if a is None or b is None:
+        pytest.skip("7WLT or 6KG7 not downloaded")
+
+    fit = core_fit(a, b, "7WLT", "6KG7")
+    assert not isinstance(fit, Refusal)
+    assert fit.comparison == compare(a, b, "7WLT", "6KG7")
+
+    # And the transform is the one that produced those numbers: applying it to
+    # the fitted residues has to reproduce the core RMSD it reports.
+    from piezo1.analysis.core_periphery import _protomer_ca
+
+    mob_xyz, mob_res = _protomer_ca(a)
+    tgt_xyz, tgt_res = _protomer_ca(b)
+    moved = (mob_xyz - fit.centroid) @ fit.rotation.T + fit.translation
+    index = {int(r): i for i, r in enumerate(mob_res)}
+    target_index = {int(r): i for i, r in enumerate(tgt_res)}
+    from piezo1.analysis.core_periphery import correspondence
+
+    mapping = correspondence(fit.comparison.mobile_numbering,
+                             fit.comparison.target_numbering)
+    pairs = []
+    for resi in fit.fitted_residues:
+        mapped = resi if mapping is None else mapping.get(int(resi))
+        if mapped in target_index and resi in index:
+            pairs.append((index[resi], target_index[mapped]))
+    d = moved[[i for i, _ in pairs]] - tgt_xyz[[j for _, j in pairs]]
+    recomputed = float(np.sqrt((d * d).sum(axis=1).mean()))
+    assert recomputed == pytest.approx(fit.comparison.core_rmsd, abs=1e-6)
+
+
+def test_the_same_pair_fits_the_same_either_way_round(structure_by_id):
+    """The calibration for the core fit, and the defect it caught.
+
+    A rigid fit on one residue set is symmetric: whichever entry is moved, the
+    core RMSD is the same number. It was not. The core was selected by the
+    *mobile's* residue numbers whatever the mobile was, and ``"mouse" in
+    "mouse_piezo2"`` is true — so with PIEZO2 as the mobile, PIEZO1's mouse
+    domain ranges were indexed straight into PIEZO2's numbering and a
+    different set of 287 residues was fitted, giving 2.36 Å where the same
+    pair the other way round gives 3.74. The curated domains exist in human
+    and mouse PIEZO1 only, so the core is now selected in whichever entry is
+    one of those and mapped to the other through the correspondence.
+
+    This is the mis-framing ``paralogue_identity`` refuses outright, where it
+    moves the cap identity from 0.35 to 0.85 and announces nothing.
+    """
+    a, b = structure_by_id("7WLT"), structure_by_id("6KG7")
+    if a is None or b is None:
+        pytest.skip("7WLT or 6KG7 not downloaded")
+
+    forward = compare(a, b, "7WLT", "6KG7")
+    backward = compare(b, a, "6KG7", "7WLT")
+    assert forward.n_core == backward.n_core
+    assert forward.core_rmsd == pytest.approx(backward.core_rmsd, abs=1e-6)
+    assert forward.periphery_rmsd == pytest.approx(backward.periphery_rmsd,
+                                                   abs=1e-6)
+    assert forward.splay_ratio == pytest.approx(backward.splay_ratio, abs=1e-6)
+
+
+def test_a_pair_with_no_curated_domains_either_side_says_where_its_core_came_from(
+        structure_by_id):
+    """Two non-PIEZO1 entries have no curated pore module, so where the core
+    *is* has to be carried into their numbering by alignment — and below
+    Rost's line that alignment is the weaker of the two things the answer
+    rests on. It is answered, and the note says so rather than reading like a
+    curated selection."""
+    worm = structure_by_id("9ZIS")
+    fly = structure_by_id("9W7X")
+    if worm is None or fly is None:
+        pytest.skip("9ZIS or 9W7X not downloaded")
+
+    result = compare(worm, fly, "9ZIS", "9W7X")
+    assert result, getattr(result, "reason", "")
+    assert "carried into" in result.note
+    assert "not curated" in result.note
+
+    # The control: a pair that *does* have curated domains says nothing of the
+    # kind, or the note would be decoration rather than a warning.
+    piezo1 = structure_by_id("7WLT")
+    if piezo1 is not None:
+        assert "carried into" not in compare(piezo1, worm, "7WLT", "9ZIS").note
+
+
+def test_the_deviations_are_offered_in_both_entries_numbering(structure_by_id):
+    """A caller colouring one structure by the splay must use that structure's
+    own residue numbers. Across paralogues the two sets share none, so handing
+    over a single map would have been silently wrong for one of them."""
+    a, b = structure_by_id("7WLT"), structure_by_id("6KG7")
+    if a is None or b is None:
+        pytest.skip("7WLT or 6KG7 not downloaded")
+
+    fit = core_fit(a, b, "7WLT", "6KG7")
+    assert len(fit.deviation) == len(fit.deviation_target)
+    # Same distances, different keys. The numbers overlap as integers — both
+    # proteins have a residue 2000 — which is exactly why one map cannot stand
+    # in for the other: it would land on a real, wrong residue.
+    assert sorted(fit.deviation.values()) == pytest.approx(
+        sorted(fit.deviation_target.values()))
+    shared = set(fit.deviation) & set(fit.deviation_target)
+    assert shared, "no residue number is in both entries; the guard is vacuous"
+    differ = [n for n in shared
+              if abs(fit.deviation[n] - fit.deviation_target[n]) > 1e-9]
+    assert differ, ("the two maps agree at every shared number, so one is a "
+                    "copy of the other rather than a re-keying")
 
 
 def test_the_core_and_periphery_sets_do_not_overlap():

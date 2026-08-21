@@ -71,6 +71,29 @@ class SelectionMixin:
                                  f"in {self.record.pdb if self.record else '?'}")
         self.viewport.update()
 
+    def mark_imported_positions(self, source: str) -> None:
+        """Mark a set of positions the **census** recorded, not this project.
+
+        A curated site is in the Annotation panel, where it belongs — these are
+        somebody else's result, recorded in human numbering, and they get their
+        own entry point so nothing suggests they were measured here. The
+        conversion into the loaded entry's numbering, and the refusal when it
+        cannot be made, are in :func:`piezo1.ui.model_actions.highlight_residues`.
+        """
+        from .model_actions import highlight_residues
+
+        residues, label = highlight_residues(self, source)
+        if not residues:
+            self._set_status(label)
+            return
+        self._highlight(residues, label)
+        self._focus_residues(residues)
+        self._set_status(
+            f"marked {len(residues)} {'residue' if len(residues) == 1 else 'residues'}"
+            f" — {label}. These positions are the piezo_genes census's, not "
+            f"measured here; what is under the marker is this entry's own "
+            f"residue at that position.")
+
     def _focus_residues(self, residues) -> None:
         """Move the camera to a selection, if the user has asked for that."""
         mode = self.focus_mode()

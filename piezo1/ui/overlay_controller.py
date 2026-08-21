@@ -52,6 +52,12 @@ class OverlayResult:
         return tuple(self.protomer_order) != (0, 1, 2)
 
     def summary(self) -> str:
+        # A core-only fit reports in the words of the analysis that produced
+        # it, so the status line and the result window cannot describe the
+        # same superposition differently.
+        if self.meta.get("summary"):
+            return (f"{self.meta['summary']} · fitted on the pore module ONLY "
+                    f"— the blades are a MEASUREMENT, not part of the fit")
         text = (f"{self.structure.name}: RMSD {self.rmsd:.2f} Å over "
                 f"{self.n_common} common C-alphas")
         if self.reordered:
@@ -119,6 +125,9 @@ class OverlayWorker(QObject):
     def _superpose(self) -> OverlayResult:
         from ..structure.superpose import kabsch, match_protomers, rmsd
 
+        if self.mode == "core":
+            return self._core_only()
+
         order = (0, 1, 2)
         by_label = float("nan")
         if self.mode == "protomer":
@@ -159,6 +168,49 @@ class OverlayWorker(QObject):
                   "max_deviation": max(deviation.values()) if deviation else 0.0})
 
 
+    def _core_only(self) -> OverlayResult:
+        """Fit on the pore module alone, and let the blades fall where they may.
+
+        The other two modes fit on everything shared, which answers "how
+        different are these two". This answers a different question — *given
+        that the pore modules are on top of each other, where do the blades
+        land* — and it is the one the family work rests on: an AlphaFold
+        monomer splays 7-9x from an experimental structure of its own protein,
+        while experimental cross-paralogue pairs splay 0.8-2.5x.
+
+        The fit is :func:`piezo1.analysis.core_periphery.core_fit`, not a
+        second implementation of it, so what is drawn is the superposition the
+        Core-and-periphery result window describes — down to the correspondence,
+        which is a real global alignment when the two are different proteins.
+        """
+        from ..analysis.core_periphery import Refusal, core_fit
+
+        fit = core_fit(self.mobile, self.reference,
+                       self.mobile.name or "overlay",
+                       self.reference.name or "reference")
+        if isinstance(fit, Refusal):
+            raise ValueError(fit.reason)
+        comparison = fit.comparison
+        return OverlayResult(
+            structure=self.mobile, rotation=fit.rotation,
+            translation=fit.translation, centroid=fit.centroid,
+            rmsd=comparison.core_rmsd, rmsd_by_label=comparison.core_rmsd,
+            n_common=comparison.n_core,
+            # Keyed by the REFERENCE's residue numbers, because the deviation
+            # colouring is painted on the reference — and across paralogues the
+            # two entries number the same position differently.
+            per_residue=fit.deviation_target,
+            meta={"mode": "core", "reference": self.reference.name,
+                  "summary": comparison.summary(),
+                  "splay_ratio": comparison.splay_ratio,
+                  "n_periphery": comparison.n_periphery,
+                  "periphery_rmsd": comparison.periphery_rmsd,
+                  "cross_paralogue": comparison.cross_paralogue,
+                  "correspondence": comparison.note,
+                  "max_deviation": (max(fit.deviation_target.values())
+                                    if fit.deviation_target else 0.0)})
+
+
 class OverlayController:
     """Owns the second view, its styling and the superposition thread."""
 
@@ -189,10 +241,17 @@ class OverlayController:
             return
 
         mobile = Structure.from_file(path)
-        refusal = self._numbering_refusal(pdb, mobile)
-        if refusal:
-            self.win._set_status(refusal)
-            return
+        # The numbering refusal exists because residue numbers are the join key
+        # for the other two modes. A core fit does not use them as one: it
+        # establishes correspondence through a global alignment, which is what
+        # makes a PIEZO1-against-PIEZO2 superposition a measurement rather than
+        # a picture — and refusing it here would refuse the one comparison the
+        # mode was added for.
+        if mode != "core":
+            refusal = self._numbering_refusal(pdb, mobile)
+            if refusal:
+                self.win._set_status(refusal)
+                return
 
         self.win._set_status(f"superposing {pdb}…")
         self._thread = QThread()

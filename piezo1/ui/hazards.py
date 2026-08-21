@@ -252,6 +252,50 @@ HAZARDS: tuple = (
               "is not guarded.",
         status="guarded",
         where="ui/analysis_controller.py"),
+    Hazard(
+        key="annotation_read_in_the_wrong_numbering",
+        scenario="Load a mouse entry — which is most of the catalogue — open "
+                 "the Annotation panel, and click a domain, a site or a "
+                 "variant to see it on the structure.",
+        wrong="Curated annotation drawn at human residue numbers on mouse "
+              "coordinates. The offset is not constant and reaches 26 "
+              "residues, so the marker lands on a real, wrong residue rather "
+              "than on nothing: the hydrophobic gate is mouse 2473/2476/2480 "
+              "and human 2447/2450/2454, and R2456H sits at mouse 2482 while "
+              "2456 there is a proline. A PIEZO2 entry was shown PIEZO1's "
+              "annotation outright.",
+        guard="The panel loads annotation for the entry's own numbering on "
+              "every load and says which numbering that is; a protein with no "
+              "curated annotation gets empty lists and the reason. A variant "
+              "keeps `residue` as its identity — R2456H is R2456H in every "
+              "document here — and carries `position`, the number in the "
+              "numbering the set was loaded for, which is what anything "
+              "looking it up in coordinates uses. Round 95; the same defect "
+              "Round 93 found in `analysis/features.py` and Round 89b in the "
+              "functional-residue loader, in the panel a user reads first.",
+        status="guarded",
+        where="ui/panels/annotation_panel.py, core/annotations.py"),
+    Hazard(
+        key="superposition_read_as_similarity",
+        scenario="Superpose a second structure on the pore module and read "
+                 "how far apart the blades land as how different the two "
+                 "proteins are.",
+        wrong="A fit chosen from several possible fits read as a measurement "
+              "of similarity. A core-only fit is DIRECTIONAL: it asks where "
+              "the blades land given that the pores are superposed, and the "
+              "same pair fitted on everything shared gives a different number "
+              "— 7WLT on 6KG7 is 3.74 A on the core with 4.68 A blades, "
+              "against 3.38 A fitted globally.",
+        guard="The mode is named in the panel and on the status line, which "
+              "reports the core fit, the blade distance and the ratio "
+              "together and says the blades are a measurement rather than "
+              "part of the fit. A pair whose cores do not converge gets no "
+              "ratio at all, and the control that makes a ratio readable — a "
+              "prediction against its own protein splays 7-9x where "
+              "experimental paralogues splay 0.8-2.5x — is in the result "
+              "window beside it.",
+        status="guarded",
+        where="ui/overlay_controller.py, analysis/core_periphery.py"),
 )
 
 
