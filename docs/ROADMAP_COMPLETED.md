@@ -3022,8 +3022,8 @@ test, tested.
   median aligned core pair is 2.5 Å apart, so proximity alone is what every pair
   gives.
 - [x] **Show that the "blades splay" is the prediction.** An AlphaFold monomer
-  splays **7–9× from an experimental structure of the protein it models**; two
-  experimental structures of *different paralogues* splay **0.8–1.2×**. The core
+  splays **7.2–9.1× from an experimental structure of the protein it models**;
+  three experimental cross-paralogue pairs splay **0.8–2.5×**. The core
   agreement survives and is stronger than reported: two experimental paralogues
   at 3.6 Å against the census's 3.9. 7WLT → 7WLU is 19×, which is PIEZO1's own
   gating motion.

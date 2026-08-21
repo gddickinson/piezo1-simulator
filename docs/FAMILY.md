@@ -191,10 +191,12 @@ a core-only fit:
 | 6KG7 → 9VEE (PIEZO2, mouse → human) | 1.17 Å | 2.38 Å | 2.0× |
 | 7WLT → 6KG7 (PIEZO1 → PIEZO2) | 3.74 Å | 4.68 Å | 1.2× |
 | 7WLT → 9VEE (PIEZO1 → PIEZO2) | 3.57 Å | 3.01 Å | **0.8×** |
+| 8YEZ → 9VEE (PIEZO1 → PIEZO2) | 3.79 Å | 9.46 Å | 2.5× |
 
-An AlphaFold monomer splays **7–9×** from an experimental structure of the
-protein it is a model *of*. Two experimental structures of *different
-paralogues* splay about **1×**. So the splay in the census's picture is a
+An AlphaFold monomer splays **7.2–9.1×** from an experimental structure of the
+protein it is a model *of*. Three experimental cross-paralogue pairs splay
+**0.8–2.5×** — the widest of them, 8YEZ against 9VEE, on an entry resolving the
+least blade. So the splay in the census's picture is a
 prediction-versus-experiment artefact, not paralogue divergence — and the core
 agreement it reports (3.9 Å) is matched by two experimental paralogues at
 3.6–3.7 Å, which is the stronger version of the same claim.

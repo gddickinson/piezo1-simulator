@@ -86,9 +86,9 @@ asks a directional question and can <b>fail</b>, in which case no splay ratio is
 reported.</p>
 
 <p>The control is what makes the answer readable: an AlphaFold monomer splays
-<b>7&ndash;9&times;</b> from an experimental structure <i>of the protein it is a
-model of</i>, while two experimental structures of <i>different paralogues</i>
-splay about <b>1&times;</b>. So a large splay measured against a predicted model
+<b>7.2&ndash;9.1&times;</b> from an experimental structure <i>of the protein it
+is a model of</i>, while three experimental cross-paralogue pairs splay
+<b>0.8&ndash;2.5&times;</b>. So a large splay measured against a predicted model
 is a statement about the model. Within one protein, 7WLT against the flattened
 7WLU splays <b>19&times;</b> — core-conserved and periphery-free is what
 PIEZO1's own gating motion looks like.</p>

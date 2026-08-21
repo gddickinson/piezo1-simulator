@@ -7191,9 +7191,9 @@ sharpen one and two say what a finding is really about.
   structural result superposes a *predicted* piezo3 monomer on experimental
   mouse Piezo1 and reports the cores agreeing while the blades splay. Generalised
   here to every pair, with the control that decides it: an AlphaFold monomer
-  splays **7–9× from an experimental structure of the protein it is a model
-  of**, while two experimental structures of *different paralogues* splay
-  **0.8–1.2×**. The core agreement survives and is stronger than reported — two
+  splays **7.2–9.1× from an experimental structure of the protein it is a
+  model of**, while three experimental cross-paralogue pairs splay **0.8–2.5×**, the
+  widest on the entry resolving the least blade. The core agreement survives and is stronger than reported — two
   experimental paralogues superpose at 3.6 Å against the census's 3.9 — and the
   splay is an artefact of comparing a model with an experiment. The 19× at the
   top of that table is PIEZO1's own gating motion: core-conserved and

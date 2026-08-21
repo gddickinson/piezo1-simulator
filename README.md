@@ -335,9 +335,8 @@ enrichment replicates strongly against a *population* comparator on its own
 boundaries (odds ratio 3.63, P = 0.0033) and not on ours — the 120 residues the
 two disagree about carry six pathogenic positions, which is the result. And the
 blades "splaying" in its structural figure is not paralogue divergence: an
-AlphaFold monomer splays **7–9× from an experimental structure of the protein it
-models**, while two experimental structures of *different* paralogues splay
-about 1×.
+AlphaFold monomer splays **7.2–9.1× from an experimental structure of the protein
+it models**, while three experimental cross-paralogue pairs splay 0.8–2.5×.
 
 **The question neither project could ask alone**: is a residue's evolutionary
 constraint predicted by how mechanically coupled it is, or only by how buried it

@@ -115,9 +115,9 @@ HAZARDS: tuple = (
                  "by the pore module and read the blade separation as a "
                  "difference between the two proteins.",
         wrong="A property of the predictor reported as evolutionary "
-              "divergence. Measured: an AlphaFold monomer splays 7-9x from an "
-              "experimental structure OF THE SAME PROTEIN, while two "
-              "experimental structures of different paralogues splay 0.8-1.2x.",
+              "divergence. Measured: an AlphaFold monomer splays 7.2-9.1x from an "
+              "experimental structure OF THE SAME PROTEIN (7.2-9.1x), "
+              "while three experimental cross-paralogue pairs splay 0.8-2.5x.",
         guard="core_periphery reports the splay as a ratio against the core "
               "it was fitted on, refuses a ratio entirely when the cores do "
               "not superpose, and states cross_paralogue explicitly; the "

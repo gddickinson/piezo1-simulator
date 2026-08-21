@@ -140,9 +140,9 @@ CAVEATS = {
     "coreperiphery": (
         "A CORE-ONLY FIT IS DIRECTIONAL and can fail. It asks where the blades "
         "land given that the pore modules are superposed. The control that "
-        "makes the answer readable: an AlphaFold MONOMER splays 7-9x from an "
-        "experimental structure OF THE SAME PROTEIN, while two experimental "
-        "structures of DIFFERENT paralogues splay ~1x. A large splay against a "
+        "makes the answer readable: an AlphaFold MONOMER splays 7.2-9.1x from "
+        "an experimental structure OF THE SAME PROTEIN, while three "
+        "experimental cross-paralogue pairs splay 0.8-2.5x. A large splay against a "
         "predicted model is therefore a statement about the model."),
     "piezo3": (
         "A PREDICTED MONOMER ASSEMBLED ON SOMEBODY ELSE'S TRIMER. 96% of the "

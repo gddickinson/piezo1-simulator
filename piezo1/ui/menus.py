@@ -316,9 +316,9 @@ def _analysis_menu(win, bar) -> None:
             "two disagree by 120 residues and the answer follows.")
     _action(menu, "Core and peri&phery…", win.show_core_periphery, "",
             "Superpose a partner on this entry by the pore module alone,\n"
-            "then measure where the blades land. Two experimental paralogue\n"
-            "structures splay ~1x; an AlphaFold monomer of the SAME protein\n"
-            "splays 7-9x, which is what makes the control worth having.")
+            "then measure where the blades land. Experimental cross-paralogue\n"
+            "pairs splay 0.8-2.5x; an AlphaFold monomer of the SAME protein\n"
+            "splays 7.2-9.1x, which is what makes the control worth having.")
     _action(menu, "piezo&3 - the third PIEZO…", win.show_piezo3, "",
             "The paralogue vertebrates have and humans lost: transcribed,\n"
             "spliced and under selection at its pore, with the identical\n"
