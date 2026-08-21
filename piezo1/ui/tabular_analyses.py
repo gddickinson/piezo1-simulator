@@ -112,6 +112,47 @@ CAVEATS = {
         "each other; and the family's two non-animal members (plant, amoeba) "
         "are ABSENT, because the only structural representation either has is "
         "an AlphaFold MONOMER and the elastic network needs three protomers."),
+    "family": (
+        "AN EXTERNAL PROJECT'S RESULTS, not this one's. Every statement here "
+        "was produced by the piezo_genes census — a 194-genome sweep this "
+        "application does not perform — and re-verified against its own source "
+        "files when the resource was built. Nothing in this window was "
+        "measured on the loaded structure. The four entries beside it "
+        "(Constraint, Disease geography, Core and periphery, piezo3) are the "
+        "ones that measure."),
+    "constraint": (
+        "THE PER-RESIDUE VALUES ARE THE CENSUS'S; the partition is ours. Two "
+        "things follow. A mouse entry is read through the alignment map, so "
+        "coverage below 1.0 is residues the map could not carry rather than "
+        "residues nobody scored. And the blade gradient is BOUNDARY-DEPENDENT: "
+        "the census's finding that the distal blade is more conserved than the "
+        "proximal one holds on its chain-cut bands and REVERSES on the "
+        "transmembrane units, because its proximal band is 77% inter-unit "
+        "linker against the distal band's 29% and linker scores the same "
+        "either side."),
+    "disease": (
+        "AN INDEPENDENT RE-TEST, not a reproduction, and it does not settle. "
+        "PIEZO1 only where the census pooled two genes, and against gnomAD "
+        "population missense rather than ClinVar benign labels. The enrichment "
+        "reaches significance on the census's pore-module boundaries and not "
+        "on ours, and the 120 residues the two disagree about (2057-2176) "
+        "themselves carry six pathogenic positions. Read both rows."),
+    "coreperiphery": (
+        "A CORE-ONLY FIT IS DIRECTIONAL and can fail. It asks where the blades "
+        "land given that the pore modules are superposed. The control that "
+        "makes the answer readable: an AlphaFold MONOMER splays 7-9x from an "
+        "experimental structure OF THE SAME PROTEIN, while two experimental "
+        "structures of DIFFERENT paralogues splay ~1x. A large splay against a "
+        "predicted model is therefore a statement about the model."),
+    "piezo3": (
+        "A PREDICTED MONOMER ASSEMBLED ON SOMEBODY ELSE'S TRIMER. 96% of the "
+        "resulting departure from planarity is the template's arrangement, so "
+        "the dome radius is not a measurement of piezo3. What the numbers can "
+        "do is FAIL, and they did not: the protomer arranges into a closed "
+        "trimer with an axis and a continuous lumen. That is a negative that "
+        "survived, not a positive demonstrated — no current has ever been "
+        "recorded from any piezo3, and human piezo3 has been a pseudogene "
+        "since before the primate radiation."),
     "variant_structures": (
         "A null result, reported rather than worked around: every deposited "
         "human PIEZO1 structure is closed, so no difference in conductance can "
@@ -216,6 +257,27 @@ class TabularAnalysisMixin:
         self._run_registry_analysis(
             "prediction_record",
             "Can this predict gain- vs loss-of-function? — the record")
+
+    def show_family(self) -> None:
+        """The imported census. Runs on no structure, and says so."""
+        self._run_registry_analysis(
+            "family", "The PIEZO family census — what was imported")
+
+    def show_constraint(self) -> None:
+        self._run_registry_analysis(
+            "constraint", "Evolutionary constraint, on our own domains")
+
+    def show_disease_geography(self) -> None:
+        self._run_registry_analysis(
+            "disease", "Where human disease sits — re-tested here")
+
+    def show_core_periphery(self) -> None:
+        self._run_registry_analysis(
+            "coreperiphery", "Core and periphery — fitted on the pore module")
+
+    def show_piezo3(self) -> None:
+        self._run_registry_analysis(
+            "piezo3", "piezo3 — the third vertebrate PIEZO")
 
     def show_paired_variant(self) -> None:
         self._run_registry_analysis(

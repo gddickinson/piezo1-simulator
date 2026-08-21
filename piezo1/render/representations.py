@@ -71,6 +71,11 @@ class ColorBy(str, Enum):
     #: VALUE because VALUE auto-ranges, and an auto-ranged potential map paints
     #: an almost-neutral surface as violently charged.
     POTENTIAL = "potential"
+    #: Evolutionary constraint, on a *fixed* 0-1 scale. Separate from VALUE for
+    #: the same reason POTENTIAL is — VALUE auto-ranges, and an auto-ranged
+    #: constraint map cannot be compared between two entries that resolve
+    #: different amounts of blade.
+    CONSTRAINT = "constraint"
 
 
 SS_COLORS = np.array([
@@ -173,6 +178,8 @@ class MolecularView:
             return st.element_colors()
         if self.color_by is ColorBy.POTENTIAL and self.values is not None:
             return colormaps.potential_colors(self.values)
+        if self.color_by is ColorBy.CONSTRAINT and self.values is not None:
+            return colormaps.constraint_colors(self.values)
         if self.color_by is ColorBy.VALUE and self.values is not None:
             return colormaps.value_colors(self.values)
         if self.color_by is ColorBy.SECONDARY:

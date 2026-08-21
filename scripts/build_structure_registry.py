@@ -86,6 +86,20 @@ PREDICTED_MODELS = {
              "a property of the fold rather than of animals. A PREDICTION and "
              "a MONOMER: read the pLDDT before believing the blade.",
         recommended_for=["predicted", "family", "generality"]),
+    "AF-A0AB32U1Q1-F1-MODEL_V6": dict(
+        species="zebrafish", state="predicted", gating="unknown",
+        note="AlphaFold DB model of zebrafish piezo3 (si:dkey-11f4.7), 2,651 "
+             "residues — the THIRD vertebrate PIEZO, and the only structural "
+             "representation it has anywhere. Human piezo3 has been the "
+             "pseudogene PIEZO1P2 since before the primate radiation, so the "
+             "paralogue cannot be studied in human coordinates at all. A "
+             "PREDICTION and a MONOMER, with two further cautions particular "
+             "to it: the UniProt entry is unreviewed, so its topology "
+             "annotation names 21 transmembrane helices where PIEZO1 and "
+             "PIEZO2 have 38; and a second record for the same gene "
+             "(A0AC58GFC9, the one the census scored) differs by one inserted "
+             "residue, so nothing may join the two by residue number.",
+        recommended_for=["predicted", "family", "paralogue", "generality"]),
 }
 
 #: Downloaded coordinate files that do not become catalogue entries, each with

@@ -1,0 +1,343 @@
+"""What the parameter audit does **not** flag, and the reason for each.
+
+Split from ``parameter_audit.py`` at the 500-line limit and along the seam that
+file already had: the audit is a mechanism — walk the AST, find the numeric
+literals, decide — and this is the *judgement* about which literals are not
+scientific parameters. The judgement is what a reader has to check, and it is
+readable without the machinery.
+
+The rule it encodes, from ``CLAUDE.md``: tolerances, seeds, iteration caps and
+zero-initialised fields are legitimately exempt; a physical quantity never is.
+Every entry states its reason, and the audit refuses an entry that does not.
+"""
+
+from __future__ import annotations
+
+__all__ = ["EXEMPT_NAMES", "EXEMPT"]
+
+
+EXEMPT_NAMES = {
+    "tol": "convergence tolerance, not a physical quantity",
+    "tolerance": "convergence tolerance",
+    "atol": "absolute tolerance",
+    "rtol": "relative tolerance",
+    "seed": "random seed; results are reported with it fixed",
+    "iterations": "iteration cap",
+    "maxiter": "iteration cap",
+    "max_iterations": "iteration cap",
+    "relaxation": "damping on a fixed-point iteration; changes how fast it "
+                  "converges, not what it converges to",
+    "calcium": "an experimental condition set by the caller, not a parameter",
+    "max_nodes": "solver node cap",
+    "max_pairs": "sampling cap, reported when it truncates",
+    "max_n": "search ceiling",
+    "n_max": "search ceiling; returning it would be reported as no answer",
+    "ROUND": "which recorded validation a design analysis refers to; an "
+             "identifier, not a quantity — the numbers are read from the record",
+    "chunk": "memory blocking; cannot change a result",
+    "n_corresponding": "zero-initialised count on a refusal result; the real "
+                       "value is measured, never defaulted",
+    "n_core": "zero-initialised count on a refusal result",
+    "clashes": "zero-initialised count on a refusal result; measured by "
+               "structure.clashes.count_clashes when there is an assembly",
+    "n_points": "quadrature or plotting density",
+    "n_samples": "Monte-Carlo sample count",
+    "n_simulations": "Monte-Carlo replicate count",
+    "n_resamples": "bootstrap replicate count; changes the precision of an "
+                   "interval, never the quantity being estimated",
+    "n_shuffles": "permutation replicate count; changes the precision of the "
+                  "control distribution, never its centre",
+    "n_modelled": "counter, initialised to zero",
+    "n_pairs": "how many site pairs are sampled; changes the precision of the "
+               "correlation, not its expected value",
+    "digits": "how many decimals to print; presentation only",
+    "level": "derived from stats.alpha rather than set independently",
+    "n_bins": "histogram resolution",
+    "n_angular": "mesh resolution for rendering",
+    "n_frames": "animation length",
+    "n_rays": "ray-cast sampling density",
+    "cytosolic_index": "which end of the pore profile is the cytosolic one. An "
+                       "array index describing a structure's orientation, not a "
+                       "quantity; it is measured by pore_charge.cytosolic_end "
+                       "rather than chosen, and the default matches the "
+                       "canonical frame the profile is computed in",
+    "n_protomers": "structural fact fixed by the assembly, registered as anm.n_protomers",
+    "n_channels": "simulation multiplicity chosen by the caller",
+    "n_points_": "plotting density",
+    "n": "grid or sample size",
+    "size": "page size for a paged API",
+    "timeout": "network timeout",
+    "delay": "polite rate limit for a public API",
+    "coarse": "initial grid resolution before refinement",
+    "refine_steps": "refinement iterations",
+    "indent": "text formatting",
+    "top": "how many results to show",
+    "pc": "which principal component to report",
+    "scale": "display scaling",
+    "amplitude": "display amplitude; explicitly not a physical prediction",
+    "min_ca": "chain-length floor, registered as geometry.min_ca_per_protomer",
+    "min_common": "coverage floor chosen per analysis",
+    "min_length": "sequence-length filter for ortholog search",
+    "max_length": "sequence-length filter for ortholog search",
+    "min_spheres": "cluster-size floor for reporting",
+    "max_pockets": "how many pockets to report",
+    "sensitivity": "tunable knob, reported with every prediction",
+    "resting": "an experimental condition set by the caller",
+    "resting_tension": "an experimental condition set by the caller",
+    "duration": "protocol length set by the caller",
+    "tension": "an independent variable, not a parameter",
+    "lo": "search bracket",
+    "hi": "search bracket",
+    "ratio": "group-size ratio chosen per design",
+    "alpha_": "see stats.alpha",
+    "n_modes_": "see anm.n_modes",
+}
+
+#: Specific (module, owner, name) triples exempt for reasons of their own.
+EXEMPT = {
+    # --- the imported PIEZO-family census -------------------------------
+    # Three numbers below are *somebody else's boundary choices*, quoted so
+    # their result can be reproduced before it is disputed. Registering them
+    # would make them overridable, and an override would silently stop the
+    # reproduction being a reproduction — which is the opposite of what the
+    # registry is for.
+    ("analysis/family_constraint.py", None, "CENSUS_CUT_MOUSE"):
+        "the census cut its two blade bands at mouse residue 1300. Theirs, not "
+        "ours: it is here to reproduce their number, and a different value "
+        "would reproduce a different one.",
+    ("analysis/family_constraint.py", None, "CENSUS_CUT_HUMAN_FALLBACK"):
+        "the human equivalent of the census's own cut, used only if the "
+        "alignment map cannot place it. Stated rather than silent because a "
+        "cut in the wrong place moves every band mean above it.",
+    ("analysis/family_constraint.py", None, "CENSUS_PROXIMAL_END"):
+        "where the census's proximal blade band ends and its anchor begins. "
+        "Theirs, for the same reason as the cut above.",
+    ("analysis/family_constraint.py", "ConstraintOnStructure", "n_atoms_scored"):
+        "counter, initialised to zero",
+    ("analysis/family_constraint.py", "ConstraintOnStructure", "n_residues_scored"):
+        "counter, initialised to zero",
+    ("analysis/family_constraint.py", "ConstraintOnStructure", "n_residues"):
+        "counter, initialised to zero",
+    ("analysis/constraint_mechanics.py", "FeatureCoupling", "p_empirical"):
+        "a p-value initialised to 1.0, which is 'no evidence' — the value a "
+        "feature keeps if the null could not be computed. The real one is "
+        "measured from the shift null, never defaulted.",
+    ("analysis/constraint_mechanics.py", "FeatureCoupling", "q_value"):
+        "an FDR-adjusted p initialised to 1.0, as above.",
+    ("analysis/family_motifs.py", "control_motif", "residue"):
+        "where in human PIEZO1 to take a motif that is known to be present, "
+        "so the absent-motif search has a positive control. Any position "
+        "would do and the test drives several; it defaults to 2456 because "
+        "that is the residue the rest of this subsystem is about.",
+    ("analysis/family_motifs.py", "control_motif", "length"):
+        "how many residues the positive-control motif is. Four, to match the "
+        "length of the absent motif being tested, so the control exercises the "
+        "same search.",
+    ("structure/frame.py", "Frame", "n_atoms_fitted"): "counter, initialised to zero",
+    ("physics/conduction_path.py", "ConductionPath", "dropped_entry"):
+        "counter, initialised to zero",
+    ("physics/conduction_path.py", "ConductionPath", "dropped_exit"):
+        "counter, initialised to zero",
+    ("physics/conduction_path.py", None, "_MIN_SLICES"):
+        "a floor on the arithmetic, not on the physics: below it the truncated "
+        "path is a gap between two annotations rather than a pore, and the "
+        "result is refused rather than computed. No structure in the catalogue "
+        "comes near it — the shortest truncated path is 80 slices.",
+    ("physics/martini.py", "currents_pA", "valence"):
+        "the charge number of the ion the trajectory counted — which ion, not "
+        "a fitted quantity. Their simulations count Na+, so it is 1.",
+    ("physics/charge.py", "ion_rate", "valence"):
+        "the charge number of the ion whose rate is being counted — which ion, "
+        "not a fitted quantity. The species themselves carry registered radii "
+        "and diffusivities; this only says how many charges each one carries.",
+    ("analysis/liu2025_permeation.py", "cumulative_permeation", "valence"):
+        "the charge number of the permeating ion — which ion is being counted, "
+        "not a fitted quantity. Liu et al.'s Figure 5D counts Na+, so it is 1; "
+        "the ion species themselves carry registered radii and diffusivities.",
+    ("structure/fusion_pose.py", None, "SPIN_SAMPLES"):
+        "how finely the tag's undetermined spin is sampled when reporting what "
+        "fraction of orientations touch the channel. A reporting resolution, "
+        "not a property of the fusion: finer sampling sharpens the fraction "
+        "and the drawn angle, it cannot change which orientations are "
+        "admissible, and the measured answer is zero of them at every "
+        "sampling tried.",
+    ("structure/fusion_pose.py", "place_tag", "spin"):
+        "the undetermined degree of freedom itself. Zero means 'as aligned by "
+        "the seam', which is a starting point for the scan rather than a "
+        "measured angle — the whole point of the module is that nothing "
+        "determines this number.",
+    ("structure/fusion.py", "AccessibleVolume", "n_before_clash"):
+        "counter, initialised to zero",
+    ("physics/charge.py", None, "ELEMENTARY_CHARGE"):
+        "SI-definitional since the 2019 redefinition; a unit conversion between "
+        "amperes and ions per second, not a measured quantity that could be "
+        "revised. Exempt for the same reason F_FARADAY and R_GAS below are — it "
+        "only became visible to this audit when it moved out of `render`, which "
+        "is not scanned, into `physics`, which is.",
+    ("physics/_pnp_kernels.py", None, "F_FARADAY"):
+        "SI-definitional since the 2019 redefinition; a unit conversion, not a "
+        "measured quantity that could be revised",
+    ("physics/_pnp_kernels.py", None, "R_GAS"):
+        "SI-definitional since the 2019 redefinition",
+    ("physics/electrostatics.py", None, "_E2_OVER_4PI_EPS0"):
+        "e^2 / 4 pi eps0 in Joule-metre. SI-definitional since the 2019 "
+        "redefinition — both the elementary charge and the vacuum permittivity "
+        "are exact — so it is a unit conversion rather than a quantity that "
+        "could be revised. It is nonetheless the number that was wrong by "
+        "10^10 in this module's first draft, which is why it carries a comment "
+        "rather than merely an exemption.",
+    ("physics/electrostatics.py", None, "_BOLTZMANN"):
+        "SI-definitional since the 2019 redefinition; it converts an energy "
+        "into k_BT and nothing else",
+    ("analysis/hydropathy.py", None, "_UNKNOWN"):
+        "hydropathy assigned to a residue that is not one of the twenty. Zero "
+        "is the only defensible value — neither hydrophobic nor hydrophilic — "
+        "and it exists so that an unknown residue does not shift the numbering "
+        "of the curve, which dropping it would.",
+    ("analysis/hydropathy.py", "repeat_periodicity", "period"):
+        "the repeat length being *tested*, not a setting. It is the hypothesis "
+        "Guo & MacKinnon state — that the helices come in fours — and the "
+        "caller varies it to test other periods; registering it would make the "
+        "hypothesis a parameter of its own test.",
+    ("analysis/projection.py", None, "_DEFAULT_Z"):
+        "atomic number used for an element not in the table. Carbon, because a "
+        "protein is mostly carbon and an unrecognised element in a cryo-EM "
+        "model is far more likely to be an unusual carbon than an unusual "
+        "metal. An element identity, not a tunable quantity.",
+    ("analysis/projection.py", "scale_bar_pixels", "nanometres"):
+        "the length of the scale bar the caller wants drawn. Figure 2's is 10 "
+        "nm, so that is the default; it describes the annotation, not the "
+        "image, and cannot change a pixel of the projection.",
+    ("analysis/topology.py", None, "MEMBRANE_HALF"):
+        "half-height of the drawn membrane in the topology diagram's own "
+        "dimensionless layout units. A renderer scales it; it is a drawing "
+        "coordinate and there is no Angstrom it corresponds to.",
+    ("physics/pore_charge.py", None, "AVOGADRO"):
+        "SI-definitional since the 2019 redefinition; it turns a count of "
+        "elementary charges into a molar density and nothing else",
+    ("physics/_pnp_kernels.py", None, "_EXP_CLIP"):
+        "overflow guard on the Donnan solve, in thermal voltages. 40 of them "
+        "is over a volt, far outside anything the fixed charge can produce, so "
+        "it can only ever catch a runaway iterate — a value that clips is a "
+        "bug report, not a modelling choice.",
+    ("physics/permeation.py", "PermeationResult", "pore_current"):
+        "computed field",
+    ("physics/selectivity.py", None, "REVERSAL_BRACKET_V"):
+        "how wide a voltage range the reversal potential is searched over. A "
+        "search bound: the root is bracketed inside it or reported as absent, "
+        "and widening it cannot move a root that exists. +/-200 mV contains "
+        "the Nernst limit of the protocol (-43 mV) five times over.",
+    ("analysis/variant_structures.py", "VariantStructure", "n_protein_atoms"):
+        "counter, initialised to zero",
+    ("physics/permeation.py", "PermeationResult", "access_ohm"): "computed field",
+    ("physics/permeation.py", "PermeationResult", "pore_ohm"): "computed field",
+    ("analysis/gnomad.py", None, "window"):
+        "half-width of the window over which observed missense variation is "
+        "averaged. A smoothing scale for a population-genetics readout, not a "
+        "property of PIEZO1; frozen at 25 by "
+        "docs/PREREGISTRATION_ROUND41.md and tested at 10 and 50 as "
+        "pre-registered secondaries so no result can rest on the choice.",
+    ("core/numbering_check.py", "NumberingIdentity", "n_unassigned"):
+        "counter, initialised to zero",
+    ("analysis/harvest.py", "HarvestReport", "n_papers"):
+        "counter, initialised to zero",
+    ("analysis/harvest.py", "_sentence_around", "width"):
+        "how much of the surrounding sentence to keep for a human to read; "
+        "presentation only, and it cannot change which candidates are found",
+    ("analysis/prediction_confidence.py", None, "n_residues"):
+        "length of human PIEZO1, a fact about the sequence rather than a "
+        "parameter; the same 2521 core.sequence carries",
+    ("analysis/prediction_confidence.py", "saturation", "min_separation"):
+        "sequence separation beyond which PAE is read as long-range. A "
+        "reporting threshold for a confidence readout, not a physical "
+        "quantity; the separation-binned table beside it shows the whole "
+        "curve so no conclusion rests on the single cut.",
+    ("analysis/prediction_confidence.py", "assess_seam", "seam"):
+        "where a hybrid model would be cut, which is set by which residues the "
+        "experimental structures resolve rather than chosen",
+    ("analysis/gnomad.py", "missense_density", "n_residues"):
+        "length of human PIEZO1, a fact about the sequence rather than a "
+        "parameter of any calculation; the same 2521 that "
+        "core.sequence carries.",
+    ("analysis/model_error.py", "pore_convention_error", "uniform_radius"):
+        "the radius the *alternative* convention gives every atom. It defines "
+        "that convention rather than describing PIEZO1, and the whole point of "
+        "the check is that the answer depends on it — which is measured and "
+        "reported, not fixed to one value.",
+    ("analysis/crosscheck_methods.py", "conservation_by_kmer_anchoring", "k"):
+        "seed length for the DP-free anchoring used only as a cross-check. It "
+        "is a property of the alternative instrument, not of PIEZO1, and the "
+        "pipeline's conservation does not depend on it.",
+    ("analysis/crosscheck_methods.py", "conservation_by_kmer_anchoring",
+     "window"):
+        "how far the seed may slide when anchoring; a search bound for the "
+        "cross-check route only",
+    ("analysis/labelling.py", "predicted_brightness", "per_dye_intensity"):
+        "defines the brightness unit rather than measuring anything: the "
+        "histogram is in units of one dye, so 1.0 IS the unit",
+    ("analysis/labelling.py", "predicted_brightness", "background"):
+        "zero-offset default; a real background is supplied by the caller in "
+        "whatever units their camera reports",
+    ("structure/frame.py", None, "CTERM_FRACTION"):
+        "which slice of residues counts as the cytosolic end when orienting a "
+        "structure. A criterion for reading topology off a model, not a "
+        "measured quantity — there is no experiment that returns it and no "
+        "paper to cite. Its value is justified in the module against all 20 "
+        "downloaded entries and pinned by "
+        "test_frame.test_no_downloaded_structure_loads_upside_down.",
+    ("structure/geometry.py", None, "MIN_CA_FOR_SURFACE"):
+        "how many C-alphas a chain needs before its transmembrane helices are "
+        "allowed to contribute to the dome surface. A parsing threshold for "
+        "deposited files — it keeps a bound peptide or an auxiliary subunit "
+        "out of the membrane surface — not a property of PIEZO1. Carried over "
+        "unchanged from the inline copy it replaced, so no measured number "
+        "moves with it.",
+    ("structure/protomers.py", None, "MIN_CA_PER_PROTOMER"):
+        "how many C-alphas a chain needs before it counts as a protomer rather "
+        "than a bound peptide. A parsing threshold for deposited files, not a "
+        "property of PIEZO1; covered by test_entities.",
+    ("physics/kinetics.py", "GatingModel", "conductance_pS"):
+        "registered as kinetics.conductance_pS; the field mirrors it",
+    ("analysis/measure.py", "SASAResult", "probe"):
+        "record of the probe used, not the default that chose it",
+    ("analysis/measure.py", "SASAResult", "n_points"):
+        "record of the density used",
+    ("analysis/pockets.py", "AlphaSpheres", "n_total"): "counter, initialised to zero",
+    ("analysis/pockets.py", "Pocket", "buriedness"): "computed field, zero-initialised",
+    ("analysis/validation.py", "EffectSize", "n_bootstrap"): "records what was used",
+    ("analysis/conservation.py", "ConservationProfile", "n_orthologs"):
+        "counter filled in after the alignment; zero means nothing was fetched",
+    ("analysis/variant_impact.py", "CouplingScore", "gating_cost_change"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "cost_change_normalised"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "spring_scale"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "n_contacts"): "computed field",
+    ("analysis/variant_impact.py", "CouplingScore", "local_strain"): "computed field",
+    ("analysis/hydration.py", "LiningPoint", "distance"): "computed field",
+    ("analysis/hydration.py", None, "HYDROPHOBICITY_FALLBACK"):
+        "CHAP's fallback for residues outside the scale; a definition, not a measurement",
+    ("physics/elastica.py", "ElasticaSolution", "r0"): "computed field",
+    ("physics/elastica.py", "ElasticaSolution", "slope"): "computed field",
+    ("physics/membrane.py", "FootprintSolution", "r0"): "computed field",
+    ("physics/membrane.py", "FootprintSolution", "slope"): "computed field",
+    ("physics/membrane.py", "FootprintSolution", "energy"): "computed field",
+    ("physics/dome.py", "DomeGeometrySummary", "dome_depth"): "computed field",
+    ("physics/dome.py", "DomeGeometrySummary", "footprint_radius"): "computed field",
+    ("structure/geometry.py", "DomeGeometry", "radius_of_curvature"): "computed field",
+    ("structure/geometry.py", "DomeGeometry", "dome_depth"): "computed field",
+    ("structure/geometry.py", "DomeGeometry", "footprint_radius"): "computed field",
+    ("structure/geometry.py", "DomeGeometry", "dome_area"): "computed field",
+    ("structure/geometry.py", "DomeGeometry", "projected_area"): "computed field",
+    ("structure/geometry.py", "DomeGeometry", "n_atoms_used"):
+        "counter recording how many points survived the sphere-fit trim",
+    ("structure/superpose.py", "SymmetryAxis", "order"):
+        "the rotational order being tested, an argument of the question",
+    ("structure/superpose.py", "SymmetryAxis", "rmsd"): "computed field",
+    ("structure/superpose.py", "SymmetryAxis", "angle_deg"): "computed field",
+    ("analysis/ensemble.py", "StructureEnsemble", "n_protomers"): "structural fact",
+    ("structure/morph.py", None, "max_bond_jump"):
+        "a diagnostic threshold for reporting bond distortion, not an input",
+    ("structure/pore.py", None, "min_separation"):
+        "how far apart two reported constrictions must be; presentation",
+    ("physics/kinetics.py", None, "peak_open_probability"): "search bracket",
+    ("physics/anm.py", None, "mode"): "display amplitude",
+}

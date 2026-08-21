@@ -16,7 +16,7 @@ PY := $(CONDA_RUN) python
 .PHONY: help env lock fetch resources test test-quick test-science test-ui \
         test-render test-records lint gui reproduce verify quick \
         figures validate clean-derived sizes params audit \
-        notebooks coldclone provenance
+        notebooks coldclone provenance family
 # `notebooks` and `coldclone` name a directory and a script; without .PHONY
 # make sees the target as already built and does nothing.
 
@@ -101,6 +101,10 @@ coldclone:  ## Run the suite from an empty clone; a failure is a reproducibility
 
 provenance:  ## Walk each documented number back to its file, parameters and commit
 	$(PY) -m piezo1.analysis.provenance_chain
+
+family:  ## Re-import the PIEZO family census, verifying every quoted number
+	$(PY) scripts/build_family_findings.py --check
+	$(PY) -m piezo1.cli family
 
 quick:  ## Fetch, test and verify, skipping the slow steps
 	$(PY) scripts/reproduce.py --quick

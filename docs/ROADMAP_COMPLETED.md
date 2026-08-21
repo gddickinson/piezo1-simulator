@@ -2979,3 +2979,77 @@ Each time the honest answer required measuring something nobody had measured.
 That is not a substitute for a guard, but it is evidence that the most valuable
 input to this project is still someone asking why a number is what it is.
 
+
+---
+
+## Round 93 — the PIEZO family census, imported and answered back
+
+The sibling `piezo_genes` project's 194-genome census brought across behind a
+provenance gate, and every statement in it that this project's coordinates can
+test, tested.
+
+- [x] **Import thirteen census findings behind a gate that can refuse.**
+  `scripts/build_family_findings.py` re-reads all **32** quoted numbers from the
+  census's own result files on every build, requires claims never reduced to a
+  table to appear literally in its `FINDINGS.md`, records the source commit, and
+  **refuses to write at all** when the census is absent. The load-bearing check
+  is the fifth: the imported PIEZO1 track's own amino acids are verified residue
+  by residue against `uniprot_human.json`, because a track joined to the wrong
+  sequence is a plausible colouring off by an indel.
+- [x] **Replicate the core-is-pore result on boundaries the census did not
+  choose.** The two partitions put the anchor **141 residues apart**; on ours
+  the ordering holds — anchor 0.832, CTD 0.810, inner helix 0.789 against THU1's
+  0.630.
+- [x] **Recompute the paralogue identities from our own alignment.** Cap 0.404
+  against the census's 0.402, inner helix 0.905, CTD 0.899, whole protein 0.495.
+  A pair framed in PIEZO2 now **raises**: indexing PIEZO2 with PIEZO1's domain
+  ranges put the cap at 0.85 and announced nothing.
+- [x] **Contradict the distal-versus-proximal blade gradient, with a
+  mechanism.** The census's bands reproduce (0.649 / 0.558 against 0.656 /
+  0.558) and are **29% and 77% inter-unit linker**, with linker scoring 0.517
+  and 0.515 either side. On the THU units the ordering reverses: 0.698 distal
+  against 0.737 proximal.
+- [x] **Re-test the disease enrichment against a population comparator.** OR
+  3.63 / P = 0.0033 on the census's boundaries, 1.60 / P = 0.25 on ours; the
+  **120 disputed residues (2057–2176) carry six pathogenic positions**. Both
+  rows reported. The constraint score still classifies at AUC 0.82 against
+  gnomAD population variation, against the census's 0.91 against ClinVar benign.
+- [x] **Settle the two-disease-genes-one-residue claim on coordinates.** PIEZO1
+  R2456 ≡ PIEZO2 R2686 and R2488 ≡ R2718: this project's own alignment pairs
+  them independently, and after a pore-module fit each is the nearest residue of
+  the other paralogue **to within one** — which is the resolution a 3.5 Å
+  cross-paralogue fit can claim. The control that makes it a measurement: the
+  median aligned core pair is 2.5 Å apart, so proximity alone is what every pair
+  gives.
+- [x] **Show that the "blades splay" is the prediction.** An AlphaFold monomer
+  splays **7–9× from an experimental structure of the protein it models**; two
+  experimental structures of *different paralogues* splay **0.8–1.2×**. The core
+  agreement survives and is stronger than reported: two experimental paralogues
+  at 3.6 Å against the census's 3.9. 7WLT → 7WLU is 19×, which is PIEZO1's own
+  gating motion.
+- [x] **Add piezo3 as the tenth family reference and run it end to end.**
+  Identifies at 1.000 against a runner-up of 0.068 with **no other entry's
+  identification moving**. Keeps the human residue at all 14 pathogenic pore
+  positions, checked against a different UniProt record from the one the census
+  scored (the two differ by one inserted residue at ~2014, mapped by alignment).
+  Assembled it gives dome R = 10.8 nm against 7WLT's 9.7 nm by the identical
+  route — with **96%** of the departure from planarity borrowed from the
+  template, so neither number is evidence about piezo3. It closes, which is a
+  negative that survived.
+- [x] **Measure whether mechanics explains the constraint.** PRS response at the
+  gate ρ = 0.373, holding **0.287** with burial fixed (q = 0.007) against
+  burial's own 0.369; five of eight features survive the shift null, the
+  correction and the burial control. The permutation null is measured to be 3×
+  too narrow, which is why the null is a circular shift.
+- [x] **Fix the numbering defect this surfaced.** `build_feature_table`
+  defaulted to human annotation on mouse entries: the conservation column scored
+  ρ = 0.29 against the same profile read correctly (now 1.00), `distance_to_gate`
+  found no gate residue at all, and `prs_gate_response` against constraint went
+  from −0.02 to +0.37. Recorded that Round 48's endpoints were computed through
+  it; **not** revised, per the negative-result protocol.
+- [x] **Register the subsystem as checking instruments.** Eight modules join
+  `CHECKING_MODULES` with a named calibrating test for every public callable —
+  and the register caught two tests named and not written on its first run.
+  Two calibrations were wrong first and are recorded: a random-walk planted
+  signal that correctly failed to clear the null, and a rank-partialling test
+  that claimed the wrong reason for ranking.

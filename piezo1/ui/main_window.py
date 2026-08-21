@@ -41,6 +41,7 @@ from .nanodomain_controller import NanodomainController
 from .path_controller import AllostericPathController
 from .pocket_controller import PocketController
 from .planar_membrane_controller import PlanarMembraneController
+from .constraint_controller import ConstraintColourController
 from .potential_controller import ElectrostaticColourController
 from .pore_controller import PoreSurfaceController
 from .appearance import AppearanceMixin
@@ -143,6 +144,7 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         self.micelle = MicelleController(self)
         self.planar_membrane = PlanarMembraneController(self)
         self.electrostatics = ElectrostaticColourController(self)
+        self.constraint_colour = ConstraintColourController(self)
         self.session = SessionController(self)
         self.presentation = PresentationController(self)
         self._build_menu()
@@ -353,6 +355,10 @@ class MainWindow(AlignmentMixin, CompanionMixin, CompletenessMixin,
         # wetting model refuses to animate.
         self.ion_flux.clear()
         self.electrostatics.reset()
+        # Same reason as the potential colouring: `result` describes the
+        # entry being replaced, and its coverage figures would end up on
+        # the status line over a different structure.
+        self.constraint_colour.reset()
         # The morph holds a displacement field plus a base coordinate array,
         # both of the old entry.
         self.morph_controller.reset()

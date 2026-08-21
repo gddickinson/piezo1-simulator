@@ -169,6 +169,32 @@ def value_colors(values: np.ndarray, vmin: float | None = None,
     return _viridis((v - lo) / (hi - lo)).astype(np.float32)
 
 
+def constraint_colors(values: np.ndarray,
+                      scale: tuple[float, float] = (0.0, 1.0)) -> np.ndarray:
+    """Viridis over a **fixed** 0-1 range, for evolutionary constraint.
+
+    A separate function rather than another call to :func:`value_colors` for
+    the same reason :func:`potential_colors` is: that one auto-ranges to the
+    2nd and 98th percentiles, so the same protein would be painted differently
+    depending on how much blade the entry resolved, and two structures could
+    not be compared with each other. Jensen-Shannon divergence is already
+    bounded in [0, 1] and its absolute value means something, so there is
+    nothing to fit.
+
+    An unscored residue arrives as ``nan`` and comes out mid-grey — the same
+    convention the hydropathy map uses, and for the same reason: "not scored"
+    must not be reachable through the colour that means "scored low".
+    """
+    v = np.asarray(values, dtype=np.float64)
+    lo, hi = scale
+    if hi <= lo:
+        hi = lo + 1.0
+    fraction = np.clip((v - lo) / (hi - lo), 0.0, 1.0)
+    colors = _viridis(np.nan_to_num(fraction, nan=0.0)).astype(np.float32)
+    colors[np.isnan(v)] = np.array([0.55, 0.55, 0.55], dtype=np.float32)
+    return colors
+
+
 def potential_colors(values: np.ndarray, scale: float | None = None
                      ) -> np.ndarray:
     """Red-white-blue diverging colours for an electrostatic potential.

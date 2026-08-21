@@ -1,0 +1,1807 @@
+{
+ "provenance": {
+  "source_project": "piezo_genes",
+  "source_title": "PIEZO family gene census",
+  "source_commit": "bb3943c",
+  "source_note": "A 194-genome, eukaryote-wide census of the PIEZO family: what the family's true range is, that vertebrates have a third paralogue (piezo3) the databases largely missed, and which parts of the protein half a billion years of evolution has refused to change.",
+  "built_by": "scripts/build_family_findings.py",
+  "verified": "13 findings, 32 numbers re-read from the source on this build"
+ },
+ "findings": [
+  {
+   "key": "core_is_pore",
+   "session": "S17",
+   "kind": "sequence",
+   "title": "The conserved core is the pore, in every paralogue independently",
+   "statement": "Compared against 121-192 orthologues of itself, each of the three vertebrate PIEZO genes is least constrained across the blades and most constrained across the pore machinery - the anchor, the two pore helices and the C-terminal domain. The ordering is the same computed separately in PIEZO1, PIEZO2 and piezo3.",
+   "numbers": {
+    "piezo1_distal_blade_mean_jsd": 0.6561,
+    "piezo1_pore_linker_mean_jsd": 0.8219,
+    "piezo1_inner_helix_mean_jsd": 0.8074,
+    "piezo1_pore_module_p": 8.13e-25
+   },
+   "source": "constraint/constraint_by_domain.tsv",
+   "here": "analysis.family_constraint.domain_constraint",
+   "caveat": "Measured on the census project's own domain partition, which is not this project's. Recomputed here on domains.json, which is a different boundary set and therefore a real test rather than a restatement.",
+   "n_checks": 3
+  },
+  {
+   "key": "paralogues_kept_the_machine",
+   "session": "S17",
+   "kind": "sequence",
+   "title": "Half a billion years rewrote the blades and left the pore",
+   "statement": "PIEZO1, PIEZO2 and piezo3 now agree at 45-48% of positions overall, but at 73-91% across the anchor, the pore helices, the pore linker and the CTD, and *below* the whole-protein figure across both blade regions - in all three pairwise comparisons.",
+   "numbers": {
+    "piezo1_piezo2_whole": 0.4743,
+    "piezo1_piezo2_inner_helix": 0.8519,
+    "piezo1_piezo2_ctd": 0.9123,
+    "piezo1_piezo3_whole": 0.4529,
+    "piezo1_piezo3_outer_helix": 0.8519,
+    "piezo1_piezo2_distal_blades": 0.441
+   },
+   "source": "constraint/paralog_identity_by_domain.tsv",
+   "here": "analysis.family_constraint.paralogue_asymmetry",
+   "caveat": "An identity is a statement about sequence. Whether the two channels agree in *space* over the same region is a separate question, answered here by analysis.core_periphery.",
+   "n_checks": 4
+  },
+  {
+   "key": "ced_is_the_exception",
+   "session": "S17",
+   "kind": "sequence",
+   "title": "The lid is the one piece of the pore the paralogues did not keep",
+   "statement": "The CED - the extracellular cap over the pore - is the only part of the pore machinery that is *less* alike between paralogues than the protein as a whole (35-40%), and inside PIEZO2 it is less constrained than even the blades. The three genes share a pore and differ in its lid.",
+   "numbers": {
+    "piezo1_piezo2_ced_identity": 0.4017,
+    "piezo1_piezo3_ced_identity": 0.3777,
+    "piezo2_piezo3_ced_identity": 0.3534,
+    "piezo2_ced_mean_jsd": 0.5685,
+    "piezo2_distal_blade_mean_jsd": 0.6601
+   },
+   "source": "constraint/paralog_identity_by_domain.tsv",
+   "here": "analysis.family_constraint.paralogue_asymmetry",
+   "caveat": "A warning against reading 'piezo3 has PIEZO's pore' as 'piezo3 behaves like PIEZO1'. In PIEZO1 and PIEZO2 the cap influences ion selectivity and inactivation, so this is where a functional difference is most likely to live.",
+   "n_checks": 2
+  },
+  {
+   "key": "distal_beats_proximal",
+   "session": "review 2026-08-19",
+   "kind": "sequence",
+   "title": "The distal blade is more conserved than the proximal blade",
+   "statement": "Within every paralogue the *distal* blade - the part furthest from the pore - carries higher constraint than the proximal blade. That is the opposite of what 'peripheral means dispensable' predicts, and it sits directly against the 2026 nematode structures reporting the pore-distal blade dispensable for mechanoactivation.",
+   "numbers": {
+    "piezo1_distal": 0.6561,
+    "piezo1_proximal": 0.5583,
+    "piezo2_distal": 0.6601,
+    "piezo2_proximal": 0.633,
+    "piezo3_distal": 0.6082,
+    "piezo3_proximal": 0.5443
+   },
+   "source": "constraint/constraint_by_domain.tsv",
+   "here": "analysis.family_constraint.blade_gradient",
+   "caveat": "The census project's proximal_blades band includes the beam, and its distal band is much the larger of the two. The comparison is repeated here on this project's own THU boundaries.",
+   "n_checks": 2
+  },
+  {
+   "key": "disease_in_the_pore_module",
+   "session": "S24",
+   "kind": "clinical",
+   "title": "Human disease concentrates in the part of the family that never changed",
+   "statement": "Of all labelled human missense positions in PIEZO1 and PIEZO2, the pore module - 17-18% of the protein - holds 14 of 43 pathogenic positions (33%) and 16 of 146 benign ones (11%): odds ratio 3.9, one-sided Fisher P = 0.0014. Pathogenic variation piles into the region the family conserved for half a billion years; benign variation, if anything, avoids it.",
+   "numbers": {
+    "n_pathogenic_in_module": 14,
+    "n_pathogenic": 43,
+    "n_benign_in_module": 16,
+    "n_benign": 146,
+    "odds_ratio": 3.922,
+    "p_fisher": 0.00135
+   },
+   "source": "alignments/structure_stats.tsv",
+   "here": "analysis.disease_geography.pore_module_enrichment",
+   "caveat": "Variants are found where people look. The two genes are sequenced for different clinical reasons, and the benign set is dominated by population data whose ascertainment differs from the pathogenic set's. The test says where the labelled positions sit, not where disease-causing change is possible.",
+   "n_checks": 4
+  },
+  {
+   "key": "same_residue_two_genes",
+   "session": "S24",
+   "kind": "clinical",
+   "title": "Two disease genes mutate the same residue",
+   "statement": "The fourteen pathogenic pore-module positions occupy only twelve alignment columns. PIEZO1 R2456, behind a human red-cell disorder, and PIEZO2 R2686, behind Gordon syndrome, are the same residue of the same machine in two different genes - as are PIEZO1 R2488 and PIEZO2 R2718. The paralogues have been separate for half a billion years and disease still finds the same place in both.",
+   "numbers": {
+    "n_positions": 14,
+    "n_columns": 12,
+    "n_shared": 2
+   },
+   "source": "alignments/alignment_stats.tsv",
+   "here": "analysis.equivalent_positions.locate",
+   "caveat": "An alignment column is a claim about correspondence, not a measurement of one. Whether the two arginines occupy the same place in space is a separate question - which this project can answer, and does, by superposing the two channels.",
+   "n_checks": 2
+  },
+  {
+   "key": "piezo3_kept_disease_residues",
+   "session": "S17",
+   "kind": "clinical",
+   "title": "The residues that make people ill are the residues piezo3 kept",
+   "statement": "Carrying labelled human positions across to piezo3: at positions where a human mutation causes disease piezo3 has the same amino acid 75% of the time (PIEZO1) and 70% (PIEZO2); at benign positions 31% and 26%; across aligned columns as a whole 45%. Disease positions sit above background, benign ones below, and positions of unknown significance land exactly on it. Of the 14 pathogenic positions inside the pore module, piezo3 has the identical residue at all 14.",
+   "numbers": {
+    "piezo1_pathogenic_frac": 0.75,
+    "piezo1_benign_frac": 0.3068,
+    "piezo1_background_frac": 0.4529,
+    "piezo1_odds_ratio": 3.624,
+    "piezo1_p_fisher": 0.00612,
+    "pore_module_identical": 14
+   },
+   "source": "constraint/piezo3_audit_summary.tsv",
+   "here": "analysis.piezo3.kept_positions",
+   "caveat": "No functional test has been done. The gene is transcribed, spliced and tissue-patterned, but nobody has measured whether it conducts. These are predictions about a channel nobody has recorded from.",
+   "n_checks": 3
+  },
+  {
+   "key": "constraint_predicts_pathogenicity",
+   "session": "S17",
+   "kind": "clinical",
+   "title": "The per-position constraint separates pathogenic from benign at AUC 0.91",
+   "statement": "Because the clinical labels are independent of the evolutionary scores, they also test them. Used as a classifier on human PIEZO1, the deep constraint track separates pathogenic from benign missense at AUC 0.914 (21 vs 107 positions, Mann-Whitney P = 1.1e-9).",
+   "numbers": {
+    "auc": 0.9143,
+    "n_pathogenic": 21,
+    "n_benign": 107,
+    "p_mannwhitney": 1.07e-09
+   },
+   "source": "constraint/variant_constraint_test.tsv",
+   "here": "analysis.disease_geography.constraint_classifier",
+   "caveat": "The score recovers judgements clinicians already made; it has not been shown to make new ones correctly. The pathogenic set is small and non-randomly located.",
+   "n_checks": 2
+  },
+  {
+   "key": "pore_module_superposition",
+   "session": "S24",
+   "kind": "structure",
+   "title": "The pore module is where the channels agree in space, not just in sequence",
+   "statement": "Superposing the predicted zebrafish piezo3 model on the experimental cryo-EM mouse Piezo1 structure 6B3R *by the pore module alone* puts the cores at 3.86 A RMSD over 448 matched C-alpha while the blades splay visibly apart. The core-conserved / periphery-free result stops being a profile and becomes a shape.",
+   "numbers": {
+    "rmsd": 3.86,
+    "n_matched": 448
+   },
+   "source": "alignments/structure_stats.tsv",
+   "here": "analysis.core_periphery.compare",
+   "caveat": "One of the two structures is a prediction, and a prediction of a single protomer at that. A low core RMSD between a model and an experiment is partly a statement about what the predictor was trained on.",
+   "n_checks": 2
+  },
+  {
+   "key": "family_range",
+   "session": "S20",
+   "kind": "census",
+   "title": "PIEZO is a eukaryotic invention, and its absences split in two",
+   "statement": "8,329 PIEZO-like proteins across Metazoa, Viridiplantae, protists and Fungi; zero hits in 628 archaeal reference proteomes and a 300-genus bacterial sample under every protocol tried. Among 1,501 fungal reference proteomes the only genuine PIEZO is Rozella allomycis, the deepest fungal branch - everything after that split, Dikarya included, lacks the family.",
+   "numbers": {
+    "n_proteins": 8329,
+    "archaeal_hits": 0,
+    "fungal_proteomes": 1501
+   },
+   "source": "FINDINGS.md",
+   "here": "recorded only - this project holds ten family references, of which nine are reviewed, and does not sample genomes. The census is what says how large a sample that is",
+   "caveat": "The bacterial statement is a sample, not a census. Iterative profile search was measured to break at scale on the two largest databases, so the metazoan and protist totals are profile-sweep figures with 69 qualified candidates held out.",
+   "n_checks": 3
+  },
+  {
+   "key": "piezo3_is_ancient_and_lost",
+   "session": "S13/S15",
+   "kind": "census",
+   "title": "piezo3 is as old as its siblings, and humans lost it before the primates",
+   "statement": "Both duplications creating PIEZO1, PIEZO2 and piezo3 sit at or before the origin of jawed vertebrates, roughly 460-560 Ma. piezo3 has since been lost eleven times; the human remnant is the catalogued pseudogene PIEZO1P2, still holding 24% of the protein in recognisable pieces, and the loss reconstructs to the primate stem 88-74 Ma.",
+   "numbers": {
+    "duplication_ma_low": 460,
+    "duplication_ma_high": 560,
+    "n_losses": 11,
+    "human_remnant_frac": 0.24
+   },
+   "source": "FINDINGS.md",
+   "here": "recorded only - no piezo3 coordinates exist for any mammal",
+   "caveat": "The loss count depends on the question: 5 if asked whether the locus is still there, 16 if asked whether a working gene is. Eleven sits between them, and the sensitivity matrix runs 4-22.",
+   "n_checks": 2
+  },
+  {
+   "key": "pfew_not_a_signature",
+   "session": "review 2026-08-19",
+   "kind": "sequence",
+   "title": "A motif quoted as a family signature is not one",
+   "statement": "The PFEW motif reported as absolutely conserved across protozoan PIEZO homologues in the 2013 survey does not occur in human PIEZO1, nor in any of the 117 representative sequences spanning protists to primates. What is conserved that deeply are three short windows around the pore.",
+   "numbers": {
+    "n_sequences_searched": 117,
+    "n_occurrences": 0
+   },
+   "source": "FINDINGS.md",
+   "here": "analysis.family_motifs.motif_scan",
+   "caveat": "A negative about one literal four-residue string. It does not show the 2013 survey was wrong about its own sequences, only that the motif does not generalise to the family as now sampled.",
+   "n_checks": 1
+  },
+  {
+   "key": "codon_selection_agrees",
+   "session": "S17",
+   "kind": "sequence",
+   "title": "Counting codons rather than amino acids gives the same answer",
+   "statement": "Site-wise dN/dS (FEL) over the trimmed codon alignment puts the pore region as the most protected part of the gene and the pore-lining helix as the most protected element in it - the same ordering the amino-acid comparison gives, from a statistic that shares nothing with it. Across all three genes there is exactly one site anywhere with a hint of positive selection, against more than three thousand under purifying selection.",
+   "numbers": {
+    "piezo1_anchor_frac_purifying": 0.6306,
+    "piezo1_whole_frac_purifying": 0.4949
+   },
+   "source": "constraint/selection_by_domain.tsv",
+   "here": "analysis.family_constraint.selection_track",
+   "caveat": "FEL was run on 57 codon sequences against 121-192 protein sequences, so its resolution is coarser and its coverage lower (70-74% of positions carry a usable rate).",
+   "n_checks": 2
+  }
+ ],
+ "tables": {
+  "domain_map": {
+   "note": "The census project's own domain partition, in each gene's own numbering. Kept so its per-domain numbers can be read on the boundaries that produced them, never to replace ours.",
+   "source": "constraint/domain_map.tsv",
+   "rows": [
+    {
+     "paralog": "PIEZO1",
+     "domain": "distal_blades",
+     "mouse_start": "1",
+     "mouse_end": "1300",
+     "ref_start": "1",
+     "ref_end": "1305",
+     "n_residues": "1305",
+     "aligned_frac": "0.994",
+     "note": "THU1-6; peripheral, most mobile"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "proximal_blades",
+     "mouse_start": "1301",
+     "mouse_end": "1951",
+     "ref_start": "1306",
+     "ref_end": "1935",
+     "n_residues": "630",
+     "aligned_frac": "0.959",
+     "note": "THU7-9, includes the beam"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "beam",
+     "mouse_start": "1300",
+     "mouse_end": "1365",
+     "ref_start": "1305",
+     "ref_end": "1370",
+     "n_residues": "66",
+     "aligned_frac": "1.0",
+     "note": "long intracellular helix; force transmission"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "anchor",
+     "mouse_start": "1952",
+     "mouse_end": "2063",
+     "ref_start": "1936",
+     "ref_end": "2047",
+     "n_residues": "112",
+     "aligned_frac": "1.0",
+     "note": "anchor domain"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "outer_helix",
+     "mouse_start": "2073",
+     "mouse_end": "2099",
+     "ref_start": "2057",
+     "ref_end": "2083",
+     "n_residues": "27",
+     "aligned_frac": "1.0",
+     "note": "OH, pore module"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "CED",
+     "mouse_start": "2210",
+     "mouse_end": "2456",
+     "ref_start": "2194",
+     "ref_end": "2430",
+     "n_residues": "237",
+     "aligned_frac": "0.96",
+     "note": "C-terminal extracellular domain, caps the pore"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "inner_helix",
+     "mouse_start": "2464",
+     "mouse_end": "2490",
+     "ref_start": "2438",
+     "ref_end": "2464",
+     "n_residues": "27",
+     "aligned_frac": "1.0",
+     "note": "IH, pore-lining"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "CTD",
+     "mouse_start": "2491",
+     "mouse_end": "2547",
+     "ref_start": "2465",
+     "ref_end": "2521",
+     "n_residues": "57",
+     "aligned_frac": "1.0",
+     "note": "C-terminal intracellular domain"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "pore_module",
+     "mouse_start": "2073",
+     "mouse_end": "2547",
+     "ref_start": "2057",
+     "ref_end": "2521",
+     "n_residues": "465",
+     "aligned_frac": "0.979",
+     "note": "OH + CED + IH + CTD together"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "distal_blades",
+     "mouse_start": "1",
+     "mouse_end": "1300",
+     "ref_start": "1",
+     "ref_end": "1432",
+     "n_residues": "1432",
+     "aligned_frac": "0.985",
+     "note": "THU1-6; peripheral, most mobile"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "proximal_blades",
+     "mouse_start": "1301",
+     "mouse_end": "1951",
+     "ref_start": "1433",
+     "ref_end": "2164",
+     "n_residues": "732",
+     "aligned_frac": "0.939",
+     "note": "THU7-9, includes the beam"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "beam",
+     "mouse_start": "1300",
+     "mouse_end": "1365",
+     "ref_start": "1432",
+     "ref_end": "1506",
+     "n_residues": "75",
+     "aligned_frac": "1.0",
+     "note": "long intracellular helix; force transmission"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "anchor",
+     "mouse_start": "1952",
+     "mouse_end": "2063",
+     "ref_start": "2165",
+     "ref_end": "2276",
+     "n_residues": "112",
+     "aligned_frac": "1.0",
+     "note": "anchor domain"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "outer_helix",
+     "mouse_start": "2073",
+     "mouse_end": "2099",
+     "ref_start": "2286",
+     "ref_end": "2312",
+     "n_residues": "27",
+     "aligned_frac": "1.0",
+     "note": "OH, pore module"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "CED",
+     "mouse_start": "2210",
+     "mouse_end": "2456",
+     "ref_start": "2423",
+     "ref_end": "2660",
+     "n_residues": "238",
+     "aligned_frac": "0.935",
+     "note": "C-terminal extracellular domain, caps the pore"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "inner_helix",
+     "mouse_start": "2464",
+     "mouse_end": "2490",
+     "ref_start": "2668",
+     "ref_end": "2694",
+     "n_residues": "27",
+     "aligned_frac": "1.0",
+     "note": "IH, pore-lining"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "CTD",
+     "mouse_start": "2491",
+     "mouse_end": "2547",
+     "ref_start": "2695",
+     "ref_end": "2752",
+     "n_residues": "58",
+     "aligned_frac": "1.0",
+     "note": "C-terminal intracellular domain"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "pore_module",
+     "mouse_start": "2073",
+     "mouse_end": "2547",
+     "ref_start": "2286",
+     "ref_end": "2752",
+     "n_residues": "467",
+     "aligned_frac": "0.966",
+     "note": "OH + CED + IH + CTD together"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "distal_blades",
+     "mouse_start": "1",
+     "mouse_end": "1300",
+     "ref_start": "1",
+     "ref_end": "1392",
+     "n_residues": "1392",
+     "aligned_frac": "0.983",
+     "note": "THU1-6; peripheral, most mobile"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "proximal_blades",
+     "mouse_start": "1301",
+     "mouse_end": "1951",
+     "ref_start": "1393",
+     "ref_end": "2057",
+     "n_residues": "665",
+     "aligned_frac": "0.88",
+     "note": "THU7-9, includes the beam"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "beam",
+     "mouse_start": "1300",
+     "mouse_end": "1365",
+     "ref_start": "1392",
+     "ref_end": "1447",
+     "n_residues": "56",
+     "aligned_frac": "0.848",
+     "note": "long intracellular helix; force transmission"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "anchor",
+     "mouse_start": "1952",
+     "mouse_end": "2063",
+     "ref_start": "2058",
+     "ref_end": "2169",
+     "n_residues": "112",
+     "aligned_frac": "1.0",
+     "note": "anchor domain"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "outer_helix",
+     "mouse_start": "2073",
+     "mouse_end": "2099",
+     "ref_start": "2179",
+     "ref_end": "2205",
+     "n_residues": "27",
+     "aligned_frac": "1.0",
+     "note": "OH, pore module"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "CED",
+     "mouse_start": "2210",
+     "mouse_end": "2456",
+     "ref_start": "2316",
+     "ref_end": "2560",
+     "n_residues": "245",
+     "aligned_frac": "0.968",
+     "note": "C-terminal extracellular domain, caps the pore"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "inner_helix",
+     "mouse_start": "2464",
+     "mouse_end": "2490",
+     "ref_start": "2568",
+     "ref_end": "2594",
+     "n_residues": "27",
+     "aligned_frac": "1.0",
+     "note": "IH, pore-lining"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "CTD",
+     "mouse_start": "2491",
+     "mouse_end": "2547",
+     "ref_start": "2595",
+     "ref_end": "2651",
+     "n_residues": "57",
+     "aligned_frac": "1.0",
+     "note": "C-terminal intracellular domain"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "pore_module",
+     "mouse_start": "2073",
+     "mouse_end": "2547",
+     "ref_start": "2179",
+     "ref_end": "2651",
+     "n_residues": "473",
+     "aligned_frac": "0.983",
+     "note": "OH + CED + IH + CTD together"
+    }
+   ]
+  },
+  "constraint_by_domain": {
+   "note": "Within-paralogue constraint, domain by domain.",
+   "source": "constraint/constraint_by_domain.tsv",
+   "rows": [
+    {
+     "paralog": "PIEZO1",
+     "domain": "distal_blades",
+     "n_sites": "1247",
+     "mean_jsd": "0.6561",
+     "median_jsd": "0.6836",
+     "vs_whole_protein": "-0.0033",
+     "p_greater_than_distal_blades": ""
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "proximal_blades",
+     "n_sites": "488",
+     "mean_jsd": "0.5583",
+     "median_jsd": "0.552",
+     "vs_whole_protein": "-0.1011",
+     "p_greater_than_distal_blades": "1"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "beam",
+     "n_sites": "66",
+     "mean_jsd": "0.6685",
+     "median_jsd": "0.6955",
+     "vs_whole_protein": "0.0091",
+     "p_greater_than_distal_blades": "0.41"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "anchor",
+     "n_sites": "112",
+     "mean_jsd": "0.7499",
+     "median_jsd": "0.7628",
+     "vs_whole_protein": "0.0906",
+     "p_greater_than_distal_blades": "2.13e-08"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "outer_helix",
+     "n_sites": "27",
+     "mean_jsd": "0.8047",
+     "median_jsd": "0.8378",
+     "vs_whole_protein": "0.1453",
+     "p_greater_than_distal_blades": "1.25e-06"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "CED",
+     "n_sites": "235",
+     "mean_jsd": "0.6854",
+     "median_jsd": "0.7273",
+     "vs_whole_protein": "0.0261",
+     "p_greater_than_distal_blades": "0.0185"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "inner_helix",
+     "n_sites": "27",
+     "mean_jsd": "0.8074",
+     "median_jsd": "0.8076",
+     "vs_whole_protein": "0.1481",
+     "p_greater_than_distal_blades": "8.08e-07"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "CTD",
+     "n_sites": "57",
+     "mean_jsd": "0.8054",
+     "median_jsd": "0.8378",
+     "vs_whole_protein": "0.1461",
+     "p_greater_than_distal_blades": "5.99e-12"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "pore_linker",
+     "n_sites": "117",
+     "mean_jsd": "0.8219",
+     "median_jsd": "0.828",
+     "vs_whole_protein": "0.1626",
+     "p_greater_than_distal_blades": "9.83e-27"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "pore_module",
+     "n_sites": "463",
+     "mean_jsd": "0.7488",
+     "median_jsd": "0.7958",
+     "vs_whole_protein": "0.0894",
+     "p_greater_than_distal_blades": "8.13e-25"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "distal_blades",
+     "n_sites": "1379",
+     "mean_jsd": "0.6601",
+     "median_jsd": "0.6828",
+     "vs_whole_protein": "-0.0055",
+     "p_greater_than_distal_blades": ""
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "proximal_blades",
+     "n_sites": "642",
+     "mean_jsd": "0.633",
+     "median_jsd": "0.6591",
+     "vs_whole_protein": "-0.0326",
+     "p_greater_than_distal_blades": "1"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "beam",
+     "n_sites": "75",
+     "mean_jsd": "0.7252",
+     "median_jsd": "0.7401",
+     "vs_whole_protein": "0.0596",
+     "p_greater_than_distal_blades": "0.000477"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "anchor",
+     "n_sites": "112",
+     "mean_jsd": "0.7841",
+     "median_jsd": "0.7984",
+     "vs_whole_protein": "0.1185",
+     "p_greater_than_distal_blades": "1.29e-17"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "outer_helix",
+     "n_sites": "27",
+     "mean_jsd": "0.7979",
+     "median_jsd": "0.8232",
+     "vs_whole_protein": "0.1323",
+     "p_greater_than_distal_blades": "1.37e-06"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "CED",
+     "n_sites": "233",
+     "mean_jsd": "0.5685",
+     "median_jsd": "0.596",
+     "vs_whole_protein": "-0.0972",
+     "p_greater_than_distal_blades": "1"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "inner_helix",
+     "n_sites": "27",
+     "mean_jsd": "0.8071",
+     "median_jsd": "0.8076",
+     "vs_whole_protein": "0.1415",
+     "p_greater_than_distal_blades": "7.71e-08"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "CTD",
+     "n_sites": "58",
+     "mean_jsd": "0.8087",
+     "median_jsd": "0.8307",
+     "vs_whole_protein": "0.1431",
+     "p_greater_than_distal_blades": "1.9e-14"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "pore_linker",
+     "n_sites": "117",
+     "mean_jsd": "0.8115",
+     "median_jsd": "0.8175",
+     "vs_whole_protein": "0.1459",
+     "p_greater_than_distal_blades": "6.69e-27"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "pore_module",
+     "n_sites": "462",
+     "mean_jsd": "0.6875",
+     "median_jsd": "0.76",
+     "vs_whole_protein": "0.0219",
+     "p_greater_than_distal_blades": "1.37e-07"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "distal_blades",
+     "n_sites": "1304",
+     "mean_jsd": "0.6082",
+     "median_jsd": "0.6096",
+     "vs_whole_protein": "-0.007",
+     "p_greater_than_distal_blades": ""
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "proximal_blades",
+     "n_sites": "574",
+     "mean_jsd": "0.5443",
+     "median_jsd": "0.5383",
+     "vs_whole_protein": "-0.0709",
+     "p_greater_than_distal_blades": "1"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "beam",
+     "n_sites": "56",
+     "mean_jsd": "0.6491",
+     "median_jsd": "0.6645",
+     "vs_whole_protein": "0.0339",
+     "p_greater_than_distal_blades": "0.038"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "anchor",
+     "n_sites": "112",
+     "mean_jsd": "0.7388",
+     "median_jsd": "0.7529",
+     "vs_whole_protein": "0.1236",
+     "p_greater_than_distal_blades": "4.83e-15"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "outer_helix",
+     "n_sites": "27",
+     "mean_jsd": "0.7817",
+     "median_jsd": "0.8175",
+     "vs_whole_protein": "0.1665",
+     "p_greater_than_distal_blades": "2.15e-07"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "CED",
+     "n_sites": "245",
+     "mean_jsd": "0.6157",
+     "median_jsd": "0.6334",
+     "vs_whole_protein": "0.0005",
+     "p_greater_than_distal_blades": "0.279"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "inner_helix",
+     "n_sites": "27",
+     "mean_jsd": "0.7544",
+     "median_jsd": "0.7576",
+     "vs_whole_protein": "0.1393",
+     "p_greater_than_distal_blades": "4.53e-06"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "CTD",
+     "n_sites": "57",
+     "mean_jsd": "0.7634",
+     "median_jsd": "0.7797",
+     "vs_whole_protein": "0.1482",
+     "p_greater_than_distal_blades": "1.36e-11"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "pore_linker",
+     "n_sites": "117",
+     "mean_jsd": "0.7531",
+     "median_jsd": "0.7609",
+     "vs_whole_protein": "0.1379",
+     "p_greater_than_distal_blades": "1.74e-18"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "pore_module",
+     "n_sites": "473",
+     "mean_jsd": "0.6849",
+     "median_jsd": "0.7097",
+     "vs_whole_protein": "0.0697",
+     "p_greater_than_distal_blades": "8.12e-17"
+    }
+   ]
+  },
+  "paralogue_identity": {
+   "note": "What the three paralogues kept of each other, domain by domain.",
+   "source": "constraint/paralog_identity_by_domain.tsv",
+   "rows": [
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "CED",
+     "n_columns": "229",
+     "identity": "0.4017",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "-0.0725"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "CTD",
+     "n_columns": "57",
+     "identity": "0.9123",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "0.438"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "anchor",
+     "n_columns": "112",
+     "identity": "0.7321",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "0.2579"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "beam",
+     "n_columns": "66",
+     "identity": "0.4545",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "-0.0197"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "distal_blades",
+     "n_columns": "1263",
+     "identity": "0.441",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "-0.0333"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "inner_helix",
+     "n_columns": "27",
+     "identity": "0.8519",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "0.3776"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "outer_helix",
+     "n_columns": "27",
+     "identity": "0.8519",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "0.3776"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "pore_linker",
+     "n_columns": "117",
+     "identity": "0.8462",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "0.3719"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "pore_module",
+     "n_columns": "457",
+     "identity": "0.6324",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "0.1581"
+    },
+    {
+     "pair": "PIEZO1_vs_PIEZO2",
+     "frame": "PIEZO1",
+     "domain": "proximal_blades",
+     "n_columns": "522",
+     "identity": "0.3582",
+     "whole_protein_identity": "0.4743",
+     "delta_vs_whole": "-0.116"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "CED",
+     "n_columns": "233",
+     "identity": "0.3777",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "-0.0752"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "CTD",
+     "n_columns": "57",
+     "identity": "0.7193",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "0.2664"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "anchor",
+     "n_columns": "112",
+     "identity": "0.75",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "0.2971"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "beam",
+     "n_columns": "66",
+     "identity": "0.3939",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "-0.059"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "distal_blades",
+     "n_columns": "1245",
+     "identity": "0.4209",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "-0.032"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "inner_helix",
+     "n_columns": "27",
+     "identity": "0.7407",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "0.2878"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "outer_helix",
+     "n_columns": "27",
+     "identity": "0.8519",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "0.3989"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "pore_linker",
+     "n_columns": "117",
+     "identity": "0.7949",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "0.3419"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "pore_module",
+     "n_columns": "461",
+     "identity": "0.5748",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "0.1219"
+    },
+    {
+     "pair": "PIEZO1_vs_piezo3",
+     "frame": "PIEZO1",
+     "domain": "proximal_blades",
+     "n_columns": "465",
+     "identity": "0.3484",
+     "whole_protein_identity": "0.4529",
+     "delta_vs_whole": "-0.1045"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "CED",
+     "n_columns": "232",
+     "identity": "0.3534",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "-0.1233"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "CTD",
+     "n_columns": "58",
+     "identity": "0.7069",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "0.2302"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "anchor",
+     "n_columns": "112",
+     "identity": "0.7946",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "0.3179"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "beam",
+     "n_columns": "68",
+     "identity": "0.5",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "0.0233"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "distal_blades",
+     "n_columns": "1276",
+     "identity": "0.4381",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "-0.0387"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "inner_helix",
+     "n_columns": "27",
+     "identity": "0.8519",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "0.3751"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "outer_helix",
+     "n_columns": "27",
+     "identity": "0.8148",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "0.3381"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "pore_linker",
+     "n_columns": "117",
+     "identity": "0.8632",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "0.3865"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "pore_module",
+     "n_columns": "461",
+     "identity": "0.5835",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "0.1068"
+    },
+    {
+     "pair": "PIEZO2_vs_piezo3",
+     "frame": "PIEZO2",
+     "domain": "proximal_blades",
+     "n_columns": "503",
+     "identity": "0.3956",
+     "whole_protein_identity": "0.4767",
+     "delta_vs_whole": "-0.0811"
+    }
+   ]
+  },
+  "variant_constraint_auc": {
+   "note": "The constraint score used as a variant classifier.",
+   "source": "constraint/variant_constraint_test.tsv",
+   "rows": [
+    {
+     "gene": "PIEZO1",
+     "layer": "deep",
+     "n_pathogenic": "21",
+     "n_benign": "107",
+     "mean_jsd_pathogenic": "0.8061",
+     "mean_jsd_benign": "0.5152",
+     "auc": "0.9143",
+     "p_mannwhitney": "1.07e-09"
+    },
+    {
+     "gene": "PIEZO1",
+     "layer": "shallow",
+     "n_pathogenic": "21",
+     "n_benign": "107",
+     "mean_jsd_pathogenic": "0.8201",
+     "mean_jsd_benign": "0.61",
+     "auc": "0.8823",
+     "p_mannwhitney": "1.65e-08"
+    },
+    {
+     "gene": "PIEZO1",
+     "layer": "vert",
+     "n_pathogenic": "21",
+     "n_benign": "107",
+     "mean_jsd_pathogenic": "0.7792",
+     "mean_jsd_benign": "0.4782",
+     "auc": "0.9003",
+     "p_mannwhitney": "3.63e-09"
+    },
+    {
+     "gene": "PIEZO1",
+     "layer": "family",
+     "n_pathogenic": "21",
+     "n_benign": "107",
+     "mean_jsd_pathogenic": "0.495",
+     "mean_jsd_benign": "0.2969",
+     "auc": "0.8373",
+     "p_mannwhitney": "5.47e-07"
+    },
+    {
+     "gene": "PIEZO2",
+     "layer": "deep",
+     "n_pathogenic": "24",
+     "n_benign": "45",
+     "mean_jsd_pathogenic": "0.7995",
+     "mean_jsd_benign": "0.5093",
+     "auc": "0.9343",
+     "p_mannwhitney": "1.78e-09"
+    },
+    {
+     "gene": "PIEZO2",
+     "layer": "shallow",
+     "n_pathogenic": "24",
+     "n_benign": "45",
+     "mean_jsd_pathogenic": "0.8263",
+     "mean_jsd_benign": "0.6201",
+     "auc": "0.9269",
+     "p_mannwhitney": "3.21e-09"
+    },
+    {
+     "gene": "PIEZO2",
+     "layer": "vert",
+     "n_pathogenic": "24",
+     "n_benign": "45",
+     "mean_jsd_pathogenic": "0.7545",
+     "mean_jsd_benign": "0.4379",
+     "auc": "0.9426",
+     "p_mannwhitney": "8.87e-10"
+    },
+    {
+     "gene": "PIEZO2",
+     "layer": "family",
+     "n_pathogenic": "24",
+     "n_benign": "45",
+     "mean_jsd_pathogenic": "0.4832",
+     "mean_jsd_benign": "0.3264",
+     "auc": "0.7741",
+     "p_mannwhitney": "9.83e-05"
+    },
+    {
+     "gene": "POOLED",
+     "layer": "deep",
+     "n_pathogenic": "45",
+     "n_benign": "152",
+     "mean_jsd_pathogenic": "0.8026",
+     "mean_jsd_benign": "0.5135",
+     "auc": "0.9222",
+     "p_mannwhitney": "4.15e-18"
+    },
+    {
+     "gene": "POOLED",
+     "layer": "shallow",
+     "n_pathogenic": "45",
+     "n_benign": "152",
+     "mean_jsd_pathogenic": "0.8234",
+     "mean_jsd_benign": "0.613",
+     "auc": "0.9035",
+     "p_mannwhitney": "1.06e-16"
+    },
+    {
+     "gene": "POOLED",
+     "layer": "vert",
+     "n_pathogenic": "45",
+     "n_benign": "152",
+     "mean_jsd_pathogenic": "0.766",
+     "mean_jsd_benign": "0.4663",
+     "auc": "0.9118",
+     "p_mannwhitney": "2.56e-17"
+    },
+    {
+     "gene": "POOLED",
+     "layer": "family",
+     "n_pathogenic": "45",
+     "n_benign": "152",
+     "mean_jsd_pathogenic": "0.4887",
+     "mean_jsd_benign": "0.3056",
+     "auc": "0.8134",
+     "p_mannwhitney": "8.91e-11"
+    }
+   ]
+  },
+  "piezo3_audit": {
+   "note": "Whether piezo3 kept the human residue, split by clinical class.",
+   "source": "constraint/piezo3_audit_summary.tsv",
+   "rows": [
+    {
+     "gene": "PIEZO1",
+     "contrast": "P/LP vs all aligned columns",
+     "class_bucket": "P/LP",
+     "n_positions": "24",
+     "n_identical_in_piezo3": "18",
+     "frac_identical": "0.75",
+     "comparator_frac_identical": "0.4529",
+     "comparator_n": "2358",
+     "odds_ratio": "3.624",
+     "p_fisher": "0.00612"
+    },
+    {
+     "gene": "PIEZO1",
+     "contrast": "B/LB vs all aligned columns",
+     "class_bucket": "B/LB",
+     "n_positions": "88",
+     "n_identical_in_piezo3": "27",
+     "frac_identical": "0.3068",
+     "comparator_frac_identical": "0.4529",
+     "comparator_n": "2358",
+     "odds_ratio": "0.535",
+     "p_fisher": "0.00844"
+    },
+    {
+     "gene": "PIEZO1",
+     "contrast": "VUS vs all aligned columns",
+     "class_bucket": "VUS",
+     "n_positions": "831",
+     "n_identical_in_piezo3": "362",
+     "frac_identical": "0.4356",
+     "comparator_frac_identical": "0.4529",
+     "comparator_n": "2358",
+     "odds_ratio": "0.932",
+     "p_fisher": "0.395"
+    },
+    {
+     "gene": "PIEZO1",
+     "contrast": "P/LP vs B/LB",
+     "class_bucket": "P/LP",
+     "n_positions": "24",
+     "n_identical_in_piezo3": "18",
+     "frac_identical": "0.75",
+     "comparator_frac_identical": "0.3068",
+     "comparator_n": "88",
+     "odds_ratio": "6.778",
+     "p_fisher": "0.00013"
+    },
+    {
+     "gene": "PIEZO2",
+     "contrast": "P/LP vs all aligned columns",
+     "class_bucket": "P/LP",
+     "n_positions": "19",
+     "n_identical_in_piezo3": "13",
+     "frac_identical": "0.6842",
+     "comparator_frac_identical": "0.4706",
+     "comparator_n": "2503",
+     "odds_ratio": "2.437",
+     "p_fisher": "0.0688"
+    },
+    {
+     "gene": "PIEZO2",
+     "contrast": "B/LB vs all aligned columns",
+     "class_bucket": "B/LB",
+     "n_positions": "37",
+     "n_identical_in_piezo3": "6",
+     "frac_identical": "0.1622",
+     "comparator_frac_identical": "0.4706",
+     "comparator_n": "2503",
+     "odds_ratio": "0.218",
+     "p_fisher": "0.000168"
+    },
+    {
+     "gene": "PIEZO2",
+     "contrast": "VUS vs all aligned columns",
+     "class_bucket": "VUS",
+     "n_positions": "508",
+     "n_identical_in_piezo3": "223",
+     "frac_identical": "0.439",
+     "comparator_frac_identical": "0.4706",
+     "comparator_n": "2503",
+     "odds_ratio": "0.88",
+     "p_fisher": "0.205"
+    },
+    {
+     "gene": "PIEZO2",
+     "contrast": "P/LP vs B/LB",
+     "class_bucket": "P/LP",
+     "n_positions": "19",
+     "n_identical_in_piezo3": "13",
+     "frac_identical": "0.6842",
+     "comparator_frac_identical": "0.1622",
+     "comparator_n": "37",
+     "odds_ratio": "11.194",
+     "p_fisher": "0.000203"
+    },
+    {
+     "gene": "POOLED",
+     "contrast": "P/LP vs B/LB",
+     "class_bucket": "P/LP",
+     "n_positions": "43",
+     "n_identical_in_piezo3": "31",
+     "frac_identical": "0.7209",
+     "comparator_frac_identical": "0.264",
+     "comparator_n": "125",
+     "odds_ratio": "7.202",
+     "p_fisher": "1.74e-07"
+    }
+   ]
+  },
+  "selection_by_domain": {
+   "note": "The same question asked in codons rather than amino acids (FEL site-wise dN/dS), which is why it is worth carrying: it shares no statistic with the JSD track.",
+   "source": "constraint/selection_by_domain.tsv",
+   "rows": [
+    {
+     "paralog": "PIEZO1",
+     "domain": "CED",
+     "n_sites": "178",
+     "median_beta": "0.0466",
+     "mean_beta": "0.1264",
+     "frac_purifying_q05": "0.5281",
+     "median_omega_usable": "0.0218"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "CTD",
+     "n_sites": "56",
+     "median_beta": "0.0",
+     "mean_beta": "0.0252",
+     "frac_purifying_q05": "0.4821",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "WHOLE_PROTEIN",
+     "n_sites": "1865",
+     "median_beta": "0.0531",
+     "mean_beta": "0.2957",
+     "frac_purifying_q05": "0.4949",
+     "median_omega_usable": "0.0489"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "anchor",
+     "n_sites": "111",
+     "median_beta": "0.0",
+     "mean_beta": "0.0771",
+     "frac_purifying_q05": "0.6306",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "beam",
+     "n_sites": "53",
+     "median_beta": "0.1673",
+     "mean_beta": "0.1954",
+     "frac_purifying_q05": "0.4717",
+     "median_omega_usable": "0.0611"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "distal_blades",
+     "n_sites": "977",
+     "median_beta": "0.0659",
+     "mean_beta": "0.1552",
+     "frac_purifying_q05": "0.4841",
+     "median_omega_usable": "0.0702"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "inner_helix",
+     "n_sites": "27",
+     "median_beta": "0.0",
+     "mean_beta": "0.0145",
+     "frac_purifying_q05": "0.6667",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "outer_helix",
+     "n_sites": "27",
+     "median_beta": "0.0",
+     "mean_beta": "0.0326",
+     "frac_purifying_q05": "0.6296",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "pore_linker",
+     "n_sites": "117",
+     "median_beta": "0.0",
+     "mean_beta": "0.0117",
+     "frac_purifying_q05": "0.6923",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "pore_module",
+     "n_sites": "405",
+     "median_beta": "0.0",
+     "mean_beta": "0.0656",
+     "frac_purifying_q05": "0.5852",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO1",
+     "domain": "proximal_blades",
+     "n_sites": "319",
+     "median_beta": "0.1346",
+     "mean_beta": "1.1108",
+     "frac_purifying_q05": "0.3699",
+     "median_omega_usable": "0.1321"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "CED",
+     "n_sites": "180",
+     "median_beta": "0.1065",
+     "mean_beta": "0.2813",
+     "frac_purifying_q05": "0.5222",
+     "median_omega_usable": "0.0886"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "CTD",
+     "n_sites": "56",
+     "median_beta": "0.0",
+     "mean_beta": "0.0095",
+     "frac_purifying_q05": "0.7679",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "WHOLE_PROTEIN",
+     "n_sites": "1933",
+     "median_beta": "0.0",
+     "mean_beta": "0.1013",
+     "frac_purifying_q05": "0.6658",
+     "median_omega_usable": "0.0005"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "anchor",
+     "n_sites": "111",
+     "median_beta": "0.0",
+     "mean_beta": "0.029",
+     "frac_purifying_q05": "0.8198",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "beam",
+     "n_sites": "52",
+     "median_beta": "0.0508",
+     "mean_beta": "0.0709",
+     "frac_purifying_q05": "0.8077",
+     "median_omega_usable": "0.0279"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "distal_blades",
+     "n_sites": "1013",
+     "median_beta": "0.0456",
+     "mean_beta": "0.1028",
+     "frac_purifying_q05": "0.6308",
+     "median_omega_usable": "0.0226"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "inner_helix",
+     "n_sites": "27",
+     "median_beta": "0.0",
+     "mean_beta": "0.0039",
+     "frac_purifying_q05": "0.9259",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "outer_helix",
+     "n_sites": "27",
+     "median_beta": "0.0",
+     "mean_beta": "0.0273",
+     "frac_purifying_q05": "0.7407",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "pore_linker",
+     "n_sites": "117",
+     "median_beta": "0.0",
+     "mean_beta": "0.0146",
+     "frac_purifying_q05": "0.7863",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "pore_module",
+     "n_sites": "407",
+     "median_beta": "0.0",
+     "mean_beta": "0.132",
+     "frac_purifying_q05": "0.6732",
+     "median_omega_usable": "0.0"
+    },
+    {
+     "paralog": "PIEZO2",
+     "domain": "proximal_blades",
+     "n_sites": "350",
+     "median_beta": "0.0001",
+     "mean_beta": "0.0886",
+     "frac_purifying_q05": "0.6886",
+     "median_omega_usable": "0.019"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "CED",
+     "n_sites": "187",
+     "median_beta": "0.1854",
+     "mean_beta": "0.2247",
+     "frac_purifying_q05": "0.5829",
+     "median_omega_usable": "0.1921"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "CTD",
+     "n_sites": "56",
+     "median_beta": "0.0741",
+     "mean_beta": "0.119",
+     "frac_purifying_q05": "0.625",
+     "median_omega_usable": "0.0738"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "WHOLE_PROTEIN",
+     "n_sites": "1907",
+     "median_beta": "0.1844",
+     "mean_beta": "0.244",
+     "frac_purifying_q05": "0.5732",
+     "median_omega_usable": "0.1745"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "anchor",
+     "n_sites": "111",
+     "median_beta": "0.169",
+     "mean_beta": "0.1945",
+     "frac_purifying_q05": "0.6577",
+     "median_omega_usable": "0.1315"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "beam",
+     "n_sites": "50",
+     "median_beta": "0.1616",
+     "mean_beta": "0.2119",
+     "frac_purifying_q05": "0.68",
+     "median_omega_usable": "0.1723"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "distal_blades",
+     "n_sites": "980",
+     "median_beta": "0.19",
+     "mean_beta": "0.2477",
+     "frac_purifying_q05": "0.5673",
+     "median_omega_usable": "0.1823"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "inner_helix",
+     "n_sites": "27",
+     "median_beta": "0.1008",
+     "mean_beta": "0.1217",
+     "frac_purifying_q05": "0.7778",
+     "median_omega_usable": "0.0902"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "outer_helix",
+     "n_sites": "27",
+     "median_beta": "0.0887",
+     "mean_beta": "0.1297",
+     "frac_purifying_q05": "0.5926",
+     "median_omega_usable": "0.0952"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "pore_linker",
+     "n_sites": "117",
+     "median_beta": "0.1169",
+     "mean_beta": "0.1497",
+     "frac_purifying_q05": "0.6496",
+     "median_omega_usable": "0.1154"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "pore_module",
+     "n_sites": "414",
+     "median_beta": "0.141",
+     "mean_beta": "0.1763",
+     "frac_purifying_q05": "0.6208",
+     "median_omega_usable": "0.1283"
+    },
+    {
+     "paralog": "piezo3",
+     "domain": "proximal_blades",
+     "n_sites": "352",
+     "median_beta": "0.2656",
+     "mean_beta": "0.3335",
+     "frac_purifying_q05": "0.4915",
+     "median_omega_usable": "0.2221"
+    }
+   ]
+  }
+ },
+ "pore_module_pathogenic": [
+  {
+   "gene": "PIEZO1",
+   "resi": 2070,
+   "aa": "K",
+   "element": "outer_helix",
+   "msa_col": 8802,
+   "piezo3_resi": 2192,
+   "piezo3_aa": "K"
+  },
+  {
+   "gene": "PIEZO1",
+   "resi": 2088,
+   "aa": "R",
+   "element": "pore_linker",
+   "msa_col": 8827,
+   "piezo3_resi": 2210,
+   "piezo3_aa": "R"
+  },
+  {
+   "gene": "PIEZO1",
+   "resi": 2117,
+   "aa": "E",
+   "element": "pore_linker",
+   "msa_col": 8881,
+   "piezo3_resi": 2239,
+   "piezo3_aa": "E"
+  },
+  {
+   "gene": "PIEZO1",
+   "resi": 2127,
+   "aa": "T",
+   "element": "pore_linker",
+   "msa_col": 8891,
+   "piezo3_resi": 2249,
+   "piezo3_aa": "T"
+  },
+  {
+   "gene": "PIEZO1",
+   "resi": 2225,
+   "aa": "M",
+   "element": "CED",
+   "msa_col": 9214,
+   "piezo3_resi": 2347,
+   "piezo3_aa": "M"
+  },
+  {
+   "gene": "PIEZO1",
+   "resi": 2430,
+   "aa": "P",
+   "element": "CED",
+   "msa_col": 9808,
+   "piezo3_resi": 2560,
+   "piezo3_aa": "P"
+  },
+  {
+   "gene": "PIEZO1",
+   "resi": 2456,
+   "aa": "R",
+   "element": "inner_helix",
+   "msa_col": 9902,
+   "piezo3_resi": 2586,
+   "piezo3_aa": "R"
+  },
+  {
+   "gene": "PIEZO1",
+   "resi": 2488,
+   "aa": "R",
+   "element": "CTD",
+   "msa_col": 9935,
+   "piezo3_resi": 2618,
+   "piezo3_aa": "R"
+  },
+  {
+   "gene": "PIEZO1",
+   "resi": 2496,
+   "aa": "E",
+   "element": "CTD",
+   "msa_col": 10001,
+   "piezo3_resi": 2626,
+   "piezo3_aa": "E"
+  },
+  {
+   "gene": "PIEZO2",
+   "resi": 2295,
+   "aa": "W",
+   "element": "outer_helix",
+   "msa_col": 8798,
+   "piezo3_resi": 2188,
+   "piezo3_aa": "W"
+  },
+  {
+   "gene": "PIEZO2",
+   "resi": 2406,
+   "aa": "G",
+   "element": "pore_linker",
+   "msa_col": 9122,
+   "piezo3_resi": 2299,
+   "piezo3_aa": "G"
+  },
+  {
+   "gene": "PIEZO2",
+   "resi": 2686,
+   "aa": "R",
+   "element": "inner_helix",
+   "msa_col": 9902,
+   "piezo3_resi": 2586,
+   "piezo3_aa": "R"
+  },
+  {
+   "gene": "PIEZO2",
+   "resi": 2718,
+   "aa": "R",
+   "element": "CTD",
+   "msa_col": 9935,
+   "piezo3_resi": 2618,
+   "piezo3_aa": "R"
+  },
+  {
+   "gene": "PIEZO2",
+   "resi": 2739,
+   "aa": "S",
+   "element": "CTD",
+   "msa_col": 10063,
+   "piezo3_resi": 2639,
+   "piezo3_aa": "S"
+  }
+ ],
+ "equivalent_positions": [
+  {
+   "msa_col": 9902,
+   "element": "inner_helix",
+   "piezo1": 2456,
+   "piezo1_aa": "R",
+   "piezo1_disease": "DHS1 (hereditary xerocytosis)",
+   "piezo2": 2686,
+   "piezo2_aa": "R",
+   "piezo2_disease": "DA3 Gordon / MWKS",
+   "piezo3": 2586,
+   "piezo3_aa": "R",
+   "note": "Both gain-of-function; PIEZO1 R2456H is the best-characterised slow-inactivating variant in the family and 8YFG resolves it."
+  },
+  {
+   "msa_col": 9935,
+   "element": "CTD",
+   "piezo1": 2488,
+   "piezo1_aa": "R",
+   "piezo1_disease": "DHS1 (hereditary xerocytosis)",
+   "piezo2": 2718,
+   "piezo2_aa": "R",
+   "piezo2_disease": "DA5 distal arthrogryposis",
+   "piezo3": 2618,
+   "piezo3_aa": "R",
+   "note": "Both in the C-terminal intracellular domain, the most identical element between the paralogues (91%)."
+  }
+ ],
+ "census": {
+  "n_proteins": 8329,
+  "by_kingdom": {
+   "Metazoa": 6592,
+   "Viridiplantae": 1397,
+   "protists": 318,
+   "Fungi": 7
+  },
+  "unassigned_to_kingdom": 15,
+  "archaeal_proteomes_searched": 628,
+  "archaeal_hits": 0,
+  "fungal_proteomes_searched": 1501,
+  "fungal_genuine": 1,
+  "fungal_genuine_species": "Rozella allomycis",
+  "vertebrate_genomes": 194,
+  "note": "PIEZO is a eukaryotic invention, inherited almost universally, and its absences split into the real (fungi after the Rozella split, intracellular parasites) and the bibliographic (arthropod and mollusc reference proteomes whose genes are in the genome but not the proteome). The bacterial statement is a 300-genus sample, not a census."
+ }
+}

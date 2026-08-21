@@ -1,4 +1,4 @@
-"""Does the machinery survive the family? — curated residues across all nine PIEZOs.
+"""Does the machinery survive the family? — curated residues across all ten PIEZOs.
 
 ``homology.py`` measures how related the family members are. This asks the
 question that being related is only interesting for: **the gate, the

@@ -407,6 +407,9 @@ from .report_tags import (analysis_hybrid,   # noqa: E402
                           analysis_ligands, analysis_nanodomain,
                           analysis_paired_variant,
                           analysis_permeation, analysis_prediction_record)
+from .report_family import (analysis_constraint,   # noqa: E402
+                            analysis_core_periphery, analysis_disease,
+                            analysis_family, analysis_piezo3)
 from .report_validation import (analysis_fluctuations,   # noqa: E402
                                 analysis_homology, analysis_paralogue)
 
@@ -428,6 +431,11 @@ ANALYSES = {
     "homology": analysis_homology,
     "pockets": analysis_pockets,
     "interactions": analysis_interactions,
+    "family": analysis_family,
+    "constraint": analysis_constraint,
+    "disease": analysis_disease,
+    "coreperiphery": analysis_core_periphery,
+    "piezo3": analysis_piezo3,
     "guo2017": analysis_guo2017,
     "liu2025": analysis_liu2025,
 }

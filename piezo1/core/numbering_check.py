@@ -63,9 +63,17 @@ __all__ = ["NumberingIdentity", "SpliceShift", "MismatchBlock",
 #: a twelve-residue length difference puts everything past the first indel out
 #: of register. Pinned in ``tests/test_homology.py``.
 REFERENCES = ("human", "mouse", "rat", "human_piezo2", "mouse_piezo2",
-              "worm_piezo", "fly_piezo", "plant_piezo", "dicty_piezo")
+              "zebrafish_piezo3", "worm_piezo", "fly_piezo", "plant_piezo",
+              "dicty_piezo")
 PIEZO1_REFERENCES = ("human", "mouse", "rat")
 PIEZO2_REFERENCES = ("human_piezo2", "mouse_piezo2")
+#: The **third** vertebrate PIEZO, which this project held no reference for
+#: until the census made the case that it exists. Its own category rather than
+#: a PIEZO1 or a PIEZO2: the duplications that produced all three sit together
+#: on the jawed-vertebrate stem, so piezo3 is a sibling of the other two and
+#: not a version of either. Human piezo3 is a pseudogene, so the reference is
+#: zebrafish — which is also why nothing here carries curated annotation for it.
+PIEZO3_REFERENCES = ("zebrafish_piezo3",)
 #: The invertebrate PIEZOs. Neither is a PIEZO1 or a PIEZO2 — the duplication
 #: that produced those two is vertebrate — so they are their own category and
 #: the generality question they answer is a wider one.
@@ -81,6 +89,7 @@ NON_ANIMAL_REFERENCES = ("plant_piezo", "dicty_piezo")
 PROTEIN_NAMES = {
     "human": "PIEZO1", "mouse": "PIEZO1", "rat": "PIEZO1",
     "human_piezo2": "PIEZO2", "mouse_piezo2": "PIEZO2",
+    "zebrafish_piezo3": "piezo3",
     "worm_piezo": "PEZO-1", "fly_piezo": "dPIEZO",
     "plant_piezo": "AtPIEZO", "dicty_piezo": "pzoA",
 }

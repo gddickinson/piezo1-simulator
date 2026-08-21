@@ -25,7 +25,7 @@ the module rather than a decoration.**
 
 A global BLOSUM62 alignment of two unrelated 2,500-residue proteins returns
 about 22% identity for nothing but composition and the alignment's own freedom
-to slide. **15 of the 36 pairs in this family fall below Rost's 30% line**, and
+to slide. **17 of the 45 pairs in this family fall below Rost's 30% line**, and
 for those the percentage is mostly that.
 
 The extreme case is PEZO-1 against Arabidopsis PIEZO. Identity **0.238**;
@@ -63,11 +63,11 @@ import numpy as np
 
 from ..config import RESOURCE_DIR
 from ..core.numbering_check import (NON_ANIMAL_REFERENCES, PIEZO1_REFERENCES,
-                                    PIEZO2_REFERENCES, PROTEIN_NAMES,
-                                    REFERENCES, reference_entry)
+                                    PIEZO2_REFERENCES, PIEZO3_REFERENCES,
+                                    PROTEIN_NAMES, REFERENCES, reference_entry)
 from ..parameters import PARAMETERS as _P
 
-__all__ = ["FamilyMember", "family", "member", "Relationship", "relationship",
+__all__ = ["reviewed_family", "unreviewed_family", "FamilyMember", "family", "member", "Relationship", "relationship",
            "FamilyMatrix", "family_matrix", "align_pair", "shuffled_null",
            "GROUPS", "group_of"]
 
@@ -77,6 +77,10 @@ __all__ = ["FamilyMember", "family", "member", "Relationship", "relationship",
 GROUPS = {
     "PIEZO1": PIEZO1_REFERENCES,
     "PIEZO2": PIEZO2_REFERENCES,
+    #: The third vertebrate paralogue. Its own group rather than a version of
+    #: either sibling: all three duplications sit together on the
+    #: jawed-vertebrate stem, so piezo3 is their contemporary.
+    "piezo3": PIEZO3_REFERENCES,
     "invertebrate": ("worm_piezo", "fly_piezo"),
     "non-animal": NON_ANIMAL_REFERENCES,
 }
@@ -95,12 +99,18 @@ def group_of(key: str) -> str:
 
 @dataclass(frozen=True)
 class FamilyMember:
-    """One reviewed PIEZO, read from its committed UniProt resource.
+    """One PIEZO reference, read from its committed UniProt resource.
 
     ``n_transmembrane`` is carried because it is the field that refuses the
-    obvious shortcut: five of the nine have 38 helices and four do not, so
+    obvious shortcut: six of the ten have 38 helices and four do not, so
     "TM12 of PIEZO1" has no counterpart in the plant protein that can be found
     by counting.
+
+    ``reviewed`` is carried because the family is no longer uniformly reviewed.
+    Zebrafish piezo3 is a TrEMBL entry with an automatic annotation naming 21
+    transmembrane helices where its two siblings have 38 — so its helix count
+    is a statement about the annotation and not about the protein, and nothing
+    should read it as the latter.
     """
 
     key: str
@@ -111,6 +121,7 @@ class FamilyMember:
     length: int
     n_transmembrane: int
     group: str
+    reviewed: bool = True
 
     @property
     def label(self) -> str:
@@ -126,13 +137,23 @@ _FAMILY: tuple[FamilyMember, ...] | None = None
 
 
 def family() -> tuple[FamilyMember, ...]:
-    """Every reviewed PIEZO, in :data:`GROUPS` order.
+    """Every PIEZO reference this project holds, in :data:`GROUPS` order.
 
     Built from the committed resources rather than from a list written here,
     so the family cannot disagree with the sequences the rest of the project
     reads. Missing a resource raises rather than silently shortening the
-    family: a comparison quietly run over eight of nine would report a smaller
+    family: a comparison quietly run over nine of ten would report a smaller
     range of divergence and look like a tighter result.
+
+    **Ten members, of which nine are reviewed.** Until Round 93 these were the
+    same number, and the sentence "one UniProt query returns exactly the
+    family" carried the argument in ``docs/HOMOLOGY_SEARCH.md``. Zebrafish
+    piezo3 is a TrEMBL entry, so ``reviewed:true AND family:piezo`` still
+    returns nine and now misses a real vertebrate paralogue — which does not
+    weaken that argument but sharpens it, and is itself one of the census's
+    findings: a third of real PIEZO genes have no reviewed protein record.
+    :func:`reviewed_family` is the nine, for anything that has to reproduce the
+    query.
     """
     global _FAMILY
     if _FAMILY is not None:
@@ -154,9 +175,24 @@ def family() -> tuple[FamilyMember, ...]:
             organism=data.get("organism", "?"), gene=data.get("gene") or "?",
             length=int(data["length"]),
             n_transmembrane=int(data["n_transmembrane"]),
-            group=group_of(key)))
+            group=group_of(key), reviewed=bool(data.get("reviewed", True))))
     _FAMILY = tuple(members)
     return _FAMILY
+
+
+def reviewed_family() -> tuple[FamilyMember, ...]:
+    """The nine members a ``reviewed:true`` UniProt query returns.
+
+    Kept separate from :func:`family` so the enumerability argument in
+    ``docs/HOMOLOGY_SEARCH.md`` still has something to point at, and so the
+    gap between the two counts stays visible rather than being absorbed.
+    """
+    return tuple(m for m in family() if m.reviewed)
+
+
+def unreviewed_family() -> tuple[FamilyMember, ...]:
+    """The members no reviewed query returns. One, and it is a paralogue."""
+    return tuple(m for m in family() if not m.reviewed)
 
 
 def member(key: str) -> FamilyMember:
@@ -375,9 +411,11 @@ _MATRIX_CACHE: dict = {}
 
 def family_matrix(keys=None, replicates: int | None = None,
                   seed: int = 0) -> FamilyMatrix:
-    """The whole comparison: 36 pairs, each with its null. **About two minutes.**
+    """The whole comparison: 45 pairs, each with its null. **About three minutes.**
 
-    The cost is the null, not the answer — 36 alignments take three seconds and
+    Ten members since Round 93, so 45 pairs rather than 36 and about half again
+    the cost. The cost is the null, not the answer — 45 alignments take four
+    seconds and
     the 720 shuffled ones take the rest. That is the price of not reporting a
     bare percentage, and it is why the GUI runs this on a worker thread and the
     CLI says what it is doing.

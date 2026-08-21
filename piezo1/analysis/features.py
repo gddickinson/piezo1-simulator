@@ -63,6 +63,29 @@ FEATURE_NOTES = {
 }
 
 
+def _to_human(residue: int, species: str) -> int | None:
+    """A residue number in this entry's numbering, as a human PIEZO1 number."""
+    if species == "human":
+        return residue
+    from ..core.sequence import mouse_to_human
+    return mouse_to_human(residue)
+
+
+def _blade_range(species: str) -> tuple[int, int]:
+    """The blade span, in the entry's own numbering.
+
+    Human 570-1302 is where the deposited structures start resolving and where
+    THU7 ends. Carried across by the alignment map rather than by an offset,
+    for the same reason everything else in this project is.
+    """
+    human = (570, 1302)
+    if species == "human":
+        return human
+    from ..core.sequence import human_to_mouse
+    lo, hi = (human_to_mouse(human[0]), human_to_mouse(human[1]))
+    return (lo or human[0], hi or human[1])
+
+
 @dataclass
 class ResidueFeatures:
     """A residue-by-feature table with provenance for each column."""
@@ -154,7 +177,7 @@ def build_feature_table(structure: Structure,
                         annotations: Annotations | None = None,
                         n_modes: int = 30, cutoff: float = 15.0,
                         gate_group: str = "hydrophobic_gate",
-                        blade_range: tuple[int, int] = (570, 1302),
+                        blade_range: tuple[int, int] | None = None,
                         include_conservation: bool = True,
                         include_sasa: bool = True,
                         sasa_points: float | None = None) -> ResidueFeatures:
@@ -163,13 +186,35 @@ def build_feature_table(structure: Structure,
     Everything is averaged over the three protomers, because a homotrimer has
     three chemically identical copies of each residue and reporting one would
     make the answer depend on which chain the file happened to list first.
+
+    **Every residue number here is in the entry's own numbering**, and that has
+    to be established rather than assumed. Until Round 93 this defaulted to
+    human annotation whatever it was handed, so on a *mouse* entry — which is
+    most of the catalogue and is the entry the Round 48 validation used — the
+    hydrophobic-gate group, the blade range and the conservation profile were
+    all looked up at human residue numbers against mouse coordinates. The
+    human/mouse offset is not constant and reaches 26 residues, so the gate
+    columns pointed at residues a helix turn away and the conservation column
+    dropped from rho = 0.81 to 0.29 against an independent measure of the same
+    quantity.
+
+    It survived because ``tests/test_features.py`` uses a **human** fixture,
+    where the default is right. The numbering now comes from
+    :func:`piezo1.core.numbering_check.piezo1_numbering`, and the
+    human-anchored conservation profile is converted through
+    :mod:`piezo1.core.sequence` rather than by an offset.
     """
+    from ..core.numbering_check import piezo1_numbering
+
+    species = piezo1_numbering(structure) or "human"
+    if blade_range is None:
+        blade_range = _blade_range(species)
     sasa_points = int(_P.value("sasa.n_points_fast")) if sasa_points is None else sasa_points
     from .allostery import (build_network, cross_correlation,
                             path_betweenness, perturbation_response)
     from ..physics.anm import ANM
 
-    ann = annotations or load_annotations("human")
+    ann = annotations or load_annotations(species)
     blocks, residues = _protomer_blocks(structure)
     per = len(residues)
     coords = np.vstack(blocks)
@@ -267,11 +312,14 @@ def build_feature_table(structure: Structure,
         try:
             from .conservation import conservation_profile, load_orthologs
             profile = conservation_profile(load_orthologs())
+            # The profile is anchored on human Q92508 whatever entry this is,
+            # so its keys are human residue numbers and the structure's are
+            # not. Converted through the alignment map, never by subtraction.
             lookup = {int(r): float(c) for r, c, cov
                       in zip(profile.residues, profile.conservation, profile.coverage)
                       if cov >= 0.5}
             columns["conservation"] = np.array(
-                [lookup.get(int(r), np.nan) for r in residues])
+                [lookup.get(_to_human(int(r), species), np.nan) for r in residues])
         except FileNotFoundError:
             columns["conservation"] = np.full(per, np.nan)
 

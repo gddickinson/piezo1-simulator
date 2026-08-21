@@ -25,7 +25,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from piezo1.config import (DICTY_PIEZO_ACC, FLY_PIEZO_ACC,  # noqa: E402
                            HUMAN_ACC, HUMAN_PIEZO2_ACC, MOUSE_ACC,
                            MOUSE_PIEZO2_ACC, PLANT_PIEZO_ACC, RAT_ACC,
-                           RESOURCE_DIR, SEQUENCE_DIR, WORM_PIEZO_ACC)
+                           RESOURCE_DIR, SEQUENCE_DIR, WORM_PIEZO_ACC,
+                           ZEBRAFISH_PIEZO3_ACC)
 
 #: The PIEZO2 entries are here because 6KG7 is a PIEZO2 structure and the
 #: paralogue comparison needs its transmembrane annotation from the same source
@@ -43,7 +44,8 @@ from piezo1.config import (DICTY_PIEZO_ACC, FLY_PIEZO_ACC,  # noqa: E402
 SPECIES = {"human": HUMAN_ACC, "mouse": MOUSE_ACC, "rat": RAT_ACC,
            "human_piezo2": HUMAN_PIEZO2_ACC, "mouse_piezo2": MOUSE_PIEZO2_ACC,
            "worm_piezo": WORM_PIEZO_ACC, "fly_piezo": FLY_PIEZO_ACC,
-           "plant_piezo": PLANT_PIEZO_ACC, "dicty_piezo": DICTY_PIEZO_ACC}
+           "plant_piezo": PLANT_PIEZO_ACC, "dicty_piezo": DICTY_PIEZO_ACC,
+           "zebrafish_piezo3": ZEBRAFISH_PIEZO3_ACC}
 
 #: UniProt feature types we keep, mapped to the key used in the output file.
 KEEP_RANGES = {
@@ -82,6 +84,13 @@ def distil(entry: dict) -> dict:
         "length": entry["sequence"]["length"],
         "mass_da": entry["sequence"]["molWeight"],
         "sequence": entry["sequence"]["value"],
+        # Reviewed (Swiss-Prot) or unreviewed (TrEMBL). Carried because the
+        # family is no longer uniformly reviewed: zebrafish piezo3 is TrEMBL,
+        # which is why a `reviewed:true` query returns nine members and not
+        # ten — and that absence is one of the census's own findings rather
+        # than an accident of this project's sampling.
+        "entry_type": entry.get("entryType"),
+        "reviewed": "unreviewed" not in str(entry.get("entryType", "")).lower(),
         "entry_version": entry.get("entryAudit", {}).get("entryVersion"),
         "sequence_version": entry.get("entryAudit", {}).get("sequenceVersion"),
         "last_modified": entry.get("entryAudit", {}).get("lastSequenceUpdateDate"),

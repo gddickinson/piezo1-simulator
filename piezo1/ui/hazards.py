@@ -69,6 +69,65 @@ HAZARDS: tuple = (
         where="ui/overlay_controller.py"),
 
     Hazard(
+        key="imported_result_read_as_measured",
+        scenario="Open the constraint colouring, or any of the four family "
+                 "analyses, and read the numbers as something this "
+                 "application computed from the loaded coordinates.",
+        wrong="An external project's evolutionary result attributed to this "
+              "one's physics. A coloured trimer is the most persuasive thing "
+              "this application can put on a screen and these values came "
+              "from a 194-genome census that ran somewhere else; a reader who "
+              "takes them for a measurement here has no way to check them "
+              "and no reason to look for the caveat.",
+        guard="Every family result window leads with whose numbers they are, "
+              "the constraint status line begins 'NOT MEASURED HERE', and the "
+              "imported resource records the source project and the commit it "
+              "was taken at. The importer re-reads all 32 quoted numbers from "
+              "the source on every build and refuses to write when the source "
+              "is absent, so a superseded value cannot survive as a "
+              "quotation. The importer itself is "
+              "scripts/build_family_findings.py, outside the package.",
+        status="guarded",
+        where="ui/constraint_controller.py, ui/tabular_analyses.py, "
+              "core/family.py"),
+
+    Hazard(
+        key="domain_partition_decides_the_answer",
+        scenario="Report the pore-module disease enrichment, or any per-domain "
+                 "constraint number, on one set of domain boundaries.",
+        wrong="A boundary choice reported as a finding. This project and the "
+              "census put the anchor 141 residues apart and the outer helix "
+              "120; the enrichment reaches odds ratio 3.63 at P = 0.0033 on "
+              "their boundaries and 1.60 at P = 0.25 on ours, and the 120 "
+              "residues in dispute carry six pathogenic positions themselves.",
+        guard="disease_geography reports the test under BOTH partitions with "
+              "the disagreement element by element and the disputed band's "
+              "own pathogenic residues named, and its verdict says outright "
+              "when significance depends on the choice. blade_gradient does "
+              "the same for the census's distal-versus-proximal result, which "
+              "reverses on the transmembrane units.",
+        status="guarded",
+        where="analysis/disease_geography.py, analysis/family_constraint.py"),
+
+    Hazard(
+        key="prediction_splay_read_as_divergence",
+        scenario="Superpose a predicted monomer on an experimental structure "
+                 "by the pore module and read the blade separation as a "
+                 "difference between the two proteins.",
+        wrong="A property of the predictor reported as evolutionary "
+              "divergence. Measured: an AlphaFold monomer splays 7-9x from an "
+              "experimental structure OF THE SAME PROTEIN, while two "
+              "experimental structures of different paralogues splay 0.8-1.2x.",
+        guard="core_periphery reports the splay as a ratio against the core "
+              "it was fitted on, refuses a ratio entirely when the cores do "
+              "not superpose, and states cross_paralogue explicitly; the "
+              "caveat on every result names the prediction-versus-experiment "
+              "control, and a test drives it on the mouse AlphaFold model "
+              "against 6B3R.",
+        status="guarded",
+        where="analysis/core_periphery.py, ui/tabular_analyses.py"),
+
+    Hazard(
         key="companion_mistaken_for_primary",
         scenario="Display three structures at once, then run an analysis and "
                  "read the number as belonging to whichever is being looked at.",

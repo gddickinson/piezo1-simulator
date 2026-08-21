@@ -440,7 +440,8 @@ def test_the_piezo2_annotation_resources_are_committed_and_parallel():
                ("human", "mouse", "rat", "human_piezo2", "mouse_piezo2"))
     assert all(helices[n] != 38 for n in
                ("worm_piezo", "fly_piezo", "plant_piezo", "dicty_piezo"))
-    assert lengths == {"human": 2521, "mouse": 2547, "rat": 2535,
+    assert lengths == {"zebrafish_piezo3": 2651,
+                       "human": 2521, "mouse": 2547, "rat": 2535,
                        "human_piezo2": 2752, "mouse_piezo2": 2822,
                        "worm_piezo": 2442, "fly_piezo": 2551,
                        "plant_piezo": 2462, "dicty_piezo": 3080}

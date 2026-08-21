@@ -245,7 +245,18 @@ def test_every_shared_analysis_is_reachable_from_the_gui(qapp):
                "paralogue": "show_paralogue",
                "homology": "show_homology",
                "guo2017": "show_guo2017",
-               "liu2025": "show_liu2025"}
+               "liu2025": "show_liu2025",
+               # Round 93. `family` is the odd one: it needs no structure at
+               # all, because what it prints is a property of the imported
+               # resource. It still gets a menu entry, because a result nobody
+               # can reach from the window is exactly what this test exists to
+               # catch, and because it is the entry that says the other four
+               # are answering somebody else's question.
+               "family": "show_family",
+               "constraint": "show_constraint",
+               "disease": "show_disease_geography",
+               "coreperiphery": "show_core_periphery",
+               "piezo3": "show_piezo3"}
 
     for name in ANALYSES:
         assert name in drawn or name in tabular, (

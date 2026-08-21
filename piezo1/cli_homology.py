@@ -8,8 +8,8 @@ three do not load coordinates at all.
 Three subjects, because they are three different amounts of work and a user
 should choose deliberately:
 
-* ``--family`` — the nine members, from committed resources. Instant.
-* ``--sites`` — every curated functional residue across all nine, gated by
+* ``--family`` — the ten members, from committed resources. Instant.
+* ``--sites`` — every curated functional residue across all ten, gated by
   whether the alignment is in register there. A few seconds.
 * the default matrix — every pair with its composition-matched null. **Two
   minutes**, almost all of it computing the nulls, which is the price of not
@@ -195,13 +195,13 @@ def add_homology_parser(sub, common) -> None:
     p = sub.add_parser(
         "homology", parents=[common],
         help="the PIEZO family: members, sequence relationships, curated "
-             "sites across all nine, and structural comparison")
+             "sites across all ten, and structural comparison")
     p.add_argument("structure", nargs="?", default=None,
                    help="a PDB id — compare that entry against every "
                         "catalogued homologue. Omit for the family matrix.")
     p.add_argument("--species", choices=["human", "mouse"], default=None)
     p.add_argument("--family", action="store_true",
-                   help="just the nine members and their annotation (instant)")
+                   help="just the ten members and their annotation (instant)")
     p.add_argument("--sites", action="store_true",
                    help="curated functional residues across the family")
     p.add_argument("--structural", nargs=2, metavar=("A", "B"),

@@ -7126,3 +7126,153 @@ fixture snapshots and restores every setting and the application style, so
 running the suite cannot restyle the user's next session. The scripted GUI
 smoke test passes over the refactored menus — the check that exists because
 mechanical Qt refactors have broken the app silently twice.
+
+---
+
+## Round 93 — the PIEZO family census, imported and answered back
+
+**What this round is.** A sibling project, `piezo_genes`, has spent twenty-four
+sessions on a 194-genome, eukaryote-wide census of the PIEZO family: what its
+true range is, that vertebrates have a **third** PIEZO gene the databases
+largely missed, and which parts of the protein half a billion years of evolution
+has refused to change. It is a sequence project — no coordinates, no physics,
+and no way to ask *why* a residue is conserved. This project is the mirror
+image. The round brings its results across and asks what this project's
+coordinates say back.
+
+**Why an import needed a gate rather than a copy.** The failure mode for
+somebody else's result is specific and silent: they keep working, correct a
+number, and the copy here becomes a confident quotation of a superseded value.
+So `scripts/build_family_findings.py` makes every imported statement declare how
+to re-read the number it rests on, re-reads all thirty-two from the census's own
+result files, requires claims never reduced to a table to appear literally in
+its `FINDINGS.md`, records the source commit — and **refuses to write at all**
+when the census is not on disk, because a rebuild with no source would otherwise
+re-stamp the resource with a fresh date and nothing behind it.
+
+The gate that earns its place is the fifth one. The census works in three
+numbering systems and this project works in two others, and a per-residue track
+joined to the wrong sequence produces a colouring that looks entirely plausible
+and is off by an indel. So the imported PIEZO1 track's own amino acids are
+checked residue by residue against `uniprot_human.json` before anything is
+written.
+
+**Four replications, on boundaries the census did not choose.** The point of
+re-running rather than quoting is that it can fail. The two projects' domain
+partitions put the **anchor 141 residues apart** and the outer helix 120, while
+agreeing on the cap to within four — the signature of two ranges taken from
+different papers. On ours: anchor 0.832, CTD 0.810, inner helix 0.789 against
+THU1's 0.630, so the core-is-pore ordering is a property of the protein. The
+pairwise identities recomputed from this project's own alignment put the cap —
+the census's one exception, the piece of pore machinery *below* the
+whole-protein figure — at **0.404 against their 0.402**. The fourteen pathogenic
+pore positions are confirmed on a *different UniProt record* of the same
+zebrafish gene from the one the census scored. And two evolutionary measurements
+sharing no data and no statistic agree at ρ = 0.88.
+
+**Four places the answer came out differently.** None overturns a headline; two
+sharpen one and two say what a finding is really about.
+
+- **The distal-versus-proximal blade gradient is composition, not biology.** The
+  census's bands reproduce here exactly, so the import is sound — and the bands
+  are a single chain cut containing 29% and **77%** inter-unit linker
+  respectively, with linker scoring the same either side (0.517 against 0.515).
+  Restricted to the four-TM units the ordering **reverses**. What survives the
+  composition is the opposite gradient.
+- **The disease enrichment is real and it turns on 120 residues.** Re-tested on
+  PIEZO1 alone against gnomAD *population* missense rather than ClinVar benign
+  labels — a better control for the ascertainment problem the census names in
+  its own caveat — it replicates strongly on their boundaries (OR 3.63,
+  P = 0.0033 against their 3.9 and 0.0014) and does not reach significance on
+  ours (OR 1.60, P = 0.25). The disputed band is 2057–2176, and it carries six
+  pathogenic positions including E2117 and T2127. Both rows are printed, because
+  picking the one that agrees would be reporting a boundary choice as a finding.
+- **The blades "splaying" is the prediction, not the paralogue.** The census's
+  structural result superposes a *predicted* piezo3 monomer on experimental
+  mouse Piezo1 and reports the cores agreeing while the blades splay. Generalised
+  here to every pair, with the control that decides it: an AlphaFold monomer
+  splays **7–9× from an experimental structure of the protein it is a model
+  of**, while two experimental structures of *different paralogues* splay
+  **0.8–1.2×**. The core agreement survives and is stronger than reported — two
+  experimental paralogues superpose at 3.6 Å against the census's 3.9 — and the
+  splay is an artefact of comparing a model with an experiment. The 19× at the
+  top of that table is PIEZO1's own gating motion: core-conserved and
+  periphery-free is what flattening looks like inside one protein.
+- **`best_template` picks the wrong template for a new paralogue.** Its rule —
+  same protein first, then most residues resolved — falls through for a
+  paralogue nobody has a structure of, to the **worm** PEZO-1 entry at 28%
+  identity and 13,839 inter-protomer clashes against a PIEZO1 trimer's 44% and
+  2,922. Right for the case it was written for. `analysis.piezo3` chooses
+  explicitly and prints the comparison rather than overriding it silently.
+
+**The joint question neither project could ask.** Is a residue's evolutionary
+constraint predicted by how mechanically coupled it is, or only by how buried it
+is? Buried residues are conserved in every protein ever studied for reasons
+having nothing to do with mechanotransduction, and burial correlates with almost
+every mechanical quantity — so the second half of that sentence is the whole
+difficulty. Three controls: the null is a **circular shift, not a permutation**
+(both series are strongly autocorrelated along the chain, and a permutation null
+is measured to be three times narrower — which is how a comparison invents
+significance from structure that was in both series to begin with); burial is
+partialled out, rank-first because the confounder is monotone and not linear;
+and eight features are corrected together. Measured on 7WLT: PRS response at the
+gate ρ = 0.373, holding **0.287** with burial fixed at q = 0.007, against
+burial's own 0.369. Five of eight survive all three controls, and the signs are
+the census's picture in mechanics — coupled to the gate ⟹ constrained, mobile ⟹
+free.
+
+**A defect this found, and one it did not fix.** That result only appeared after
+`analysis/features.py` was corrected. It defaulted to *human* annotation
+whatever entry it was handed, so on a **mouse** entry — most of the catalogue —
+the hydrophobic-gate group, the blade range and the human-anchored conservation
+profile were all looked up at human residue numbers against mouse coordinates,
+a non-constant offset reaching 26 residues. Measured before and after on 7WLT:
+the conservation column scored **ρ = 0.29** against the same profile read at the
+correct residue and now scores 1.00; `distance_to_gate` had no residue at zero
+and now finds mouse 2473/2476/2480, which is what `functional_residues.json`
+says the gate is; `prs_gate_response` against constraint went from **−0.02 to
++0.37**. It survived because `tests/test_features.py` uses a *human* fixture,
+where the default is right, and the actual use is mouse.
+
+`docs/PREREGISTRATION_ROUND48.md` records that Round 48's endpoints — burial,
+conservation and gate coupling — were built by `build_feature_table` on 7WLT.
+Round 48 is a frozen null and is **not revised here**: the standing policy in
+`NEGATIVE_RESULT_PROTOCOL.md` is that a recorded result is superseded rather
+than edited, and superseding it is a decision about the project's central claim
+rather than a side effect of an import. It is recorded in `docs/FAMILY.md` §6
+rather than left to be discovered.
+
+**piezo3 as a structure.** The only coordinates the third vertebrate PIEZO has
+anywhere are one AlphaFold model of the zebrafish protein — human piezo3 has
+been the pseudogene `PIEZO1P2` since before the primate radiation. It is now a
+tenth family reference, a catalogue entry, and identifies at 1.000 against a
+runner-up of 0.068 **with no other entry's identification moving**, which is
+pinned the way rat's addition was. Run through the pipeline it gives dome
+R = 10.8 nm and a 0.37 Å bottleneck against 7WLT's 9.7 nm and 0.73 Å by the
+identical route — and neither number is evidence about piezo3, because 96% of
+the assembled trimer's departure from planarity is the template's arrangement
+and the protomer is a prediction whose blades this round has just measured to
+sit 33–45 Å from where cryo-EM puts them. What the numbers *can* do is fail, and
+they did not: the protomer arranges into a closed trimer with an axis and a
+continuous lumen. A negative that survived, not a positive demonstrated.
+
+**Calibration.** Eight new modules join `CHECKING_MODULES`, because none of them
+measures a property of PIEZO1 and all of them exist to decide whether something
+may be believed. Every public callable has a named calibrating test — and the
+register earned its keep immediately, failing on two tests I had named and not
+written.
+
+Two calibrations were wrong first and are recorded as such. A planted
+correlation on two random walks reached only z = 1.6, which looked like the
+instrument failing and is the instrument being correct: two random walks
+correlate at |ρ| near 1 by chance, so a shift null built from one is enormous.
+Pinned as a bound rather than deleted. And the rank-partialling test first
+claimed ranking removes more of a *skewed* confounder, which is false when the
+dependence is linear in the raw values — the case that decides it is a monotone
+**non-linear** confounder, which is what burial is, and the test now measures
+the ranked control against the raw one rather than asserting the choice.
+
+**Six numbers registered, three exempted with reasons.** The census's own band
+boundaries (mouse 1300, its human equivalent, and where its proximal band ends)
+are exempt rather than registered: they are quoted to reproduce somebody else's
+number, and an override would silently stop the reproduction being one.

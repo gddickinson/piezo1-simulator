@@ -76,9 +76,10 @@ Read the last row. PEZO-1 and Arabidopsis PIEZO are **23.8% identical**, and a
 to PEZO-1. The percentage carries essentially nothing. The local alignment
 score on the identical pair is 64 standard deviations above its null.
 
-**15 of the 36 pairs fall below Rost's 30% twilight line.** Two of them have an
-identity statistically indistinguishable from chance while their alignment
-score is overwhelming.
+**17 of the 45 pairs fall below Rost's 30% twilight line** (15 of 36 before
+piezo3 joined the family in Round 93). Two of them have an identity
+statistically indistinguishable from chance while their alignment score is
+overwhelming.
 
 The conclusion is not "these proteins are only distantly related". It is that
 **percent identity is the wrong statistic below that line**, which is precisely
@@ -149,7 +150,8 @@ saying when the measurement does not hold still.
   TrEMBL holds many more, including the zebrafish `si:dkey-11f4.7` entries that
   a third vertebrate paralogue would be built from. Those are unreviewed, of
   varying length, and cataloguing them is a curation job with a provenance gate,
-  not a search feature.
+  not a search feature. **One of them has since been curated — see the
+  Round 93 note below.**
 - **Not that the family cannot grow.** `io.fetch.FAMILY_ACCESSIONS` is a pinned
   list precisely so that growth is something a person notices and curates.
 
@@ -165,7 +167,48 @@ saying when the measurement does not hold still.
    the one asked here.
 3. **A curated PIEZO3.** Dong et al.'s zebrafish paralogue would be the first
    new vertebrate PIEZO since PIEZO2 and would change what the family means. It
-   needs the annotation discrepancy resolved first — see below.
+   needs the annotation discrepancy resolved first — see below. ✅ **This fired
+   in Round 93; the record is the next section.**
+
+## Round 93 — the third clause fired, and what it changed
+
+Standing instruction 3 above was written expecting exactly this, so this is a
+record rather than a revision.
+
+The `piezo_genes` census settled the annotation discrepancy that the clause made
+a precondition: **piezo3 is a real vertebrate paralogue**, as old as PIEZO1 and
+PIEZO2 (both duplications on the jawed-vertebrate stem, ~460–560 Ma), transcribed
+and correctly spliced, under purifying selection at its pore, and lost eleven
+times since — including on the primate stem, which is why the human genome has
+the pseudogene `PIEZO1P2` at the locus and no gene. `si:dkey-11f4.7`
+(A0AB32U1Q1) is now the tenth committed reference.
+
+**Three things this changes, and one it does not.**
+
+- **The family is ten and the query returns nine.** The sentence carrying the
+  argument above — one UniProt query returns exactly the family — was true when
+  every member was reviewed. piezo3 is TrEMBL, so `reviewed:true AND
+  family:piezo` still returns nine and now *misses a genuine vertebrate
+  paralogue*. `analysis.homology.reviewed_family()` is the nine, kept separate
+  from `family()` so the gap stays visible instead of being absorbed into a
+  bumped count.
+- **That does not weaken the enumerability argument; it sharpens it.** The
+  problem the census names is not that the family is too large to enumerate — it
+  is that the databases are *incomplete*, and a similarity search over the same
+  databases inherits exactly that incompleteness. A BLAST run would not have
+  found piezo3 either, for the same reason the reviewed query does not: the
+  sequence is there and the *record* is the thing that is missing. What found it
+  was a genome sweep with synteny, a phylogeny and a loss reconstruction — not a
+  search feature.
+- **An unreviewed member's annotation is not architecture.** piezo3's UniProt
+  entry names **21** transmembrane helices where its two siblings have 38. That
+  is an automatic annotation on an uncurated record, and `FamilyMember.reviewed`
+  is carried so nothing reads it as a statement about the protein. A test pins
+  it.
+- **Unchanged: this project still ships no homology search.** All three grounds
+  in the argument above hold, and the third — that the structural route answers
+  the generality question better — is now stronger, because piezo3 arrived with
+  a structure and `analysis.core_periphery` could measure it.
 
 ## A note owed to `piezo_genes`
 

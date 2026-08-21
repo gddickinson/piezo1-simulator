@@ -71,8 +71,12 @@ STEPS = [
      [sys.executable, "scripts/run_validation.py"], True),
     ("validation22", "Re-run the Round 22 exploratory test",
      [sys.executable, "scripts/run_validation_round22.py"], True),
+    ("family", "Re-import the PIEZO family census and verify every quoted number",
+     [sys.executable, "scripts/build_family_findings.py"], True),
     ("figures", "Regenerate the documentation figures",
      [sys.executable, "scripts/make_figures.py"], True),
+    ("family_figures", "Regenerate the family-census figures",
+     [sys.executable, "scripts/make_family_figures.py"], True),
     ("screenshots", "Drive the GUI and capture screenshots",
      [sys.executable, "scripts/screenshot_app.py", "--structure", "8YEZ",
       "--analysis"], True),
@@ -139,7 +143,8 @@ def main() -> int:
         if key in args.skip or (args.only and key not in args.only):
             print(f"\n=== {label}\n    skipped")
             continue
-        if args.quick and key in ("figures", "screenshots", "references"):
+        if args.quick and key in ("figures", "family_figures", "screenshots",
+                                  "references"):
             print(f"\n=== {label}\n    skipped (--quick)")
             continue
         if not run(label, command, optional):

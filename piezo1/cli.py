@@ -26,6 +26,7 @@ from pathlib import Path
 import numpy as np
 
 from .analysis.report import ANALYSES, build_report
+from .cli_family import add_family_parser
 from .cli_homology import add_homology_parser
 from .config import STRUCTURE_DIR
 from .core.annotations import load_annotations
@@ -95,7 +96,7 @@ def cmd_analysis(args) -> int:
     record = load_registry().get(args.structure)
     species = args.species or (record.numbering_species if record else "human")
     params = {k: v for k, v in vars(args).items()
-              if k in ("step", "n_modes", "top") and v is not None}
+              if k in ("step", "n_modes", "top", "partner") and v is not None}
     result = ANALYSES[args.command](st, species, **params)
     _emit(result, args.json)
     return 0 if "error" not in result else 1
@@ -269,7 +270,7 @@ def cmd_conservation(args) -> int:
 def cmd_report(args) -> int:
     st = _load(args.structure)
     params = {k: v for k, v in vars(args).items()
-              if k in ("step", "n_modes", "top") and v is not None}
+              if k in ("step", "n_modes", "top", "partner") and v is not None}
     report = build_report(st, species=args.species,
                           analyses=args.analyses, parameters=params)
     out = Path(args.output) if args.output else None
@@ -380,14 +381,25 @@ def build_parser() -> argparse.ArgumentParser:
             ("nanodomain", "calcium at the HaloTag when the channel opens"),
             ("prediction_record", "what a variant prediction is worth"),
             ("ligands", "modulators and the standing of their binding sites"),
-            ("paired_variant", "R2456H against wild type, with a control")):
+            ("paired_variant", "R2456H against wild type, with a control"),
+            ("constraint", "evolutionary constraint from the family census, on "
+                           "this entry and on our own domain partition"),
+            ("disease", "does pathogenic variation concentrate in the pore "
+                        "module? re-tested on our own annotation"),
+            ("coreperiphery", "fit a partner on this entry by the pore module, "
+                              "then measure where the blades land"),
+            ("piezo3", "the third vertebrate PIEZO, run through this "
+                       "project's own pipeline")):
         p = sub.add_parser(name, help=help_text, parents=[common])
         p.add_argument("structure")
         p.add_argument("--species", choices=["human", "mouse"])
         p.add_argument("--step", type=float, help="pore slice spacing, A")
         p.add_argument("--n-modes", dest="n_modes", type=int)
         p.add_argument("--top", type=int)
+        p.add_argument("--partner", help="second entry, for coreperiphery")
         p.set_defaults(func=cmd_analysis)
+
+    add_family_parser(sub, common)
 
     p = sub.add_parser("guo2017", parents=[common],
                        help="replicate the figures of Guo & MacKinnon 2017, "

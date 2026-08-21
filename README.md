@@ -257,16 +257,25 @@ coordinates.
 other PIEZO in the catalogue; `python -m piezo1.cli homology` works on the
 family itself.
 
-The reviewed family is **nine proteins**, which is small enough to hold in full:
-PIEZO1 (human, mouse, rat), PIEZO2 (human, mouse), *C. elegans* PEZO-1,
-*Drosophila* PIEZO, *Arabidopsis* PIEZO and *Dictyostelium* pzoA. All nine ship
-as committed annotation, and the sequence viewer will align any two of them.
+The reference family is **ten proteins**, which is small enough to hold in full:
+PIEZO1 (human, mouse, rat), PIEZO2 (human, mouse), zebrafish **piezo3**,
+*C. elegans* PEZO-1, *Drosophila* PIEZO, *Arabidopsis* PIEZO and *Dictyostelium*
+pzoA. All ten ship as committed annotation, and the sequence viewer will align
+any two of them. piezo3 is the newest and the odd one out: it is the third
+vertebrate PIEZO, human piezo3 has been a pseudogene since before the primate
+radiation, and the only coordinates it has anywhere are one AlphaFold model of
+the zebrafish protein — see the family section above.
+
+The *census* the family sits in is much larger, and measured rather than
+assumed: 8,329 PIEZO-like proteins across Metazoa, Viridiplantae, protists and
+Fungi, with zero hits in 628 archaeal reference proteomes. The nine reviewed
+sequences are a sample of that, and now say so.
 
 Two things the comparison insists on, both because a number here is easy to
 misread:
 
-**Percent identity stops being evidence before the family ends.** Fifteen of the
-thirty-six pairs fall below the ~30% "twilight zone" boundary. PEZO-1 and
+**Percent identity stops being evidence before the family ends.** Seventeen of
+the forty-five pairs fall below the ~30% "twilight zone" boundary. PEZO-1 and
 *Arabidopsis* PIEZO are 23.8% identical — and a *scrambled* Arabidopsis sequence
 of the same amino-acid composition is 22.5% identical to PEZO-1. The homology is
 real (the local alignment score is 64 standard deviations above the same null),
@@ -289,6 +298,59 @@ structures.
 Neither non-animal PIEZO can join at all — the only structural representation
 either has is an AlphaFold *monomer*, and the dome, the pore and the elastic
 network all need three protomers.
+
+### Ask what half a billion years protected, and why
+
+A sibling project, `piezo_genes`, ran a 194-genome census of the PIEZO family:
+its true range, a **third** vertebrate PIEZO gene the databases largely missed,
+and which parts of the protein evolution has refused to change. It is a sequence
+project with no coordinates. This one is a physics project with no evolutionary
+depth. **Analysis → The PIEZO family census** and the four entries below it are
+the join; `docs/FAMILY.md` is the full account.
+
+Thirteen imported statements sit in a committed resource, each with the numbers
+it rests on and what it does *not* establish. The importer re-reads all
+thirty-two of those numbers from the census's own files on every build, and
+refuses to write at all if the census is not on disk — an imported finding whose
+source has moved is a confident quotation of a superseded value, and nothing
+else would notice.
+
+**What replicated, on boundaries the census did not choose.** The two projects'
+domain partitions put the anchor **141 residues apart**. On ours the conserved
+core is still the pore machinery — anchor 0.832, CTD 0.810, inner helix 0.789
+against THU1's 0.630 — and the one exception the census reports, the
+extracellular cap, lands at **0.404 identity between PIEZO1 and PIEZO2 against
+their 0.402**, from a different alignment. PIEZO1 R2456 (hereditary xerocytosis)
+and PIEZO2 R2686 (Gordon syndrome) really are the same residue of the same
+machine: this project's own alignment pairs them independently, and after
+superposing the two channels by the pore module alone each is the **nearest
+residue of the other paralogue to within one** — which is also the resolution a
+3.5 Å cross-paralogue fit can honestly claim.
+
+**And three places the answer came out differently.** The census's
+distal-versus-proximal blade gradient turns out to be band composition: its two
+bands are 29% and **77%** inter-unit linker, linker scores the same either side,
+and restricted to the four-TM units the ordering reverses. Its disease
+enrichment replicates strongly against a *population* comparator on its own
+boundaries (odds ratio 3.63, P = 0.0033) and not on ours — the 120 residues the
+two disagree about carry six pathogenic positions, which is the result. And the
+blades "splaying" in its structural figure is not paralogue divergence: an
+AlphaFold monomer splays **7–9× from an experimental structure of the protein it
+models**, while two experimental structures of *different* paralogues splay
+about 1×.
+
+**The question neither project could ask alone**: is a residue's evolutionary
+constraint predicted by how mechanically coupled it is, or only by how buried it
+is? Burial alone reaches ρ = 0.37. With burial held fixed, the elastic network's
+perturbation response *at the gate* keeps **ρ = 0.29** (q = 0.007) against a
+circular-shift null — a permutation null is measured to be three times too
+narrow, because both series are autocorrelated along the chain. Five of eight
+mechanical features survive. Modest, and that is its honest size.
+
+**View → Colour by evolutionary constraint** paints it on the model, on a fixed
+0–1 scale so two entries stay comparable, with unscored residues in grey rather
+than dark: the blade tips are where coverage is worst and where low constraint is
+exactly the claim being made.
 
 ### Build the full-length model
 

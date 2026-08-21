@@ -319,3 +319,84 @@ def test_the_register_covers_the_three_hazards_the_round_named():
             "modified_registry_unmarked"} <= keys
     assert not by_status("accepted"), (
         "an accepted hazard must be listed in ROADMAP.md as well")
+
+
+# --------------------------------------------------- Round 93: imported results
+
+def test_an_imported_result_cannot_be_shown_without_saying_whose_it_is():
+    """The hazard: an external project's evolutionary numbers read as this
+    project's physics. A coloured trimer looks the same either way."""
+    from piezo1.analysis.report import ANALYSES
+    from piezo1.core.family import load_family_findings
+    from piezo1.ui.tabular_analyses import CAVEATS
+
+    assert "AN EXTERNAL PROJECT'S RESULTS" in CAVEATS["family"]
+    assert "THE PER-RESIDUE VALUES ARE THE CENSUS'S" in CAVEATS["constraint"]
+    for key in ("family", "constraint", "disease", "coreperiphery", "piezo3"):
+        assert key in ANALYSES and key in CAVEATS
+
+    findings = load_family_findings()
+    assert findings.provenance["source_project"] == "piezo_genes"
+    assert findings.provenance["source_commit"]
+    # And the result payload itself names the source, not only the caveat.
+    payload = ANALYSES["family"](None, "human")
+    assert findings.source in payload["source"]
+
+
+def test_the_importer_refuses_a_source_it_cannot_verify_against(tmp_path):
+    """The other half of the guard: a rebuild with no census must write
+    nothing rather than re-stamping the resource with a fresh date."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    from piezo1.config import PROJECT_ROOT, RESOURCE_DIR
+
+    before = (RESOURCE_DIR / "family_findings.json").read_bytes()
+    result = subprocess.run(
+        [sys.executable,
+         str(Path(PROJECT_ROOT) / "scripts" / "build_family_findings.py"),
+         "--source", str(tmp_path)],
+        capture_output=True, text=True, timeout=300)
+    assert result.returncode != 0 and "REFUSED" in result.stderr
+    assert (RESOURCE_DIR / "family_findings.json").read_bytes() == before
+
+
+def test_a_partition_dependent_result_is_reported_under_both_partitions():
+    """The hazard: a boundary choice reported as a finding."""
+    from piezo1.analysis.disease_geography import PARTITIONS, both_partitions
+
+    result = both_partitions()
+    assert set(result["results"]) == set(PARTITIONS)
+    significance = {r.significant for r in result["results"].values()}
+    if len(significance) > 1:
+        assert "boundary" in result["verdict"], (
+            "the two partitions disagree and the verdict does not say so")
+    assert result["disputed"]["n_residues"] > 0
+    assert result["disputed"]["pathogenic"], (
+        "the disputed band's own pathogenic residues must be named, or "
+        "'boundary-dependent' is an excuse rather than something checkable")
+
+
+def test_a_prediction_versus_experiment_splay_is_not_paralogue_divergence(
+        structure_by_id):
+    """The hazard: a property of the predictor read as evolutionary divergence.
+
+    The guard is that the control exists and is measurable, so the caveat is
+    backed by a number rather than a claim.
+    """
+    from piezo1.analysis.core_periphery import compare
+    from piezo1.ui.tabular_analyses import CAVEATS
+
+    assert "SAME PROTEIN" in CAVEATS["coreperiphery"]
+
+    prediction = structure_by_id("AF-E2JF22-F1-model_v6")
+    experiment = structure_by_id("6B3R")
+    paralogue_a, paralogue_b = structure_by_id("7WLT"), structure_by_id("9VEE")
+    if any(s is None for s in (prediction, experiment, paralogue_a, paralogue_b)):
+        pytest.skip("the entries this control needs are not all downloaded")
+
+    same_protein = compare(prediction, experiment, "AF mouse", "6B3R")
+    cross = compare(paralogue_a, paralogue_b, "7WLT", "9VEE")
+    assert same_protein.splay_ratio > 4 * cross.splay_ratio
+    assert cross.cross_paralogue and not same_protein.cross_paralogue

@@ -64,6 +64,7 @@ def _family_sequences():
     from ..config import RESOURCE_DIR
 
     order = ["human", "mouse", "rat", "human_piezo2", "mouse_piezo2",
+             "zebrafish_piezo3",
              "worm_piezo", "fly_piezo", "plant_piezo", "dicty_piezo"]
     for key in order:
         path = RESOURCE_DIR / f"uniprot_{key}.json"
@@ -250,14 +251,17 @@ def load_named_sequences(structure=None) -> list[NamedSequence]:
     Missing downloads are skipped rather than raising, so the viewer opens with
     whatever is present and says what is not.
 
-    **All nine reviewed PIEZOs are offered, not just human and mouse.** Until
-    Round 89 this returned two references, so the comparison tool could align
-    human against mouse and nothing else — while the project held annotation
-    for six proteins and the family has nine. Each carries its own
-    ``numbering``, which is the whole reason they can be listed together
-    safely: no two of the nine share a length, so a residue number means
-    nothing without the sequence it belongs to, and ``compare_sequences``
-    refuses to pair them positionally across different numbering.
+    **All ten PIEZO references are offered, not just human and mouse.** Until
+    Round 89 this returned two, so the comparison tool could align human
+    against mouse and nothing else — while the project held annotation for six
+    proteins and the family has ten. Each carries its own ``numbering``, which
+    is the whole reason they can be listed together safely: **no two of the ten
+    share a length**, so a residue number means nothing without the sequence it
+    belongs to, and ``compare_sequences`` refuses to pair them positionally
+    across different numbering.
+
+    Nine are reviewed; the tenth, zebrafish piezo3, is TrEMBL — the third
+    vertebrate paralogue, which human lost before the primate radiation.
     """
     out: list[NamedSequence] = []
     for key, label, letters, numbering, accession in _family_sequences():

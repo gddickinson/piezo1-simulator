@@ -51,30 +51,65 @@ def _shuffle(sequence: str) -> str:
 # The family itself
 # --------------------------------------------------------------------------
 
-def test_the_family_is_nine_and_every_member_is_committed():
+def test_the_family_is_ten_and_every_member_is_committed():
     members = H.family()
-    assert len(members) == 9
+    assert len(members) == 10
     assert {m.key for m in members} == set(REFERENCES)
     for m in members:
         assert m.length > 2000 and m.accession and m.organism != "?"
         assert m.protein == PROTEIN_NAMES[m.key]
 
 
+def test_nine_are_reviewed_and_the_tenth_is_a_real_paralogue():
+    """Round 93 broke a coincidence this project had been leaning on.
+
+    The enumerability argument in `docs/HOMOLOGY_SEARCH.md` rests on one
+    UniProt query returning exactly the family. It still returns nine — and
+    the tenth, zebrafish piezo3, is a TrEMBL entry for a genuine third
+    vertebrate paralogue. So the query no longer returns the family, and the
+    gap has to stay visible rather than being absorbed into a bumped count.
+    """
+    assert len(H.reviewed_family()) == 9
+    unreviewed = H.unreviewed_family()
+    assert len(unreviewed) == 1
+    assert unreviewed[0].key == "zebrafish_piezo3"
+    assert unreviewed[0].group == "piezo3"
+    assert set(H.reviewed_family()) | set(unreviewed) == set(H.family())
+
+
+def test_the_unreviewed_members_helix_count_is_annotation_not_architecture():
+    """21 helices where its siblings have 38, because nobody has curated it.
+
+    Pinned so no comparison reads it as a statement about the protein: the
+    census's own finding is that a third of real PIEZO genes have no protein
+    record, and this is what that looks like from inside.
+    """
+    piezo3 = H.member("zebrafish_piezo3")
+    assert not piezo3.reviewed
+    assert piezo3.n_transmembrane == 21
+    assert all(m.n_transmembrane == 38 for m in H.family()
+               if m.group in ("PIEZO1", "PIEZO2"))
+
+
 def test_no_two_members_share_a_length_or_a_helix_count_architecture():
     """The reason nothing may transfer a residue number or a helix index.
 
-    Nine lengths, all different — so a residue number without its numbering
-    system is not a residue. And four distinct helix counts, so 'TM12' is not
-    a portable name either: only the five vertebrate members have 38.
+    Ten lengths, all different — so a residue number without its numbering
+    system is not a residue. And five distinct helix counts, so 'TM12' is not
+    a portable name either: only the five *reviewed* vertebrate members have
+    38. piezo3's 21 is its unreviewed annotation and not its architecture,
+    which is pinned separately.
     """
     members = H.family()
-    assert len({m.length for m in members}) == 9
+    assert len({m.length for m in members}) == 10
 
-    vertebrate = {m.key for m in members if m.group in ("PIEZO1", "PIEZO2")}
-    assert all(m.n_transmembrane == 38 for m in members if m.key in vertebrate)
+    curated_vertebrate = {m.key for m in members
+                          if m.group in ("PIEZO1", "PIEZO2")}
+    assert all(m.n_transmembrane == 38 for m in members
+               if m.key in curated_vertebrate)
     assert all(m.n_transmembrane != 38 for m in members
-               if m.key not in vertebrate)
-    assert {m.n_transmembrane for m in members} == {35, 36, 38, 40}
+               if m.key not in curated_vertebrate)
+    assert {m.n_transmembrane for m in members} == {21, 35, 36, 38, 40}
 
 
 def test_a_missing_resource_raises_rather_than_shortening_the_family(monkeypatch):

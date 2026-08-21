@@ -516,11 +516,15 @@ exactly them — and this project held six. The three added are **rat Piezo1**
 ***Dictyostelium* pzoA** (Q54S52, 3,080 aa). The last two matter most: PIEZO is
 not a metazoan invention, so the generality question widens from one vertebrate
 duplication to the root of the eukaryotes. **No two of the nine share a length,
-and four helix counts appear across them — 35, 36, 38, 40** — so neither a
-residue number nor a helix index transfers between them by arithmetic.
+and five helix counts appear across them — 21, 35, 36, 38, 40** — so neither a
+residue number nor a helix index transfers between them by arithmetic. The 21
+is zebrafish piezo3's, and it is an *unreviewed* annotation rather than an
+architecture: its two vertebrate siblings have 38, and `FamilyMember.reviewed`
+is carried so nothing reads it as a statement about the protein.
 
-**Sequence identity stops being evidence before the family ends.** Fifteen of
-the thirty-six pairs fall below Rost's 30% twilight line. Measured against
+**Sequence identity stops being evidence before the family ends.** Seventeen of
+the forty-five pairs fall below Rost's 30% twilight line (fifteen of thirty-six
+before piezo3 joined the family in Round 93). Measured against
 composition-matched shuffles of the same partner:
 
 | pair | identity | shuffled null | z | local score z |
@@ -609,6 +613,77 @@ mechanism is a property of the PIEZO fold, and it means nothing in that
 mechanism distinguishes the two proteins, whose inactivation kinetics and
 tissue roles differ. With one PIEZO2 structure, it says the fold *admits* the
 mechanism, not that every PIEZO uses it.
+
+### 4d. What half a billion years protected — and whether mechanics explains it (Round 93)
+
+The [`piezo_genes`](../../piezo_genes) census measured, for every residue of
+human PIEZO1, how much 174 genome-backed orthologues have been willing to change
+it. That track is imported here (`resources/family_constraint.json`, behind the
+gate in `scripts/build_family_findings.py`), and the full account of what
+replicated and what did not is [`FAMILY.md`](FAMILY.md). Two things belong in
+the scientific record.
+
+**The conserved core is the pore machinery, and it survives a change of
+boundaries.** The census and this project partition PIEZO1 differently — the two
+put the anchor **141 residues apart** and the outer helix 120, while agreeing on
+the cap to within four, which is the signature of two ranges taken from
+different papers rather than of a numbering error. Measured on `domains.json`:
+
+| domain | mean constraint | vs whole protein |
+|---|---|---|
+| anchor | 0.832 | +0.183 |
+| CTD | 0.810 | +0.160 |
+| inner helix | 0.789 | +0.140 |
+| outer helix | 0.787 | +0.137 |
+| cap (CED) | 0.683 | +0.033 |
+| THU2 | 0.653 | +0.003 |
+| THU1 | 0.630 | −0.020 |
+
+The same asymmetry appears in the pairwise identities between paralogues,
+recomputed here from this project's own global alignment: whole protein 0.495
+between PIEZO1 and PIEZO2, inner helix 0.905, CTD 0.899, anchor 0.870 — and the
+extracellular cap at **0.404**, the one part of the pore machinery *below* the
+whole-protein figure. The census reports 0.402 for the same quantity from
+entirely different machinery. The three paralogues share a pore and differ in
+its lid, which is where a functional difference between them is most likely to
+live.
+
+**Whether the elastic network explains any of it.** This is the question the
+census could not ask — a sequence alignment contains no mechanics — and it is
+worth stating carefully, because burial explains most conservation in most
+proteins for reasons having nothing to do with mechanotransduction, and burial
+correlates with almost every mechanical quantity a normal-mode model produces.
+
+Three controls (`analysis/constraint_mechanics.py`): the null is a **circular
+shift** of the constraint track rather than a permutation, because both series
+are strongly autocorrelated along the chain and a permutation null is measured
+to be three times narrower; burial is partialled out rank-first; and the eight
+features are corrected together. On 7WLT:
+
+| feature | ρ | ρ with burial held fixed | q |
+|---|---|---|---|
+| PRS response at the gate | +0.373 | **+0.287** | 0.007 |
+| cross-correlation with the gate | +0.295 | +0.248 | 0.007 |
+| distance to the gate | −0.279 | −0.234 | 0.007 |
+| mean-square fluctuation | −0.321 | −0.219 | 0.007 |
+| PRS coupling | −0.284 | −0.188 | 0.007 |
+| betweenness | +0.030 | +0.031 | 0.63 |
+| **burial alone** | **−0.369** | — | — |
+
+Five of eight survive all three controls, and the signs are the sequence result
+restated in mechanics: **residues mechanically coupled to the gate are
+constrained; residues that move are free to change.** The effect is modest — a
+partial ρ of 0.29 against burial's 0.37 — and that is its honest size. It is the
+first quantitative link this project has between the elastic-network mechanism
+and an evolutionary measurement made without any reference to it.
+
+Two supports and one caution. This project's own conservation profile and the
+census's agree at ρ = 0.88 over 2,521 positions with no data and no statistic in
+common. The census's constraint score still separates pathogenic from *population*
+missense here at AUC 0.82 against its own 0.91 measured against ClinVar benign
+labels. And the numbers above only appeared after a numbering defect in
+`analysis/features.py` was corrected — see `FAMILY.md` §6, which also records
+that Round 48's endpoints were computed through it.
 
 ---
 

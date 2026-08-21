@@ -80,6 +80,18 @@ MOUSE_PIEZO2_ACC = "Q8CD54"
 RAT_ACC = "Q0KL00"                   # Rattus norvegicus Piezo1, 2535 aa
 PLANT_PIEZO_ACC = "F4IN58"           # Arabidopsis thaliana PIEZO, 2462 aa
 DICTY_PIEZO_ACC = "Q54S52"           # Dictyostelium discoideum pzoA, 3080 aa
+#: Zebrafish piezo3 (si:dkey-11f4.7), 2651 aa — the **third vertebrate PIEZO**.
+#: Not in the reviewed set: it has no name in any database, which is one of the
+#: piezo_genes census's own findings. Added because it is the only paralogue
+#: with a structure this project can run its pipeline on, human piezo3 having
+#: been a pseudogene since before the primate radiation.
+#:
+#: There are two UniProt records for this gene and they differ by a single
+#: inserted residue at ~2014. This one is the accession the AlphaFold model is
+#: keyed on; the census scored A0AC58GFC9. Nothing may join the two by residue
+#: number — see :mod:`piezo1.analysis.piezo3`.
+ZEBRAFISH_PIEZO3_ACC = "A0AB32U1Q1"
+CENSUS_PIEZO3_ACC = "A0AC58GFC9"
 
 HUMAN_LENGTH = 2521
 MOUSE_LENGTH = 2547

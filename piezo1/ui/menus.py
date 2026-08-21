@@ -136,6 +136,19 @@ def _view_menu(win, bar) -> None:
                 "Criteria are heavy-atom based: no deposited entry has\n"
                 "hydrogens, so a drawn hydrogen bond is geometry rather than\n"
                 "an observed proton.")
+    _action(menu, "Colour by evolutionary c&onstraint", win.constraint_colour.show, "",
+            checkable=True, checked=False,
+            tip="How much 174 PIEZO1 orthologues have refused to change each\n"
+                "residue, from the piezo_genes census. NOT MEASURED HERE.\n"
+                "Scale FIXED at 0-1 so two entries stay comparable; an\n"
+                "auto-ranged map would repaint the same protein differently\n"
+                "depending on how much blade the entry resolved.\n"
+                "An UNSCORED residue is grey, not dark - the blade tips are\n"
+                "where coverage is worst and where low constraint is exactly\n"
+                "the claim being made, so the two must not share a colour.\n"
+                "A mouse entry is read through the alignment map. A PIEZO2 or\n"
+                "invertebrate entry is REFUSED rather than coloured by\n"
+                "whatever sits at those numbers in PIEZO1.")
     _action(menu, "Colour by &electrostatics", win.electrostatics.show, "",
             checkable=True, checked=False,
             tip="Figure 4c's surface potential, on the SAME FIXED SCALE:\n"
@@ -282,6 +295,37 @@ def _analysis_menu(win, bar) -> None:
     _action(menu, "PIEZO &family comparison…", win.show_homology, "",
             "The same question across the catalogue — PIEZO2, PEZO-1, dPIEZO.\n"
             "Reports a RANGE: one entry pair gives 0.98 and another 0.19.")
+    menu.addSeparator()
+    _action(menu, "The PIEZO family &census…", win.show_family, "",
+            "Everything imported from the piezo_genes census: 13 findings,\n"
+            "each with the number it rests on, the file it came from and\n"
+            "what this project does with it. NOTHING here is measured on the\n"
+            "loaded structure - the four entries below are the ones that\n"
+            "measure.")
+    _action(menu, "Evolutionary &constraint…", win.show_constraint, "",
+            "Per-residue constraint over 174 PIEZO1 orthologues, summarised\n"
+            "on THIS project's domain boundaries rather than the census's.\n"
+            "The pore machinery comes out most constrained and the blades\n"
+            "least - and one census finding, the distal-versus-proximal\n"
+            "blade gradient, REVERSES on our boundaries because its bands\n"
+            "differ in how much inter-unit linker they contain.")
+    _action(menu, "Where &disease sits…", win.show_disease_geography, "",
+            "Does pathogenic missense concentrate in the pore module?\n"
+            "Re-tested on our own variants against gnomAD population\n"
+            "variation. Reported under BOTH domain partitions, because the\n"
+            "two disagree by 120 residues and the answer follows.")
+    _action(menu, "Core and peri&phery…", win.show_core_periphery, "",
+            "Superpose a partner on this entry by the pore module alone,\n"
+            "then measure where the blades land. Two experimental paralogue\n"
+            "structures splay ~1x; an AlphaFold monomer of the SAME protein\n"
+            "splays 7-9x, which is what makes the control worth having.")
+    _action(menu, "piezo&3 - the third PIEZO…", win.show_piezo3, "",
+            "The paralogue vertebrates have and humans lost: transcribed,\n"
+            "spliced and under selection at its pore, with the identical\n"
+            "residue at all 14 pathogenic pore positions. Assembled into a\n"
+            "trimer on a deposited template and run through the pipeline -\n"
+            "with 96% of the resulting shape borrowed from that template.")
+    menu.addSeparator()
     _action(menu, "&Interactions…", win.show_interactions, "",
             "Hydrogen bonds, salt bridges, hydrophobic contacts, pi-stacking,\n"
             "cation-pi and disulfides, using published geometric criteria.")

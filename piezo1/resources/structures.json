@@ -1387,6 +1387,41 @@
    ]
   },
   {
+   "pdb": "AF-A0AB32U1Q1-F1-MODEL_V6",
+   "file": "AF-A0AB32U1Q1-F1-model_v6.cif",
+   "resolution": null,
+   "released": "",
+   "title": "AlphaFold DB predicted model",
+   "journal": "Nucleic Acids Res",
+   "year": 2024,
+   "pmid": null,
+   "doi": "10.1093/nar/gkad1011",
+   "emdb": [],
+   "n_atoms": 21411,
+   "n_protomers": 1,
+   "protomer_chains": [
+    {
+     "chain": "A",
+     "n_ca": 2651,
+     "first": 1,
+     "last": 2651
+    }
+   ],
+   "ligands": [],
+   "protein": "piezo3",
+   "numbering": "zebrafish_piezo3",
+   "species": "zebrafish",
+   "state": "predicted",
+   "gating": "unknown",
+   "note": "AlphaFold DB model of zebrafish piezo3 (si:dkey-11f4.7), 2,651 residues \u2014 the THIRD vertebrate PIEZO, and the only structural representation it has anywhere. Human piezo3 has been the pseudogene PIEZO1P2 since before the primate radiation, so the paralogue cannot be studied in human coordinates at all. A PREDICTION and a MONOMER, with two further cautions particular to it: the UniProt entry is unreviewed, so its topology annotation names 21 transmembrane helices where PIEZO1 and PIEZO2 have 38; and a second record for the same gene (A0AC58GFC9, the one the census scored) differs by one inserted residue, so nothing may join the two by residue number.",
+   "recommended_for": [
+    "predicted",
+    "family",
+    "paralogue",
+    "generality"
+   ]
+  },
+  {
    "pdb": "AF-E2JF22-F1-MODEL_V6",
    "file": "AF-E2JF22-F1-model_v6.cif",
    "resolution": null,
